@@ -10,24 +10,20 @@ endif()
 
 project(neuro_evo)
 
+# Boost is required
+find_package(Boost REQUIRED COMPONENTS filesystem)
+
 include_directories(
     include
+    ${Boost_INCLUDE_DIRS}
 )
 
 # Build all files in src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-# Optional build examples
-if(BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
-
 add_library(neuroEvo SHARED
     ${SOURCES}
 )
-
-# Boost is required
-find_package(Boost REQUIRED COMPONENTS filesystem)
 
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
@@ -40,3 +36,7 @@ if(LINUX)
     )
 endif()
 
+# Optional build examples
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif(BUILD_EXAMPLES)

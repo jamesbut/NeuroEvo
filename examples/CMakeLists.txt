@@ -1,7 +1,5 @@
 include_directories(../include)
 
-set(neuroEvo_LIBS ${CMAKE_SOURCE_DIR}/build/libneuroEvo.so)
-
 add_executable(and_example
     and_example.cpp
 )
@@ -19,17 +17,17 @@ add_executable(single_cart_pole_example
 )
 
 target_link_libraries(and_example
-    ${neuroEvo_LIBS}
+    neuroEvo
 )
 
 target_link_libraries(quadratic_function_example
-    ${neuroEvo_LIBS}
+    neuroEvo
 )
 
 target_link_libraries(sequence_classification_example
-    ${neuroEvo_LIBS}
+    neuroEvo
 )
 
 target_link_libraries(single_cart_pole_example
-    ${neuroEvo_LIBS}
+    neuroEvo
 )
