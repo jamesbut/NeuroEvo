@@ -1,5 +1,5 @@
-# NeuroEvo
----
+<img align="left" width="400" title="NeuroEvo logo" src="https://github.com/jamesbut/NeuroEvo/blob/master/logo.png">
+<br/><br/><br/><br/>
 
 ## Overview
 
@@ -60,7 +60,7 @@ so are C++ improvements. Comments are best communicated via opening an issue.
 ## License
 
 This project is licensed under the MIT License,
-see the [LICENSE](https://github.com/jamesbut/NeuroEvo/blob/master/LICENSE) file for details.
+see the [LICENSE]() file for details.
 
 ## Acknowledgments
 
