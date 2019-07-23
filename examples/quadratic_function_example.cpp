@@ -1,12 +1,14 @@
 /*
     This is a simple example of how to use NeuroEvo.
-    This example solves the AND boolean domain with
-    a fixed neural network.
+    This example maximises a quadratic function.
+    The aim here is to illustrate that NeuroEvo can be
+    used for mathematical optimisation not just domains
+    that use neural networks
 */
 
 #include <population.h>
-#include <phenotype/phenotype_specs/fixed_network_spec.h>
-#include <domains/boolean_functions/and.h>
+#include <phenotype/phenotype_specs/real_vector_phenotype_spec.h>
+#include <domains/mathematical_functions/quadratic_function.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutation.h>
 
@@ -25,18 +27,15 @@ int ga_finished(Population& population, Domain& domain, const unsigned MAX_GENS)
 
 int main(int argc, const char* argv[]) {
 
-    // Build a network with 2 input nodes, 1 output node,
-    // 0 hidden layers and no recurrence.
-    const unsigned NUM_INPUTS = 2;
-    const unsigned NUM_OUTPUTS = 1;
-    const unsigned NUM_HIDDEN_LAYERS = 0;
-    const unsigned NEURONS_PER_LAYER = 0;
-    const bool RECURRENT = false;
-    FixedNetworkSpec pheno_spec(NUM_INPUTS, NUM_OUTPUTS, NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER, RECURRENT);
+    const unsigned NUM_GENES = 1;
+    RealVectorPhenotypeSpec pheno_spec(NUM_GENES);
 
-    // Build AND domain
+    // Build quadratic function domain
+    const double A = -1;
+    const double B = 22;
+    const double C = -120;
     const bool DOMAIN_TRACE = false;
-    std::unique_ptr<Domain> domain(new AND(DOMAIN_TRACE));
+    std::unique_ptr<Domain> domain(new QuadraticFunction(A, B, C, DOMAIN_TRACE, 0.9));
 
     // Check phenotype is suitable for the specific domain
     if(!domain->check_phenotype_spec(pheno_spec)) exit(EXIT_FAILURE);

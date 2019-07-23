@@ -1,13 +1,13 @@
-#ifndef _AND_H_
-#define _AND_H_
+#ifndef _OR_H_
+#define _OR_H_
 
 #include <domains/domain.h>
 
-class AND : public Domain {
+class OR : public Domain {
 
 public:
 
-    AND(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS = 3.9);
+    OR(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS = 3.9);
 
     bool check_phenotype_spec(PhenotypeSpec& pheno_spec) override;
 
