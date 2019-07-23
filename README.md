@@ -60,7 +60,7 @@ so are C++ improvements. Comments are best communicated via opening an issue.
 ## License
 
 This project is licensed under the MIT License,
-see the [LICENSE]() file for details.
+see the [LICENSE](https://github.com/jamesbut/NeuroEvo/blob/master/LICENSE) file for details.
 
 ## Acknowledgments
 
