@@ -12,6 +12,9 @@
 #include <domains/domain.h>
 #include <random>
 
+namespace NeuroEvo {
+namespace Domains {
+
 class SequenceClassification : public Domain {
 
 public:
@@ -20,7 +23,7 @@ public:
                            const unsigned ZEROS_LOWER, const bool DOMAIN_TRACE = false,
                            const double COMPLETION_FITNESS = 1);
 
-    bool check_phenotype_spec(PhenotypeSpec& pheno_spec) override;
+    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override;
 
 private:
 
@@ -43,5 +46,8 @@ private:
     std::uniform_int_distribution<int> _zeros_dist;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

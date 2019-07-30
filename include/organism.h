@@ -13,13 +13,16 @@
 #include <iostream>
 #include <gp_map/gp_map.h>
 
+namespace NeuroEvo {
+
 class Organism {
 
 public:
 
-    Organism(PhenotypeSpec& phenotype_spec);
-    Organism(PhenotypeSpec& phenotype_spec, Genotype& genotype, GPMap* gp_map);
-    Organism(PhenotypeSpec& phenotype_spec, const std::string file_name);
+    Organism(Phenotypes::PhenotypeSpec& phenotype_spec);
+    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotype& genotype,
+             GPMaps::GPMap* gp_map);
+    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, const std::string file_name);
 
     Organism(const Organism& organism);
     Organism& operator=(const Organism& organism);
@@ -31,11 +34,11 @@ public:
     void set_fitness(double fitness);
     const double get_fitness() const;
 
-    Genotype& get_genotype() const;
-    GPMap* get_gp_map() const;
-    Phenotype& get_phenotype() const;
+    Genotypes::Genotype& get_genotype() const;
+    GPMaps::GPMap* get_gp_map() const;
+    Phenotypes::Phenotype& get_phenotype() const;
 
-    PhenotypeSpec& get_phenotype_spec() const;
+    Phenotypes::PhenotypeSpec& get_phenotype_spec() const;
 
     void genesis();
 
@@ -47,14 +50,16 @@ private:
     //is created on the stack in main and I don't want
     //that to be deleted when the Organism gets deleted.
     //Maybe something cleaner can be done in future.
-    PhenotypeSpec* _phenotype_spec;
+    Phenotypes::PhenotypeSpec* _phenotype_spec;
 
-    std::unique_ptr<Genotype> _genotype;
-    std::unique_ptr<GPMap> _gp_map;
-    std::unique_ptr<Phenotype> _phenotype;
+    std::unique_ptr<Genotypes::Genotype> _genotype;
+    std::unique_ptr<GPMaps::GPMap> _gp_map;
+    std::unique_ptr<Phenotypes::Phenotype> _phenotype;
 
     double _fitness;
 
 };
+
+} // namespace NeuroEvo
 
 #endif

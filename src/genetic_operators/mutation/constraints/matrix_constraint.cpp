@@ -1,5 +1,8 @@
 #include <genetic_operators/mutation/constraints/matrix_constraint.h>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 MatrixConstraint::MatrixConstraint(const unsigned HEIGHT, const unsigned WIDTH) :
     _HEIGHT(HEIGHT),
     _WIDTH(WIDTH) {}
@@ -25,3 +28,6 @@ bool MatrixConstraint::satisfied(std::vector<double>& vector) {
     return true;
 
 }
+
+} // namespace Mutators
+} // namespace NeuroEvo

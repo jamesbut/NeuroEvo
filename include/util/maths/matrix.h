@@ -6,6 +6,9 @@
     operations easier to deal with.
 */
 
+namespace NeuroEvo {
+namespace Utils {
+
 template <class T>
 class Matrix {
 
@@ -99,5 +102,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
 
 }
 
+} // namespace Utils
+} // namespace NeuroEvo
 
 #endif

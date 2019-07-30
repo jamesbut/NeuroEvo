@@ -9,6 +9,9 @@
 
 #include <genetic_operators/mutation/constraints/constraint.h>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 class MatrixConstraint : public Constraint {
 
 public:
@@ -23,5 +26,8 @@ private:
     const unsigned _WIDTH;
 
 };
+
+} // namespace Mutators
+} // namespace NeuroEvo
 
 #endif

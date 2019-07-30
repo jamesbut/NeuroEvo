@@ -13,6 +13,9 @@
 #include <phenotype/phenotype.h>
 #include <genotype/real_vector_genotype.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class RealVectorPhenotype : public Phenotype {
 
 public:
@@ -34,5 +37,8 @@ private:
     const std::vector<double> _phenotype_vec;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

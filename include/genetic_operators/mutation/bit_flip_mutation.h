@@ -11,6 +11,9 @@
 #include <genetic_operators/mutation/mutation.h>
 #include <random>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 class BitFlipMutation : public Mutation {
 
 public:
@@ -28,5 +31,8 @@ private:
     std::uniform_real_distribution<> _rng_uniform_distr;
 
 };
+
+} // namespace Mutators
+} // namespace NeuroEvo
 
 #endif

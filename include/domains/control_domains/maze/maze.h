@@ -10,6 +10,9 @@
 #include <domains/control_domains/maze/grid.h>
 #include <random>
 
+namespace NeuroEvo {
+namespace Domains {
+
 class Maze : public Domain {
 
 public:
@@ -17,7 +20,7 @@ public:
     Maze(const std::string GRID_FILE_NAME, const bool REWARD_INPUT, const bool ACTION_INPUT,
          const bool PRINT_MAP, const unsigned MAX_STEPS = 200);
 
-    bool check_phenotype_spec(PhenotypeSpec& pheno_spec) override;
+    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override;
 
 private:
 
@@ -52,5 +55,8 @@ private:
     std::uniform_int_distribution<int> _uni_dist;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

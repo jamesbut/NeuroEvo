@@ -1,8 +1,10 @@
 #include <population.h>
 #include <iostream>
 
+namespace NeuroEvo {
+
 Population::Population(const unsigned int POP_SIZE, unsigned int& gen_ref,
-                       PhenotypeSpec& PHENOTYPE_SPEC) :
+                       Phenotypes::PhenotypeSpec& PHENOTYPE_SPEC) :
     _POP_SIZE(POP_SIZE),
     _gen(gen_ref) {
 
@@ -11,9 +13,9 @@ Population::Population(const unsigned int POP_SIZE, unsigned int& gen_ref,
 
 }
 
-void Population::generate_new_population(Selection* selector,
-                                         Mutation* genotype_mutator,
-                                         Mutation* gp_map_mutator) {
+void Population::generate_new_population(Selectors::Selection* selector,
+                                         Mutators::Mutation* genotype_mutator,
+                                         Mutators::Mutation* gp_map_mutator) {
 
     std::vector<Organism> new_pop;
 
@@ -59,3 +61,5 @@ const unsigned int& Population::get_gen_num() const {
     return _gen;
 
 }
+
+} // namespace NeuroEvo

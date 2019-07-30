@@ -4,6 +4,9 @@
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <vector>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class HebbsNeuron {
 
 public:
@@ -38,5 +41,8 @@ private:
     void normalise_weights();
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

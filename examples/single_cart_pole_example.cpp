@@ -11,7 +11,8 @@
 #include <sstream>
 
 //Determines the status of the GA
-int ga_finished(Population& population, Domain& domain, const unsigned MAX_GENS) {
+int ga_finished(NeuroEvo::Population& population, NeuroEvo::Domains::Domain& domain,
+                const unsigned MAX_GENS) {
 
     if(population.get_gen_num() >= MAX_GENS)
         return 2;
@@ -23,14 +24,15 @@ int ga_finished(Population& population, Domain& domain, const unsigned MAX_GENS)
 
 }
 
-void individual_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSpec>& pheno_spec,
+void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
                     const std::string& organism_folder_name) {
 
     // View the run of the saved best_winner_so_far
     std::stringstream best_winner_path;
     best_winner_path << "../../data/" << organism_folder_name << "/best_winner_so_far";
 
-    Organism organism(*pheno_spec, best_winner_path.str());
+    NeuroEvo::Organism organism(*pheno_spec, best_winner_path.str());
 
     // Run
     const unsigned NUM_TRIALS = 1;
@@ -40,14 +42,19 @@ void individual_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSp
 
 }
 
-void evolutionary_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSpec>& pheno_spec) {
+void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                      std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec) {
 
     // Build genetic operators
     const double MUTATION_RATE = 0.4;
     const double MUTATION_POWER = 1.0;
-    std::unique_ptr<Mutation> mutator(new RealGaussianMutation(MUTATION_RATE, MUTATION_POWER));
+    std::unique_ptr<NeuroEvo::Mutators::Mutation> mutator(
+        new NeuroEvo::Mutators::RealGaussianMutation(MUTATION_RATE, MUTATION_POWER)
+    );
 
-    std::unique_ptr<Selection> selector(new RouletteWheelSelection());
+    std::unique_ptr<NeuroEvo::Selectors::Selection> selector(
+        new NeuroEvo::Selectors::RouletteWheelSelection()
+    );
 
     // Evolutionary parameters
     const unsigned NUM_RUNS = 1;
@@ -62,7 +69,7 @@ void evolutionary_run(std::unique_ptr<Domain>& domain, std::unique_ptr<Phenotype
         int ga_completed = 0;
 
         // Build population
-        Population population(POP_SIZE, gen, *pheno_spec);
+        NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec);
 
         do {
 
@@ -118,10 +125,12 @@ int main(int argc, const char* argv[]) {
     const bool RECURRENT = false;
     const bool RANDOM_WEIGHT_INIT = false;
     const bool EVOLVE_INIT_WEIGHTS = false;
-    std::unique_ptr<PhenotypeSpec> pheno_spec(new HebbsNetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
-                                                                   NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER,
-                                                                   RECURRENT, RANDOM_WEIGHT_INIT,
-                                                                   EVOLVE_INIT_WEIGHTS));
+    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec> pheno_spec(
+        new NeuroEvo::Phenotypes::HebbsNetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
+                                                   NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER,
+                                                   RECURRENT, RANDOM_WEIGHT_INIT,
+                                                   EVOLVE_INIT_WEIGHTS)
+    );
 
     // Build single cart pole domain
     const bool MARKOVIAN = false;
@@ -131,8 +140,10 @@ int main(int argc, const char* argv[]) {
     bool DOMAIN_TRACE = false;
     if(argc == 2) DOMAIN_TRACE = true;
 
-    std::unique_ptr<Domain> domain(new SingleCartPole(MARKOVIAN, RANDOM_START,
-                                                      PRINT_STATE, DOMAIN_TRACE));
+    std::unique_ptr<NeuroEvo::Domains::Domain> domain(
+        new NeuroEvo::Domains::SingleCartPole(MARKOVIAN, RANDOM_START,
+                                              PRINT_STATE, DOMAIN_TRACE)
+    );
 
     // Check phenotype is suitable for the specific domain
     if(!domain->check_phenotype_spec(*pheno_spec)) return -1;

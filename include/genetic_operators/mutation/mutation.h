@@ -4,6 +4,9 @@
 #include <genetic_operators/mutation/constraints/constraint.h>
 #include <memory>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 class Mutation {
 
 public:
@@ -20,5 +23,8 @@ protected:
     std::unique_ptr<Constraint> _constraint;
 
 };
+
+} // namespace Mutators
+} // namespace NeuroEvo
 
 #endif

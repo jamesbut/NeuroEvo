@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 
+namespace NeuroEvo {
+namespace Domains {
+
 //Set up the 2d grid structure of any maze
 class Grid {
 
@@ -55,5 +58,8 @@ private:
     unsigned _agent_y;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

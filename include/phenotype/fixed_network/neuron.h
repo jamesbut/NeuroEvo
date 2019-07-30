@@ -9,6 +9,9 @@
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <vector>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class Neuron {
 
 public:
@@ -36,5 +39,8 @@ protected:
 
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

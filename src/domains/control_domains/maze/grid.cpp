@@ -4,6 +4,9 @@
 #include <iterator>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Domains {
+
 Grid::Grid(const std::string FILE_NAME, const unsigned AGENT_START_X, const unsigned AGENT_START_Y) :
     _FILE_NAME(FILE_NAME) {
 
@@ -167,3 +170,6 @@ void Grid::print_grid() {
     std::cout << std::endl;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

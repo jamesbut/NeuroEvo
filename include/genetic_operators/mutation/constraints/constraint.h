@@ -3,6 +3,9 @@
 
 #include <vector>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 class Constraint {
 
 public:
@@ -10,5 +13,8 @@ public:
     virtual bool satisfied(std::vector<double>& vector) = 0;
 
 };
+
+} // namespace Mutators
+} // namespace NeuroEvo
 
 #endif

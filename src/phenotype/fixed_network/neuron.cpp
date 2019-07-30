@@ -2,6 +2,9 @@
 #include <iostream>
 #include <cmath>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 Neuron::Neuron(const LayerSpec& LAYER_SPEC, const bool TRACE) :
     _LAYER_SPEC(LAYER_SPEC),
     _previous_output(0.0),
@@ -71,3 +74,6 @@ void Neuron::reset() {
     _previous_output = 0.0;
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

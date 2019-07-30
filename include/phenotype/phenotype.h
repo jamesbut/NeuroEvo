@@ -12,6 +12,9 @@
 
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class Phenotype {
 
 public:
@@ -31,5 +34,8 @@ protected:
     virtual Phenotype* clone_impl() const = 0;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <thread>
 
+namespace NeuroEvo {
+namespace Domains {
+
 SequenceClassification::SequenceClassification(const unsigned DEPTH, const unsigned ZEROS_UPPER,
                                                const unsigned ZEROS_LOWER, const bool DOMAIN_TRACE,
                                                const double COMPLETION_FITNESS) :
@@ -133,9 +136,9 @@ void SequenceClassification::get_all_permutations(const std::vector<int> VALUES,
 
 }
 
-bool SequenceClassification::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool SequenceClassification::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    NetworkSpec* network_spec = dynamic_cast<NetworkSpec*>(&pheno_spec);
+    Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
     //If it is not a network
     if(network_spec == nullptr) {
@@ -165,3 +168,6 @@ bool SequenceClassification::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
     return true;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

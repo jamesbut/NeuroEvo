@@ -9,6 +9,9 @@
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Selectors {
+
 RouletteWheelSelection::RouletteWheelSelection(const double BIAS) :
     _BIAS(BIAS),
     _rng_generator(std::random_device()()),
@@ -81,3 +84,6 @@ double RouletteWheelSelection::calculate_total_pop_fitness(std::vector<double>& 
     return total_fitness;
 
 }
+
+} // namespace Selectors
+} // namespace NeuroEvo

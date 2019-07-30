@@ -3,49 +3,57 @@
 #include <phenotype/real_vector_phenotype.h>
 #include <gp_map/matrix_map.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 RealVectorPhenotypeSpec::RealVectorPhenotypeSpec(const unsigned int NUM_GENES) :
     PhenotypeSpec(NUM_GENES) {}
 
-Genotype* RealVectorPhenotypeSpec::generate_genotype() {
+Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype() {
 
-    return new RealVectorGenotype(NUM_GENES);
-
-}
-
-Genotype* RealVectorPhenotypeSpec::generate_genotype(Genotype& genotype) {
-
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
-
-    return new RealVectorGenotype(*real_vec_genotype);
+    return new Genotypes::RealVectorGenotype(NUM_GENES);
 
 }
 
-Genotype* RealVectorPhenotypeSpec::generate_genotype(const std::string& file_name) {
+Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype(Genotypes::Genotype& genotype) {
 
-    return new RealVectorGenotype(file_name);
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
 
-}
-
-GPMap* RealVectorPhenotypeSpec::generate_gp_map() {
-
-    return new MatrixMap(NUM_GENES, NUM_GENES);
+    return new Genotypes::RealVectorGenotype(*real_vec_genotype);
 
 }
 
-GPMap* RealVectorPhenotypeSpec::generate_gp_map(const std::string& file_name) {
+Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype(const std::string& file_name) {
 
-    return new MatrixMap(NUM_GENES, NUM_GENES, file_name);
+    return new Genotypes::RealVectorGenotype(file_name);
 
 }
 
-Phenotype* RealVectorPhenotypeSpec::generate_phenotype(Genotype& genotype,
-                                                       GPMap* gp_map) {
+GPMaps::GPMap* RealVectorPhenotypeSpec::generate_gp_map() {
 
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
+    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES);
+
+}
+
+GPMaps::GPMap* RealVectorPhenotypeSpec::generate_gp_map(const std::string& file_name) {
+
+    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES, file_name);
+
+}
+
+Phenotypes::Phenotype* RealVectorPhenotypeSpec::generate_phenotype(Genotypes::Genotype& genotype,
+                                                                   GPMaps::GPMap* gp_map) {
+
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
 
     if(gp_map)
         return gp_map->map(*real_vec_genotype, *this);
     else
-        return new RealVectorPhenotype(real_vec_genotype->get_genes());
+        return new Phenotypes::RealVectorPhenotype(real_vec_genotype->get_genes());
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

@@ -1,6 +1,9 @@
 #include <genetic_operators/mutation/real_gaussian_mutation.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 RealGaussianMutation::RealGaussianMutation(const double MUTATION_RATE, const double MUTATION_POWER,
                                            Constraint* constraint) :
     _MUTATION_RATE(MUTATION_RATE),
@@ -24,3 +27,6 @@ void RealGaussianMutation::mutate(std::vector<double>& vector) {
     }
 
 }
+
+} // namespace Mutators
+} // namespace NeuroEvo

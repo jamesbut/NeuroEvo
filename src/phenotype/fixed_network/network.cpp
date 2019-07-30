@@ -1,5 +1,8 @@
 #include <phenotype/fixed_network/network.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 FixedNetwork::FixedNetwork(const FixedNetworkSpec NET_SPEC) :
     _NET_SPEC(NET_SPEC),
     _TRACE(NET_SPEC.TRACE) {
@@ -60,3 +63,6 @@ void FixedNetwork::reset() {
         layer.reset();
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

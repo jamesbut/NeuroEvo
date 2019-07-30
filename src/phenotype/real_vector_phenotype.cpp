@@ -1,5 +1,8 @@
 #include <phenotype/real_vector_phenotype.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 RealVectorPhenotype::RealVectorPhenotype(const std::vector<double>& traits) :
     _phenotype_vec(traits) {}
 
@@ -17,3 +20,6 @@ void RealVectorPhenotype::print_params() {
         std::cout << trait << std::endl;
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

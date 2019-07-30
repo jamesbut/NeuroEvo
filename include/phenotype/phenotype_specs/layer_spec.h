@@ -10,6 +10,9 @@
     and implements that activation function.
 */
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 struct ActivationFuncSpec {
 
     virtual double activate(const double x) = 0;
@@ -121,5 +124,8 @@ struct LayerSpec {
     std::unique_ptr<ActivationFuncSpec> _activation_spec;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

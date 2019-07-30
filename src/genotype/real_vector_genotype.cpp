@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iomanip>
 
+namespace NeuroEvo {
+namespace Genotypes {
+
 RealVectorGenotype::RealVectorGenotype(const unsigned int NUM_GENES) {
 
     std::random_device rd;
@@ -58,3 +61,6 @@ void RealVectorGenotype::print_genotype(std::ofstream& file) {
         file << "," << _genes.at(i);
 
 }
+
+} // namespace Genotypes
+} // namespace NeuroEvo

@@ -13,6 +13,9 @@
 #include <optional>
 #include <data/data_collection.h>
 
+namespace NeuroEvo {
+namespace Domains {
+
 class Domain {
 
 public:
@@ -28,7 +31,7 @@ public:
     //Evaluate individual for a number of trials
     double evaluate_org(Organism& org, const unsigned NUM_TRIALS);
 
-    virtual bool check_phenotype_spec(PhenotypeSpec& pheno_spec) = 0;
+    virtual bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) = 0;
 
     //Determines whether the current population
     //has 'completed' the domain, this normally
@@ -61,16 +64,18 @@ protected:
 
 private:
 
-    std::vector<std::vector<double> > evaluate_pop_serial(Population& pop, const unsigned NUM_TRIALS);
+    std::vector<std::vector<double> > evaluate_pop_serial(Population& pop,
+                                                          const unsigned NUM_TRIALS);
 
     //Only compile parallel execution if on linux
     //The implementation of this uses linux OS calls
 #ifdef __linux__
-    std::vector<std::vector<double> > evaluate_pop_parallel(Population& pop, const unsigned NUM_TRIALS);
+    std::vector<std::vector<double> > evaluate_pop_parallel(Population& pop,
+                                                            const unsigned NUM_TRIALS);
 #endif
 
     //Shared memory for parallel execution
-    std::optional<SharedFitnessMemory> _shared_fitness_mem;
+    std::optional<Utils::SharedFitnessMemory> _shared_fitness_mem;
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
@@ -78,5 +83,8 @@ private:
     DataCollector data_collector;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

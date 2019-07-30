@@ -2,24 +2,27 @@
 #include <iostream>
 #include <fstream>
 
+namespace NeuroEvo {
+
 // The member variables are created by calling their specific generate
 // functions from the PhenotypeSpec (the PhenotypeSpec knows how to create
 // them)
-Organism::Organism(PhenotypeSpec& phenotype_spec) :
+Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec) :
     _genotype(phenotype_spec.generate_genotype()),
     _gp_map(phenotype_spec.generate_gp_map()),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
     _fitness(0.0) {}
 
-Organism::Organism(PhenotypeSpec& phenotype_spec, Genotype& genotype, GPMap* gp_map) :
+Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotype& genotype,
+                   GPMaps::GPMap* gp_map) :
     _genotype(genotype.clone()),
     _gp_map(gp_map ? gp_map->clone() : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
     _fitness(0.0) {}
 
-Organism::Organism(PhenotypeSpec& phenotype_spec, const std::string file_name) :
+Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, const std::string file_name) :
     _genotype(phenotype_spec.generate_genotype(file_name)),
     _gp_map(phenotype_spec.generate_gp_map(file_name)),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
@@ -81,26 +84,28 @@ const double Organism::get_fitness() const {
 
 }
 
-Genotype& Organism::get_genotype() const {
+Genotypes::Genotype& Organism::get_genotype() const {
 
     return *_genotype;
 
 }
 
-GPMap* Organism::get_gp_map() const {
+GPMaps::GPMap* Organism::get_gp_map() const {
 
     return _gp_map.get();
 
 }
 
-Phenotype& Organism::get_phenotype() const {
+Phenotypes::Phenotype& Organism::get_phenotype() const {
 
     return *_phenotype;
 
 }
 
-PhenotypeSpec& Organism::get_phenotype_spec() const {
+Phenotypes::PhenotypeSpec& Organism::get_phenotype_spec() const {
 
     return *_phenotype_spec;
 
 }
+
+} // namespace NeuroEvo

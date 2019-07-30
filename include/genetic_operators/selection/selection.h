@@ -3,6 +3,9 @@
 
 #include <organism.h>
 
+namespace NeuroEvo {
+namespace Selectors {
+
 class Selection {
 
 public:
@@ -13,5 +16,8 @@ public:
     virtual Organism select(std::vector<Organism>& orgs) = 0;
 
 };
+
+} // namespace Selectors
+} // namespace NeuroEvo
 
 #endif

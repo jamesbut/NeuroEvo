@@ -1,6 +1,9 @@
 #include <util/memory/shared_fitness_memory.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Utils {
+
 SharedFitnessMemory::SharedFitnessMemory(const int POP_SIZE, const int NUM_RUNS) :
     _POP_SIZE(POP_SIZE),
     _NUM_RUNS(NUM_RUNS),
@@ -39,3 +42,6 @@ double SharedFitnessMemory::get_fitness(const int individual, const int run) {
     return fitness;
 
 }
+
+} // namespace Utils
+} // namespace NeuroEvo

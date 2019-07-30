@@ -10,6 +10,9 @@
 #include <phenotype/fixed_network/layer.h>
 #include <genotype/real_vector_genotype.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class FixedNetwork : public Phenotype {
 
 public:
@@ -43,5 +46,8 @@ private:
     std::vector<Layer> layers;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

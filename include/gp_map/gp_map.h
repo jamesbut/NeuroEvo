@@ -9,15 +9,21 @@
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <util/maths/matrix.h>
 
-// I would eventually like to sort out this circular
-// dependency
-struct PhenotypeSpec;
+namespace NeuroEvo {
+
+// Forward declaration
+namespace Phenotypes {
+    struct PhenotypeSpec;
+} // namespace Phenotypes
+
+namespace GPMaps {
 
 class GPMap {
 
 public:
 
-    virtual Phenotype* map(Genotype& genotype, PhenotypeSpec& pheno_spec) = 0;
+    virtual Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
+                                       Phenotypes::PhenotypeSpec& pheno_spec) = 0;
 
     virtual ~GPMap() = default;
 
@@ -25,7 +31,7 @@ public:
 
     // Only supports a Matrix of doubles as a map
     // I will make this generic in future
-    virtual Matrix<double>& get_map() = 0;
+    virtual Utils::Matrix<double>& get_map() = 0;
 
     auto clone() const { return std::unique_ptr<GPMap>(clone_impl()); }
 
@@ -34,5 +40,8 @@ protected:
     virtual GPMap* clone_impl() const = 0;
 
 };
+
+} // namespace GPMaps
+} // namespace NeuroEvo
 
 #endif

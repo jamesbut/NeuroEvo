@@ -10,7 +10,13 @@
 #include <optional>
 #include <gp_map/gp_map.h>
 
-class GPMap;
+namespace NeuroEvo {
+
+namespace GPMaps {
+    class GPMap;
+} // namespace GPMaps
+
+namespace Phenotypes {
 
 //Generic phenotype spec
 struct PhenotypeSpec {
@@ -22,20 +28,20 @@ public:
         PRINT_WEIGHTS(false),
         TRACE(TRACE) {}
 
-    virtual Genotype* generate_genotype() = 0;
+    virtual Genotypes::Genotype* generate_genotype() = 0;
 
     //Generates a copy of the genotype
     //TODO: Remove this if not needed - I can just do genotype.clone()
-    virtual Genotype* generate_genotype(Genotype& genotype) = 0;
+    virtual Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) = 0;
 
     //Generates a genotype from file
-    virtual Genotype* generate_genotype(const std::string& file_name) = 0;
+    virtual Genotypes::Genotype* generate_genotype(const std::string& file_name) = 0;
 
-    virtual GPMap* generate_gp_map() = 0;
-    virtual GPMap* generate_gp_map(const std::string& file_name) = 0;
+    virtual GPMaps::GPMap* generate_gp_map() = 0;
+    virtual GPMaps::GPMap* generate_gp_map(const std::string& file_name) = 0;
 
     //GPMap can be null
-    virtual Phenotype* generate_phenotype(Genotype& genotype, GPMap* gp_map) = 0;
+    virtual Phenotype* generate_phenotype(Genotypes::Genotype& genotype, GPMaps::GPMap* gp_map) = 0;
 
     auto clone() const { return std::unique_ptr<PhenotypeSpec>(clone_impl()); }
 
@@ -49,5 +55,8 @@ protected:
     virtual PhenotypeSpec* clone_impl() const = 0;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

@@ -3,6 +3,9 @@
 #include <cmath>
 #include <fstream>
 
+namespace NeuroEvo {
+namespace Domains {
+
 SingleCartPole::SingleCartPole(const bool MARKOVIAN, const bool RANDOM_START,
                                const bool PRINT_STATE, const bool DOMAIN_TRACE,
                                const int MAX_STEPS) :
@@ -48,7 +51,7 @@ double SingleCartPole::single_run(Organism& org, unsigned int rand_seed) {
     }
 
 
-    Phenotype& phenotype = org.get_phenotype();
+    Phenotypes::Phenotype& phenotype = org.get_phenotype();
 
     int steps = 0;
 
@@ -126,9 +129,9 @@ double SingleCartPole::single_run(Organism& org, unsigned int rand_seed) {
 
 }
 
-bool SingleCartPole::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool SingleCartPole::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    NetworkSpec* network_spec = dynamic_cast<NetworkSpec*>(&pheno_spec);
+    Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
     //If it is not a network
     if(network_spec == nullptr) {
@@ -181,3 +184,6 @@ void SingleCartPole::print_state_to_file(CartPole& cart_pole) {
     state_file.close();
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

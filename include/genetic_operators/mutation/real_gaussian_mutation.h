@@ -4,6 +4,9 @@
 #include <genetic_operators/mutation/mutation.h>
 #include <random>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 class RealGaussianMutation : public Mutation {
 
 public:
@@ -25,5 +28,8 @@ private:
     std::normal_distribution<> _rng_gaussian_mutation_power_distr;
 
 };
+
+} // namespace Mutators
+} // namespace NeuroEvo
 
 #endif

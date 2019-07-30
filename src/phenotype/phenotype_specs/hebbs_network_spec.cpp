@@ -3,6 +3,9 @@
 #include <phenotype/hebbs_network/hebbs_network.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 HebbsNetworkSpec::HebbsNetworkSpec(const unsigned int NUM_INPUTS, const unsigned int NUM_OUTPUTS,
                                    const unsigned int NUM_HIDDEN_LAYERS, const unsigned int NEURONS_PER_LAYER,
                                    const bool RECURRENT, const bool RANDOM_WEIGHT_INIT,
@@ -105,42 +108,48 @@ std::vector<LayerSpec> HebbsNetworkSpec::build_layer_specs(const unsigned NUM_IN
 
 }
 
-Genotype* HebbsNetworkSpec::generate_genotype() {
+Genotypes::Genotype* HebbsNetworkSpec::generate_genotype() {
 
-    return new RealVectorGenotype(NUM_GENES);
-
-}
-
-Genotype* HebbsNetworkSpec::generate_genotype(Genotype& genotype) {
-
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
-
-    return new RealVectorGenotype(*real_vec_genotype);
+    return new Genotypes::RealVectorGenotype(NUM_GENES);
 
 }
 
-Genotype* HebbsNetworkSpec::generate_genotype(const std::string& file_name) {
+Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(Genotypes::Genotype& genotype) {
 
-    return new RealVectorGenotype(file_name);
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
+
+    return new Genotypes::RealVectorGenotype(*real_vec_genotype);
 
 }
 
-GPMap* HebbsNetworkSpec::generate_gp_map() {
+Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(const std::string& file_name) {
+
+    return new Genotypes::RealVectorGenotype(file_name);
+
+}
+
+GPMaps::GPMap* HebbsNetworkSpec::generate_gp_map() {
 
     return nullptr;
 
 }
 
-GPMap* HebbsNetworkSpec::generate_gp_map(const std::string& file_name) {
+GPMaps::GPMap* HebbsNetworkSpec::generate_gp_map(const std::string& file_name) {
 
     return nullptr;
 
 }
 
-Phenotype* HebbsNetworkSpec::generate_phenotype(Genotype& genotype, GPMap* gp_map) {
+Phenotypes::Phenotype* HebbsNetworkSpec::generate_phenotype(Genotypes::Genotype& genotype,
+                                                            GPMaps::GPMap* gp_map) {
 
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
 
-    return new HebbsNetwork(*real_vec_genotype, *this, TRACE);
+    return new Phenotypes::HebbsNetwork(*real_vec_genotype, *this, TRACE);
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

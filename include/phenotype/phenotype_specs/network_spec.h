@@ -9,6 +9,9 @@
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 struct NetworkSpec : PhenotypeSpec {
 
 public:
@@ -22,12 +25,13 @@ public:
         PhenotypeSpec(NUM_GENES, TRACE) {}
 
 
-    virtual Genotype* generate_genotype() = 0;
-    virtual Genotype* generate_genotype(Genotype& genotype) = 0;
-    virtual Genotype* generate_genotype(const std::string& file_name) = 0;
-    virtual GPMap* generate_gp_map() = 0;
-    virtual GPMap* generate_gp_map(const std::string& file_name) = 0;
-    virtual Phenotype* generate_phenotype(Genotype& genotype, GPMap* gp_map) = 0;
+    virtual Genotypes::Genotype* generate_genotype() = 0;
+    virtual Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) = 0;
+    virtual Genotypes::Genotype* generate_genotype(const std::string& file_name) = 0;
+    virtual GPMaps::GPMap* generate_gp_map() = 0;
+    virtual GPMaps::GPMap* generate_gp_map(const std::string& file_name) = 0;
+    virtual Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
+                                                      GPMaps::GPMap* gp_map) = 0;
 
     auto clone() const { return std::unique_ptr<NetworkSpec>(clone_impl()); }
 
@@ -45,5 +49,8 @@ protected:
     }
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

@@ -5,6 +5,9 @@
 #include <thread>
 #include <chrono>
 
+namespace NeuroEvo {
+namespace Domains {
+
 Maze::Maze(const std::string GRID_FILE_NAME, const bool REWARD_INPUT, const bool ACTION_INPUT,
            const bool PRINT_MAP, const unsigned MAX_STEPS) :
     _GRID_FILE_NAME(GRID_FILE_NAME),
@@ -245,9 +248,9 @@ void Maze::rand_move_reward() {
 
 }
 
-bool Maze::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool Maze::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    NetworkSpec* network_spec = dynamic_cast<NetworkSpec*>(&pheno_spec);
+    Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
     //If it is not a network
     if(network_spec == nullptr) {
@@ -291,3 +294,6 @@ bool Maze::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
     return true;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

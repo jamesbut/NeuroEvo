@@ -10,13 +10,16 @@
 
 #include <domains/domain.h>
 
+namespace NeuroEvo {
+namespace Domains {
+
 class NLeggedTable : public Domain {
 
 public:
 
     NLeggedTable(const unsigned NUM_LEGS, const bool DOMAIN_TRACE = false);
 
-    bool check_phenotype_spec(PhenotypeSpec& pheno_spec) override;
+    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override;
 
 private:
 
@@ -25,5 +28,8 @@ private:
     const unsigned _NUM_LEGS;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

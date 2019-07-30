@@ -1,6 +1,9 @@
 #include <genetic_operators/mutation/bit_flip_mutation.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Mutators {
+
 BitFlipMutation::BitFlipMutation(const double MUTATION_RATE, Constraint* constraint) :
     _MUTATION_RATE(MUTATION_RATE),
     _rng_generator(std::random_device()()),
@@ -31,3 +34,6 @@ void BitFlipMutation::mutate(std::vector<double>& vector) {
     }
 
 }
+
+} // namespace Mutators
+} // namespace NeuroEvo

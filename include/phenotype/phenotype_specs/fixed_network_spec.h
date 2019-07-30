@@ -12,6 +12,9 @@
 
 #include <phenotype/phenotype_specs/network_spec.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 //Define fixed network specification
 struct FixedNetworkSpec : NetworkSpec {
 
@@ -27,12 +30,13 @@ public:
                      const bool TRACE = false);
 
 
-    Genotype* generate_genotype() override;
-    Genotype* generate_genotype(Genotype& genotype) override;
-    Genotype* generate_genotype(const std::string& file_name) override;
-    GPMap* generate_gp_map() override;
-    GPMap* generate_gp_map(const std::string& file_name) override;
-    Phenotype* generate_phenotype(Genotype& genotype, GPMap* gp_map) override;
+    Genotypes::Genotype* generate_genotype() override;
+    Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;
+    Genotypes::Genotype* generate_genotype(const std::string& file_name) override;
+    GPMaps::GPMap* generate_gp_map() override;
+    GPMaps::GPMap* generate_gp_map(const std::string& file_name) override;
+    Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
+                                              GPMaps::GPMap* gp_map) override;
 
 protected:
 
@@ -56,5 +60,8 @@ private:
                                              const bool RECURRENT);
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

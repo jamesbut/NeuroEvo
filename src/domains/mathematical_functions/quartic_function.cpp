@@ -3,6 +3,9 @@
 #include <cmath>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Domains {
+
 QuarticFunction::QuarticFunction(const double A, const double B, const double C,
                                  const double D, const double E,
                                  const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
@@ -28,10 +31,10 @@ double QuarticFunction::single_run(Organism& org, unsigned rand_seed) {
 
 }
 
-bool QuarticFunction::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool QuarticFunction::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    RealVectorPhenotypeSpec* real_vec_pheno_spec;
-    real_vec_pheno_spec = dynamic_cast<RealVectorPhenotypeSpec*>(&pheno_spec);
+    Phenotypes::RealVectorPhenotypeSpec* real_vec_pheno_spec;
+    real_vec_pheno_spec = dynamic_cast<Phenotypes::RealVectorPhenotypeSpec*>(&pheno_spec);
 
     if(real_vec_pheno_spec == nullptr) {
 
@@ -53,3 +56,6 @@ bool QuarticFunction::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
     return true;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

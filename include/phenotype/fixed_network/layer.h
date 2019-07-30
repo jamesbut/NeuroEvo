@@ -8,6 +8,9 @@
 #include <phenotype/fixed_network/neuron.h>
 #include <vector>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class Layer {
 
 public:
@@ -42,5 +45,8 @@ private:
     void print_outputs(std::vector<double>& outputs);
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

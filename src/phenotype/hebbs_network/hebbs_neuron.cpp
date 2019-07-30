@@ -4,6 +4,9 @@
 #include <cmath>
 #include <random>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 //Constructor
 HebbsNeuron::HebbsNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE) :
     _LAYER_SPEC(LAYER_SPEC),
@@ -143,3 +146,6 @@ void HebbsNeuron::reset() {
     //TODO: Set weights back to intial values too
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

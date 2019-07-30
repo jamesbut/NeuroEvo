@@ -10,17 +10,19 @@
 #include <string>
 #include <optional>
 
+namespace NeuroEvo {
+
 class DataCollector {
 
 public:
 
     DataCollector(const bool UUID_FOLDERS = true);
 
-    void collect_generational_data(Population& population);
+    void collect_generational_data(NeuroEvo::Population& population);
 
-    void print_population_winner(Population& population);
-    void print_generational_winner(Population& population);
-    void print_best_winner_so_far(Population& population);
+    void print_population_winner(NeuroEvo::Population& population);
+    void print_generational_winner(NeuroEvo::Population& population);
+    void print_best_winner_so_far(NeuroEvo::Population& population);
 
     void delete_folder();
 
@@ -28,7 +30,7 @@ public:
 
 private:
 
-    void print_population_to_file(Population& population);
+    void print_population_to_file(NeuroEvo::Population& population);
 
     //Path to folder in which to store
     //all data for a run
@@ -37,5 +39,7 @@ private:
     std::optional<double> best_fitness_so_far;
 
 };
+
+} // namespace NeuroEvo
 
 #endif

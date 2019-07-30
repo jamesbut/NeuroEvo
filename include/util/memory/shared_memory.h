@@ -11,6 +11,8 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
+namespace NeuroEvo {
+namespace Utils {
 
 template <typename T>
 class SharedMemory {
@@ -81,5 +83,8 @@ T SharedMemory<T>::read_data(const unsigned int mem_location) {
     return _memory[mem_location];
 
 }
+
+} // namespace Utils
+} // namespace NeuroEvo
 
 #endif

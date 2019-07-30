@@ -4,6 +4,9 @@
 #include <phenotype/hebbs_network/hebbs_neuron.h>
 #include <vector>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class HebbsLayer {
 
 public:
@@ -37,5 +40,8 @@ private:
     void print_outputs(std::vector<double>& outputs);
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

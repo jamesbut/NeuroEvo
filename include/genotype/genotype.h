@@ -12,6 +12,9 @@
 #include <memory>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Genotypes {
+
 class Genotype {
 
 public:
@@ -34,5 +37,8 @@ protected:
     std::vector<double> _genes;
 
 };
+
+} // namespace Genotypes
+} // namespace NeuroEvo
 
 #endif

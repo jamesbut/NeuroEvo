@@ -2,6 +2,9 @@
 #include <phenotype/phenotype_specs/network_spec.h>
 #include <math.h>
 
+namespace NeuroEvo {
+namespace Domains {
+
 OR::OR(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
     Domain(DOMAIN_TRACE, COMPLETION_FITNESS) {}
 
@@ -33,9 +36,9 @@ double OR::single_run(Organism& org, unsigned rand_seed) {
     return fitness;
 }
 
-bool OR::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool OR::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    NetworkSpec* network_spec = dynamic_cast<NetworkSpec*>(&pheno_spec);
+    Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
     //If it is not a network
     if(network_spec == nullptr) {
@@ -58,3 +61,6 @@ bool OR::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
     return true;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

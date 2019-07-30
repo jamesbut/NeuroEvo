@@ -3,6 +3,9 @@
 #include <iostream>
 #include <fstream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 HebbsNetwork::HebbsNetwork(const HebbsNetworkSpec NET_SPEC, const bool TRACE) :
     _NET_SPEC(NET_SPEC),
     _TRACE(TRACE),
@@ -17,7 +20,8 @@ HebbsNetwork::HebbsNetwork(const HebbsNetworkSpec NET_SPEC, const bool TRACE) :
 
 }
 
-HebbsNetwork::HebbsNetwork(RealVectorGenotype& genotype, HebbsNetworkSpec& NET_SPEC, const bool TRACE) :
+HebbsNetwork::HebbsNetwork(Genotypes::RealVectorGenotype& genotype, HebbsNetworkSpec& NET_SPEC,
+                           const bool TRACE) :
     _NET_SPEC(NET_SPEC),
     _TRACE(TRACE),
     _PRINT_WEIGHTS(NET_SPEC.PRINT_WEIGHTS),
@@ -181,3 +185,6 @@ void HebbsNetwork::reset() {
         layer.reset();
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

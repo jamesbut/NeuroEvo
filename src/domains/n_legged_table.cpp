@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <cmath>
 
+namespace NeuroEvo {
+namespace Domains {
+
 NLeggedTable::NLeggedTable(const unsigned NUM_LEGS, const bool DOMAIN_TRACE) :
     _NUM_LEGS(NUM_LEGS),
     Domain(DOMAIN_TRACE, 100) {}
@@ -40,10 +43,10 @@ double NLeggedTable::single_run(Organism& org, unsigned rand_seed) {
 
 }
 
-bool NLeggedTable::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
+bool NLeggedTable::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    RealVectorPhenotypeSpec* real_vec_pheno_spec;
-    real_vec_pheno_spec = dynamic_cast<RealVectorPhenotypeSpec*>(&pheno_spec);
+    Phenotypes::RealVectorPhenotypeSpec* real_vec_pheno_spec;
+    real_vec_pheno_spec = dynamic_cast<Phenotypes::RealVectorPhenotypeSpec*>(&pheno_spec);
 
     if(real_vec_pheno_spec == nullptr) {
 
@@ -65,3 +68,6 @@ bool NLeggedTable::check_phenotype_spec(PhenotypeSpec& pheno_spec) {
     return true;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

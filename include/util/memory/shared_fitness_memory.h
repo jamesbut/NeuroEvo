@@ -8,6 +8,9 @@
 
 #include <util/memory/shared_memory.h>
 
+namespace NeuroEvo {
+namespace Utils {
+
 class SharedFitnessMemory {
 
 public:
@@ -25,5 +28,8 @@ private:
     SharedMemory<double> _memory;
 
 };
+
+} // namespace Utils
+} // namespace NeuroEvo
 
 #endif

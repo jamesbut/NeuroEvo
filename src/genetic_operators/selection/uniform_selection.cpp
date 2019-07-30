@@ -1,5 +1,8 @@
 #include <genetic_operators/selection/uniform_selection.h>
 
+namespace NeuroEvo {
+namespace Selectors {
+
 UniformSelection::UniformSelection() :
     _rng_generator(std::random_device()()),
     _rng_uniform_distr(0, 1) {}
@@ -17,3 +20,6 @@ Organism UniformSelection::select(std::vector<Organism>& orgs) {
                     orgs.at(chosen_org).get_gp_map());
 
 }
+
+} // namespace Selectors
+} // namespace NeuroEvo

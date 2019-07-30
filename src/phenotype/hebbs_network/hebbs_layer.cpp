@@ -1,6 +1,9 @@
 #include <phenotype/hebbs_network/hebbs_layer.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 HebbsLayer::HebbsLayer(const LayerSpec& layer_spec, const bool TRACE) :
     _LAYER_SPEC(layer_spec),
     _TRACE(TRACE) {
@@ -104,3 +107,6 @@ void HebbsLayer::reset() {
         neuron.reset();
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

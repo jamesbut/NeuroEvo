@@ -6,6 +6,9 @@
 #include <iomanip>
 #include <limits>
 
+namespace NeuroEvo {
+namespace GPMaps {
+
 MatrixMap::MatrixMap(const unsigned genotype_size,
                      const unsigned phenotype_size) :
     _interaction_matrix(phenotype_size, genotype_size) {
@@ -24,21 +27,22 @@ MatrixMap::MatrixMap(const unsigned genotype_size,
                      const std::string& file_name) :
     _interaction_matrix(phenotype_size, genotype_size, read_matrix(file_name)) {}
 
-Phenotype* MatrixMap::map(Genotype& genotype, PhenotypeSpec& pheno_spec) {
+Phenotypes::Phenotype* MatrixMap::map(Genotypes::Genotype& genotype,
+                                      Phenotypes::PhenotypeSpec& pheno_spec) {
 
-    const Matrix<double> genes(genotype.get_genes());
+    const Utils::Matrix<double> genes(genotype.get_genes());
 
-    Matrix<double> traits = _interaction_matrix * genes;
+    Utils::Matrix<double> traits = _interaction_matrix * genes;
 
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this
-    FixedNetworkSpec* net_spec = dynamic_cast<FixedNetworkSpec*>(&pheno_spec);
+   Phenotypes::FixedNetworkSpec* net_spec = dynamic_cast<Phenotypes::FixedNetworkSpec*>(&pheno_spec);
 
     if(net_spec != nullptr)
-        return new FixedNetwork(traits_vector, *net_spec);
+        return new Phenotypes::FixedNetwork(traits_vector, *net_spec);
     else
-        return new RealVectorPhenotype(traits_vector);
+        return new Phenotypes::RealVectorPhenotype(traits_vector);
 }
 
 void MatrixMap::print_gp_map(std::ofstream& file) {
@@ -80,3 +84,6 @@ std::vector<double> MatrixMap::read_matrix(const std::string& file_name) {
     return matrix_values;
 
 }
+
+} // namespace GPMaps
+} // namespace NeuroEvo

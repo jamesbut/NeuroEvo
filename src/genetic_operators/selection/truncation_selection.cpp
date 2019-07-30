@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Selectors {
+
 TruncationSelection::TruncationSelection(const double PERCENTAGE_SELECTION) :
     _PERCENTAGE_SELECTION(PERCENTAGE_SELECTION),
     _rng_generator(std::random_device()()),
@@ -47,3 +50,6 @@ std::vector<int> TruncationSelection::sort_population(std::vector<Organism>& org
     return sorted_indices;
 
 }
+
+} // namespace Selectors
+} // namespace NeuroEvo

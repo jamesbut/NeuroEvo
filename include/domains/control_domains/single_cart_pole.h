@@ -14,6 +14,9 @@
 
 #include <domains/domain.h>
 
+namespace NeuroEvo {
+namespace Domains {
+
 class SingleCartPole: public Domain {
 
 public:
@@ -26,7 +29,7 @@ private:
 
     double single_run(Organism& org, unsigned int rand_seed) override;
 
-    bool check_phenotype_spec(PhenotypeSpec& pheno_spec) override;
+    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override;
 
     //Cart Pole struct to store cart variables
     struct CartPole {
@@ -60,5 +63,8 @@ private:
     const std::string _STATE_FILE_NAME;
 
 };
+
+} // namespace Domains
+} // namespace NeuroEvo
 
 #endif

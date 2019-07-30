@@ -8,6 +8,9 @@
 
 #include <genotype/genotype.h>
 
+namespace NeuroEvo {
+namespace Genotypes {
+
 class RealVectorGenotype : public Genotype {
 
 public:
@@ -27,5 +30,8 @@ protected:
     virtual RealVectorGenotype* clone_impl() const override { return new RealVectorGenotype(*this); };
 
 };
+
+} // namespace Genotypes
+} // namespace NeuroEvo
 
 #endif

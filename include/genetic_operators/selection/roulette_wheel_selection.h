@@ -12,6 +12,9 @@
 #include <genetic_operators/selection/selection.h>
 #include <random>
 
+namespace NeuroEvo {
+namespace Selectors {
+
 class RouletteWheelSelection : public Selection {
 
 public:
@@ -34,5 +37,8 @@ private:
     std::uniform_real_distribution<> _rng_uniform_distr;
 
 };
+
+} // namespace Selectors
+} // namespace NeuroEvo
 
 #endif

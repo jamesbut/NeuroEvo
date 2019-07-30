@@ -2,6 +2,9 @@
 #include <phenotype/fixed_network/gru_neuron.h>
 #include <iostream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 Layer::Layer(const LayerSpec& LAYER_SPEC, const bool TRACE) :
     _LAYER_SPEC(LAYER_SPEC),
     _TRACE(TRACE) {
@@ -80,3 +83,6 @@ void Layer::print_outputs(std::vector<double>& outputs) {
         neuron->reset();
 
  }
+
+ } // namespace Phenotypes
+ } // namespace NeuroEvo

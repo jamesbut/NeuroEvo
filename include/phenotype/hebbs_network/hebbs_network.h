@@ -17,13 +17,17 @@
 #include <iostream>
 #include <fstream>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class HebbsNetwork : public Phenotype {
 
 public:
 
     HebbsNetwork(const HebbsNetworkSpec NET_SPEC, const bool TRACE = false);
 
-    HebbsNetwork(RealVectorGenotype& genotype, HebbsNetworkSpec& NET_SPEC, const bool TRACE = false);
+    HebbsNetwork(Genotypes::RealVectorGenotype& genotype, HebbsNetworkSpec& NET_SPEC,
+                 const bool TRACE = false);
 
     void propogate_learning_rates(const std::vector<double>& learning_rates);
     void propogate_weights(const std::vector<double>& weights);
@@ -61,5 +65,8 @@ private:
     const bool _PRINT_WEIGHTS;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif

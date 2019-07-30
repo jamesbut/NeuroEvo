@@ -2,7 +2,11 @@
 #include <thread>
 #include <sys/wait.h>
 
-void Domain::evaluate_population(Population& pop, const unsigned NUM_TRIALS, const bool PARALLEL) {
+namespace NeuroEvo {
+namespace Domains {
+
+void Domain::evaluate_population(Population& pop, const unsigned NUM_TRIALS,
+                                 const bool PARALLEL) {
 
     std::vector<std::vector<double> > fitnesses;
 
@@ -34,7 +38,8 @@ void Domain::evaluate_population(Population& pop, const unsigned NUM_TRIALS, con
 
 }
 
-std::vector<std::vector<double> > Domain::evaluate_pop_serial(Population& pop, const unsigned NUM_TRIALS) {
+std::vector<std::vector<double> > Domain::evaluate_pop_serial(Population& pop,
+                                                              const unsigned NUM_TRIALS) {
 
     //Store fitnesses from runs
     std::vector<std::vector<double> > fitnesses(pop.get_size(), std::vector<double>(NUM_TRIALS));
@@ -74,7 +79,7 @@ std::vector<std::vector<double> > Domain::evaluate_pop_parallel(Population& pop,
 
     //Check shared memory is available for parallel execution
     if(!_shared_fitness_mem.has_value())
-        _shared_fitness_mem.emplace(SharedFitnessMemory(pop.get_size(), NUM_TRIALS));
+        _shared_fitness_mem.emplace(Utils::SharedFitnessMemory(pop.get_size(), NUM_TRIALS));
 
     auto concurrent_threads_supported = std::thread::hardware_concurrency();
 
@@ -198,3 +203,6 @@ bool Domain::check_for_completion(Population& population) {
     return false;
 
 }
+
+} // namespace Domains
+} // namespace NeuroEvo

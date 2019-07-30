@@ -12,6 +12,9 @@
 #include <gp_map/gp_map.h>
 #include <util/maths/matrix.h>
 
+namespace NeuroEvo {
+namespace GPMaps {
+
 class MatrixMap : public GPMap {
 
 public:
@@ -20,11 +23,12 @@ public:
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size,
               const std::string& file_name);
 
-    Phenotype* map(Genotype& genotype, PhenotypeSpec& pheno_spec) override;
+    Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
+                               Phenotypes::PhenotypeSpec& pheno_spec) override;
 
     void print_gp_map(std::ofstream& file) override;
 
-    inline Matrix<double>& get_map() override { return _interaction_matrix; };
+    inline Utils::Matrix<double>& get_map() override { return _interaction_matrix; };
 
 protected:
 
@@ -34,10 +38,13 @@ private:
 
     //Matrix defining the affect the the genome has on each of the phenotypic
     //traits
-    Matrix<double> _interaction_matrix;
+    Utils::Matrix<double> _interaction_matrix;
 
     std::vector<double> read_matrix(const std::string& file_name);
 
 };
+
+} // namespace GPMaps
+} // namespace NeuroEvo
 
 #endif

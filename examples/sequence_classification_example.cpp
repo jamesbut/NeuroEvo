@@ -16,7 +16,8 @@
 #include <sstream>
 
 //Determines the status of the GA
-int ga_finished(Population& population, Domain& domain, const unsigned MAX_GENS) {
+int ga_finished(NeuroEvo::Population& population, NeuroEvo::Domains::Domain& domain,
+                const unsigned MAX_GENS) {
 
     if(population.get_gen_num() >= MAX_GENS)
         return 2;
@@ -28,14 +29,15 @@ int ga_finished(Population& population, Domain& domain, const unsigned MAX_GENS)
 
 }
 
-void individual_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSpec>& pheno_spec,
+void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
                     const std::string& organism_folder_name) {
 
     // View the run of the saved best_winner_so_far
     std::stringstream best_winner_path;
     best_winner_path << "../../data/" << organism_folder_name << "/best_winner_so_far";
 
-    Organism organism(*pheno_spec, best_winner_path.str());
+    NeuroEvo::Organism organism(*pheno_spec, best_winner_path.str());
 
     // Run
     const unsigned NUM_TRIALS = 1;
@@ -45,14 +47,19 @@ void individual_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSp
 
 }
 
-void evolutionary_run(std::unique_ptr<Domain>& domain, std::unique_ptr<PhenotypeSpec>& pheno_spec) {
+void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                      std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec) {
 
     // Build genetic operators
     const double MUTATION_RATE = 0.4;
     const double MUTATION_POWER = 1.0;
-    std::unique_ptr<Mutation> mutator(new RealGaussianMutation(MUTATION_RATE, MUTATION_POWER));
+    std::unique_ptr<NeuroEvo::Mutators::Mutation> mutator(
+        new NeuroEvo::Mutators::RealGaussianMutation(MUTATION_RATE, MUTATION_POWER)
+    );
 
-    std::unique_ptr<Selection> selector(new RouletteWheelSelection());
+    std::unique_ptr<NeuroEvo::Selectors::Selection> selector(
+        new NeuroEvo::Selectors::RouletteWheelSelection()
+    );
 
     // Evolutionary parameters
     const unsigned NUM_RUNS = 1;
@@ -67,7 +74,7 @@ void evolutionary_run(std::unique_ptr<Domain>& domain, std::unique_ptr<Phenotype
         int ga_completed = 0;
 
         // Build population
-        Population population(POP_SIZE, gen, *pheno_spec);
+        NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec);
 
         do {
 
@@ -111,7 +118,9 @@ int main(int argc, const char* argv[]) {
     if(argc < 1 || argc > 2) {
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run: ./sequence_classification_example" << std::endl;
-        std::cout << "Individual run:   ./sequence_classification_example *population directory*" << std::endl;
+        std::cout << "Individual run:   ./sequence_classification_example *population directory*"
+                  << std::endl;
+
         return -1;
     }
 
@@ -125,21 +134,24 @@ int main(int argc, const char* argv[]) {
     const unsigned HL_LAYER_TYPE = 2;
     const unsigned HL_NUM_NEURONS = 3;
     const unsigned HL_INPUTS_PER_NEURON = 1;    // The number of inputs to the hidden layer
-    ActivationFuncSpec* hl_activation_spec(new SigmoidSpec(1));
-    LayerSpec hidden_layer(HL_LAYER_TYPE, HL_NUM_NEURONS, HL_INPUTS_PER_NEURON, hl_activation_spec);
+    NeuroEvo::Phenotypes::ActivationFuncSpec* hl_activation_spec(new NeuroEvo::Phenotypes::SigmoidSpec(1));
+    NeuroEvo::Phenotypes::LayerSpec hidden_layer(HL_LAYER_TYPE, HL_NUM_NEURONS,
+                                                 HL_INPUTS_PER_NEURON, hl_activation_spec);
 
     const unsigned OL_LAYER_TYPE = 0;
     const unsigned OL_NUM_NEURONS = 1;
     const unsigned OL_INPUTS_PER_NEURON = 3;    // The number of inputs to the output layer
-    ActivationFuncSpec* ol_activation_spec(new SigmoidSpec(1));
-    LayerSpec output_layer(OL_LAYER_TYPE, OL_NUM_NEURONS, OL_INPUTS_PER_NEURON, ol_activation_spec);
+    NeuroEvo::Phenotypes::ActivationFuncSpec* ol_activation_spec(new NeuroEvo::Phenotypes::SigmoidSpec(1));
+    NeuroEvo::Phenotypes::LayerSpec output_layer(OL_LAYER_TYPE, OL_NUM_NEURONS,
+                                                 OL_INPUTS_PER_NEURON, ol_activation_spec);
 
     // Build a network from the layer specifications
-    std::vector<LayerSpec> layer_specs{hidden_layer, output_layer};
+    std::vector<NeuroEvo::Phenotypes::LayerSpec> layer_specs{hidden_layer, output_layer};
 
     const unsigned NUM_INPUTS = 1;
-    //FixedNetworkSpec pheno_spec(NUM_INPUTS, layer_specs);
-    std::unique_ptr<PhenotypeSpec> pheno_spec(new FixedNetworkSpec(NUM_INPUTS, layer_specs));
+    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec> pheno_spec(
+        new NeuroEvo::Phenotypes::FixedNetworkSpec(NUM_INPUTS, layer_specs)
+    );
 
     // Build sequence classification domain
     const unsigned DEPTH = 3;           // The number of 1s and -1s
@@ -149,8 +161,10 @@ int main(int argc, const char* argv[]) {
     bool DOMAIN_TRACE = false;
     if(argc == 2) DOMAIN_TRACE = true;
 
-    std::unique_ptr<Domain> domain(new SequenceClassification(DEPTH, ZEROS_UPPER, ZEROS_LOWER,
-                                                              DOMAIN_TRACE));
+    std::unique_ptr<NeuroEvo::Domains::Domain> domain(
+        new NeuroEvo::Domains::SequenceClassification(DEPTH, ZEROS_UPPER,
+                                                      ZEROS_LOWER, DOMAIN_TRACE)
+    );
 
     // Check phenotype is suitable for the specific domain
     if(!domain->check_phenotype_spec(*pheno_spec)) return -1;

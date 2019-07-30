@@ -1,5 +1,8 @@
 #include <phenotype/fixed_network/gru_neuron.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 GRUNeuron::GRUNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE) :
     Neuron(LAYER_SPEC, TRACE) {
 
@@ -119,3 +122,6 @@ double GRUNeuron::evaluate(std::vector<double>& inputs) {
     return output;
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

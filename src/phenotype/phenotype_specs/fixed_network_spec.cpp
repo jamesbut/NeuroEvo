@@ -4,6 +4,8 @@
 #include <iostream>
 #include <gp_map/matrix_map.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
 
 FixedNetworkSpec::FixedNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                                    const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
@@ -100,47 +102,53 @@ std::vector<LayerSpec> FixedNetworkSpec::build_layer_specs(const unsigned NUM_IN
 }
 
 
-Genotype* FixedNetworkSpec::generate_genotype() {
+Genotypes::Genotype* FixedNetworkSpec::generate_genotype() {
 
-    return new RealVectorGenotype(NUM_GENES);
-
-}
-
-Genotype* FixedNetworkSpec::generate_genotype(Genotype& genotype) {
-
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
-
-    return new RealVectorGenotype(*real_vec_genotype);
+    return new Genotypes::RealVectorGenotype(NUM_GENES);
 
 }
 
-Genotype* FixedNetworkSpec::generate_genotype(const std::string& file_name) {
+Genotypes::Genotype* FixedNetworkSpec::generate_genotype(Genotypes::Genotype& genotype) {
 
-    return new RealVectorGenotype(file_name);
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
 
-}
-
-GPMap* FixedNetworkSpec::generate_gp_map() {
-
-    return new MatrixMap(NUM_GENES, NUM_GENES);
+    return new Genotypes::RealVectorGenotype(*real_vec_genotype);
 
 }
 
-GPMap* FixedNetworkSpec::generate_gp_map(const std::string& file_name) {
+Genotypes::Genotype* FixedNetworkSpec::generate_genotype(const std::string& file_name) {
 
-    return new MatrixMap(NUM_GENES, NUM_GENES, file_name);
+    return new Genotypes::RealVectorGenotype(file_name);
 
 }
 
-Phenotype* FixedNetworkSpec::generate_phenotype(Genotype& genotype, GPMap* gp_map) {
+GPMaps::GPMap* FixedNetworkSpec::generate_gp_map() {
 
-    RealVectorGenotype* real_vec_genotype = dynamic_cast<RealVectorGenotype*>(&genotype);
+    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES);
+
+}
+
+GPMaps::GPMap* FixedNetworkSpec::generate_gp_map(const std::string& file_name) {
+
+    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES, file_name);
+
+}
+
+Phenotypes::Phenotype* FixedNetworkSpec::generate_phenotype(Genotypes::Genotype& genotype,
+                                                            GPMaps::GPMap* gp_map) {
+
+    Genotypes::RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
 
     //If there is a gp_map, then map, otherwise
     //just use the genes for traits
     if(gp_map)
         return gp_map->map(genotype, *this);
     else
-        return new FixedNetwork(real_vec_genotype->get_genes(), *this);
+        return new Phenotypes::FixedNetwork(real_vec_genotype->get_genes(), *this);
 
 }
+
+} // namespace Phenotypes
+} // namespace NeuroEvo

@@ -7,6 +7,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+namespace NeuroEvo {
+
 DataCollector::DataCollector(const bool UUID_FOLDERS) {
 
     //First check to see whether data directory
@@ -69,7 +71,7 @@ void DataCollector::print_population_to_file(Population& population) {
     for(unsigned int i = 0; i < population.get_size(); i++) {
 
         Organism& org = pop_orgs.at(i);
-        Genotype& genotype = org.get_genotype();
+        Genotypes::Genotype& genotype = org.get_genotype();
 
         //Write fitness
         gen_file << org.get_fitness();
@@ -173,3 +175,5 @@ void DataCollector::delete_folder() {
     boost::filesystem::remove_all(_folder_path);
 
 }
+
+} // namespace NeuroEvo

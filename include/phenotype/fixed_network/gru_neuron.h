@@ -3,6 +3,9 @@
 
 #include <phenotype/fixed_network/neuron.h>
 
+namespace NeuroEvo {
+namespace Phenotypes {
+
 class GRUNeuron : public Neuron {
 
 public:
@@ -35,5 +38,8 @@ private:
     unsigned _b_u_index;
 
 };
+
+} // namespace Phenotypes
+} // namespace NeuroEvo
 
 #endif
