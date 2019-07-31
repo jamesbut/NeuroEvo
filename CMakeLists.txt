@@ -13,11 +13,17 @@ project(neuro_evo)
 # Boost is required
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-# Make variable available to the C++ source code
+# Set path of population data directory
+set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
+
 # Also set the variable in the parent scope so it
 # can be used in other cmake files
-set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
-set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
+get_directory_property(hasParent PARENT_DIRECTORY)
+if(hasParent)
+    set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
+endif()
+
+# Make variable available to the C++ source code
 add_compile_definitions(DATA_PATH="${DATA_PATH}")
 
 include_directories(
