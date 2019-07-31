@@ -72,6 +72,9 @@ void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
         // Build population
         NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec);
 
+        // Create a data collector for printing out generational information
+        NeuroEvo::DataCollector data_collector;
+
         do {
 
             std::cout << "Gen: " << gen << std::endl;
@@ -81,6 +84,9 @@ void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
 
             // Check for completion
             ga_completed = ga_finished(population, *domain, MAX_GENS);
+
+            // Print population data after fitness evaluation
+            data_collector.collect_generational_data(population);
 
             // Break if completed
             if(ga_completed != 0) break;

@@ -33,9 +33,6 @@ void Domain::evaluate_population(Population& pop, const unsigned NUM_TRIALS,
     if(!_complete)
         _complete = check_for_completion(pop);
 
-    //Print generational data
-    data_collector.collect_generational_data(pop);
-
 }
 
 std::vector<std::vector<double> > Domain::evaluate_pop_serial(Population& pop,

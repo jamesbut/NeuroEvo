@@ -80,8 +80,6 @@ private:
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
 
-    DataCollector data_collector;
-
 };
 
 } // namespace Domains
