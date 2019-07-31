@@ -14,7 +14,11 @@ project(neuro_evo)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
 # Make variable available to the C++ source code
-add_compile_definitions( DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data" )
+# Also set the variable in the parent scope so it
+# can be used in other cmake files
+set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
+set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
+add_compile_definitions(DATA_PATH="${DATA_PATH}")
 
 include_directories(
     include
