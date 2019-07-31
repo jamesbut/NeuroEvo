@@ -30,7 +30,7 @@ void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
 
     // View the run of the saved best_winner_so_far
     std::stringstream best_winner_path;
-    best_winner_path << "../../data/" << organism_folder_name << "/best_winner_so_far";
+    best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
 
     NeuroEvo::Organism organism(*pheno_spec, best_winner_path.str());
 

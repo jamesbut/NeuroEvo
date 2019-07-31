@@ -10,8 +10,8 @@ HebbsNetwork::HebbsNetwork(const HebbsNetworkSpec NET_SPEC, const bool TRACE) :
     _NET_SPEC(NET_SPEC),
     _TRACE(TRACE),
     _PRINT_WEIGHTS(NET_SPEC.PRINT_WEIGHTS),
-    _WEIGHTS_FILE_NAME("../../data/indv_run_hebbs_weights"),
-    _OUTPUTS_FILE_NAME("../../data/outputs") {
+    _WEIGHTS_FILE_NAME(std::string(DATA_PATH) + "/indv_run_hebbs_weights"),
+    _OUTPUTS_FILE_NAME(std::string(DATA_PATH) + "/outputs") {
 
     remove(_WEIGHTS_FILE_NAME.c_str());
     remove(_OUTPUTS_FILE_NAME.c_str());
@@ -25,8 +25,8 @@ HebbsNetwork::HebbsNetwork(Genotypes::RealVectorGenotype& genotype, HebbsNetwork
     _NET_SPEC(NET_SPEC),
     _TRACE(TRACE),
     _PRINT_WEIGHTS(NET_SPEC.PRINT_WEIGHTS),
-    _WEIGHTS_FILE_NAME("../../data/indv_run_hebbs_weights"),
-    _OUTPUTS_FILE_NAME("../../data/outputs") {
+    _WEIGHTS_FILE_NAME(std::string(DATA_PATH) + "/indv_run_hebbs_weights"),
+    _OUTPUTS_FILE_NAME(std::string(DATA_PATH) + "/outputs") {
 
     remove(_WEIGHTS_FILE_NAME.c_str());
     remove(_OUTPUTS_FILE_NAME.c_str());

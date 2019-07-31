@@ -13,6 +13,9 @@ project(neuro_evo)
 # Boost is required
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
+# Make variable available to the C++ source code
+add_compile_definitions( DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data" )
+
 include_directories(
     include
     ${Boost_INCLUDE_DIRS}

@@ -13,13 +13,13 @@ DataCollector::DataCollector(const bool UUID_FOLDERS) {
 
     //First check to see whether data directory
     //exists and if not, create it
-    if(!boost::filesystem::exists("../../data"))
-        boost::filesystem::create_directory("../../data");
+    if(!boost::filesystem::exists(DATA_PATH))
+        boost::filesystem::create_directory(DATA_PATH);
 
     //Set up path
     std::stringstream folder_name;
     std::stringstream path;
-    path << "../../data/";
+    path << DATA_PATH << "/";
 
     //Use a UUID for folder name or the date and time
     if(UUID_FOLDERS) {

@@ -13,7 +13,7 @@ SingleCartPole::SingleCartPole(const bool MARKOVIAN, const bool RANDOM_START,
     _MARKOVIAN(MARKOVIAN),
     _RANDOM_START(RANDOM_START),
     _PRINT_STATE_TO_FILE(PRINT_STATE),
-    _STATE_FILE_NAME("../../data/single_cp_state"),
+    _STATE_FILE_NAME(std::string(DATA_PATH) + "/single_cp_state"),
     Domain(DOMAIN_TRACE, MAX_STEPS+1) {
 
     //Remove previous state file
