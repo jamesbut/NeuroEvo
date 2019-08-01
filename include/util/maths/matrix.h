@@ -6,6 +6,10 @@
     operations easier to deal with.
 */
 
+#include <vector>
+#include <string>
+#include <iostream>
+
 namespace NeuroEvo {
 namespace Utils {
 
