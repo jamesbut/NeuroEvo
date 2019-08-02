@@ -29,9 +29,11 @@ public:
 
     virtual void print_gp_map(std::ofstream& file) = 0;
 
-    // Only supports a Matrix of doubles as a map
-    // I will make this generic in future
-    virtual Utils::Matrix<double>& get_map() = 0;
+    // The GPMap can be accessed and modified by the mutator functions
+    // if it can be represented in vector or Matrix format.
+    // If the map cannot be represented in Matrix format, the optional
+    // should just be empty
+    virtual std::optional<Utils::Matrix<double>> get_map() = 0;
 
     auto clone() const { return std::unique_ptr<GPMap>(clone_impl()); }
 

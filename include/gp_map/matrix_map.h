@@ -28,7 +28,7 @@ public:
 
     void print_gp_map(std::ofstream& file) override;
 
-    inline Utils::Matrix<double>& get_map() override { return _interaction_matrix; };
+    inline std::optional<Utils::Matrix<double>> get_map() override { return _interaction_matrix; };
 
 protected:
 

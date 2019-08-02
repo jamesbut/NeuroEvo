@@ -33,7 +33,6 @@ Phenotypes::Phenotype* MatrixMap::map(Genotypes::Genotype& genotype,
     const Utils::Matrix<double> genes(genotype.get_genes());
 
     Utils::Matrix<double> traits = _interaction_matrix * genes;
-
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this

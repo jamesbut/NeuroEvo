@@ -28,9 +28,10 @@ void Population::generate_new_population(Selectors::Selection* selector,
         if(genotype_mutator)
             genotype_mutator->mutate(child_organism.get_genotype().get_genes());
 
-        //Mutate GPMap
-        if(gp_map_mutator)
-            gp_map_mutator->mutate(child_organism.get_gp_map()->get_map().get_vector());
+        //Only mutate GPMap if a GPMap mutator has been specified
+        //and if the GPMap is vectorisable
+        if(gp_map_mutator && child_organism.get_gp_map()->get_map().has_value())
+            gp_map_mutator->mutate(child_organism.get_gp_map()->get_map()->get_vector());
 
         //Create new phenotype out of newly modified genotype
         child_organism.genesis();

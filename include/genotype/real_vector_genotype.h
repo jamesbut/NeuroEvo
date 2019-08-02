@@ -15,7 +15,8 @@ class RealVectorGenotype : public Genotype {
 
 public:
 
-    RealVectorGenotype(const unsigned int NUM_GENES);
+    RealVectorGenotype(const unsigned NUM_GENES);
+    RealVectorGenotype(const std::vector<double>& genes);
 
     //Copy constructor
     RealVectorGenotype(const RealVectorGenotype& genotype);

@@ -22,6 +22,12 @@ RealVectorGenotype::RealVectorGenotype(const unsigned int NUM_GENES) {
 
 }
 
+RealVectorGenotype::RealVectorGenotype(const std::vector<double>& genes) {
+
+    _genes = genes;
+
+}
+
 RealVectorGenotype::RealVectorGenotype(const RealVectorGenotype& genotype) {
 
     _genes = genotype._genes;
