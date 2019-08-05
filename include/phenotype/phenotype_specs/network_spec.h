@@ -18,11 +18,11 @@ public:
 
     NetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                 const std::vector<LayerSpec>& LAYER_SPECS, const unsigned NUM_GENES,
-                const bool TRACE = false) :
+                const GPMaps::gpmaps GPMAP_IDENTIFIER = GPMaps::NoMap) :
         NUM_INPUTS(NUM_INPUTS),
         NUM_OUTPUTS(NUM_OUTPUTS),
         LAYER_SPECS(LAYER_SPECS),
-        PhenotypeSpec(NUM_GENES, TRACE) {}
+        PhenotypeSpec(NUM_GENES, GPMAP_IDENTIFIER) {}
 
 
     virtual Genotypes::Genotype* generate_genotype() = 0;

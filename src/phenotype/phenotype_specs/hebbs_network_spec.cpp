@@ -6,30 +6,31 @@
 namespace NeuroEvo {
 namespace Phenotypes {
 
-HebbsNetworkSpec::HebbsNetworkSpec(const unsigned int NUM_INPUTS, const unsigned int NUM_OUTPUTS,
-                                   const unsigned int NUM_HIDDEN_LAYERS, const unsigned int NEURONS_PER_LAYER,
+HebbsNetworkSpec::HebbsNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
+                                   const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
                                    const bool RECURRENT, const bool RANDOM_WEIGHT_INIT,
-                                   const bool EVOLVE_INIT_WEIGHTS, const bool TRACE) :
+                                   const bool EVOLVE_INIT_WEIGHTS, GPMaps::gpmaps GPMAP_IDENTIFIER) :
     RANDOM_WEIGHT_INIT(RANDOM_WEIGHT_INIT),
     EVOLVE_INIT_WEIGHTS(EVOLVE_INIT_WEIGHTS),
     NetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
-                build_layer_specs(NUM_INPUTS, NUM_OUTPUTS, NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER, RECURRENT),
+                build_layer_specs(NUM_INPUTS, NUM_OUTPUTS, NUM_HIDDEN_LAYERS,
+                                  NEURONS_PER_LAYER, RECURRENT),
                 get_required_num_genes(NUM_INPUTS,
                                        NUM_OUTPUTS,
                                        NUM_HIDDEN_LAYERS,
                                        NEURONS_PER_LAYER,
                                        RECURRENT,
                                        EVOLVE_INIT_WEIGHTS),
-                TRACE) {}
+                GPMAP_IDENTIFIER) {}
 
 
 HebbsNetworkSpec::HebbsNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
                                    const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS,
-                                   const bool TRACE) :
+                                   GPMaps::gpmaps GPMAP_IDENTIFIER) :
     RANDOM_WEIGHT_INIT(RANDOM_WEIGHT_INIT),
     EVOLVE_INIT_WEIGHTS(EVOLVE_INIT_WEIGHTS),
     NetworkSpec(NUM_INPUTS, get_num_outputs(layer_specs), layer_specs,
-                get_required_num_genes(NUM_INPUTS, layer_specs, EVOLVE_INIT_WEIGHTS), TRACE) {}
+                get_required_num_genes(NUM_INPUTS, layer_specs, EVOLVE_INIT_WEIGHTS), GPMAP_IDENTIFIER) {}
 
 const unsigned HebbsNetworkSpec::get_required_num_genes(const unsigned int NUM_INPUTS,
                                                         const unsigned int NUM_OUTPUTS,

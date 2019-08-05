@@ -8,6 +8,7 @@
 #include <phenotype/phenotype.h>
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <util/maths/matrix.h>
+#include <optional>
 
 namespace NeuroEvo {
 
@@ -36,6 +37,7 @@ public:
     virtual std::optional<Utils::Matrix<double>> get_map() = 0;
 
     auto clone() const { return std::unique_ptr<GPMap>(clone_impl()); }
+
 
 protected:
 

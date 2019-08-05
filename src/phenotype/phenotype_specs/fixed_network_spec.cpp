@@ -3,13 +3,14 @@
 #include <phenotype/fixed_network/network.h>
 #include <iostream>
 #include <gp_map/matrix_map.h>
+#include <gp_map/dct_map.h>
 
 namespace NeuroEvo {
 namespace Phenotypes {
 
 FixedNetworkSpec::FixedNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                                    const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
-                                   const bool RECURRENT, const bool TRACE) :
+                                   const bool RECURRENT, const GPMaps::gpmaps GPMAP_IDENTIFIER) :
     NetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
                 build_layer_specs(NUM_INPUTS, NUM_OUTPUTS,
                                   NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER,
@@ -19,13 +20,13 @@ FixedNetworkSpec::FixedNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM
                                        NUM_HIDDEN_LAYERS,
                                        NEURONS_PER_LAYER,
                                        RECURRENT),
-                TRACE) {}
+                GPMAP_IDENTIFIER) {}
 
 
 FixedNetworkSpec::FixedNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
-                                   const bool TRACE) :
+                                   const GPMaps::gpmaps GPMAP_IDENTIFIER) :
     NetworkSpec(NUM_INPUTS, get_num_outputs(layer_specs), layer_specs,
-                get_required_num_genes(NUM_INPUTS, layer_specs), TRACE) {}
+                get_required_num_genes(NUM_INPUTS, layer_specs), GPMAP_IDENTIFIER) {}
 
 
 const unsigned FixedNetworkSpec::get_required_num_genes(const unsigned int NUM_INPUTS,
@@ -125,7 +126,26 @@ Genotypes::Genotype* FixedNetworkSpec::generate_genotype(const std::string& file
 
 GPMaps::GPMap* FixedNetworkSpec::generate_gp_map() {
 
-    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES);
+    switch(GPMAP_IDENTIFIER) {
+
+        case GPMaps::NoMap :
+            return nullptr;
+
+        case GPMaps::Matrix :
+            return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES);
+
+        //Can only work on network with 1 layer currently
+        case GPMaps::InverseDCT :
+            if(LAYER_SPECS.size() > 1)
+                return nullptr;
+            else {
+                //TODO: Pass in this parameter somewhere
+                //      I think this requires a slight design change though
+                const unsigned C = 1;
+                return new GPMaps::DCTMap(C, NUM_OUTPUTS, NUM_INPUTS);
+            }
+
+    }
 
 }
 

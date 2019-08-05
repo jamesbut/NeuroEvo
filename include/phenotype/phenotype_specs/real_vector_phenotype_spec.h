@@ -10,7 +10,7 @@ class RealVectorPhenotypeSpec : public PhenotypeSpec {
 
 public:
 
-    RealVectorPhenotypeSpec(const unsigned int NUM_GENES);
+    RealVectorPhenotypeSpec(const unsigned NUM_GENES);
 
     Genotypes::Genotype* generate_genotype() override;
     Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;

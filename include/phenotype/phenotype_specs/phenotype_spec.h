@@ -7,8 +7,8 @@
 */
 
 #include <phenotype/phenotype.h>
-#include <optional>
 #include <gp_map/gp_map.h>
+#include <gp_map/gp_map_enum.h>
 
 namespace NeuroEvo {
 
@@ -23,10 +23,12 @@ struct PhenotypeSpec {
 
 public:
 
-    PhenotypeSpec(const unsigned int NUM_GENES, const bool TRACE = false) :
+    PhenotypeSpec(const unsigned int NUM_GENES,
+                  const GPMaps::gpmaps GPMAP_IDENTIFIER = GPMaps::NoMap) :
         NUM_GENES(NUM_GENES),
         PRINT_WEIGHTS(false),
-        TRACE(TRACE) {}
+        TRACE(false),
+        GPMAP_IDENTIFIER(GPMAP_IDENTIFIER) {}
 
     virtual Genotypes::Genotype* generate_genotype() = 0;
 
@@ -53,6 +55,9 @@ public:
 protected:
 
     virtual PhenotypeSpec* clone_impl() const = 0;
+
+    //Defines the type of GPMap used
+    const GPMaps::gpmaps GPMAP_IDENTIFIER;
 
 };
 

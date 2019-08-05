@@ -23,11 +23,12 @@ public:
 
     FixedNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                      const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
-                     const bool RECURRENT, const bool TRACE = false);
+                     const bool RECURRENT,
+                     const GPMaps::gpmaps GPMAP_IDENTIFIER = GPMaps::NoMap);
 
 
     FixedNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
-                     const bool TRACE = false);
+                     const GPMaps::gpmaps GPMAP_IDENTIFIER = GPMaps::NoMap);
 
 
     Genotypes::Genotype* generate_genotype() override;
