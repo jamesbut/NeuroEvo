@@ -4,12 +4,12 @@
 namespace NeuroEvo {
 
 Population::Population(const unsigned int POP_SIZE, unsigned int& gen_ref,
-                       Phenotypes::PhenotypeSpec& PHENOTYPE_SPEC) :
+                       Phenotypes::PhenotypeSpec& pheno_spec, GPMaps::GPMapSpec* gp_map_spec) :
     _POP_SIZE(POP_SIZE),
     _gen(gen_ref) {
 
     for(std::size_t i = 0; i < _POP_SIZE; i++)
-        _organisms.push_back(Organism(PHENOTYPE_SPEC));
+        _organisms.push_back(Organism(pheno_spec, gp_map_spec));
 
 }
 

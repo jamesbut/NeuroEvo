@@ -9,7 +9,7 @@ namespace Phenotypes {
 HebbsNetworkSpec::HebbsNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                                    const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
                                    const bool RECURRENT, const bool RANDOM_WEIGHT_INIT,
-                                   const bool EVOLVE_INIT_WEIGHTS, GPMaps::gpmaps GPMAP_IDENTIFIER) :
+                                   const bool EVOLVE_INIT_WEIGHTS) :
     RANDOM_WEIGHT_INIT(RANDOM_WEIGHT_INIT),
     EVOLVE_INIT_WEIGHTS(EVOLVE_INIT_WEIGHTS),
     NetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
@@ -20,17 +20,15 @@ HebbsNetworkSpec::HebbsNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM
                                        NUM_HIDDEN_LAYERS,
                                        NEURONS_PER_LAYER,
                                        RECURRENT,
-                                       EVOLVE_INIT_WEIGHTS),
-                GPMAP_IDENTIFIER) {}
+                                       EVOLVE_INIT_WEIGHTS)) {}
 
 
 HebbsNetworkSpec::HebbsNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
-                                   const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS,
-                                   GPMaps::gpmaps GPMAP_IDENTIFIER) :
+                                   const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS) :
     RANDOM_WEIGHT_INIT(RANDOM_WEIGHT_INIT),
     EVOLVE_INIT_WEIGHTS(EVOLVE_INIT_WEIGHTS),
     NetworkSpec(NUM_INPUTS, get_num_outputs(layer_specs), layer_specs,
-                get_required_num_genes(NUM_INPUTS, layer_specs, EVOLVE_INIT_WEIGHTS), GPMAP_IDENTIFIER) {}
+                get_required_num_genes(NUM_INPUTS, layer_specs, EVOLVE_INIT_WEIGHTS)) {}
 
 const unsigned HebbsNetworkSpec::get_required_num_genes(const unsigned int NUM_INPUTS,
                                                         const unsigned int NUM_OUTPUTS,
@@ -127,18 +125,6 @@ Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(Genotypes::Genotype& ge
 Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(const std::string& file_name) {
 
     return new Genotypes::RealVectorGenotype(file_name);
-
-}
-
-GPMaps::GPMap* HebbsNetworkSpec::generate_gp_map() {
-
-    return nullptr;
-
-}
-
-GPMaps::GPMap* HebbsNetworkSpec::generate_gp_map(const std::string& file_name) {
-
-    return nullptr;
 
 }
 

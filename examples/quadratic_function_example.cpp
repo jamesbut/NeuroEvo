@@ -35,7 +35,7 @@ void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
     std::stringstream best_winner_path;
     best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
 
-    NeuroEvo::Organism organism(*pheno_spec, best_winner_path.str());
+    NeuroEvo::Organism organism(*pheno_spec, nullptr, best_winner_path.str());
 
     // Run
     const unsigned NUM_TRIALS = 1;
@@ -72,7 +72,7 @@ void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
         int ga_completed = 0;
 
         // Build population
-        NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec);
+        NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec, nullptr);
 
         // Create a data collector for printing out generational information
         NeuroEvo::DataCollector data_collector;

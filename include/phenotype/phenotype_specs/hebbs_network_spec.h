@@ -12,19 +12,15 @@ public:
 
     HebbsNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                      const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
-                     const bool RECURRENT, const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS,
-                     const GPMaps::gpmaps GPMAP_IDENTIFER = GPMaps::NoMap);
+                     const bool RECURRENT, const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS);
 
     HebbsNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
-                     const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS,
-                     const GPMaps::gpmaps GPMAP_IDENTIFIER = GPMaps::NoMap);
+                     const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS);
 
 
     Genotypes::Genotype* generate_genotype() override;
     Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;
     Genotypes::Genotype* generate_genotype(const std::string& file_name) override;
-    GPMaps::GPMap* generate_gp_map() override;
-    GPMaps::GPMap* generate_gp_map(const std::string& file_name) override;
     Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
                                               GPMaps::GPMap* gp_map) override;
 

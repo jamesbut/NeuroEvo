@@ -7,7 +7,7 @@ namespace NeuroEvo {
 namespace Phenotypes {
 
 RealVectorPhenotypeSpec::RealVectorPhenotypeSpec(const unsigned int NUM_GENES) :
-    PhenotypeSpec(NUM_GENES, GPMaps::NoMap) {}
+    PhenotypeSpec(NUM_GENES) {}
 
 Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype() {
 
@@ -27,18 +27,6 @@ Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype(Genotypes::Genot
 Genotypes::Genotype* RealVectorPhenotypeSpec::generate_genotype(const std::string& file_name) {
 
     return new Genotypes::RealVectorGenotype(file_name);
-
-}
-
-GPMaps::GPMap* RealVectorPhenotypeSpec::generate_gp_map() {
-
-    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES);
-
-}
-
-GPMaps::GPMap* RealVectorPhenotypeSpec::generate_gp_map(const std::string& file_name) {
-
-    return new GPMaps::MatrixMap(NUM_GENES, NUM_GENES, file_name);
 
 }
 

@@ -12,6 +12,7 @@
 #include <memory>
 #include <iostream>
 #include <gp_map/gp_map.h>
+#include <gp_map/gp_map_specs/gp_map_spec.h>
 
 namespace NeuroEvo {
 
@@ -19,10 +20,11 @@ class Organism {
 
 public:
 
-    Organism(Phenotypes::PhenotypeSpec& phenotype_spec);
+    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec);
     Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotype& genotype,
-             GPMaps::GPMap* gp_map);
-    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, const std::string file_name);
+             GPMaps::GPMapSpec* gp_map_spec);
+    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec,
+             const std::string file_name);
 
     Organism(const Organism& organism);
     Organism& operator=(const Organism& organism);
@@ -39,6 +41,7 @@ public:
     Phenotypes::Phenotype& get_phenotype() const;
 
     Phenotypes::PhenotypeSpec& get_phenotype_spec() const;
+    GPMaps::GPMapSpec* get_gp_map_spec() const;
 
     void genesis();
 
@@ -51,6 +54,7 @@ private:
     //that to be deleted when the Organism gets deleted.
     //Maybe something cleaner can be done in future.
     Phenotypes::PhenotypeSpec* _phenotype_spec;
+    GPMaps::GPMapSpec* _gp_map_spec;
 
     std::unique_ptr<Genotypes::Genotype> _genotype;
     std::unique_ptr<GPMaps::GPMap> _gp_map;
@@ -62,4 +66,5 @@ private:
 
 } // namespace NeuroEvo
 
+#include <gp_map/gp_map_specs/gp_map_spec.h>
 #endif

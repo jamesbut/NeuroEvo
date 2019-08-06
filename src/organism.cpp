@@ -7,26 +7,30 @@ namespace NeuroEvo {
 // The member variables are created by calling their specific generate
 // functions from the PhenotypeSpec (the PhenotypeSpec knows how to create
 // them)
-Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec) :
+Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec) :
     _genotype(phenotype_spec.generate_genotype()),
-    _gp_map(phenotype_spec.generate_gp_map()),
+    _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
+    _gp_map_spec(gp_map_spec),
     _fitness(0.0) {}
 
 Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotype& genotype,
-                   GPMaps::GPMap* gp_map) :
+                   GPMaps::GPMapSpec* gp_map_spec) :
     _genotype(genotype.clone()),
-    _gp_map(gp_map ? gp_map->clone() : nullptr),
+    _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
+    _gp_map_spec(gp_map_spec),
     _fitness(0.0) {}
 
-Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, const std::string file_name) :
+Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec,
+                   const std::string file_name) :
     _genotype(phenotype_spec.generate_genotype(file_name)),
-    _gp_map(phenotype_spec.generate_gp_map(file_name)),
+    _gp_map(gp_map_spec->generate_gp_map(file_name)),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
+    _gp_map_spec(gp_map_spec),
     _fitness(0.0) {}
 
 Organism::Organism(const Organism& organism) :
@@ -34,6 +38,7 @@ Organism::Organism(const Organism& organism) :
     _gp_map(organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr),
     _phenotype(organism.get_phenotype().clone()),
     _phenotype_spec(&organism.get_phenotype_spec()),
+    _gp_map_spec(organism.get_gp_map_spec()),
     _fitness(organism.get_fitness()) {}
 
 Organism& Organism::operator=(const Organism& organism) {
@@ -42,6 +47,7 @@ Organism& Organism::operator=(const Organism& organism) {
     _gp_map = organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr;
     _phenotype = organism.get_phenotype().clone();
     _phenotype_spec = &organism.get_phenotype_spec();
+    _gp_map_spec = organism.get_gp_map_spec();
     _fitness = organism.get_fitness();
 
     return *this;
@@ -105,6 +111,12 @@ Phenotypes::Phenotype& Organism::get_phenotype() const {
 Phenotypes::PhenotypeSpec& Organism::get_phenotype_spec() const {
 
     return *_phenotype_spec;
+
+}
+
+GPMaps::GPMapSpec* Organism::get_gp_map_spec() const {
+
+    return _gp_map_spec;
 
 }
 
