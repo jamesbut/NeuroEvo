@@ -1,7 +1,7 @@
 #ifndef _MATRIX_MAP_SPEC_
 #define _MATRIX_MAP_SPEC_
 
-#include <gp_map/gp_map_spec/gp_map_spec.h>
+#include <gp_map/gp_map_specs/gp_map_spec.h>
 #include <gp_map/matrix_map.h>
 
 namespace NeuroEvo {
