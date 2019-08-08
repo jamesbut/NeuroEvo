@@ -50,8 +50,10 @@ std::vector<double> FixedNetwork::activate(std::vector<double>& inputs) {
 
     std::vector<double> ins = inputs;
 
-    for(unsigned int i = 0; i < _NET_SPEC.LAYER_SPECS.size(); i++)
+    for(unsigned int i = 0; i < _NET_SPEC.LAYER_SPECS.size(); i++) {
+        if(_TRACE) std::cout << "\nLayer: " << i << std::endl;
         ins = layers.at(i).evaluate(ins);
+    }
 
     return ins;
 

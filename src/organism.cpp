@@ -27,7 +27,7 @@ Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotyp
 Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec,
                    const std::string file_name) :
     _genotype(phenotype_spec.generate_genotype(file_name)),
-    _gp_map(gp_map_spec->generate_gp_map(file_name)),
+    _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map(file_name) : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
     _gp_map_spec(gp_map_spec),

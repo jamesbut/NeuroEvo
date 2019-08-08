@@ -57,11 +57,15 @@ std::vector<double> Layer::evaluate(std::vector<double>& inputs) {
     std::vector<double> outputs;
 
     for(std::size_t i = 0; i < neurons.size(); i++) {
+        if(_TRACE) std::cout << "Neuron: " << i << std::endl;
         outputs.push_back(neurons.at(i)->evaluate(inputs));
     }
 
     //Print outputs
-    if(_TRACE) print_outputs(outputs);
+    if(_TRACE) {
+        std::cout << "Layer outputs:" << std::endl;
+        print_outputs(outputs);
+    }
 
     return outputs;
 

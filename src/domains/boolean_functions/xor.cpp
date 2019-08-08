@@ -26,8 +26,11 @@ double XOR::single_run(Organism& org, unsigned rand_seed) {
         std::vector<double> inputs = xor_inputs.at(i);
         std::vector<double> output = org.get_phenotype().activate(inputs);
 
-        if(_DOMAIN_TRACE)
+        if(_DOMAIN_TRACE) {
+            std::cout << "Domain outputs:\n" << std::endl;
             std::cout << correct_outputs.at(i) << " " << output.at(0) << std::endl;
+            std::cout << "---------------------------------" << std::endl;
+        }
 
         fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
 

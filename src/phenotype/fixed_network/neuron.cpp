@@ -21,9 +21,6 @@ void Neuron::set_weights(std::vector<double>& weights) {
 
 double Neuron::evaluate(std::vector<double>& inputs) {
 
-    if(_TRACE) std::cout << "Inputs size: " << inputs.size() << std::endl;
-    if(_TRACE) std::cout << "Weights size: " << _weights.size() << std::endl;
-
     double activation_val = 0.0;
 
     for(std::size_t i = 0; i < inputs.size(); i++) {
@@ -42,13 +39,13 @@ double Neuron::evaluate(std::vector<double>& inputs) {
         activation_val += 1 * _weights.at(inputs.size()+1);
 
         if(_TRACE) std::cout << "\n" << _previous_output << " x " << _weights.at(inputs.size()) << "\n";
-        if(_TRACE) std::cout << "\n" << "1 x " << _weights.at(inputs.size()+1) << "\n";
+        if(_TRACE) std::cout << "\n" << "1 x " << _weights.at(inputs.size()+1) << "\n\n";
 
     } else {
 
         activation_val += 1 * _weights.at(inputs.size());
 
-        if(_TRACE) std::cout << "\n" << "1 x " << _weights.at(inputs.size()) << "\n";
+        if(_TRACE) std::cout << "\n" << "1 x " << _weights.at(inputs.size()) << "\n\n";
 
     }
 
