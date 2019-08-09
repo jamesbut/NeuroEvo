@@ -18,7 +18,7 @@ public:
 
     // Create a matrix map specified in a .im file
     MatrixMapSpec(const std::string& IM_FILE_NAME) :
-        IM_FILE_NAME(std::string(CMAKE_CURRENT_SOURCE_DIR) + "/config/interaction_matrices/"
+        IM_FILE_NAME(std::string(NEURO_EVO_CMAKE_SRC_DIR) + "/config/interaction_matrices/"
                      + IM_FILE_NAME) {}
 
     GPMap* generate_gp_map() override {
