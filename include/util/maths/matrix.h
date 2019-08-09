@@ -34,6 +34,11 @@ public:
         _WIDTH(width),
         _matrix(vector) {}
 
+    Matrix(const std::vector<std::vector<T>>& matrix) :
+        _HEIGHT(matrix.size()),
+        _WIDTH(matrix.at(0).size()),
+        _matrix(flatten(matrix)) {}
+
     Matrix operator*(const Matrix& m) {
 
         //Check for valid matrix multiplication
@@ -87,6 +92,17 @@ private:
     const unsigned _WIDTH;
 
     std::vector<T> _matrix;
+
+    inline std::vector<T> flatten(const std::vector<std::vector<T>>& matrix) {
+
+        std::vector<T> vec;
+        vec.reserve(matrix.size() * matrix.at(0).size());
+
+        for(const auto& row : matrix)
+            vec.insert(vec.end(), row.begin(), row.end());
+        return vec;
+
+    }
 
 };
 

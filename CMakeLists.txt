@@ -25,6 +25,7 @@ endif()
 
 # Make variable available to the C++ source code
 add_compile_definitions(DATA_PATH="${DATA_PATH}")
+add_compile_definitions(CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 include_directories(
     include

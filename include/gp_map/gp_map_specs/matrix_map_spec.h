@@ -11,26 +11,39 @@ struct MatrixMapSpec : GPMapSpec {
 
 public:
 
+    // Create the identity Matrix Map
     MatrixMapSpec(const unsigned HEIGHT, const unsigned WIDTH) :
         HEIGHT(HEIGHT),
         WIDTH(WIDTH) {}
 
+    // Create a matrix map specified in a .im file
+    MatrixMapSpec(const std::string& IM_FILE_NAME) :
+        IM_FILE_NAME(std::string(CMAKE_CURRENT_SOURCE_DIR) + "/config/interaction_matrices/"
+                     + IM_FILE_NAME) {}
+
     GPMap* generate_gp_map() override {
 
-        return new MatrixMap(HEIGHT, WIDTH);
+        if(IM_FILE_NAME)
+            return new MatrixMap(*IM_FILE_NAME);
+        else
+            return new MatrixMap(*HEIGHT, *WIDTH);
 
     }
 
+    // This generates a matrix map from an organism file,
+    // so it is read differently than a matrix map from a .im file
     GPMap* generate_gp_map(const std::string& file_name) override {
 
-        return new MatrixMap(HEIGHT, WIDTH, file_name);
+        return new MatrixMap(*HEIGHT, *WIDTH, file_name);
 
     }
 
 private:
 
-    const unsigned HEIGHT;
-    const unsigned WIDTH;
+    std::optional<const unsigned> HEIGHT;
+    std::optional<const unsigned> WIDTH;
+
+    std::optional<const std::string> IM_FILE_NAME;
 
 };
 

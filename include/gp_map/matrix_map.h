@@ -21,7 +21,8 @@ public:
 
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size);
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size,
-              const std::string& file_name);
+              const std::string& org_file_name);
+    MatrixMap(const std::string& im_file_name);
 
     Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
                                Phenotypes::PhenotypeSpec& pheno_spec) override;
@@ -40,7 +41,8 @@ private:
     //traits
     Utils::Matrix<double> _interaction_matrix;
 
-    std::vector<double> read_matrix(const std::string& file_name);
+    std::vector<double> read_matrix_org_file(const std::string& org_file_name);
+    Utils::Matrix<double> read_matrix_im_file(const std::string& im_file_name);
 
 };
 
