@@ -1,23 +1,23 @@
-#include <domains/boolean_functions/and.h>
+#include <domains/boolean_functions/nand.h>
 #include <phenotype/phenotype_specs/network_spec.h>
 #include <math.h>
 
 namespace NeuroEvo {
 namespace Domains {
 
-AND::AND(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
+NAND::NAND(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
     Domain(DOMAIN_TRACE, COMPLETION_FITNESS) {}
 
-double AND::single_run(Organism& org, unsigned rand_seed) {
+double NAND::single_run(Organism& org, unsigned rand_seed) {
 
-    //Different AND inputs
+    //Different NAND inputs
     std::vector<std::vector<double> > and_inputs {{1.0, 1.0},
                                                   {1.0, 0.0},
                                                   {0.0, 1.0},
                                                   {0.0, 0.0}};
 
-    //Correct outputs for the respective AND inputs
-    std::vector<double> correct_outputs {1.0, 0.0, 0.0, 0.0};
+    //Correct outputs for the respective NAND inputs
+    std::vector<double> correct_outputs {0.0, 1.0, 1.0, 1.0};
 
     double fitness = 0.0;
 
@@ -38,7 +38,7 @@ double AND::single_run(Organism& org, unsigned rand_seed) {
 
 }
 
-bool AND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
+bool NAND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
     Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
@@ -55,7 +55,7 @@ bool AND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
     if(network_spec->NUM_INPUTS != 2 || network_spec->NUM_OUTPUTS != 1) {
 
             std::cout << "Number of inputs must be 2 and number of outputs" <<
-                         " must be 1 for the AND domain" << std::endl;
+                         " must be 1 for the NAND domain" << std::endl;
             return false;
 
     }
