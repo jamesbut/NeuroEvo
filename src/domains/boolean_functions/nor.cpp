@@ -1,29 +1,29 @@
-#include <domains/boolean_functions/nand.h>
+#include <domains/boolean_functions/nor.h>
 #include <phenotype/phenotype_specs/network_spec.h>
 #include <math.h>
 
 namespace NeuroEvo {
 namespace Domains {
 
-NAND::NAND(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
+NOR::NOR(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS) :
     Domain(DOMAIN_TRACE, COMPLETION_FITNESS) {}
 
-double NAND::single_run(Organism& org, unsigned rand_seed) {
+double NOR::single_run(Organism& org, unsigned rand_seed) {
 
-    //Different NAND inputs
-    std::vector<std::vector<double> > nand_inputs {{1.0, 1.0},
-                                                   {1.0, 0.0},
-                                                   {0.0, 1.0},
-                                                   {0.0, 0.0}};
+    //Different NOR inputs
+    std::vector<std::vector<double> > nor_inputs {{1.0, 1.0},
+                                                  {1.0, 0.0},
+                                                  {0.0, 1.0},
+                                                  {0.0, 0.0}};
 
-    //Correct outputs for the respective NAND inputs
-    std::vector<double> correct_outputs {0.0, 1.0, 1.0, 1.0};
+    //Correct outputs for the respective NOR inputs
+    std::vector<double> correct_outputs {0.0, 0.0, 0.0, 1.0};
 
     double fitness = 0.0;
 
-    for(std::size_t i = 0; i < nand_inputs.size(); i++) {
+    for(std::size_t i = 0; i < nor_inputs.size(); i++) {
 
-        std::vector<double> inputs = nand_inputs.at(i);
+        std::vector<double> inputs = nor_inputs.at(i);
         std::vector<double> output = org.get_phenotype().activate(inputs);
 
         if(_DOMAIN_TRACE)
@@ -31,14 +31,12 @@ double NAND::single_run(Organism& org, unsigned rand_seed) {
 
         fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
 
-
     }
 
     return fitness;
-
 }
 
-bool NAND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
+bool NOR::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
     Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
 
@@ -55,7 +53,7 @@ bool NAND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
     if(network_spec->NUM_INPUTS != 2 || network_spec->NUM_OUTPUTS != 1) {
 
             std::cout << "Number of inputs must be 2 and number of outputs" <<
-                         " must be 1 for the NAND domain" << std::endl;
+                         " must be 1 for the NOR domain" << std::endl;
             return false;
 
     }
