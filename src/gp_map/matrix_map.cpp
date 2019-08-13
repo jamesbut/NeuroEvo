@@ -23,13 +23,8 @@ MatrixMap::MatrixMap(const unsigned genotype_size,
 
 }
 
-MatrixMap::MatrixMap(const std::string& im_file_name) :
-    _interaction_matrix(read_matrix_im_file(im_file_name)) {}
-
-MatrixMap::MatrixMap(const unsigned genotype_size,
-                     const unsigned phenotype_size,
-                     const std::string& org_file_name) :
-    _interaction_matrix(phenotype_size, genotype_size, read_matrix_org_file(org_file_name)) {}
+MatrixMap::MatrixMap(const std::string& file_name) :
+    _interaction_matrix(read_matrix(file_name)) {}
 
 Phenotypes::Phenotype* MatrixMap::map(Genotypes::Genotype& genotype,
                                       Phenotypes::PhenotypeSpec& pheno_spec) {
@@ -50,62 +45,47 @@ Phenotypes::Phenotype* MatrixMap::map(Genotypes::Genotype& genotype,
 
 void MatrixMap::print_gp_map(std::ofstream& file) {
 
-    file << "\n";
+    file << "\n\n";
 
     file << std::setprecision(std::numeric_limits<double>::max_digits10);
 
-    for(unsigned i = 0; i < _interaction_matrix.get_height(); i++)
+    for(unsigned i = 0; i < _interaction_matrix.get_height(); i++) {
         for(unsigned j = 0; j < _interaction_matrix.get_width(); j++) {
             if(i == 0 && j== 0)
                 file << _interaction_matrix.at(i, j);
             else
-                file << "," << _interaction_matrix.at(i, j);
+                file << " " << _interaction_matrix.at(i, j);
         }
-
-}
-
-std::vector<double> MatrixMap::read_matrix_org_file(const std::string& org_file_name) {
-
-    std::ifstream file(org_file_name);
-    std::string line;
-
-    //Not interested in first line, that is genotype information
-    std::getline(file, line);
-    std::getline(file, line);
-
-    std::stringstream ss(line);
-    std::vector<double> matrix_values;
-
-    while(ss.good()) {
-
-        std::string substr;
-        getline(ss, substr, ',');
-        matrix_values.push_back(std::stod(substr));
-
+        file << "\n";
     }
 
-    return matrix_values;
-
 }
 
-Utils::Matrix<double> MatrixMap::read_matrix_im_file(const std::string& im_file_name) {
+Utils::Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
 
-    std::vector<std::vector<double> > matrix;
+    std::vector<std::vector<double>> vector_matrix;
 
-    //Open and read from .im file
-    std::ifstream matrix_file;
-    matrix_file.open(im_file_name);
+    std::ifstream file(file_name);
+    std::string line;
 
-    if(matrix_file.is_open()) {
+    if(file.is_open()) {
 
-        std::string line;
+        //If the file is an org file as oppose to a .im file,
+        //remove the lines above the matrix
+        if(file_name.find(".im") == std::string::npos) {
 
-        while(getline(matrix_file, line)) {
+            //Not interested in first 2 lines, that is genotype information
+            std::getline(file, line);
+            std::getline(file, line);
+
+        }
+
+        while(getline(file, line)) {
 
             //Split line by white spaces
             std::istringstream iss(line);
             std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
-                                                  std::istream_iterator<std::string>{}};
+                                                    std::istream_iterator<std::string>{}};
 
             //Convert strings to doubles
             std::vector<double> matrix_values_row(split_string.size());
@@ -113,20 +93,20 @@ Utils::Matrix<double> MatrixMap::read_matrix_im_file(const std::string& im_file_
             for(std::size_t i = 0; i < split_string.size(); i++)
                 matrix_values_row.at(i) = std::stod(split_string.at(i));
 
-            matrix.push_back(matrix_values_row);
+            vector_matrix.push_back(matrix_values_row);
 
         }
 
-        matrix_file.close();
+        file.close();
 
     } else {
 
-        std::cerr << "Could not open: " << im_file_name << std::endl;
+        std::cerr << "Could not open: " << file_name << std::endl;
         exit(EXIT_FAILURE);
 
     }
 
-    return Utils::Matrix<double>(matrix);
+    return Utils::Matrix<double>(vector_matrix);
 
 }
 

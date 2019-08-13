@@ -30,11 +30,10 @@ public:
 
     }
 
-    // This generates a matrix map from an organism file,
-    // so it is read differently than a matrix map from a .im file
+    // This generates a matrix map from an organism file
     GPMap* generate_gp_map(const std::string& file_name) override {
 
-        return new MatrixMap(*HEIGHT, *WIDTH, file_name);
+        return new MatrixMap(file_name);
 
     }
 
