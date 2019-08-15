@@ -15,6 +15,8 @@ public:
     void set_weights(std::vector<double>& weights) override;
     double evaluate(std::vector<double>& inputs) override;
 
+    void reset() override;
+
 protected:
 
     Neuron* clone_impl() const override { return new GRUNeuron(*this); };

@@ -123,5 +123,11 @@ double GRUNeuron::evaluate(std::vector<double>& inputs) {
 
 }
 
+void GRUNeuron::reset() {
+
+    _previous_output = 0.5;
+
+}
+
 } // namespace Phenotypes
 } // namespace NeuroEvo

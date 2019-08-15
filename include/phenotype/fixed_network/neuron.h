@@ -21,7 +21,7 @@ public:
     virtual void set_weights(std::vector<double>& weights);
     virtual double evaluate(std::vector<double>& inputs);
 
-    void reset();
+    virtual void reset();
     auto clone() const { return std::unique_ptr<Neuron>(clone_impl()); };
 
     void print_weights();
