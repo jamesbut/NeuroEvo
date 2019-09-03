@@ -12,9 +12,6 @@ public:
 
     RealVectorPhenotypeSpec(const unsigned NUM_GENES);
 
-    Genotypes::Genotype* generate_genotype() override;
-    Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;
-    Genotypes::Genotype* generate_genotype(const std::string& file_name) override;
     Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
                                               GPMaps::GPMap* gp_map) override;
 

@@ -107,27 +107,6 @@ std::vector<LayerSpec> HebbsNetworkSpec::build_layer_specs(const unsigned NUM_IN
 
 }
 
-Genotypes::Genotype* HebbsNetworkSpec::generate_genotype() {
-
-    return new Genotypes::RealVectorGenotype(NUM_GENES);
-
-}
-
-Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(Genotypes::Genotype& genotype) {
-
-    Genotypes::RealVectorGenotype* real_vec_genotype =
-        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
-
-    return new Genotypes::RealVectorGenotype(*real_vec_genotype);
-
-}
-
-Genotypes::Genotype* HebbsNetworkSpec::generate_genotype(const std::string& file_name) {
-
-    return new Genotypes::RealVectorGenotype(file_name);
-
-}
-
 Phenotypes::Phenotype* HebbsNetworkSpec::generate_phenotype(Genotypes::Genotype& genotype,
                                                             GPMaps::GPMap* gp_map) {
 

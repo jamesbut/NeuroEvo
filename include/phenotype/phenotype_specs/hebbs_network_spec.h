@@ -17,10 +17,6 @@ public:
     HebbsNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs,
                      const bool RANDOM_WEIGHT_INIT, const bool EVOLVE_INIT_WEIGHTS);
 
-
-    Genotypes::Genotype* generate_genotype() override;
-    Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;
-    Genotypes::Genotype* generate_genotype(const std::string& file_name) override;
     Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
                                               GPMaps::GPMap* gp_map) override;
 

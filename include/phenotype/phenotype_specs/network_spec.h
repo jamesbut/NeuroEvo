@@ -23,10 +23,6 @@ public:
         LAYER_SPECS(LAYER_SPECS),
         PhenotypeSpec(NUM_GENES) {}
 
-
-    virtual Genotypes::Genotype* generate_genotype() = 0;
-    virtual Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) = 0;
-    virtual Genotypes::Genotype* generate_genotype(const std::string& file_name) = 0;
     virtual Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
                                                       GPMaps::GPMap* gp_map) = 0;
 

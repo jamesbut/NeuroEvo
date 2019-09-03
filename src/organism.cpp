@@ -4,11 +4,9 @@
 
 namespace NeuroEvo {
 
-// The member variables are created by calling their specific generate
-// functions from the PhenotypeSpec (the PhenotypeSpec knows how to create
-// them)
-Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec) :
-    _genotype(phenotype_spec.generate_genotype()),
+Organism::Organism(Genotypes::GenotypeSpec& genotype_spec, Phenotypes::PhenotypeSpec& phenotype_spec,
+                   GPMaps::GPMapSpec* gp_map_spec) :
+    _genotype(genotype_spec.generate_genotype()),
     _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),
@@ -24,9 +22,9 @@ Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotyp
     _gp_map_spec(gp_map_spec),
     _fitness(0.0) {}
 
-Organism::Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec,
-                   const std::string file_name) :
-    _genotype(phenotype_spec.generate_genotype(file_name)),
+Organism::Organism(Genotypes::GenotypeSpec& genotype_spec, Phenotypes::PhenotypeSpec& phenotype_spec,
+                   GPMaps::GPMapSpec* gp_map_spec, const std::string file_name) :
+    _genotype(genotype_spec.generate_genotype(file_name)),
     _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map(file_name) : nullptr),
     _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
     _phenotype_spec(&phenotype_spec),

@@ -13,6 +13,7 @@
 #include <domains/sequence_classification.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutation.h>
+#include <util/random/uniform_distribution.h>
 #include <sstream>
 
 //Determines the status of the GA
@@ -30,6 +31,7 @@ int ga_finished(NeuroEvo::Population& population, NeuroEvo::Domains::Domain& dom
 }
 
 void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                    std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
                     std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
                     const std::string& organism_folder_name) {
 
@@ -37,7 +39,7 @@ void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
     std::stringstream best_winner_path;
     best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
 
-    NeuroEvo::Organism organism(*pheno_spec, nullptr, best_winner_path.str());
+    NeuroEvo::Organism organism(*geno_spec, *pheno_spec, nullptr, best_winner_path.str());
 
     // Run
     const unsigned NUM_TRIALS = 1;
@@ -48,6 +50,7 @@ void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
 }
 
 void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                      std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
                       std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec) {
 
     // Build genetic operators
@@ -74,7 +77,7 @@ void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
         int ga_completed = 0;
 
         // Build population
-        NeuroEvo::Population population(POP_SIZE, gen, *pheno_spec, nullptr);
+        NeuroEvo::Population population(POP_SIZE, gen, *geno_spec, *pheno_spec, nullptr);
 
         // Create a data collector for printing out generational information
         NeuroEvo::DataCollector data_collector;
@@ -159,6 +162,20 @@ int main(int argc, const char* argv[]) {
         new NeuroEvo::Phenotypes::FixedNetworkSpec(NUM_INPUTS, layer_specs)
     );
 
+    // Specify the distribution used for the initial gene values
+    const double INIT_GENE_LOWER_BOUND = 0;
+    const double INIT_GENE_UPPER_BOUND = 1;
+    std::unique_ptr<NeuroEvo::Utils::Distribution> genotype_distr(
+        new NeuroEvo::Utils::UniformDistribution(INIT_GENE_LOWER_BOUND, INIT_GENE_UPPER_BOUND)
+    );
+
+    // Specify genotype
+    // This is done after specifying phenotype so the number
+    // of genes required is known.
+    std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec> geno_spec(
+        new NeuroEvo::Genotypes::GenotypeSpec(pheno_spec->get_num_params(), *genotype_distr)
+    );
+
     // Build sequence classification domain
     const unsigned DEPTH = 3;           // The number of 1s and -1s
     const unsigned ZEROS_LOWER = 5;     // The smallest number of zeros interleaved in
@@ -176,7 +193,7 @@ int main(int argc, const char* argv[]) {
     if(!domain->check_phenotype_spec(*pheno_spec)) return -1;
 
     // Run either an evolutionary run or an individual run
-    if(argc == 1) evolutionary_run(domain, pheno_spec);
-    if(argc == 2) individual_run(domain, pheno_spec, argv[1]);
+    if(argc == 1) evolutionary_run(domain, geno_spec, pheno_spec);
+    if(argc == 2) individual_run(domain, geno_spec, pheno_spec, argv[1]);
 
 }

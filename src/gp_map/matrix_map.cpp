@@ -85,7 +85,7 @@ Utils::Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
             //Split line by white spaces
             std::istringstream iss(line);
             std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
-                                                    std::istream_iterator<std::string>{}};
+                                                  std::istream_iterator<std::string>{}};
 
             //Convert strings to doubles
             std::vector<double> matrix_values_row(split_string.size());

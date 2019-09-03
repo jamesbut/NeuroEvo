@@ -20,7 +20,8 @@ class Population {
 public:
 
     Population(const unsigned int POP_SIZE, unsigned int& gen_ref,
-               Phenotypes::PhenotypeSpec& pheno_spec, GPMaps::GPMapSpec* gp_map_spec);
+               Genotypes::GenotypeSpec& geno_spec, Phenotypes::PhenotypeSpec& pheno_spec,
+               GPMaps::GPMapSpec* gp_map_spec);
 
     std::vector<Organism>& get_organisms();
     const unsigned int get_size() const;

@@ -28,10 +28,6 @@ public:
 
     FixedNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs);
 
-
-    Genotypes::Genotype* generate_genotype() override;
-    Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) override;
-    Genotypes::Genotype* generate_genotype(const std::string& file_name) override;
     Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
                                               GPMaps::GPMap* gp_map) override;
 

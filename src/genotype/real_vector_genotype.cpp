@@ -8,20 +8,6 @@
 namespace NeuroEvo {
 namespace Genotypes {
 
-RealVectorGenotype::RealVectorGenotype(const unsigned int NUM_GENES) {
-
-    std::random_device rd;
-    std::mt19937 eng(rd());
-
-    // Creates random genes from the interval [0,1] but this will
-    // be definable in the future.
-    std::uniform_real_distribution<> distr(0,1);
-
-    for(size_t i = 0; i < NUM_GENES; i++)
-        _genes.push_back(distr(eng));
-
-}
-
 RealVectorGenotype::RealVectorGenotype(const std::vector<double>& genes) {
 
     _genes = genes;

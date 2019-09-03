@@ -9,6 +9,7 @@
 
 #include <genotype/genotype.h>
 #include <phenotype/phenotype_specs/phenotype_spec.h>
+#include <genotype/genotype_specs/genotype_spec.h>
 #include <memory>
 #include <iostream>
 #include <gp_map/gp_map.h>
@@ -20,11 +21,12 @@ class Organism {
 
 public:
 
-    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec);
+    Organism(Genotypes::GenotypeSpec& genotype_spec, Phenotypes::PhenotypeSpec& phenotype_spec,
+             GPMaps::GPMapSpec* gp_map_spec);
     Organism(Phenotypes::PhenotypeSpec& phenotype_spec, Genotypes::Genotype& genotype,
              GPMaps::GPMapSpec* gp_map_spec);
-    Organism(Phenotypes::PhenotypeSpec& phenotype_spec, GPMaps::GPMapSpec* gp_map_spec,
-             const std::string file_name);
+    Organism(Genotypes::GenotypeSpec& genotype_spec, Phenotypes::PhenotypeSpec& phenotype_spec,
+             GPMaps::GPMapSpec* gp_map_spec, const std::string file_name);
 
     Organism(const Organism& organism);
     Organism& operator=(const Organism& organism);

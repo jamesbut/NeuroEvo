@@ -45,7 +45,7 @@ bool QuarticFunction::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec
 
     }
 
-    if(real_vec_pheno_spec->NUM_GENES != 1) {
+    if(real_vec_pheno_spec->get_num_params() != 1) {
 
         std::cerr << "The number of genes needs to equal 1 for a 1-dimensional function!" << std::endl;
 

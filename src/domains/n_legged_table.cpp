@@ -57,7 +57,7 @@ bool NLeggedTable::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
     }
 
-    if(real_vec_pheno_spec->NUM_GENES != _NUM_LEGS) {
+    if(real_vec_pheno_spec->get_num_params() != _NUM_LEGS) {
 
         std::cerr << "The number of genes needs to equal the number of legs" << std::endl;
 

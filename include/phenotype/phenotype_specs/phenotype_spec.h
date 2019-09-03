@@ -22,26 +22,18 @@ struct PhenotypeSpec {
 
 public:
 
-    PhenotypeSpec(const unsigned int NUM_GENES) :
-        NUM_GENES(NUM_GENES),
+    PhenotypeSpec(const unsigned NUM_PARAMS) :
+        NUM_PARAMS(NUM_PARAMS),
         PRINT_WEIGHTS(false),
         TRACE(false) {}
-
-    virtual Genotypes::Genotype* generate_genotype() = 0;
-
-    //Generates a copy of the genotype
-    //TODO: Remove this if not needed - I can just do genotype.clone()
-    virtual Genotypes::Genotype* generate_genotype(Genotypes::Genotype& genotype) = 0;
-
-    //Generates a genotype from file
-    virtual Genotypes::Genotype* generate_genotype(const std::string& file_name) = 0;
 
     //GPMap can be null
     virtual Phenotype* generate_phenotype(Genotypes::Genotype& genotype, GPMaps::GPMap* gp_map) = 0;
 
     auto clone() const { return std::unique_ptr<PhenotypeSpec>(clone_impl()); }
 
-    const unsigned int NUM_GENES;
+    const unsigned& get_num_params() { return NUM_PARAMS; }
+
 
     bool TRACE;
     bool PRINT_WEIGHTS;
@@ -49,6 +41,8 @@ public:
 protected:
 
     virtual PhenotypeSpec* clone_impl() const = 0;
+
+    const unsigned NUM_PARAMS;
 
 };
 
