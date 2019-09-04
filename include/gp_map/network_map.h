@@ -25,17 +25,16 @@ protected:
 
     NetworkMap* clone_impl() const override { return new NetworkMap(*this); };
 
-    Phenotypes::FixedNetwork read_network(const std::string& file_name);
+    Phenotypes::FixedNetwork read_network(const std::string& file_name,
+                                          Phenotypes::FixedNetworkSpec& net_spec);
 
 private:
-
-    Phenotypes::FixedNetworkSpec& _net_spec;
 
     Phenotypes::FixedNetwork _decoder;
 
 };
 
-} // namespace GPMapes
+} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

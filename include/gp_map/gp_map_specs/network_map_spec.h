@@ -29,7 +29,7 @@ public:
 
 private:
 
-    Phenotypes::FixedNetworkSpec& _net_spec;
+    Phenotypes::FixedNetworkSpec _net_spec;
     const std::string _file_name;
 
 

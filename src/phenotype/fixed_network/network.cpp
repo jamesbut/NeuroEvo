@@ -3,7 +3,7 @@
 namespace NeuroEvo {
 namespace Phenotypes {
 
-FixedNetwork::FixedNetwork(const FixedNetworkSpec NET_SPEC) :
+FixedNetwork::FixedNetwork(const FixedNetworkSpec& NET_SPEC) :
     _NET_SPEC(NET_SPEC),
     _TRACE(NET_SPEC.TRACE) {
 

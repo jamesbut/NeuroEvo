@@ -17,7 +17,7 @@ class FixedNetwork : public Phenotype {
 
 public:
 
-    FixedNetwork(const FixedNetworkSpec NET_SPEC);
+    FixedNetwork(const FixedNetworkSpec& NET_SPEC);
 
     FixedNetwork(const std::vector<double>& traits, FixedNetworkSpec& NET_SPEC);
 
