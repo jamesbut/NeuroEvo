@@ -7,7 +7,7 @@ namespace NeuroEvo {
 namespace GPMaps {
 
 NetworkMap::NetworkMap(Phenotypes::FixedNetworkSpec& net_spec, const std::string& file_name) :
-    _decoder(read_network(file_name net_spec)) {}
+    _decoder(read_network(file_name, net_spec)) {}
 
 Phenotypes::Phenotype* NetworkMap::map(Genotypes::Genotype& genotype,
                                        Phenotypes::PhenotypeSpec& pheno_spec) {
@@ -71,7 +71,8 @@ Phenotypes::FixedNetwork NetworkMap::read_network(const std::string& file_name,
 
     }
 
-    return Phenotypes::FixedNetwork net(weights, net_spec);
+    Phenotypes::FixedNetwork net(weights, net_spec);
+    return net;
 
 }
 
