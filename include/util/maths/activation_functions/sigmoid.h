@@ -1,6 +1,8 @@
 #ifndef _SIGMOID_H_
 #define _SIGMOID_H_
 
+#include <util/maths/activation_functions/activation_function.h>
+
 namespace NeuroEvo {
 namespace Utils {
 
