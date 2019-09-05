@@ -55,7 +55,7 @@ double GRUNeuron::evaluate(std::vector<double>& inputs) {
 
     //Reset gate output
     //NOTE: NEAT-GRU code uses K value of 1/4.924273 here
-    double r = _LAYER_SPEC._activation_spec->activate(reset_input_sum);
+    double r = _LAYER_SPEC._activation_func->activate(reset_input_sum);
     if(_TRACE) std::cout << "r: " << r << std::endl;
 
     //Update gate
@@ -77,7 +77,7 @@ double GRUNeuron::evaluate(std::vector<double>& inputs) {
     if(_TRACE) std::cout << "update_input_sum: " << update_input_sum << std::endl;
 
     //Update gate output
-    double u = _LAYER_SPEC._activation_spec->activate(update_input_sum);
+    double u = _LAYER_SPEC._activation_func->activate(update_input_sum);
     if(_TRACE) std::cout << "u: " << u << std::endl;
 
     /* Calculate h_tilda */

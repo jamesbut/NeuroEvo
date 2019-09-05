@@ -50,7 +50,7 @@ double Neuron::evaluate(std::vector<double>& inputs) {
     }
 
 
-    double output = _LAYER_SPEC._activation_spec->activate(activation_val);
+    double output = _LAYER_SPEC._activation_func->activate(activation_val);
 
     _previous_output = output;
 

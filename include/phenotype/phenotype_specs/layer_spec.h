@@ -4,6 +4,7 @@
 #include <math.h>
 #include <memory>
 #include <iostream>
+#include <util/maths/activation_functions/activation_function.h>
 
 /*
     Defines an activation function description
@@ -13,42 +14,6 @@
 namespace NeuroEvo {
 namespace Phenotypes {
 
-struct ActivationFuncSpec {
-
-    virtual double activate(const double x) = 0;
-
-    auto clone() const { return std::unique_ptr<ActivationFuncSpec>(clone_impl()); };
-    virtual void print_spec() const = 0;
-
-protected:
-
-    virtual ActivationFuncSpec* clone_impl() const = 0;
-
-};
-
-struct SigmoidSpec : ActivationFuncSpec {
-
-    SigmoidSpec(const double K) :
-        K(K) {}
-
-    const double K;
-
-    double activate(const double x) override {
-
-        return 1 / (1 + exp(-x / K));
-
-    }
-
-    void print_spec() const {
-        std::cout << "K: " << K << std::endl;
-    }
-
-protected:
-
-    SigmoidSpec* clone_impl() const override { return new SigmoidSpec(*this); };
-
-};
-
 /*
     Defines a network layer.
     Only normal, recurrent and GRU units can be used currently.
@@ -57,11 +22,11 @@ protected:
 struct LayerSpec {
 
     LayerSpec(const unsigned type, const unsigned num_neurons,
-              unsigned inputs_per_neuron, ActivationFuncSpec* activation_spec) :
+              unsigned inputs_per_neuron, Utils::ActivationFunction* activation_func) :
         _type(type),
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron),
-        _activation_spec(activation_spec) {
+        _activation_func(activation_func) {
 
     //Normal
     if(type == 0)
@@ -82,7 +47,7 @@ struct LayerSpec {
         _num_neurons(layer_spec._num_neurons),
         _inputs_per_neuron(layer_spec._inputs_per_neuron),
         _params_per_neuron(layer_spec._params_per_neuron),
-        _activation_spec(layer_spec._activation_spec.get()->clone()) {}
+        _activation_func(layer_spec._activation_func.get()->clone()) {}
 
     LayerSpec& operator=(const LayerSpec& layer_spec) {
 
@@ -90,7 +55,7 @@ struct LayerSpec {
         _num_neurons = layer_spec._num_neurons;
         _inputs_per_neuron = layer_spec._inputs_per_neuron;
         _params_per_neuron = layer_spec._params_per_neuron;
-        _activation_spec = layer_spec._activation_spec.get()->clone();
+        _activation_func = layer_spec._activation_func.get()->clone();
 
         return *this;
 
@@ -107,7 +72,6 @@ struct LayerSpec {
         std::cout << "Num neurons: " << _num_neurons << std::endl;
         std::cout << "Inputs per neuron: " << _inputs_per_neuron << std::endl;
         std::cout << "Params per neuron: " << _params_per_neuron << std::endl;
-        _activation_spec->print_spec();
 
     }
 
@@ -121,7 +85,7 @@ struct LayerSpec {
     unsigned _inputs_per_neuron;
     unsigned _params_per_neuron;
 
-    std::unique_ptr<ActivationFuncSpec> _activation_spec;
+    std::unique_ptr<Utils::ActivationFunction> _activation_func;
 
 };
 

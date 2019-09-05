@@ -14,6 +14,7 @@
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutation.h>
 #include <util/random/uniform_distribution.h>
+#include <util/maths/activation_functions/sigmoid.h>
 #include <sstream>
 
 //Determines the status of the GA
@@ -143,14 +144,14 @@ int main(int argc, const char* argv[]) {
     const unsigned HL_LAYER_TYPE = 2;
     const unsigned HL_NUM_NEURONS = 3;
     const unsigned HL_INPUTS_PER_NEURON = 1;    // The number of inputs to the hidden layer
-    NeuroEvo::Phenotypes::ActivationFuncSpec* hl_activation_spec(new NeuroEvo::Phenotypes::SigmoidSpec(1));
+    NeuroEvo::Utils::ActivationFunction* hl_activation_spec(new NeuroEvo::Utils::Sigmoid(1));
     NeuroEvo::Phenotypes::LayerSpec hidden_layer(HL_LAYER_TYPE, HL_NUM_NEURONS,
                                                  HL_INPUTS_PER_NEURON, hl_activation_spec);
 
     const unsigned OL_LAYER_TYPE = 0;
     const unsigned OL_NUM_NEURONS = 1;
     const unsigned OL_INPUTS_PER_NEURON = 3;    // The number of inputs to the output layer
-    NeuroEvo::Phenotypes::ActivationFuncSpec* ol_activation_spec(new NeuroEvo::Phenotypes::SigmoidSpec(1));
+    NeuroEvo::Utils::ActivationFunction* ol_activation_spec(new NeuroEvo::Utils::Sigmoid(1));
     NeuroEvo::Phenotypes::LayerSpec output_layer(OL_LAYER_TYPE, OL_NUM_NEURONS,
                                                  OL_INPUTS_PER_NEURON, ol_activation_spec);
 

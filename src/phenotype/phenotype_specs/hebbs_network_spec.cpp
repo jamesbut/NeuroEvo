@@ -2,6 +2,7 @@
 #include <genotype/real_vector_genotype.h>
 #include <phenotype/hebbs_network/hebbs_network.h>
 #include <iostream>
+#include <util/maths/activation_functions/sigmoid.h>
 
 namespace NeuroEvo {
 namespace Phenotypes {
@@ -87,19 +88,19 @@ std::vector<LayerSpec> HebbsNetworkSpec::build_layer_specs(const unsigned NUM_IN
     if(NUM_HIDDEN_LAYERS == 0)
 
         layer_specs.push_back(LayerSpec(neuron_type, NUM_OUTPUTS, NUM_INPUTS,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
     else {
 
         layer_specs.push_back(LayerSpec(neuron_type, NEURONS_PER_LAYER, NUM_INPUTS,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
         for(unsigned i = 1; i < NUM_HIDDEN_LAYERS; i++)
             layer_specs.push_back(LayerSpec(neuron_type, NEURONS_PER_LAYER, NEURONS_PER_LAYER,
-                                            new SigmoidSpec(1.0)));
+                                            new Utils::Sigmoid(1.0)));
 
         layer_specs.push_back(LayerSpec(neuron_type, NUM_OUTPUTS, NEURONS_PER_LAYER,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
     }
 

@@ -62,7 +62,7 @@ double HebbsNeuron::evaluate(std::vector<double>& inputs) {
 
     }
 
-    double output = _LAYER_SPEC._activation_spec->activate(activation_val);
+    double output = _LAYER_SPEC._activation_func->activate(activation_val);
 
     //Allow for synaptic weight change - this is what makes it a plastic network
     synaptic_weight_change(inputs, output);

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <gp_map/matrix_map.h>
 #include <gp_map/dct_map.h>
+#include <util/maths/activation_functions/sigmoid.h>
 
 namespace NeuroEvo {
 namespace Phenotypes {
@@ -80,19 +81,19 @@ std::vector<LayerSpec> FixedNetworkSpec::build_layer_specs(const unsigned NUM_IN
     if(NUM_HIDDEN_LAYERS == 0)
 
         layer_specs.push_back(LayerSpec(neuron_type, NUM_OUTPUTS, NUM_INPUTS,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
     else {
 
         layer_specs.push_back(LayerSpec(neuron_type, NEURONS_PER_LAYER, NUM_INPUTS,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
         for(unsigned i = 1; i < NUM_HIDDEN_LAYERS; i++)
             layer_specs.push_back(LayerSpec(neuron_type, NEURONS_PER_LAYER, NEURONS_PER_LAYER,
-                                            new SigmoidSpec(1.0)));
+                                            new Utils::Sigmoid(1.0)));
 
         layer_specs.push_back(LayerSpec(neuron_type, NUM_OUTPUTS, NEURONS_PER_LAYER,
-                                        new SigmoidSpec(1.0)));
+                                        new Utils::Sigmoid(1.0)));
 
     }
 
