@@ -22,7 +22,7 @@ public:
 
     RealVectorPhenotype(const std::vector<double>& traits);
 
-    virtual std::vector<double> activate(std::vector<double>& inputs);
+    virtual std::vector<double> activate(std::vector<double>& inputs) override;
 
     void reset() override;
 

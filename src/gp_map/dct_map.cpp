@@ -2,6 +2,7 @@
 #include <util/maths/fourier.h>
 #include <phenotype/phenotype_specs/fixed_network_spec.h>
 #include <phenotype/fixed_network/network.h>
+#include <cmath>
 
 namespace NeuroEvo {
 namespace GPMaps {

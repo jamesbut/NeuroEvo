@@ -40,7 +40,7 @@ struct LayerSpec {
     if(_type == 2)
         _params_per_neuron = (inputs_per_neuron * 3) + 6;
 
-}
+    }
 
     LayerSpec(const LayerSpec& layer_spec) :
         _type(layer_spec._type),

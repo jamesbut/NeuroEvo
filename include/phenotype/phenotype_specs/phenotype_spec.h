@@ -22,6 +22,8 @@ struct PhenotypeSpec {
 
 public:
 
+    virtual ~PhenotypeSpec() = default;
+
     PhenotypeSpec(const unsigned NUM_PARAMS) :
         NUM_PARAMS(NUM_PARAMS),
         PRINT_WEIGHTS(false),

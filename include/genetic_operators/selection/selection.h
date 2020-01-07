@@ -10,6 +10,8 @@ class Selection {
 
 public:
 
+    virtual ~Selection() = default;
+
     // Selects an organism from a population.
     // A new organism is created as the child on which
     // modifications can be applied.

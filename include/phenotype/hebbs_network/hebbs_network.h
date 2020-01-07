@@ -32,7 +32,7 @@ public:
     void propogate_learning_rates(const std::vector<double>& learning_rates);
     void propogate_weights(const std::vector<double>& weights);
 
-    std::vector<double> activate(std::vector<double>& inputs);
+    std::vector<double> activate(std::vector<double>& inputs) override;
 
     void print_weights();
 

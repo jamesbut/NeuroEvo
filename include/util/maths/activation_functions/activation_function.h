@@ -13,6 +13,8 @@ class ActivationFunction {
 
 public:
 
+    virtual ~ActivationFunction() = default;
+
     virtual double activate(const double x) = 0;
 
     auto clone() const { return std::unique_ptr<ActivationFunction>(clone_impl()); };
