@@ -34,6 +34,8 @@ public:
 
     }
 
+    virtual ~Distribution() = default;
+
     // Returns next value from the distribution
     virtual double next() = 0;
 

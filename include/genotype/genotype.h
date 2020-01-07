@@ -19,6 +19,8 @@ class Genotype {
 
 public:
 
+    virtual ~Genotype() = default;
+
     auto clone() const { return std::unique_ptr<Genotype>(clone_impl()); };
 
     inline std::vector<double>& get_genes() { return _genes; };

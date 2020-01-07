@@ -25,6 +25,8 @@ public:
         _DOMAIN_TRACE(DOMAIN_TRACE),
         _complete(false) {};
 
+    virtual ~Domain() = default;
+
     //Evaluate entire population each for a number of trials
     void evaluate_population(Population& pop, const unsigned NUM_TRIALS, const bool PARALLEL);
 

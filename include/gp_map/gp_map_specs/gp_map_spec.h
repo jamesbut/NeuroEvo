@@ -8,6 +8,8 @@ struct GPMapSpec {
 
 public:
 
+    virtual ~GPMapSpec() = default;
+
     virtual GPMap* generate_gp_map() = 0;
     virtual GPMap* generate_gp_map(const std::string& file_name) = 0;
 

@@ -16,6 +16,8 @@ struct NetworkSpec : PhenotypeSpec {
 
 public:
 
+    virtual ~NetworkSpec() = default;
+
     NetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
                 const std::vector<LayerSpec>& LAYER_SPECS, const unsigned NUM_GENES) :
         NUM_INPUTS(NUM_INPUTS),

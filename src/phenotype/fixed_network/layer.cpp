@@ -42,7 +42,7 @@ void Layer::set_weights(std::vector<double>& weights) {
 
         start += _LAYER_SPEC._params_per_neuron;
 
-     }
+    }
 
 }
 

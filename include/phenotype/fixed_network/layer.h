@@ -37,8 +37,8 @@ public:
 private:
 
     //TODO: Have all the specs as references
-    const LayerSpec _LAYER_SPEC;
-    const bool _TRACE;
+    LayerSpec _LAYER_SPEC;
+    bool _TRACE;
 
     std::vector<std::unique_ptr<Neuron> > neurons;
 

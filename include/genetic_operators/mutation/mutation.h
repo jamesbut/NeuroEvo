@@ -16,6 +16,8 @@ public:
     Mutation(Constraint* constraint) :
         _constraint(constraint) {}
 
+    virtual ~Mutation() = default;
+
     virtual void mutate(std::vector<double>& vector) = 0;
 
 protected:

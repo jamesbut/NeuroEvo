@@ -10,6 +10,8 @@ class Constraint {
 
 public:
 
+    virtual ~Constraint() = default;
+
     virtual bool satisfied(std::vector<double>& vector) = 0;
 
 };

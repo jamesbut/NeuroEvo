@@ -22,7 +22,7 @@ public:
     FixedNetwork(const std::vector<double>& traits, FixedNetworkSpec& NET_SPEC);
 
     void propogate_weights(const std::vector<double>& weights);
-    std::vector<double> activate(std::vector<double>& inputs);
+    std::vector<double> activate(std::vector<double>& inputs) override;
 
     void reset() override;
 
