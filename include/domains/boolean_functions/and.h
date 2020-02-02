@@ -14,6 +14,10 @@ public:
 
     bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override;
 
+protected: 
+
+    void render() override;
+
 private:
 
     double single_run(Organism& org, unsigned rand_seed) override;

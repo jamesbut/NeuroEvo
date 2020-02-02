@@ -5,6 +5,20 @@
 namespace NeuroEvo {
 namespace Domains {
 
+Domain::Domain(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS, const bool RENDER,
+               const unsigned int SCREEN_WIDTH, const unsigned int SCREEN_HEIGHT) :
+    _COMPLETION_FITNESS(COMPLETION_FITNESS),
+    _DOMAIN_TRACE(DOMAIN_TRACE),
+    _RENDER(RENDER),
+    _SCREEN_WIDTH(SCREEN_WIDTH),
+    _SCREEN_HEIGHT(SCREEN_HEIGHT),
+    _window(initialise_sfml()),
+    _complete(false) {
+
+}
+
+Domain::~Domain() {}
+
 void Domain::evaluate_population(Population& pop, const unsigned NUM_TRIALS,
                                  const bool PARALLEL) {
 
@@ -198,6 +212,46 @@ bool Domain::check_for_completion(Population& population) {
             return true;
 
     return false;
+
+}
+
+// bool Domain::initialise_sdl() {
+
+//     //Initialise SDL
+// 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+// 		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
+//         return false;
+//     }
+
+//     //Set texture filtering to linear
+//     if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1" ))
+//         std::cerr << "Warning: Linear texture filtering not enabled!" << std::endl;
+
+//     //Create window
+// 	_window = SDL_CreateWindow("Domain", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+//                                _SCREEN_WIDTH, _SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+// 	if(_window == nullptr){
+//         std::cerr << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
+// 		return false;
+// 	}
+
+//     //Create renderer for window
+//     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+//     if(_renderer == nullptr) {
+//         std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
+//         return false;
+//     }
+
+//     //Initialize renderer color
+//     SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+//     return true;
+
+// }
+
+sf::RenderWindow Domain::initialise_sfml() {
+
+    return sf::RenderWindow(sf::VideoMode(_SCREEN_WIDTH, _SCREEN_HEIGHT), "Domain");
 
 }
 

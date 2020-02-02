@@ -1,0 +1,180 @@
+/*
+    This example illustrates the rendered single cart pole
+    task with a fixed network (if SDL is available).
+*/
+
+#include <population.h>
+#include <phenotype/phenotype_specs/fixed_network_spec.h>
+#include <domains/control_domains/single_cart_pole.h>
+#include <genetic_operators/selection/roulette_wheel_selection.h>
+#include <genetic_operators/mutation/real_gaussian_mutation.h>
+#include <util/random/uniform_distribution.h>
+#include <sstream>
+
+//Determines the status of the GA
+int ga_finished(NeuroEvo::Population& population, NeuroEvo::Domains::Domain& domain,
+                const unsigned MAX_GENS) {
+
+    if(population.get_gen_num() >= MAX_GENS)
+        return 2;
+
+    if(domain.complete())
+        return 1;
+
+    return 0;
+
+}
+
+void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                    std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
+                    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
+                    const std::string& organism_folder_name) {
+
+    // View the run of the saved best_winner_so_far
+    std::stringstream best_winner_path;
+    best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
+
+    NeuroEvo::Organism organism(*geno_spec, *pheno_spec, nullptr, best_winner_path.str());
+
+    // Run
+    const unsigned NUM_TRIALS = 1;
+    double fitness = domain->evaluate_org(organism, NUM_TRIALS);
+
+    std::cout << "Individual run fitness: " << fitness << std::endl;
+
+}
+
+void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
+                      std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
+                      std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec) {
+
+    // Build genetic operators
+    const double MUTATION_RATE = 0.4;
+    const double MUTATION_POWER = 1.0;
+    std::unique_ptr<NeuroEvo::Mutators::Mutation> mutator(
+        new NeuroEvo::Mutators::RealGaussianMutation(MUTATION_RATE, MUTATION_POWER)
+    );
+
+    std::unique_ptr<NeuroEvo::Selectors::Selection> selector(
+        new NeuroEvo::Selectors::RouletteWheelSelection()
+    );
+
+    // Evolutionary parameters
+    const unsigned NUM_RUNS = 1;
+    const unsigned POP_SIZE = 150;
+    const unsigned MAX_GENS = 1000;
+    const unsigned NUM_TRIALS = 1;
+    const bool PARALLEL = false;
+
+    for(unsigned i = 0; i < NUM_RUNS; i++) {
+
+        unsigned gen = 1;
+        int ga_completed = 0;
+
+        // Build population
+        NeuroEvo::Population population(POP_SIZE, gen, *geno_spec, *pheno_spec, nullptr);
+
+        // Create a data collector for printing out generational information
+        NeuroEvo::DataCollector data_collector;
+
+        do {
+
+            std::cout << "Gen: " << gen << std::endl;
+
+            // Evaluate population
+            domain->evaluate_population(population, NUM_TRIALS, PARALLEL);
+
+            // Check for completion
+            ga_completed = ga_finished(population, *domain, MAX_GENS);
+
+            // Print population data after fitness evaluation
+            data_collector.collect_generational_data(population);
+
+            // Break if completed
+            if(ga_completed != 0) break;
+
+            // Generate new population using genetic operators
+            population.generate_new_population(selector.get(), mutator.get(), nullptr);
+
+            gen++;
+
+        } while (ga_completed == 0);
+
+        // Check whether the domain was solved or not
+        if(ga_completed == 1) {
+
+            std::cout << "FOUND WINNER!" << std::endl;
+            std::cout << "Gen: " << gen << std::endl;
+
+        } else if (ga_completed == 2) {
+
+            std::cout << "GA finished at gen: " << gen << " with no winner :(" << std::endl;
+
+        }
+
+    }
+
+}
+
+int main(int argc, const char* argv[]) {
+
+    //Check for correct command line arguments
+    if(argc < 1 || argc > 2) {
+        std::cout << "Usage:" << std::endl;
+        std::cout << "Evolutionary run:   ./single_cart_pole_example" << std::endl;
+        std::cout << "Individual run:     ./single_cart_pole_example *population directory*" << std::endl;
+        return -1;
+    }
+
+    // Build a network with 4 input nodes, 2 output node,
+    // 0 hidden layers and no recurrence.
+    const unsigned NUM_INPUTS = 4;
+    const unsigned NUM_OUTPUTS = 2;
+    const unsigned NUM_HIDDEN_LAYERS = 0;
+    const unsigned NEURONS_PER_LAYER = 0;
+    const bool RECURRENT = false;
+    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec> pheno_spec(
+        new NeuroEvo::Phenotypes::FixedNetworkSpec(NUM_INPUTS, NUM_OUTPUTS,
+                                                   NUM_HIDDEN_LAYERS, NEURONS_PER_LAYER,
+                                                   RECURRENT));
+
+    // Specify the distribution used for the initial gene values
+    const double INIT_GENE_LOWER_BOUND = 0;
+    const double INIT_GENE_UPPER_BOUND = 1;
+    std::unique_ptr<NeuroEvo::Utils::Distribution> genotype_distr(
+        new NeuroEvo::Utils::UniformDistribution(INIT_GENE_LOWER_BOUND, INIT_GENE_UPPER_BOUND)
+    );
+
+    // Specify genotype
+    // This is done after specifying phenotype so the number
+    // of genes required is known.
+    std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec> geno_spec(
+        new NeuroEvo::Genotypes::GenotypeSpec(pheno_spec->get_num_params(), *genotype_distr)
+    );
+
+    // Build single cart pole domain
+    const bool MARKOVIAN = true;
+    const bool RANDOM_START = false;
+    const bool PRINT_STATE = false;
+
+    bool DOMAIN_TRACE = false;
+    bool RENDER = true;
+    if(argc == 2) { 
+        DOMAIN_TRACE = true;
+        RENDER = true;
+    }
+
+    std::unique_ptr<NeuroEvo::Domains::Domain> domain(
+        new NeuroEvo::Domains::SingleCartPole(MARKOVIAN, RANDOM_START,
+                                              PRINT_STATE, DOMAIN_TRACE,
+                                              RENDER)
+    );
+
+    // Check phenotype is suitable for the specific domain
+    if(!domain->check_phenotype_spec(*pheno_spec)) return -1;
+
+    // Run either an evolutionary run or an individual run
+    if(argc == 1) evolutionary_run(domain, geno_spec, pheno_spec);
+    if(argc == 2) individual_run(domain, geno_spec, pheno_spec, argv[1]);
+
+}

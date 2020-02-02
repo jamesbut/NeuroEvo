@@ -17,13 +17,17 @@
 namespace NeuroEvo {
 namespace Domains {
 
-class SingleCartPole: public Domain {
+class SingleCartPole : public Domain {
 
 public:
 
     SingleCartPole(const bool MARKOVIAN, const bool RANDOM_START,
                    const bool PRINT_STATE, const bool DOMAIN_TRACE,
-                   const int MAX_STEPS = 100000);
+                   const bool RENDER = false, const int MAX_STEPS = 100000);
+
+protected:
+
+    void render() override;
 
 private:
 
@@ -33,7 +37,7 @@ private:
 
     //Cart Pole struct to store cart variables
     struct CartPole {
-
+    
         const double GRAVITY = 9.8;
         const double CART_MASS = 1.0;
         const double POLE_MASS = 0.1;
@@ -43,7 +47,13 @@ private:
         const double FORCE_MAG = 10.0;
         const double TAU = 0.02;    //Seconds between state updates
 
+        //Rendering properties
+        double CART_WIDTH;
+        double CART_HEIGHT;
+        double RENDER_SCALE;
+
         const double TWELVE_DEGREES = 0.2094384;
+        const double NINETY_DEGREES = M_PI/4;
         const double FOUR_THIRDS = 1.333333333333;
 
         double x;
@@ -61,6 +71,10 @@ private:
 
     const bool _PRINT_STATE_TO_FILE;
     const std::string _STATE_FILE_NAME;
+
+    CartPole _cart_pole;
+
+    const double _BOUNDARY = 2.4;
 
 };
 

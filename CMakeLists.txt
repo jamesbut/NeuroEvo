@@ -11,7 +11,11 @@ endif()
 project(neuro_evo)
 
 # Boost is required
+set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
+
+# SFML used for rendering
+find_package(SFML COMPONENTS graphics REQUIRED)
 
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
@@ -43,6 +47,7 @@ add_library(neuroEvo SHARED
 
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
+    sfml-graphics
 )
 
 # Library used for parallelisation

@@ -13,6 +13,8 @@
 #include <optional>
 #include <data/data_collection.h>
 
+#include <SFML/Graphics.hpp>
+
 namespace NeuroEvo {
 namespace Domains {
 
@@ -20,12 +22,10 @@ class Domain {
 
 public:
 
-    Domain(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS = 0.0) :
-        _COMPLETION_FITNESS(COMPLETION_FITNESS),
-        _DOMAIN_TRACE(DOMAIN_TRACE),
-        _complete(false) {};
+    Domain(const bool DOMAIN_TRACE, const double COMPLETION_FITNESS = 0.0, const bool RENDER = false,
+           const unsigned int SCREEN_WIDTH = 1280, const unsigned int SCREEN_HEIGHT = 960);
 
-    virtual ~Domain() = default;
+    virtual ~Domain();
 
     //Evaluate entire population each for a number of trials
     void evaluate_population(Population& pop, const unsigned NUM_TRIALS, const bool PARALLEL);
@@ -53,6 +53,9 @@ protected:
     //Checks domain for completion - can be overriden
     virtual bool check_for_completion(Population& population);
 
+    //All domains should implement how to render themselves
+    virtual void render() = 0;
+
     //The fitness at which the domain is considered
     //solved
     const double _COMPLETION_FITNESS;
@@ -63,6 +66,15 @@ protected:
     bool _complete;
 
     const bool _DOMAIN_TRACE;
+
+    //Rendering variables
+    const bool _RENDER;
+
+    const int _SCREEN_WIDTH;
+    const int _SCREEN_HEIGHT;
+
+    //SFML
+    sf::RenderWindow _window;
 
 private:
 
@@ -75,6 +87,9 @@ private:
     std::vector<std::vector<double> > evaluate_pop_parallel(Population& pop,
                                                             const unsigned NUM_TRIALS);
 #endif
+
+    bool initialise_sdl();
+    sf::RenderWindow initialise_sfml();
 
     //Shared memory for parallel execution
     std::optional<Utils::SharedFitnessMemory> _shared_fitness_mem;

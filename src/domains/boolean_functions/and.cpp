@@ -64,5 +64,7 @@ bool AND::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) {
 
 }
 
+void AND::render() {}
+
 } // namespace Domains
 } // namespace NeuroEvo

@@ -16,6 +16,10 @@ add_executable(single_cart_pole_example
     single_cart_pole_example.cpp
 )
 
+add_executable(single_cart_pole_render_example
+    single_cart_pole_render_example.cpp
+)
+
 add_executable(inverse_dct_example
     inverse_dct_example.cpp
 )
@@ -33,6 +37,10 @@ target_link_libraries(sequence_classification_example
 )
 
 target_link_libraries(single_cart_pole_example
+    neuroEvo
+)
+
+target_link_libraries(single_cart_pole_render_example
     neuroEvo
 )
 

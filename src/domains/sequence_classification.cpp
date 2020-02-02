@@ -169,5 +169,7 @@ bool SequenceClassification::check_phenotype_spec(Phenotypes::PhenotypeSpec& phe
 
 }
 
+void SequenceClassification::render() {}
+
 } // namespace Domains
 } // namespace NeuroEvo

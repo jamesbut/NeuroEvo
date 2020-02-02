@@ -54,5 +54,7 @@ bool QuadraticFunction::check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_sp
 
 }
 
+void QuadraticFunction::render() {}
+
 } // namespace Domains
 } // namespace NeuroEvo
