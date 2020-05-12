@@ -68,5 +68,4 @@ private:
 
 } // namespace NeuroEvo
 
-#include <gp_map/gp_map_specs/gp_map_spec.h>
 #endif

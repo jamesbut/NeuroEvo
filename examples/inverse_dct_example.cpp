@@ -4,121 +4,13 @@
     boolean domain.
 */
 
-#include <population.h>
+#include <experiment.h>
 #include <phenotype/phenotype_specs/fixed_network_spec.h>
 #include <gp_map/gp_map_specs/dct_map_spec.h>
 #include <domains/boolean_functions/and.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutation.h>
 #include <util/random/uniform_distribution.h>
-#include <sstream>
-
-//Determines the status of the GA
-int ga_finished(NeuroEvo::Population& population, NeuroEvo::Domains::Domain& domain,
-                const unsigned MAX_GENS) {
-
-    if(population.get_gen_num() >= MAX_GENS)
-        return 2;
-
-    if(domain.complete())
-        return 1;
-
-    return 0;
-
-}
-
-void individual_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
-                    std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
-                    std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
-                    std::unique_ptr<NeuroEvo::GPMaps::GPMapSpec>& gp_map_spec,
-                    const std::string& organism_folder_name) {
-
-    // View the run of the saved best_winner_so_far
-    std::stringstream best_winner_path;
-    best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
-
-    NeuroEvo::Organism organism(*geno_spec, *pheno_spec, gp_map_spec.get(), best_winner_path.str());
-
-    // Run
-    const unsigned NUM_TRIALS = 1;
-    double fitness = domain->evaluate_org(organism, NUM_TRIALS);
-
-    std::cout << "Individual run fitness: " << fitness << std::endl;
-
-}
-
-void evolutionary_run(std::unique_ptr<NeuroEvo::Domains::Domain>& domain,
-                      std::unique_ptr<NeuroEvo::Genotypes::GenotypeSpec>& geno_spec,
-                      std::unique_ptr<NeuroEvo::Phenotypes::PhenotypeSpec>& pheno_spec,
-                      std::unique_ptr<NeuroEvo::GPMaps::GPMapSpec>& gp_map_spec) {
-
-    // Build genetic operators
-    const double MUTATION_RATE = 0.4;
-    const double MUTATION_POWER = 1.0;
-    std::unique_ptr<NeuroEvo::Mutators::Mutation> mutator(
-        new NeuroEvo::Mutators::RealGaussianMutation(MUTATION_RATE, MUTATION_POWER)
-    );
-
-    std::unique_ptr<NeuroEvo::Selectors::Selection> selector(
-        new NeuroEvo::Selectors::RouletteWheelSelection()
-    );
-
-    // Evolutionary parameters
-    const unsigned NUM_RUNS = 1;
-    const unsigned POP_SIZE = 150;
-    const unsigned MAX_GENS = 1000;
-    const unsigned NUM_TRIALS = 1;
-    const bool PARALLEL = false;
-
-    for(unsigned i = 0; i < NUM_RUNS; i++) {
-
-        unsigned gen = 1;
-        int ga_completed = 0;
-
-        // Build population
-        NeuroEvo::Population population(POP_SIZE, gen, *geno_spec, *pheno_spec, gp_map_spec.get());
-
-        // Create a data collector for printing out generational information
-        NeuroEvo::DataCollector data_collector;
-
-        do {
-
-            std::cout << "Gen: " << gen << std::endl;
-
-            // Evaluate population
-            domain->evaluate_population(population, NUM_TRIALS, PARALLEL);
-
-            // Check for completion
-            ga_completed = ga_finished(population, *domain, MAX_GENS);
-
-            // Print population data after fitness evaluation
-            data_collector.collect_generational_data(population);
-
-            // Break if completed
-            if(ga_completed != 0) break;
-
-            // Generate new population using genetic operators
-            population.generate_new_population(selector.get(), mutator.get(), nullptr);
-
-            gen++;
-
-        } while (ga_completed == 0);
-
-        // Check whether the domain was solved or not
-        if(ga_completed == 1) {
-
-            std::cout << "FOUND WINNER!" << std::endl;
-            std::cout << "Gen: " << gen << std::endl;
-
-        } else if (ga_completed == 2) {
-
-            std::cout << "GA finished at gen: " << gen << " with no winner :(" << std::endl;
-
-        }
-
-    }
-
-}
 
 int main(int argc, const char* argv[]) {
 
@@ -173,11 +65,32 @@ int main(int argc, const char* argv[]) {
 
     std::unique_ptr<NeuroEvo::Domains::Domain> domain(new NeuroEvo::Domains::AND(DOMAIN_TRACE));
 
-    // Check phenotype is suitable for the specific domain
-    if(!domain->check_phenotype_spec(*pheno_spec)) return -1;
+    //Constuct experiment
+    std::optional<NeuroEvo::Experiment> experiment = 
+        NeuroEvo::Experiment::construct(*domain, 
+                                        *geno_spec, 
+                                        *pheno_spec,
+                                        gp_map_spec.get());
+
+    //Do not continue if experiment construction was not successful
+    if(!experiment) exit(0);
+
+    //Define genetic operators and parameters
+    const unsigned POP_SIZE = 150;
+    const unsigned MAX_GENS = 1000;
+    const double MUTATION_RATE = 0.4;
+    const double MUTATION_POWER = 1.0;
+
+    std::unique_ptr<NeuroEvo::Mutators::Mutation> mutator(
+        new NeuroEvo::Mutators::RealGaussianMutation(MUTATION_RATE, MUTATION_POWER)
+    );
+
+    std::unique_ptr<NeuroEvo::Selectors::Selection> selector(
+        new NeuroEvo::Selectors::RouletteWheelSelection()
+    );
 
     // Run either an evolutionary run or an individual run
-    if(argc == 1) evolutionary_run(domain, geno_spec, pheno_spec, gp_map_spec);
-    if(argc == 2) individual_run(domain, geno_spec, pheno_spec, gp_map_spec, argv[1]);
+    if(argc == 1) experiment->evolutionary_run(POP_SIZE, MAX_GENS, *mutator, *selector);
+    if(argc == 2) experiment->individual_run(argv[1]);
 
 }
