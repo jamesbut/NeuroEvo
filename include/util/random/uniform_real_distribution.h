@@ -8,7 +8,6 @@
 #include <util/random/distribution.h>
 
 namespace NeuroEvo {
-namespace Utils {
 
 class UniformRealDistribution : public Distribution<double> {
 
@@ -25,7 +24,6 @@ private:
 
 };
 
-} // namespace Utils
 } // namespace NeuroEvo
 
 #endif

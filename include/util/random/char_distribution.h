@@ -11,6 +11,8 @@
     character from the set.
 */
 
+namespace NeuroEvo {
+
 class CharDistribution : public Distribution<char> {
 
 public:
@@ -27,5 +29,7 @@ private:
     std::discrete_distribution<unsigned> _distr;
 
 };
+
+} // namespace NeuroEvo
 
 #endif

@@ -1,7 +1,6 @@
 #include <util/random/char_distribution.h>
 
 namespace NeuroEvo {
-namespace Utils {
 
 CharDistribution::CharDistribution(const std::set<char>& char_set, 
                                    const std::optional<std::vector<double>>& char_distr) :
@@ -26,5 +25,4 @@ char CharDistribution::next() {
     return _char_set[_distr(_rng)];
 }
 
-} // namespace Utils
 } // namepace NeuroEvo

@@ -3,6 +3,8 @@
 
 #include <utils/random/distribution.h>
 
+namespace NeuroEvo {
+
 class GaussianDistribution : public Distribution<double> {
 
 public:
@@ -17,5 +19,7 @@ private:
     std::normal_distribution<double> _distr;
 
 };
+
+} // namespace NeuroEvo
 
 #endif

@@ -12,7 +12,6 @@
 #include <optional>
 
 namespace NeuroEvo {
-namespace Utils {
 
 template <typename T>
 class Distribution {
@@ -50,7 +49,6 @@ protected:
 
 };
 
-} // namespace Utils
 } // namespace NeuroEvo
 
 #endif

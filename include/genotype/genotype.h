@@ -2,45 +2,55 @@
 #define _GENOTYPE_H_
 
 /*
-    A genotype is a vector of genes.
-    This is a vector of doubles for now but
-    will be made generic in the future
-*/
-
+ * A genotype is a vector of templated values that can be mutated according to some mutator
+ */
 
 #include <vector>
-#include <memory>
 #include <iostream>
+#include <genetic_operators/mutation/mutator.h>
 
 namespace NeuroEvo {
-namespace Genotypes {
 
+template <typename G>
 class Genotype {
 
 public:
 
-    virtual ~Genotype() = default;
+    Genotype(const std::vector<G>& genes, Mutator<G>* mutator = nullptr) :
+        _genes(genes),
+        _mutator(mutator) {
+        
+        if(!_mutator)
+            std::cout << "NOTE: No mutator provided to genotype!" << std::endl;
+        
+    }
 
-    auto clone() const { return std::unique_ptr<Genotype>(clone_impl()); };
+    const std::vector<G>& genes() const {
+        return _genes;
+    }
 
-    inline std::vector<double>& get_genes() { return _genes; };
-    inline void set_gene(const unsigned int gene_num, const double value) { _genes.at(gene_num) = value; };
+    void mutate() {
 
-    virtual inline void print_genotype(std::ofstream& file) {};
-    inline void print_genotype() {
-        for(const auto& gene : _genes)
-            std::cout << gene << std::endl;
+        if(_mutator)
+            _mutator->mutate(_genes);
+
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype) {
+
+        for(const auto& gene : genotype._genes)
+            os << gene << " ";
+        return os;
+
     }
 
 protected:
 
-    virtual Genotype* clone_impl() const = 0;
-
-    std::vector<double> _genes;
+    std::vector<G> _genes;
+    std::shared_ptr<Mutator<G>> _mutator;
 
 };
 
-} // namespace Genotypes
 } // namespace NeuroEvo
 
 #endif

@@ -7,6 +7,8 @@
     A bernoulli distribution that returns a boolean according to a p parameter
 */
 
+namespace NeuroEvo {
+
 class BernoulliDistribution : public Distribution<bool> {
 
 public:
@@ -20,5 +22,7 @@ private:
    std::bernoulli_distribution _distr; 
 
 };
+
+} // namespace NeuroEvo
 
 #endif
