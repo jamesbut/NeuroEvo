@@ -10,33 +10,34 @@
 
 #include <organism.h>
 #include <genetic_operators/selection/selection.h>
-#include <genetic_operators/mutation/mutation.h>
+#include <genetic_operators/mutation/mutator.h>
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 
 namespace NeuroEvo {
 
+template <typename G>
 class Population {
 
 public:
 
-    Population(const unsigned int POP_SIZE, unsigned int& gen_ref,
-               Genotypes::GenotypeSpec& geno_spec, Phenotypes::PhenotypeSpec& pheno_spec,
-               GPMaps::GPMapSpec* gp_map_spec);
+    Population(const unsigned int pop_size, unsigned int& gen_ref,
+               GenotypeSpec<G>& geno_spec, PhenotypeSpec<G>& pheno_spec,
+               GPMapSpec<G>* gp_map_spec);
 
-    std::vector<Organism>& get_organisms();
+    std::vector<Organism<G>>& get_organisms();
     const unsigned int get_size() const;
     const unsigned int& get_gen_num() const;
 
     //Generates new population with the provided genetic operators
-    void generate_new_population(Selectors::Selection* selector,
-                                 Mutators::Mutation* genotype_mutator,
-                                 Mutators::Mutation* gp_map_mutator);
+    void generate_new_population(Selection<G>* selector,
+                                 Mutator<G>* genotype_mutator,
+                                 Mutator<G>* gp_map_mutator);
 
 private:
 
-    const unsigned _POP_SIZE;
+    const unsigned _pop_size;
 
-    std::vector<Organism> _organisms;
+    std::vector<Organism<G>> _organisms;
 
     unsigned& _gen;
 

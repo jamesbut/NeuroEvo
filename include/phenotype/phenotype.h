@@ -13,7 +13,6 @@
 #include <iostream>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class Phenotype {
 
@@ -35,7 +34,6 @@ protected:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

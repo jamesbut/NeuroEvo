@@ -12,19 +12,16 @@
 
 namespace NeuroEvo {
 
-// Forward declaration
-namespace Phenotypes {
-    struct PhenotypeSpec;
-} // namespace Phenotypes
+template <typename G>
+class PhenotypeSpec;
 
-namespace GPMaps {
-
+template <typename G>
 class GPMap {
 
 public:
 
-    virtual Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
-                                       Phenotypes::PhenotypeSpec& pheno_spec) = 0;
+    virtual Phenotype* map(Genotype<G>& genotype,
+                           PhenotypeSpec<G>& pheno_spec) = 0;
 
     virtual ~GPMap() = default;
 
@@ -45,7 +42,6 @@ protected:
 
 };
 
-} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

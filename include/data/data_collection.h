@@ -12,17 +12,18 @@
 
 namespace NeuroEvo {
 
+template <typename G>
 class DataCollector {
 
 public:
 
-    DataCollector(const bool UUID_FOLDERS = true);
+    DataCollector(const bool uuid_folders = true);
 
-    void collect_generational_data(NeuroEvo::Population& population);
+    void collect_generational_data(Population<G>& population);
 
-    void print_population_winner(NeuroEvo::Population& population);
-    void print_generational_winner(NeuroEvo::Population& population);
-    void print_best_winner_so_far(NeuroEvo::Population& population);
+    void print_population_winner(Population<G>& population);
+    void print_generational_winner(Population<G>& population);
+    void print_best_winner_so_far(Population<G>& population);
 
     void delete_folder();
 
@@ -30,7 +31,7 @@ public:
 
 private:
 
-    void print_population_to_file(NeuroEvo::Population& population);
+    void print_population_to_file(Population<G>& population);
 
     //Path to folder in which to store
     //all data for a run

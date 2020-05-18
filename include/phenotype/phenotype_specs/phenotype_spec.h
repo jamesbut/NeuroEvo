@@ -4,6 +4,8 @@
 /*
     A PhenotypeSpec defines the specification of the phenotype
     to be used.
+    It also describes how to generate the phenotype from the genotype
+    and GPMap.
 */
 
 #include <phenotype/phenotype.h>
@@ -11,44 +13,37 @@
 
 namespace NeuroEvo {
 
-namespace GPMaps {
-    class GPMap;
-} // namespace GPMaps
-
-namespace Phenotypes {
-
 //Generic phenotype spec
-struct PhenotypeSpec {
+template <typename G>
+class PhenotypeSpec {
 
 public:
 
     virtual ~PhenotypeSpec() = default;
 
-    PhenotypeSpec(const unsigned NUM_PARAMS) :
-        NUM_PARAMS(NUM_PARAMS),
-        PRINT_WEIGHTS(false),
-        TRACE(false) {}
+    PhenotypeSpec(const unsigned num_params) :
+        _num_params(num_params),
+        _print_weights(false),
+        _trace(false) {}
 
     //GPMap can be null
-    virtual Phenotype* generate_phenotype(Genotypes::Genotype& genotype, GPMaps::GPMap* gp_map) = 0;
+    virtual Phenotype* generate_phenotype(Genotype<G>& genotype, GPMap<G>* gp_map) = 0;
 
     auto clone() const { return std::unique_ptr<PhenotypeSpec>(clone_impl()); }
 
-    const unsigned& get_num_params() { return NUM_PARAMS; }
+    const unsigned& get_num_params() { return _num_params; }
 
-
-    bool TRACE;
-    bool PRINT_WEIGHTS;
+    bool _trace;
+    bool _print_weights;
 
 protected:
 
     virtual PhenotypeSpec* clone_impl() const = 0;
 
-    const unsigned NUM_PARAMS;
+    const unsigned _num_params;
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif
