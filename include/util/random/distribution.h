@@ -2,22 +2,24 @@
 #define _DISTRIBUTION_H_
 
 /*
-    Abstract distribution class that defines a simple
+    Abstract templated distribution class that defines a simple
     interface for a distribution.
-    It is used - for example - when defining a distribution
-    for the initial values of a genotype.
+    It allows for the setting and modifcation of seeds and returns
+    a value of type T according to some distribution in the sub class.
 */
 
 #include <random>
+#include <optional>
 
 namespace NeuroEvo {
 namespace Utils {
 
+template <typename T>
 class Distribution {
 
 public:
 
-    Distribution(const std::optional<unsigned> seed = std::optional<unsigned>()) {
+    Distribution(const std::optional<unsigned> seed = std::nullopt) {
 
         // If seed is provided seed with that value
         // Otherwise seed randomly
@@ -37,7 +39,7 @@ public:
     virtual ~Distribution() = default;
 
     // Returns next value from the distribution
-    virtual double next() = 0;
+    virtual T next() = 0;
 
     // Sets random seed of distribution
     inline void set_seed(const unsigned seed) { _rng.seed(seed); }
