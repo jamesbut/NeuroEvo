@@ -1,6 +1,6 @@
 #include <gp_map/dct_map.h>
 #include <util/maths/fourier.h>
-#include <phenotype/phenotype_specs/fixed_network_spec.h>
+#include <phenotype/phenotype_specs/network_builder.h>
 #include <phenotype/fixed_network/network.h>
 #include <cmath>
 

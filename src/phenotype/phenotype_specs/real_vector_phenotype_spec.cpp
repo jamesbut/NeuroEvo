@@ -4,23 +4,22 @@
 #include <gp_map/matrix_map.h>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
-RealVectorPhenotypeSpec::RealVectorPhenotypeSpec(const unsigned int NUM_GENES) :
-    PhenotypeSpec(NUM_GENES) {}
+RealVectorPhenotypeSpec::RealVectorPhenotypeSpec(const unsigned num_genes) :
+    PhenotypeSpec(num_genes) {}
 
-Phenotypes::Phenotype* RealVectorPhenotypeSpec::generate_phenotype(Genotypes::Genotype& genotype,
-                                                                   GPMaps::GPMap* gp_map) {
+Phenotype* RealVectorPhenotypeSpec::generate_phenotype(Genotype<double>& genotype,
+                                                       GPMap<double>* gp_map) 
+{
 
-    Genotypes::RealVectorGenotype* real_vec_genotype =
-        dynamic_cast<Genotypes::RealVectorGenotype*>(&genotype);
+    RealVectorGenotype* real_vec_genotype =
+        dynamic_cast<RealVectorGenotype*>(&genotype);
 
     if(gp_map)
         return gp_map->map(*real_vec_genotype, *this);
     else
-        return new Phenotypes::RealVectorPhenotype(real_vec_genotype->get_genes());
+        return new RealVectorPhenotype(real_vec_genotype->get_genes());
 
 }
 
-} // namespace Phenotypes
 } // namespace NeuroEvo

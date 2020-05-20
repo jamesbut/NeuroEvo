@@ -32,9 +32,15 @@ public:
     //GPMap can be null
     virtual Phenotype* generate_phenotype(Genotype<G>& genotype, GPMap<G>* gp_map) = 0;
 
-    auto clone() const { return std::unique_ptr<PhenotypeSpec>(clone_impl()); }
+    auto clone() const 
+    { 
+        return std::unique_ptr<PhenotypeSpec>(clone_impl()); 
+    }
 
-    const unsigned& get_num_params() { return _num_params; }
+    const unsigned& get_num_params() 
+    { 
+        return _num_params; 
+    }
 
     bool _trace;
     bool _print_weights;
@@ -43,7 +49,7 @@ protected:
 
     virtual PhenotypeSpec* clone_impl() const = 0;
 
-    const unsigned _num_params;
+    unsigned _num_params;
 
 };
 

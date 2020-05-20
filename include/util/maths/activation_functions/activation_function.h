@@ -7,7 +7,6 @@
 */
 
 namespace NeuroEvo {
-namespace Utils {
 
 class ActivationFunction {
 
@@ -17,7 +16,11 @@ public:
 
     virtual double activate(const double x) = 0;
 
-    auto clone() const { return std::unique_ptr<ActivationFunction>(clone_impl()); };
+    auto clone() const 
+    { 
+        return std::unique_ptr<ActivationFunction>(clone_impl()); 
+    };
+
 
 protected:
 
@@ -25,7 +28,6 @@ protected:
 
 };
 
-} // namespace Utils
 } // namspace NeurEvo
 
 #endif

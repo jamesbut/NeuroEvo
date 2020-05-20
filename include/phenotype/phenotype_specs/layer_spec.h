@@ -18,41 +18,51 @@ namespace NeuroEvo {
     Only normal, recurrent and GRU units can be used currently.
 */
 
-class LayerSpec {
+class LayerSpec 
+{
 
 public:
 
-    LayerSpec(const unsigned type, const unsigned num_neurons,
-              unsigned inputs_per_neuron, Utils::ActivationFunction* activation_func) :
-        _type(type),
+    enum NeuronType 
+    {
+        Standard,
+        Recurrent,
+        GRU
+    };
+
+    LayerSpec(const NeuronType neuron_type, const unsigned num_neurons,
+              const unsigned inputs_per_neuron, ActivationFunction* activation_func) :
+        _neuron_type(neuron_type),
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron),
-        _activation_func(activation_func) {
+        _activation_func(activation_func) 
+    {
 
-    //Normal
-    if(type == 0)
-        _params_per_neuron = inputs_per_neuron + 1;
+        //Normal
+        if(_neuron_type == Standard)
+            _params_per_neuron = inputs_per_neuron + 1;
 
-    //Recurrent
-    if(_type == 1)
-        _params_per_neuron = inputs_per_neuron + 2;
+        //Recurrent
+        if(_neuron_type == Recurrent)
+            _params_per_neuron = inputs_per_neuron + 2;
 
-    //GRU
-    if(_type == 2)
-        _params_per_neuron = (inputs_per_neuron * 3) + 6;
+        //GRU
+        if(_neuron_type == GRU)
+            _params_per_neuron = (inputs_per_neuron * 3) + 6;
 
     }
 
     LayerSpec(const LayerSpec& layer_spec) :
-        _type(layer_spec._type),
+        _neuron_type(layer_spec._neuron_type),
         _num_neurons(layer_spec._num_neurons),
         _inputs_per_neuron(layer_spec._inputs_per_neuron),
         _params_per_neuron(layer_spec._params_per_neuron),
         _activation_func(layer_spec._activation_func.get()->clone()) {}
 
-    LayerSpec& operator=(const LayerSpec& layer_spec) {
+    LayerSpec& operator=(const LayerSpec& layer_spec) 
+    {
 
-        _type = layer_spec._type;
+        _neuron_type = layer_spec._neuron_type;
         _num_neurons = layer_spec._num_neurons;
         _inputs_per_neuron = layer_spec._inputs_per_neuron;
         _params_per_neuron = layer_spec._params_per_neuron;
@@ -66,27 +76,45 @@ public:
     LayerSpec(LayerSpec&& layer_spec) = default;
     LayerSpec& operator=(LayerSpec&& layer_spec) = default;
 
-    void print_spec() const {
+    NeuronType get_neuron_type() const 
+    {
+        return _neuron_type;
+    }
+
+    unsigned get_num_neurons() const 
+    {
+        return _num_neurons;
+    } 
+
+    unsigned get_inputs_per_neurons() const
+    {
+        return _inputs_per_neuron;
+    }
+
+    unsigned get_params_per_neuron() const
+    {
+        return _params_per_neuron;
+    }
+
+    void print_spec() const 
+    {
 
         std::cout << "Layer Spec:" << std::endl;
-        std::cout << "Type: " << _type << std::endl;
+        std::cout << "Neuron type: " << _neuron_type << std::endl;
         std::cout << "Num neurons: " << _num_neurons << std::endl;
         std::cout << "Inputs per neuron: " << _inputs_per_neuron << std::endl;
         std::cout << "Params per neuron: " << _params_per_neuron << std::endl;
 
     }
 
-    /*
-        0: Standard
-        1: Recurrent
-        2: GRU
-    */
-    unsigned _type;
+private: 
+
+    NeuronType _neuron_type;
     unsigned _num_neurons;
     unsigned _inputs_per_neuron;
     unsigned _params_per_neuron;
 
-    std::unique_ptr<Utils::ActivationFunction> _activation_func;
+    std::unique_ptr<ActivationFunction> _activation_func;
 
 };
 

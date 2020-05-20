@@ -4,19 +4,18 @@
 #include <util/maths/activation_functions/activation_function.h>
 
 namespace NeuroEvo {
-namespace Utils {
 
-class Sigmoid : public ActivationFunction {
+class Sigmoid : public ActivationFunction 
+{
 
 public:
 
-    Sigmoid(const double K) :
-        _K(K) {}
+    Sigmoid(const double k = 1.) :
+        _k(k) {}
 
-    double activate(const double x) override {
-
-        return 1 / (1 + exp(-x / _K));
-
+    double activate(const double x) override 
+    {
+        return 1 / (1 + exp(-x / _k));
     }
 
 protected:
@@ -25,11 +24,10 @@ protected:
 
 private:
 
-    const double _K;
+    const double _k;
 
 };
 
-} // namespace Utils
 } // namespace NeuroEvo
 
 #endif
