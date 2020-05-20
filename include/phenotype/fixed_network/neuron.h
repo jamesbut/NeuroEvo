@@ -10,13 +10,12 @@
 #include <vector>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class Neuron {
 
 public:
 
-    Neuron(const LayerSpec& LAYER_SPEC, const bool TRACE);
+    Neuron(const LayerSpec& layer_spec, const bool trace);
 
     virtual void set_weights(std::vector<double>& weights);
     virtual double evaluate(std::vector<double>& inputs);
@@ -30,9 +29,9 @@ protected:
 
     virtual Neuron* clone_impl() const { return new Neuron(*this); };
 
-    const LayerSpec _LAYER_SPEC;
+    const LayerSpec _layer_spec;
 
-    const bool _TRACE;
+    const bool _trace;
 
     double _previous_output;
     std::vector<double> _weights;
@@ -40,7 +39,6 @@ protected:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

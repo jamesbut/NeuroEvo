@@ -5,18 +5,18 @@
 #include <cmath>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-DCTMap::DCTMap(const unsigned C, const unsigned NUM_NEURONS, const unsigned INPUTS_PER_NEURON) :
-    _C(C),
-    _NUM_NEURONS(NUM_NEURONS),
-    _INPUTS_PER_NEURON(INPUTS_PER_NEURON) {}
+DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron) :
+    _c(c),
+    _num_neurons(num_neurons),
+    _inputs_per_neuron(inputs_per_neuron) {}
 
-Phenotypes::Phenotype* DCTMap::map(Genotypes::Genotype& genotype,
-                                   Phenotypes::PhenotypeSpec& pheno_spec) {
+Phenotype* DCTMap::map(Genotype<double>& genotype,
+                       PhenotypeSpec<double>& pheno_spec) 
+{
 
     // Assume genes are the DCT coefficients
-    Utils::Matrix<double> coefficients(_NUM_NEURONS, _INPUTS_PER_NEURON, genotype.get_genes());
+    Utils::Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
 
     // Only keep _C coefficients
     remove_higher_frequencies(coefficients);
@@ -25,15 +25,16 @@ Phenotypes::Phenotype* DCTMap::map(Genotypes::Genotype& genotype,
     Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
 
     //TODO: For now, can only turn into Fixed Network
-    Phenotypes::FixedNetworkSpec* net_spec = dynamic_cast<Phenotypes::FixedNetworkSpec*>(&pheno_spec);
-    return new Phenotypes::FixedNetwork(traits.get_vector(), *net_spec);
+    FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
+    return new FixedNetwork(traits.get_vector(), *net_spec);
 
 }
 
-void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) {
+void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) 
+{
 
-    const unsigned& HEIGHT = coefficients.get_height();
-    const unsigned& WIDTH = coefficients.get_width();
+    const unsigned& height = coefficients.get_height();
+    const unsigned& width = coefficients.get_width();
 
     unsigned c = 1;
 
@@ -43,14 +44,14 @@ void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) {
 
     // Iterate through matrix in frequency order (lowest to highest).
     // Set all coeffiecient to 0 if the frequency index is greater than _C.
-    for(unsigned i = 0; i < (HEIGHT+WIDTH-1); i++) {
+    for(unsigned i = 0; i < (height+width-1); i++) {
 
-        int start_col_index = std::max<int>(0, (i+1-HEIGHT));
-        int start_row_index = std::max<int>(0, (i+1-WIDTH));
-        int end_row_index = std::min(i, (HEIGHT-1));
-        int end_col_index = std::min(i, (WIDTH-1));
+        int start_col_index = std::max<int>(0, (i+1-height));
+        int start_row_index = std::max<int>(0, (i+1-width));
+        int end_row_index = std::min(i, (height-1));
+        int end_col_index = std::min(i, (width-1));
 
-        unsigned diagonal_size = std::min(std::min((i+1), HEIGHT), (WIDTH - start_col_index));
+        unsigned diagonal_size = std::min(std::min((i+1), height), (width - start_col_index));
 
         for(unsigned j = 0; j < diagonal_size; j++) {
 
@@ -69,7 +70,7 @@ void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) {
 
             }
 
-            if(c > _C)
+            if(c > _c)
                 coefficients.set(row_index, column_index, 0);
             c++;
 
@@ -79,5 +80,4 @@ void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) {
 
 }
 
-} // namespace GPMaps
 } // namespace NeuroEvo

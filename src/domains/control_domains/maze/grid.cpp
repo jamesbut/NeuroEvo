@@ -5,27 +5,27 @@
 #include <iostream>
 
 namespace NeuroEvo {
-namespace Domains {
 
-Grid::Grid(const std::string FILE_NAME, const unsigned AGENT_START_X, const unsigned AGENT_START_Y) :
-    _FILE_NAME(FILE_NAME) {
+Grid::Grid(const std::string file_name, const unsigned agent_start_x, 
+           const unsigned agent_start_y) :
+    _file_name(file_name) {
 
     //Build grid from file
-    build_grid(_FILE_NAME);
+    build_grid(_file_name);
 
-    _HEIGHT = _squares.size();
-    _WIDTH = _squares.at(0).size();
+    _height = _squares.size();
+    _width = _squares.at(0).size();
 
-    _agent_x = AGENT_START_X;
-    _agent_y = AGENT_START_Y;
+    _agent_x = agent_start_x;
+    _agent_y = agent_start_y;
 
 }
 
-void Grid::build_grid(const std::string FILE_NAME) {
+void Grid::build_grid(const std::string file_name) {
 
     //Read grid from file
-    std::vector<std::vector<int> > square_types = read_grid(FILE_NAME, 1);
-    std::vector<std::vector<int> > square_rewards = read_grid(FILE_NAME, 2);
+    std::vector<std::vector<int> > square_types = read_grid(file_name, 1);
+    std::vector<std::vector<int> > square_rewards = read_grid(file_name, 2);
 
     //Build grid squares
     for(unsigned i = 0; i < square_types.size(); i++) {
@@ -33,7 +33,9 @@ void Grid::build_grid(const std::string FILE_NAME) {
         std::vector<GridSquare> square_row(square_types.at(i).size());
 
         for(unsigned j = 0; j < square_types.at(i).size(); j++)
-            square_row.at(j) = GridSquare{j, i, square_types.at(i).at(j), square_rewards.at(i).at(j)};
+            square_row.at(j) = GridSquare{j, i, 
+                                          square_types.at(i).at(j), 
+                                          square_rewards.at(i).at(j)};
 
         _squares.push_back(square_row);
 
@@ -41,13 +43,14 @@ void Grid::build_grid(const std::string FILE_NAME) {
 
 }
 
-std::vector<std::vector<int> > Grid::read_grid(const std::string FILE_NAME, const unsigned GRID_NUM) {
+std::vector<std::vector<int> > Grid::read_grid(const std::string file_name, 
+                                               const unsigned grid_num) {
 
     std::vector<std::vector<int> > square_types;
 
     //Open and read from .mz file
     std::ifstream maze_file;
-    maze_file.open(FILE_NAME);
+    maze_file.open(file_name);
 
     if(maze_file.is_open()) {
 
@@ -55,7 +58,7 @@ std::vector<std::vector<int> > Grid::read_grid(const std::string FILE_NAME, cons
 
         //Get to the correct grid
         unsigned num_empty_lines_found = 0;
-        while(num_empty_lines_found < GRID_NUM) {
+        while(num_empty_lines_found < grid_num) {
 
             getline(maze_file, line);
             if(line.empty())
@@ -88,7 +91,7 @@ std::vector<std::vector<int> > Grid::read_grid(const std::string FILE_NAME, cons
 
     } else {
 
-        std::cerr << "Could not open: " << FILE_NAME << std::endl;
+        std::cerr << "Could not open: " << file_name << std::endl;
         exit(EXIT_FAILURE);
 
     }
@@ -97,14 +100,14 @@ std::vector<std::vector<int> > Grid::read_grid(const std::string FILE_NAME, cons
 
 }
 
-void Grid::move_agent(const unsigned X, const unsigned Y) {
+void Grid::move_agent(const unsigned x, const unsigned y) {
 
-    _agent_x = X;
-    _agent_y = Y;
+    _agent_x = x;
+    _agent_y = y;
 
 }
 
-void Grid::move_reward(const unsigned X, const unsigned Y) {
+void Grid::move_reward(const unsigned x, const unsigned y) {
 
     //This function can be more generic in the future
 
@@ -116,21 +119,16 @@ void Grid::move_reward(const unsigned X, const unsigned Y) {
         }
 
     //Add new reward
-    _squares.at(Y).at(X).reward = 5;
+    _squares.at(y).at(x).reward = 5;
 
 }
 
-int Grid::get_square_type(const unsigned X, const unsigned Y) {
-
-    return _squares.at(Y).at(X).square_type;
-
+int Grid::get_square_type(const unsigned x, const unsigned y) {
+    return _squares.at(y).at(x).square_type;
 }
 
-
-int Grid::get_reward(const unsigned X, const unsigned Y) {
-
-    return _squares.at(Y).at(X).reward;
-
+int Grid::get_reward(const unsigned x, const unsigned y) {
+    return _squares.at(y).at(x).reward;
 }
 
 void Grid::print_grid() {
@@ -171,5 +169,4 @@ void Grid::print_grid() {
 
 }
 
-} // namespace Domains
 } // namespace NeuroEvo

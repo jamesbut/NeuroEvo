@@ -5,9 +5,14 @@
  * A Char Mutator mutates characters according to a distribution over some set of characters
  */
 
+#include <genetic_operators/mutation/mutator.h>
+#include <set>
+#include <util/random/char_distribution.h>
+
 namespace NeuroEvo {
 
-class CharMutator : public Mutator<char> {
+class CharMutator : public Mutator<char> 
+{
 
 public:
 

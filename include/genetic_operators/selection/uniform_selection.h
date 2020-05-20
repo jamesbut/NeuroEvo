@@ -10,25 +10,35 @@
 #include <random>
 
 namespace NeuroEvo {
-namespace Selectors {
 
-class UniformSelection : public Selection {
+template <typename G>
+class UniformSelection : public Selection<G> 
+{
 
 public:
 
-    UniformSelection();
+    UniformSelection() :
+        _uniform_distr(0., 1.) {}
 
-    Organism select(std::vector<Organism>& population) override;
+    Organism<G> select(std::vector<Organism<G>>& population) override 
+    {
+
+        const double rand_num = _uniform_distr.next();
+
+        int chosen_org = floor(rand_num * orgs.size());
+
+        return Organism(orgs.at(chosen_org).get_phenotype_spec(),
+                        orgs.at(chosen_org).get_genotype(),
+                        orgs.at(chosen_org).get_gp_map_spec());
+
+    }
 
 private:
 
-    // RNG
-    std::mt19937 _rng_generator;
-    std::uniform_real_distribution<> _rng_uniform_distr;
+    UniformRealDistribution _uniform_distr;
 
 };
 
-} // namespace Selectors
 } // namespace NeuroEvo
 
 #endif

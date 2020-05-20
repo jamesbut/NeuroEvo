@@ -12,24 +12,26 @@
 #include <gp_map/gp_map.h>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-class DCTMap : public GPMap {
+//Assume that DCTMap can only use genes of type double
+class DCTMap : public GPMap<double> 
+{
 
 public:
 
-    // C represents the number of coefficients that will be used in the reconstruction
-    DCTMap(const unsigned C, const unsigned NUM_NEURONS, const unsigned INPUTS_PER_NEURON);
+    // c represents the number of coefficients that will be used in the reconstruction
+    DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron);
 
     // Perform DCTIII (inverse DCTII) on genotype
-    Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
-                               Phenotypes::PhenotypeSpec& pheno_spec) override;
+    Phenotype* map(Genotype<double>& genotype,
+                   PhenotypeSpec<double>& pheno_spec) override;
 
-    inline std::optional<Utils::Matrix<double>> get_map() override {
+    std::optional<Utils::Matrix<double>> get_map() override 
+    {
         return std::optional<Utils::Matrix<double>>();
     };
 
-    inline void print_gp_map(std::ofstream& file) override {};
+    void print_gp_map(std::ofstream& file) override {};
 
 protected:
 
@@ -37,15 +39,14 @@ protected:
 
 private:
 
-    const unsigned _C;
-    const unsigned _NUM_NEURONS;
-    const unsigned _INPUTS_PER_NEURON;
+    const unsigned _c;
+    const unsigned _num_neurons;
+    const unsigned _inputs_per_neuron;
 
     void remove_higher_frequencies(Utils::Matrix<double>& coefficients);
 
 };
 
-} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

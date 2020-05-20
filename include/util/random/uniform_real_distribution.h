@@ -9,7 +9,8 @@
 
 namespace NeuroEvo {
 
-class UniformRealDistribution : public Distribution<double> {
+class UniformRealDistribution : public Distribution<double> 
+{
 
 public:
 

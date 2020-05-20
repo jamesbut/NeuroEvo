@@ -10,30 +10,30 @@
 #include <phenotype/phenotype_specs/layer_spec.h>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
-struct NetworkSpec : PhenotypeSpec {
+template <typename G>
+class NetworkSpec : PhenotypeSpec<G> {
 
 public:
 
     virtual ~NetworkSpec() = default;
 
-    NetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
-                const std::vector<LayerSpec>& LAYER_SPECS, const unsigned NUM_GENES) :
-        NUM_INPUTS(NUM_INPUTS),
-        NUM_OUTPUTS(NUM_OUTPUTS),
-        LAYER_SPECS(LAYER_SPECS),
-        PhenotypeSpec(NUM_GENES) {}
+    NetworkSpec(const unsigned num_inputs, const unsigned num_outputs,
+                const std::vector<LayerSpec>& layer_specs, const unsigned num_genes) :
+        _num_inputs(num_inputs),
+        _num_outputs(num_outputs),
+        _layer_specs(layer_specs),
+        PhenotypeSpec<G>(num_genes) {}
 
-    virtual Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
-                                                      GPMaps::GPMap* gp_map) = 0;
+    virtual Phenotype* generate_phenotype(Genotype<G>& genotype,
+                                          GPMap<G>* gp_map) = 0;
 
     auto clone() const { return std::unique_ptr<NetworkSpec>(clone_impl()); }
 
-    const unsigned int NUM_INPUTS;
-    const unsigned int NUM_OUTPUTS;
+    const unsigned int _num_inputs;
+    const unsigned int _num_outputs;
 
-    const std::vector<LayerSpec> LAYER_SPECS;
+    const std::vector<LayerSpec> _layer_specs;
 
 protected:
 
@@ -45,7 +45,6 @@ protected:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

@@ -9,13 +9,12 @@
 #include <vector>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class Layer {
 
 public:
 
-    Layer(const LayerSpec& layer_spec, const bool TRACE);
+    Layer(const LayerSpec& layer_spec, const bool trace);
 
     Layer(const Layer& layer);
     Layer& operator=(const Layer& layer) = default;
@@ -29,24 +28,20 @@ public:
 
     void reset();
 
-    void print_params() {
-        for(const auto& neuron : neurons)
-            neuron->print_weights();
-    };
+    void print_params();
 
 private:
 
     //TODO: Have all the specs as references
-    LayerSpec _LAYER_SPEC;
-    bool _TRACE;
+    LayerSpec _layer_spec;
+    bool _trace;
 
-    std::vector<std::unique_ptr<Neuron> > neurons;
+    std::vector<std::unique_ptr<Neuron> > _neurons;
 
     void print_outputs(std::vector<double>& outputs);
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

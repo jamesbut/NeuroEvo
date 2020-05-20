@@ -1,9 +1,12 @@
 #ifndef _BIT_FLIP_MUTATOR_H_
 #define _BIT_FLIP_MUTATOR_H_
 
+#include <genetic_operators/mutation/mutator.h>
+
 namespace NeuroEvo {
 
-class BitFlipMutator : public Mutator<bool> {
+class BitFlipMutator : public Mutator<bool> 
+{
 
 public:
 

@@ -7,27 +7,29 @@
     this results in a phenotype vector.
     An identity interaction_matrix results in a one-to-one
     mapping.
+    For now a matrix map is only defined for doubles but
+    this can be changed to be generic in the future.
 */
 
 #include <gp_map/gp_map.h>
 #include <util/maths/matrix.h>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-class MatrixMap : public GPMap {
+class MatrixMap : public GPMap<double> 
+{
 
 public:
 
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size);
     MatrixMap(const std::string& file_name);
 
-    Phenotypes::Phenotype* map(Genotypes::Genotype& genotype,
-                               Phenotypes::PhenotypeSpec& pheno_spec) override;
+    Phenotype* map(Genotype<double>& genotype,
+                   PhenotypeSpec<double>& pheno_spec) override;
 
     void print_gp_map(std::ofstream& file) override;
 
-    inline std::optional<Utils::Matrix<double>> get_map() override { return _interaction_matrix; };
+    std::optional<Utils::Matrix<double>> get_map() override { return _interaction_matrix; };
 
 protected:
 
@@ -43,7 +45,6 @@ private:
 
 };
 
-} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

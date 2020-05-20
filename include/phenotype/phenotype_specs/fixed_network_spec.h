@@ -13,48 +13,45 @@
 #include <phenotype/phenotype_specs/network_spec.h>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 //Define fixed network specification
-struct FixedNetworkSpec : NetworkSpec {
+template <typename G>
+class FixedNetworkSpec : NetworkSpec<G> {
 
 public:
 
+    FixedNetworkSpec(const unsigned num_inputs, const unsigned num_outputs,
+                     const unsigned num_hidden_layers, const unsigned neurons_per_layer,
+                     const bool recurrent);
 
-    FixedNetworkSpec(const unsigned NUM_INPUTS, const unsigned NUM_OUTPUTS,
-                     const unsigned NUM_HIDDEN_LAYERS, const unsigned NEURONS_PER_LAYER,
-                     const bool RECURRENT);
+    FixedNetworkSpec(const unsigned num_inputs, const std::vector<LayerSpec>& layer_specs);
 
-
-    FixedNetworkSpec(const unsigned NUM_INPUTS, const std::vector<LayerSpec>& layer_specs);
-
-    Phenotypes::Phenotype* generate_phenotype(Genotypes::Genotype& genotype,
-                                              GPMaps::GPMap* gp_map) override;
+    Phenotype* generate_phenotype(Genotype<G>& genotype,
+                                  GPMap<G>* gp_map) override;
 
 protected:
 
     virtual FixedNetworkSpec* clone_impl() const override { return new FixedNetworkSpec(*this); };
 
-    const unsigned get_required_num_genes(const unsigned int NUM_INPUTS,
-                                          const unsigned int NUM_OUPUTS,
-                                          const unsigned int NUM_HIDDEN_LAYERS,
-                                          const unsigned int NEURONS_PER_LAYER,
-                                          const bool RECURRENT);
+    const unsigned get_required_num_genes(const unsigned int num_inputs,
+                                          const unsigned int num_ouputs,
+                                          const unsigned int num_hidden_layers,
+                                          const unsigned int neurons_per_layer,
+                                          const bool recurrent);
 
-    const unsigned get_required_num_genes(const unsigned NUM_INPUTS,
+    const unsigned get_required_num_genes(const unsigned num_inputs,
                                           const std::vector<LayerSpec>& layer_specs);
 
 private:
 
-    std::vector<LayerSpec> build_layer_specs(const unsigned NUM_INPUTS,
-                                             const unsigned NUM_OUTPUTS,
-                                             const unsigned NUM_HIDDEN_LAYERS,
-                                             const unsigned NEURONS_PER_LAYER,
-                                             const bool RECURRENT);
+    std::vector<LayerSpec> build_layer_specs(const unsigned num_inputs,
+                                             const unsigned num_outputs,
+                                             const unsigned num_hidden_layers,
+                                             const unsigned neurons_per_layer,
+                                             const bool recurrent);
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

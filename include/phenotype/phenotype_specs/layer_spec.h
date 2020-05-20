@@ -12,14 +12,15 @@
 */
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 /*
     Defines a network layer.
     Only normal, recurrent and GRU units can be used currently.
 */
 
-struct LayerSpec {
+class LayerSpec {
+
+public:
 
     LayerSpec(const unsigned type, const unsigned num_neurons,
               unsigned inputs_per_neuron, Utils::ActivationFunction* activation_func) :
@@ -89,7 +90,6 @@ struct LayerSpec {
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

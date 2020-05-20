@@ -8,39 +8,39 @@
 #include <iterator>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
 MatrixMap::MatrixMap(const unsigned genotype_size,
                      const unsigned phenotype_size) :
-    _interaction_matrix(phenotype_size, genotype_size) {
+    _interaction_matrix(phenotype_size, genotype_size) 
+{
 
     //Create the identity interaction matrix
     for(unsigned i = 0; i < _interaction_matrix.get_height(); i++)
-        for(unsigned j = 0; j < _interaction_matrix.get_width(); j++) {
+        for(unsigned j = 0; j < _interaction_matrix.get_width(); j++) 
             if(i == j)
                 _interaction_matrix.set(i, j, 1.0);
-        }
 
 }
 
 MatrixMap::MatrixMap(const std::string& file_name) :
     _interaction_matrix(read_matrix(file_name)) {}
 
-Phenotypes::Phenotype* MatrixMap::map(Genotypes::Genotype& genotype,
-                                      Phenotypes::PhenotypeSpec& pheno_spec) {
+Phenotype* MatrixMap::map(Genotype<double>& genotype,
+                          PhenotypeSpec<double>& pheno_spec) 
+{
 
-    const Utils::Matrix<double> genes(genotype.get_genes());
+    const Utils::Matrix<double> genes(genotype.genes());
 
     Utils::Matrix<double> traits = _interaction_matrix * genes;
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this
-   Phenotypes::FixedNetworkSpec* net_spec = dynamic_cast<Phenotypes::FixedNetworkSpec*>(&pheno_spec);
+   FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
 
     if(net_spec != nullptr)
-        return new Phenotypes::FixedNetwork(traits_vector, *net_spec);
+        return new FixedNetwork(traits_vector, *net_spec);
     else
-        return new Phenotypes::RealVectorPhenotype(traits_vector);
+        return new RealVectorPhenotype(traits_vector);
 }
 
 void MatrixMap::print_gp_map(std::ofstream& file) {
@@ -110,5 +110,4 @@ Utils::Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
 
 }
 
-} // namespace GPMaps
 } // namespace NeuroEvo

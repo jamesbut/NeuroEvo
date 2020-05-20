@@ -13,6 +13,9 @@
 
 namespace NeuroEvo {
 
+template <typename G>
+class GPMap;
+
 //Generic phenotype spec
 template <typename G>
 class PhenotypeSpec {

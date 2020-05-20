@@ -4,23 +4,23 @@
 #include <iterator>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-NetworkMap::NetworkMap(Phenotypes::FixedNetworkSpec& net_spec, const std::string& file_name) :
+NetworkMap::NetworkMap(FixedNetworkSpec<double>& net_spec, const std::string& file_name) :
     _decoder(read_network(file_name, net_spec)) {}
 
-Phenotypes::Phenotype* NetworkMap::map(Genotypes::Genotype& genotype,
-                                       Phenotypes::PhenotypeSpec& pheno_spec) {
+Phenotype* NetworkMap::map(Genotype<double>& genotype,
+                           PhenotypeSpec<double>& pheno_spec) 
+{
 
     //Query the decoder with the genes - it will output
     //the weights of the phenotype
-    std::vector<double> traits = _decoder.activate(genotype.get_genes());
+    std::vector<double> traits = _decoder.activate(genotype.genes());
 
     //TODO: This is hacky, I want to change this
-    Phenotypes::FixedNetworkSpec* net_spec = dynamic_cast<Phenotypes::FixedNetworkSpec*>(&pheno_spec);
+    FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
 
     if(net_spec != nullptr)
-        return new Phenotypes::FixedNetwork(traits, *net_spec);
+        return new FixedNetwork(traits, *net_spec);
     else {
         std::cerr << "Could not create Fixed Network from decoded traits" << std::endl;
         exit(EXIT_FAILURE);
@@ -28,20 +28,27 @@ Phenotypes::Phenotype* NetworkMap::map(Genotypes::Genotype& genotype,
 
 }
 
-void NetworkMap::print_gp_map(std::ofstream& file) {
+void NetworkMap::print_gp_map(std::ofstream& file) 
+{
 
     //TODO: Write this
+    std::cerr << "Write print_gp_map in NetworkMap!" << std::endl;
+    exit(0);
 
 }
 
-std::optional<Utils::Matrix<double>> NetworkMap::get_map() {
+std::optional<Utils::Matrix<double>> NetworkMap::get_map() 
+{
 
     //TODO: Write this
+    std::cerr << "Write get_map in NetworkMap" << std::endl;
+    exit(0);
 
 }
 
-Phenotypes::FixedNetwork NetworkMap::read_network(const std::string& file_name,
-                                                  Phenotypes::FixedNetworkSpec& net_spec) {
+FixedNetwork<double> NetworkMap::read_network(const std::string& file_name,
+                                              FixedNetworkSpec<double>& net_spec) 
+{
 
     std::stringstream file_path;
     file_path << NEURO_EVO_CMAKE_SRC_DIR << "/config/decoders/" << file_name;
@@ -71,11 +78,9 @@ Phenotypes::FixedNetwork NetworkMap::read_network(const std::string& file_name,
 
     }
 
-    Phenotypes::FixedNetwork net(weights, net_spec);
+    FixedNetwork net(weights, net_spec);
     return net;
 
 }
 
-
-} // namespace GPMaps
 } // namespace NeuroEvo

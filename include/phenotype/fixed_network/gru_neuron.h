@@ -4,13 +4,12 @@
 #include <phenotype/fixed_network/neuron.h>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class GRUNeuron : public Neuron {
 
 public:
 
-    GRUNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE);
+    GRUNeuron(const LayerSpec& layer_spec, const bool trace);
 
     void set_weights(std::vector<double>& weights) override;
     double evaluate(std::vector<double>& inputs) override;
@@ -41,7 +40,6 @@ private:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

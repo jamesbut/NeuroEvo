@@ -11,10 +11,8 @@
 */
 
 #include <phenotype/phenotype.h>
-#include <genotype/real_vector_genotype.h>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class RealVectorPhenotype : public Phenotype {
 
@@ -22,7 +20,7 @@ public:
 
     RealVectorPhenotype(const std::vector<double>& traits);
 
-    virtual std::vector<double> activate(std::vector<double>& inputs) override;
+    virtual std::vector<double> activate(const std::vector<double>& inputs) override;
 
     void reset() override;
 
@@ -30,7 +28,10 @@ public:
 
 protected:
 
-    virtual RealVectorPhenotype* clone_impl() const override { return new RealVectorPhenotype(*this); };
+    virtual RealVectorPhenotype* clone_impl() const override 
+    { 
+        return new RealVectorPhenotype(*this); 
+    }
 
 private:
 
@@ -38,7 +39,6 @@ private:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif
