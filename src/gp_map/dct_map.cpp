@@ -1,7 +1,7 @@
 #include <gp_map/dct_map.h>
 #include <util/maths/fourier.h>
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <phenotype/fixed_network/network.h>
+#include <phenotype/neural_network/network.h>
 #include <cmath>
 
 namespace NeuroEvo {
@@ -25,8 +25,8 @@ Phenotype* DCTMap::map(Genotype<double>& genotype,
     Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
 
     //TODO: For now, can only turn into Fixed Network
-    FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
-    return new FixedNetwork(traits.get_vector(), *net_spec);
+    NetworkBuilder<double>* net_spec = dynamic_cast<NetworkBuilder<double>*>(&pheno_spec);
+    return new Network(traits.get_vector(), *net_spec);
 
 }
 

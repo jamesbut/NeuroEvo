@@ -1,12 +1,11 @@
-#include <phenotype/hebbs_network/hebbs_layer.h>
+#include <phenotype/neural_network/hebbs_layer.h>
 #include <iostream>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
-HebbsLayer::HebbsLayer(const LayerSpec& layer_spec, const bool TRACE) :
-    _LAYER_SPEC(layer_spec),
-    _TRACE(TRACE) {
+HebbsLayer::HebbsLayer(const LayerSpec& layer_spec, const bool trace) :
+    Layer(layer_spec, trace)
+{
 
     for(unsigned int i = 0; i < _LAYER_SPEC._num_neurons; i++)
         neurons.push_back(HebbsNeuron(_LAYER_SPEC, _TRACE));
@@ -108,5 +107,4 @@ void HebbsLayer::reset() {
 
 }
 
-} // namespace Phenotypes
 } // namespace NeuroEvo

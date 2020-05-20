@@ -67,6 +67,11 @@ public:
         exit(0);
     }
 
+    const std::vector<LayerSpec>& get_layer_specs() const
+    {
+        return _layer_specs;
+    }
+
 private:    
     struct HebbsSpec;
 
@@ -88,7 +93,7 @@ public:
 
 protected:
 
-    NetworkBuilder* clone_impl() const
+    NetworkBuilder* clone_impl() const override
     {
         return new NetworkBuilder(*this);
     } 

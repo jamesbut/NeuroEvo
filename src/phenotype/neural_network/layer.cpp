@@ -6,9 +6,10 @@ namespace NeuroEvo {
 
 Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
     _layer_spec(layer_spec),
-    _trace(trace) {
+    _trace(trace) 
+{
 
-    if(_layer_spec._type == 2)
+    if(_layer_spec._type == LayerSpec::NeuronType::GRU)
         for(unsigned int i = 0; i < _layer_spec._num_neurons; i++)
             _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_layer_spec, _trace)));
     else
@@ -24,7 +25,7 @@ Layer::Layer(const Layer& layer) :
 {
 
     for(std::size_t i = 0; i < _neurons.size(); i++)
-        _neurons.at(i) = layer._neurons.at(i)->clone();
+        _neurons[i] = layer._neurons[i]->clone();
 
 }
 
@@ -34,12 +35,13 @@ void Layer::set_weights(std::vector<double>& weights)
     std::vector<double>::iterator start = weights.begin();
     std::vector<double>::iterator end = weights.begin();
 
-    for(unsigned int i = 0; i < _layer_spec._num_neurons; i++) {
+    for(const auto& neuron : _neurons)
+    {
 
         end += _layer_spec._params_per_neuron;
 
         std::vector<double> tempW(start, end);
-        _neurons.at(i)->set_weights(tempW);
+        neuron->set_weights(tempW);
 
         start += _layer_spec._params_per_neuron;
 
@@ -47,7 +49,7 @@ void Layer::set_weights(std::vector<double>& weights)
 
 }
 
-unsigned Layer::get_number_of_params() 
+unsigned Layer::get_number_of_params() const
 {
     return _layer_spec._num_neurons * _layer_spec._params_per_neuron;
 }
@@ -56,10 +58,12 @@ std::vector<double> Layer::evaluate(std::vector<double>& inputs)
 {
 
     std::vector<double> outputs;
+    outputs.reserve(_neurons.size());
 
-    for(std::size_t i = 0; i < _neurons.size(); i++) {
+    for(const auto& neuron : _neurons)
+    {
         if(_trace) std::cout << "Neuron: " << i << std::endl;
-        outputs.push_back(_neurons.at(i)->evaluate(inputs));
+        outputs.push_back(neuron->evaluate(inputs));
     }
 
     //Print outputs
@@ -77,8 +81,8 @@ void Layer::print_outputs(std::vector<double>& outputs)
 
     std::cout << "\n";
 
-    for(std::size_t i = 0; i < outputs.size(); i++)
-        std::cout << outputs.at(i) << " ";
+    for(const auto& output : outputs)
+        std::cout << output << " ";
 
     std::cout << "\n\n";
 
@@ -90,7 +94,7 @@ void Layer::reset()
         neuron->reset();
 }
 
-void Layer::print_params() 
+void Layer::print_params() const
 {
     for(const auto& neuron : _neurons)
         neuron->print_weights();

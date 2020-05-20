@@ -42,14 +42,24 @@ public:
         return _num_params; 
     }
 
-    bool _trace;
-    bool _print_weights;
+    bool get_trace() const 
+    {
+        return _trace;
+    }
+
+    bool get_print_weights() const
+    {
+        return _print_weights;
+    }
 
 protected:
 
     virtual PhenotypeSpec* clone_impl() const = 0;
 
     unsigned _num_params;
+
+    bool _trace;
+    bool _print_weights;
 
 };
 

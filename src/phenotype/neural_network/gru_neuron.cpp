@@ -1,4 +1,4 @@
-#include <phenotype/fixed_network/gru_neuron.h>
+#include <phenotype/neural_network/gru_neuron.h>
 
 namespace NeuroEvo {
 
@@ -8,10 +8,10 @@ GRUNeuron::GRUNeuron(const LayerSpec& layer_spec, const bool trace) :
 
     //Set weight indices
     _U_index = 0;
-    _U_r_index = _U_index + _layer_spec._inputs_per_neuron;
-    _U_u_index = _U_r_index + _layer_spec._inputs_per_neuron;
+    _U_r_index = _U_index + _layer_spec.get_inputs_per_neuron();
+    _U_u_index = _U_r_index + _layer_spec.get_inputs_per_neuron();
 
-    _w_index = _U_u_index + _layer_spec._inputs_per_neuron;
+    _w_index = _U_u_index + _layer_spec.get_inputs_per_neuron();
     _w_r_index = _w_index + 1;
     _w_u_index = _w_r_index + 1;
     _b_index = _w_u_index + 1;
@@ -38,7 +38,7 @@ double GRUNeuron::evaluate(std::vector<double>& inputs)
     //Reset gate
     double reset_input_sum = 0.0;
 
-    for(unsigned i = 0; i < _layer_spec._inputs_per_neuron; i++) 
+    for(unsigned i = 0; i < _layer_spec.get_inputs_per_neuron(); i++) 
     {
         reset_input_sum += inputs.at(i) * _weights.at(_U_r_index + i);
         if(_trace) std::cout << inputs.at(i) << " x " << _weights.at(_U_r_index + i) << std::endl;
@@ -54,13 +54,13 @@ double GRUNeuron::evaluate(std::vector<double>& inputs)
 
     //Reset gate output
     //NOTE: NEAT-GRU code uses K value of 1/4.924273 here
-    double r = _layer_spec._activation_func->activate(reset_input_sum);
+    double r = _layer_spec.get_activation_func()->activate(reset_input_sum);
     if(_trace) std::cout << "r: " << r << std::endl;
 
     //Update gate
     double update_input_sum = 0.0;
 
-    for(unsigned i = 0; i < _layer_spec._inputs_per_neuron; i++) 
+    for(unsigned i = 0; i < _layer_spec.get_inputs_per_neuron(); i++) 
     {
         update_input_sum += inputs.at(i) * _weights.at(_U_u_index + i);
         if(_trace) std::cout << inputs.at(i) << " x " << _weights.at(_U_u_index + i) << std::endl;
@@ -75,7 +75,7 @@ double GRUNeuron::evaluate(std::vector<double>& inputs)
     if(_trace) std::cout << "update_input_sum: " << update_input_sum << std::endl;
 
     //Update gate output
-    double u = _layer_spec._activation_func->activate(update_input_sum);
+    double u = _layer_spec.get_activation_func()->activate(update_input_sum);
     if(_trace) std::cout << "u: " << u << std::endl;
 
     /* Calculate h_tilda */
@@ -87,7 +87,7 @@ double GRUNeuron::evaluate(std::vector<double>& inputs)
     //tanh gate
     double tanh_input_sum = 0.0;
 
-    for(unsigned i = 0; i < _layer_spec._inputs_per_neuron; i++) 
+    for(unsigned i = 0; i < _layer_spec.get_inputs_per_neuron(); i++) 
     {
         tanh_input_sum += inputs.at(i) * _weights.at(_U_index + i);
         if(_trace) std::cout << inputs.at(i) << " x " << _weights.at(_U_index + i) << std::endl;

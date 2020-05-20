@@ -2,8 +2,8 @@
 #define _NETWORK_MAP_H_
 
 #include <gp_map/gp_map.h>
-#include <phenotype/phenotype_specs/fixed_network_spec.h>
-#include <phenotype/fixed_network/network.h>
+#include <phenotype/phenotype_specs/network_builder.h>
+#include <phenotype/neural_network/network.h>
 
 /*
  * A network map passes the genotype through a network
@@ -20,7 +20,7 @@ class NetworkMap : public GPMap<double>
 
 public:
 
-    NetworkMap(FixedNetworkSpec<double>& net_spec, const std::string& file_name);
+    NetworkMap(NetworkBuilder<double>& net_spec, const std::string& file_name);
 
     Phenotype* map(Genotype<double>& genotype,
                    PhenotypeSpec<double>& pheno_spec) override;
@@ -33,12 +33,12 @@ protected:
 
     NetworkMap* clone_impl() const override { return new NetworkMap(*this); };
 
-    FixedNetwork<double> read_network(const std::string& file_name,
-                                      FixedNetworkSpec<double>& net_spec);
+    Network<double> read_network(const std::string& file_name,
+                                 NetworkBuilder<double>& net_spec);
 
 private:
 
-    FixedNetwork<double> _decoder;
+    Network<double> _decoder;
 
 };
 

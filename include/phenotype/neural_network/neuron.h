@@ -36,7 +36,6 @@ protected:
     double _previous_output;
     std::vector<double> _weights;
 
-
 };
 
 } // namespace NeuroEvo

@@ -86,7 +86,7 @@ public:
         return _num_neurons;
     } 
 
-    unsigned get_inputs_per_neurons() const
+    unsigned get_inputs_per_neuron() const
     {
         return _inputs_per_neuron;
     }
@@ -94,6 +94,11 @@ public:
     unsigned get_params_per_neuron() const
     {
         return _params_per_neuron;
+    }
+
+    const std::unique_ptr<ActivationFunction>& get_activation_func() const
+    {
+        return _activation_func;
     }
 
     void print_spec() const 

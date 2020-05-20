@@ -1,11 +1,12 @@
 #ifndef _GRU_NEURON_H_
 #define _GRU_NEURON_H_
 
-#include <phenotype/fixed_network/neuron.h>
+#include <phenotype/neural_network/neuron.h>
 
 namespace NeuroEvo {
 
-class GRUNeuron : public Neuron {
+class GRUNeuron : public Neuron 
+{
 
 public:
 

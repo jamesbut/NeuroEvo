@@ -5,7 +5,7 @@
 
 namespace NeuroEvo {
 
-NetworkMap::NetworkMap(FixedNetworkSpec<double>& net_spec, const std::string& file_name) :
+NetworkMap::NetworkMap(NetworkBuilder<double>& net_spec, const std::string& file_name) :
     _decoder(read_network(file_name, net_spec)) {}
 
 Phenotype* NetworkMap::map(Genotype<double>& genotype,
@@ -17,10 +17,10 @@ Phenotype* NetworkMap::map(Genotype<double>& genotype,
     std::vector<double> traits = _decoder.activate(genotype.genes());
 
     //TODO: This is hacky, I want to change this
-    FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
+    NetworkBuilder<double>* net_spec = dynamic_cast<NetworkBuilder<double>*>(&pheno_spec);
 
     if(net_spec != nullptr)
-        return new FixedNetwork(traits, *net_spec);
+        return new Network(traits, *net_spec);
     else {
         std::cerr << "Could not create Fixed Network from decoded traits" << std::endl;
         exit(EXIT_FAILURE);
@@ -46,8 +46,8 @@ std::optional<Utils::Matrix<double>> NetworkMap::get_map()
 
 }
 
-FixedNetwork<double> NetworkMap::read_network(const std::string& file_name,
-                                              FixedNetworkSpec<double>& net_spec) 
+Network<double> NetworkMap::read_network(const std::string& file_name,
+                                              NetworkBuilder<double>& net_spec) 
 {
 
     std::stringstream file_path;
@@ -78,7 +78,7 @@ FixedNetwork<double> NetworkMap::read_network(const std::string& file_name,
 
     }
 
-    FixedNetwork net(weights, net_spec);
+    Network net(weights, net_spec);
     return net;
 
 }

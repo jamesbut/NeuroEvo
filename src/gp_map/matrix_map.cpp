@@ -1,5 +1,5 @@
 #include <gp_map/matrix_map.h>
-#include <phenotype/fixed_network/network.h>
+#include <phenotype/neural_network/network.h>
 #include <phenotype/real_vector_phenotype.h>
 #include <fstream>
 #include <sstream>
@@ -35,10 +35,10 @@ Phenotype* MatrixMap::map(Genotype<double>& genotype,
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this
-   FixedNetworkSpec<double>* net_spec = dynamic_cast<FixedNetworkSpec<double>*>(&pheno_spec);
+   NetworkBuilder<double>* net_spec = dynamic_cast<NetworkBuilder<double>*>(&pheno_spec);
 
     if(net_spec != nullptr)
-        return new FixedNetwork(traits_vector, *net_spec);
+        return new Network(traits_vector, *net_spec);
     else
         return new RealVectorPhenotype(traits_vector);
 }

@@ -5,7 +5,7 @@
     A layer consists of a vector of neurons.
 */
 
-#include <phenotype/fixed_network/neuron.h>
+#include <phenotype/neural_network/neuron.h>
 #include <vector>
 
 namespace NeuroEvo {
@@ -23,12 +23,12 @@ public:
     Layer& operator=(Layer&& layer) = default;
 
     void set_weights(std::vector<double>& weights);
-    unsigned get_number_of_params();
+    unsigned get_number_of_params() const;
     std::vector<double> evaluate(std::vector<double>& inputs);
 
     void reset();
 
-    void print_params();
+    void print_params() const;
 
 private:
 

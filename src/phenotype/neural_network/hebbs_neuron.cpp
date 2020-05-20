@@ -5,7 +5,6 @@
 #include <random>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 //Constructor
 HebbsNeuron::HebbsNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE) :
@@ -147,5 +146,4 @@ void HebbsNeuron::reset() {
 
 }
 
-} // namespace Phenotypes
 } // namespace NeuroEvo

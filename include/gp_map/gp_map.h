@@ -16,7 +16,8 @@ template <typename G>
 class PhenotypeSpec;
 
 template <typename G>
-class GPMap {
+class GPMap 
+{
 
 public:
 
@@ -33,7 +34,10 @@ public:
     // should just be empty
     virtual std::optional<Utils::Matrix<double>> get_map() = 0;
 
-    auto clone() const { return std::unique_ptr<GPMap>(clone_impl()); }
+    auto clone() const 
+    { 
+        return std::unique_ptr<GPMap>(clone_impl()); 
+    }
 
 
 protected:

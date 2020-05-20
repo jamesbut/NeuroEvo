@@ -1,17 +1,17 @@
 #ifndef _HEBBS_LAYER_H_
 #define _HEBBS_LAYER_H_
 
-#include <phenotype/hebbs_network/hebbs_neuron.h>
+#include <phenotype/neural_network/hebbs_neuron.h>
+#include <phenotype/neural_network/layer.h>
 #include <vector>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
-class HebbsLayer {
+class HebbsLayer : Layer {
 
 public:
 
-    HebbsLayer(const LayerSpec& layer_spec, const bool TRACE);
+    HebbsLayer(const LayerSpec& layer_spec, const bool trace);
 
     void set_learning_rates(std::vector<double>& learning_params);
     void set_weights(std::vector<double>& weights);
@@ -41,7 +41,6 @@ private:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

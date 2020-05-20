@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
 class HebbsNeuron {
 
@@ -42,7 +41,6 @@ private:
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

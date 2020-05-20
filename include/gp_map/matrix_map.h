@@ -29,11 +29,17 @@ public:
 
     void print_gp_map(std::ofstream& file) override;
 
-    std::optional<Utils::Matrix<double>> get_map() override { return _interaction_matrix; };
+    std::optional<Utils::Matrix<double>> get_map() override 
+    { 
+        return _interaction_matrix; 
+    };
 
 protected:
 
-    MatrixMap* clone_impl() const override { return new MatrixMap(*this); };
+    MatrixMap* clone_impl() const override 
+    { 
+        return new MatrixMap(*this); 
+    };
 
 private:
 
