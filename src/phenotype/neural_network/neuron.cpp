@@ -1,6 +1,7 @@
-#include <phenotype/fixed_network/neuron.h>
+#include <phenotype/neural_network/neuron.h>
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 namespace NeuroEvo {
 
@@ -10,12 +11,17 @@ Neuron::Neuron(const LayerSpec& layer_spec, const bool trace) :
     _trace(trace) {}
 
 //Sets the weights of the Neuron
-void Neuron::set_weights(std::vector<double>& weights) 
+void Neuron::set_weights(const std::vector<double>& weights) 
 {
     _weights = weights;
 }
 
-double Neuron::evaluate(std::vector<double>& inputs) 
+double Neuron::evaluate(const std::vector<double>& inputs) 
+{
+    return propogate(inputs);
+}
+
+double Neuron::propogate(const std::vector<double>& inputs)
 {
 
     double activation_val = 0.0;
@@ -30,21 +36,21 @@ double Neuron::evaluate(std::vector<double>& inputs)
     if(_layer_spec.get_neuron_type() == LayerSpec::NeuronType::Recurrent) {
 
         activation_val += _previous_output * _weights[inputs.size()];
-        activation_val += 1 * _weights[inputs.size()+1];
+        activation_val += _weights[inputs.size()+1];
 
         if(_trace) 
+        {
             std::cout << "\n" << _previous_output << " x " << _weights[inputs.size()] << "\n";
-        if(_trace) 
-            std::cout << "\n" << "1 x " << _weights.at[inputs.size()+1] << "\n\n";
+            std::cout << "\n" << "1 x " << _weights[inputs.size()+1] << "\n\n";
+        }
 
     } else {
 
         activation_val += 1 * _weights[inputs.size()];
 
-        if(_trace) std::cout << "\n" << "1 x " << _weights.at(inputs.size()) << "\n\n";
+        if(_trace) std::cout << "\n" << "1 x " << _weights[inputs.size()] << "\n\n";
 
     }
-
 
     const double output = _layer_spec.get_activation_func()->activate(activation_val);
 
@@ -54,13 +60,22 @@ double Neuron::evaluate(std::vector<double>& inputs)
 
 }
 
-void Neuron::print_weights() 
+void Neuron::print_weights() const
 {
+    for(const auto& weight : _weights)
+        std::cout << weight << " ";
+    std::cout << std::endl;
+}
 
-    for(int i = 0; i < _weights.size(); i++)
-        std::cout << _weights[i] << ' ';
-    std::cout << "\n";
+void Neuron::print_weights_to_file(std::ofstream& file) const
+{
+    for(const auto& weight : _weights)
+        file << weight << ",";
+}
 
+void Neuron::print_output_to_file(std::ofstream& file) const
+{
+    file << _previous_output << ",";
 }
 
 void Neuron::reset() 

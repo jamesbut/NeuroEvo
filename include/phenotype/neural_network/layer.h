@@ -22,15 +22,18 @@ public:
     Layer(Layer&& layer) = default;
     Layer& operator=(Layer&& layer) = default;
 
-    void set_weights(std::vector<double>& weights);
-    unsigned get_number_of_params() const;
-    std::vector<double> evaluate(std::vector<double>& inputs);
+    void set_weights(const std::vector<double>& weights);
+    unsigned get_number_of_weights() const;
+    std::vector<double> evaluate(const std::vector<double>& inputs);
 
     void reset();
 
+    void print_weights() const;
     void print_params() const;
+    void print_weights_to_file(std::ofstream& file) const;
+    void print_outputs_to_file(std::ofstream& file) const;
 
-private:
+protected:
 
     //TODO: Have all the specs as references
     LayerSpec _layer_spec;
@@ -38,7 +41,7 @@ private:
 
     std::vector<std::unique_ptr<Neuron> > _neurons;
 
-    void print_outputs(std::vector<double>& outputs);
+    void print_outputs(const std::vector<double>& outputs);
 
 };
 

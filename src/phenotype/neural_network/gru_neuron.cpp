@@ -23,13 +23,13 @@ GRUNeuron::GRUNeuron(const LayerSpec& layer_spec, const bool trace) :
 
 }
 
-void GRUNeuron::set_weights(std::vector<double>& weights) 
+void GRUNeuron::set_weights(const std::vector<double>& weights) 
 {
     _weights = weights;
 }
 
 
-double GRUNeuron::evaluate(std::vector<double>& inputs) 
+double GRUNeuron::evaluate(const std::vector<double>& inputs) 
 {
 
     std::vector<double>::iterator weight_iter = _weights.begin();

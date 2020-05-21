@@ -78,17 +78,26 @@ private:
 public:
 
     void make_hebbian(const bool evolve_init_weights,
-                      const std::optional<double> default_init_weight = std::nullopt)
+                      const std::optional<double> default_init_weight = std::nullopt,
+                      const bool print_weights_to_file = false,
+                      const std::optional<std::string>& weights_file_name = std::nullopt,
+                      const std::optional<std::string>& outputs_file_name = std::nullopt)
     {
 
         if(evolve_init_weights)
-            _hebbs_spec = HebbsSpec(true);
+            _hebbs_spec = HebbsSpec(true, std::nullopt, print_weights_to_file,
+                                    weights_file_name, outputs_file_name);
         else
-            _hebbs_spec = HebbsSpec(false, default_init_weight);
+            _hebbs_spec = HebbsSpec(false, default_init_weight, print_weights_to_file,
+                                    weights_file_name, outputs_file_name);
         
         //Alter number of params
         this->_num_params = required_num_genes(_num_inputs, _layer_specs);
 
+    }
+
+    const HebbsSpec& get_hebbs_spec() const {
+        return *_hebbs_spec;
     }
 
 protected:
@@ -184,19 +193,43 @@ private:
     public:
 
         HebbsSpec(const bool evolve_init_weights,
-                  const std::optional<double> default_init_weight = std::nullopt) :
+                  const std::optional<double> default_init_weight = std::nullopt,
+                  const bool print_weights_to_file = false,
+                  const std::optional<std::string>& weights_file_name = std::nullopt,
+                  const std::optional<std::string>& outputs_file_name = std::nullopt) :
             _evolve_init_weights(evolve_init_weights),
-            _default_init_weight(default_init_weight) {}
+            _default_init_weight(default_init_weight), 
+            _print_weights_to_file(print_weights_to_file), 
+            _weights_file_name(weights_file_name), 
+            _outputs_file_name(outputs_file_name) {}
 
         const bool get_evolve_init_weights() const 
         {
             return _evolve_init_weights;
         }
 
+        const bool get_print_weights_to_file() const
+        {
+            return _print_weights_to_file;
+        }
+
+        const std::string& get_weights_file_name() const
+        {
+            return *_weights_file_name;
+        }
+
+        const std::string& get_outputs_file_name() const
+        {
+            return *_outputs_file_name;
+        }
+
     private:
 
         const bool _evolve_init_weights;
         const std::optional<double> _default_init_weight;
+        const bool _print_weights_to_file;
+        const std::optional<std::string> _weights_file_name;
+        const std::optional<std::string> _outputs_file_name;
 
     };
 

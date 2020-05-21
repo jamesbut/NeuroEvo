@@ -1,5 +1,4 @@
 #include <phenotype/neural_network/hebbs_layer.h>
-#include <iostream>
 
 namespace NeuroEvo {
 
@@ -7,103 +6,36 @@ HebbsLayer::HebbsLayer(const LayerSpec& layer_spec, const bool trace) :
     Layer(layer_spec, trace)
 {
 
-    for(unsigned int i = 0; i < _LAYER_SPEC._num_neurons; i++)
-        neurons.push_back(HebbsNeuron(_LAYER_SPEC, _TRACE));
+    for(unsigned i = 0; i < _layer_spec.get_num_neurons(); i++)
+        _neurons.push_back(
+            std::unique_ptr<Neuron>(new HebbsNeuron(_layer_spec, trace))
+        );
 
 }
 
-void HebbsLayer::set_learning_rates(std::vector<double>& learning_rates) {
+void HebbsLayer::set_learning_rates(const std::vector<double>& learning_rates) 
+{
 
-    std::vector<double>::iterator start = learning_rates.begin();
-    std::vector<double>::iterator end = learning_rates.begin();
+    auto start = learning_rates.begin();
+    auto end = learning_rates.begin();
 
-    for(unsigned int i = 0; i < _LAYER_SPEC._num_neurons; i++) {
+    //Dynamically cast to HebbsNeuron in order to call Hebbs related methods
+    std::vector<HebbsNeuron*> _hebbs_neurons;
+    _hebbs_neurons.reserve(_neurons.size());
+    for(auto& neuron : _neurons)
+        _hebbs_neurons.push_back(dynamic_cast<HebbsNeuron*>(neuron.get()));
 
-        end += _LAYER_SPEC._params_per_neuron;
+    for(auto& neuron : _hebbs_neurons)
+    {
+
+        end += _layer_spec.get_params_per_neuron();
 
         std::vector<double> tempW(start, end);
-        neurons.at(i).set_learning_rates(tempW);
+        neuron->set_learning_rates(tempW);
 
-        start += _LAYER_SPEC._params_per_neuron;
-
-     }
-
-}
-
-void HebbsLayer::set_weights(std::vector<double>& weights) {
-
-    std::vector<double>::iterator start = weights.begin();
-    std::vector<double>::iterator end = weights.begin();
-
-    for(unsigned int i = 0; i < _LAYER_SPEC._num_neurons; i++) {
-
-        end += _LAYER_SPEC._params_per_neuron;
-
-        std::vector<double> tempW(start, end);
-        neurons.at(i).set_weights(tempW);
-
-        start += _LAYER_SPEC._params_per_neuron;
+        start += _layer_spec.get_params_per_neuron();
 
      }
-
-}
-
-int HebbsLayer::get_number_of_connections() {
-
-    return _LAYER_SPEC._num_neurons * _LAYER_SPEC._params_per_neuron;
-
-}
-
-std::vector<double> HebbsLayer::evaluate(std::vector<double>& inputs) {
-
-    std::vector<double> outputs;
-
-    for(std::size_t i = 0; i < neurons.size(); i++)
-        outputs.push_back(neurons.at(i).evaluate(inputs));
-
-    //Print outputs
-    if(_TRACE) print_outputs(outputs);
-
-    return outputs;
-
-}
-
-void HebbsLayer::print_outputs(std::vector<double>& outputs) {
-
-    std::cout << "\n";
-
-    for(std::size_t i = 0; i < outputs.size(); i++)
-        std::cout << outputs.at(i) << " ";
-
-    std::cout << "\n\n";
-
-}
-
-void HebbsLayer::print_weights() {
-
-    for(std::size_t i = 0; i < neurons.size(); i++)
-        neurons.at(i).print_weights();
-
-}
-
-void HebbsLayer::print_weights_to_file(std::ofstream& file) {
-
-    for(std::size_t i = 0; i < neurons.size(); i++)
-        neurons.at(i).print_weights_to_file(file);
-
-}
-
-void HebbsLayer::print_outputs_to_file(std::ofstream& file) {
-
-    for(std::size_t i = 0; i < neurons.size(); i++)
-        neurons.at(i).print_output_to_file(file);
-
-}
-
-void HebbsLayer::reset() {
-
-    for(auto& neuron : neurons)
-        neuron.reset();
 
 }
 

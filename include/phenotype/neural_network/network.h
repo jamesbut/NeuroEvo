@@ -8,6 +8,7 @@
 #include <phenotype/phenotype.h>
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <phenotype/neural_network/layer.h>
+#include <fstream>
 
 namespace NeuroEvo {
 
@@ -38,12 +39,12 @@ public:
         for(auto& layer : _layers)
         {
 
-            end += layer.get_number_of_params();
+            end += layer.get_number_of_weights();
 
             std::vector<double> tempW(start, end);
             layer.set_weights(tempW);
 
-            start += layer.get_number_of_params();
+            start += layer.get_number_of_weights();
 
         }
 
@@ -51,6 +52,12 @@ public:
 
     std::vector<double> activate(const std::vector<double>& inputs) override 
     {
+
+        if(_net_builder.get_hebbs_spec().get_print_weights_to_file())
+        {
+            print_weights_to_file();
+            print_outputs_to_file();
+        }
 
         std::vector<double> ins = inputs;
 
@@ -85,13 +92,46 @@ protected:
 
 private:
 
-    void create_net() 
+    virtual void create_net() 
     {
         for(unsigned i = 0; i < _net_builder.get_layer_specs().size(); i++)
             _layers.push_back(Layer(_net_builder.get_layer_specs()[i], 
                                     _net_builder.get_trace()));
     }
+    
+    void print_weights_to_file() const
+    {
 
+        std::ofstream weight_file;
+        weight_file.open(_net_builder.get_hebbs_spec().get_weights_file_name(), 
+                         std::fstream::app);
+
+        for(const auto& layer : _layers)
+            layer.print_weights_to_file(weight_file);
+
+        weight_file << std::endl;
+
+        weight_file.close();
+
+    }
+
+    void print_outputs_to_file() const
+    {
+
+        std::ofstream output_file;
+        output_file.open(_net_builder.get_hebbs_spec().get_outputs_file_name(), 
+                         std::fstream::app);
+
+        for(const auto& layer : _layers)
+            layer.print_outputs_to_file(output_file);
+
+        output_file << std::endl;
+
+        output_file.close();
+
+    }
+
+    //TODO: This really should be a reference because it is getting larger!!
     const NetworkBuilder<G> _net_builder;
 
     std::vector<Layer> _layers;

@@ -11,62 +11,120 @@
 */
 
 #include <phenotype/phenotype.h>
-#include <phenotype/phenotype_specs/hebbs_network_spec.h>
-#include <phenotype/hebbs_network/hebbs_layer.h>
-#include <genotype/real_vector_genotype.h>
+#include <phenotype/phenotype_specs/network_builder.h>
+#include <phenotype/neural_network/hebbs_layer.h>
+#include <phenotype/neural_network/network.h>
 #include <iostream>
 #include <fstream>
 
 namespace NeuroEvo {
-namespace Phenotypes {
 
-class HebbsNetwork : public Phenotype {
+template <typename G>
+class HebbsNetwork : public Network<G> {
 
 public:
 
-    HebbsNetwork(const HebbsNetworkSpec NET_SPEC, const bool TRACE = false);
+    HebbsNetwork(const NetworkBuilder<G>& net_builder) :
+        _net_spec(net_spec),
+        _print_weights(net_spec.print_weights),
+    {
+        create_net();
+    }
+    
+    HebbsNetwork(const std::vector<double>& traits, const NetworkBuilder<G>& net_builder) :
+        _net_spec(net_spec),
+        _print_weights(net_spec.print_weights),
+    {
 
-    HebbsNetwork(Genotypes::RealVectorGenotype& genotype, HebbsNetworkSpec& NET_SPEC,
-                 const bool TRACE = false);
+        create_net();
 
-    void propogate_learning_rates(const std::vector<double>& learning_rates);
-    void propogate_weights(const std::vector<double>& weights);
+        //Work out number of total connections
+        unsigned num_connections = 0;
 
-    std::vector<double> activate(std::vector<double>& inputs) override;
+        for(const auto& layer : _layers)
+            num_connections += layer.get_number_of_connections();
 
-    void print_weights();
+        //If evolving weights as well as learning rates
+        if(_net_spec.evolve_init_weights) 
+        {
 
-    void reset() override;
+            //Split genes into 2 - learning rates and initial weights
+            const std::vector<double> learning_rates(traits.begin(),
+                                                    traits.begin() + num_connections);
 
-    void print_params() override {
-        for(auto& layer : layers)
-            layer.print_params();
+            const std::vector<double> weights(traits.begin() + num_connections,
+                                            traits.end());
+
+            propogate_learning_rates(learning_rates);
+            propogate_weights(weights);
+
+        } else   //If just evolving learning rates
+        {    
+
+            std::vector<double> weights;
+            weights.reserve(num_connections);
+
+            //If the weights are randomly initialised or all set to some value
+            if(_net_spec.random_weight_init) 
+            {
+
+                UniformRealDistribution _uniform_distr(0., 1.);
+
+                for(unsigned i = 0; i < num_connections; i++)
+                    weights.push_back(_uniform_distr.next());
+
+            } else 
+            {
+
+                for(unsigned i = 0; i < num_connections; i++)
+                    weights.push_back(_net_spec.default_init_value);
+
+            }
+
+            propogate_learning_rates(traits);
+            propogate_weights(weights);
+
+        }
+
+    }
+
+    void propogate_learning_rates(const std::vector<double>& learning_rates) 
+    {
+
+        auto start = learning_rates.begin();
+        auto end = learning_rates.begin();
+
+        for(auto& layer : _layers)
+        {
+
+            end += layer.get_number_of_connections();
+
+            const std::vector<double> tempW(start, end);
+            layer.set_learning_rates(tempW);
+
+            start += layer.get_number_of_connections();
+
+        }
+
     }
 
 protected:
 
-    virtual HebbsNetwork* clone_impl() const override { return new HebbsNetwork(*this); };
+    virtual HebbsNetwork* clone_impl() const override 
+    { 
+        return new HebbsNetwork(*this); 
+    };
 
 private:
 
-    void create_net();
-
-    void print_weights_to_file();
-    void print_outputs_to_file();
-
-    const HebbsNetworkSpec _NET_SPEC;
-
-    const bool _TRACE;
-
-    std::vector<HebbsLayer> layers;
-
-    const std::string _WEIGHTS_FILE_NAME;
-    const std::string _OUTPUTS_FILE_NAME;
-    const bool _PRINT_WEIGHTS;
+    void create_net() override
+    {
+        for(unsigned i = 0; i < _net_spec.layer_specs.size(); i++)
+            _layers.push_back(HebbsLayer(_net_spec.layer_specs.at(i), _trace));
+    }
 
 };
 
-} // namespace Phenotypes
 } // namespace NeuroEvo
 
 #endif

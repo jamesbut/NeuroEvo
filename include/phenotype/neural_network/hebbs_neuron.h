@@ -2,37 +2,27 @@
 #define _HEBBS_NEURON_H_
 
 #include <phenotype/phenotype_specs/layer_spec.h>
+#include <phenotype/neural_network/neuron.h>
 #include <vector>
 
 namespace NeuroEvo {
 
-class HebbsNeuron {
+class HebbsNeuron : public Neuron {
 
 public:
 
-    HebbsNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE);
+    HebbsNeuron(const LayerSpec& layer_spec, const bool trace = false);
 
-    void set_weights(std::vector<double>& weights);
-    void set_learning_rates(std::vector<double>& learning_rates);
+    void set_weights(const std::vector<double>& weights) override;
+    void set_learning_rates(const std::vector<double>& learning_rates);
 
-    double evaluate(std::vector<double>& inputs);
+    double evaluate(const std::vector<double>& inputs) override;
 
-    void print_weights();
-    void print_weights_to_file(std::ofstream& file);
-    void print_output_to_file(std::ofstream& file);
-
-    void reset();
+    void reset() override;
 
 private:
 
-    const LayerSpec _LAYER_SPEC;
-
-    const bool _TRACE;
-
-    double _previous_output;
-
     std::vector<double> _learning_rates;
-    std::vector<double> _weights;
 
     //Determines how to change the synaptic weights after activation of the neuron
     void synaptic_weight_change(const std::vector<double>& inputs, const double output);

@@ -1,4 +1,4 @@
-#include <phenotype/hebbs_network/hebbs_neuron.h>
+#include <phenotype/neural_network/hebbs_neuron.h>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -7,12 +7,11 @@
 namespace NeuroEvo {
 
 //Constructor
-HebbsNeuron::HebbsNeuron(const LayerSpec& LAYER_SPEC, const bool TRACE) :
-    _LAYER_SPEC(LAYER_SPEC),
-    _previous_output(0.0),
-    _TRACE(TRACE) {}
+HebbsNeuron::HebbsNeuron(const LayerSpec& layer_spec, const bool trace) :
+    Neuron(layer_spec, trace) {}
 
-void HebbsNeuron::set_weights(std::vector<double>& weights) {
+void HebbsNeuron::set_weights(const std::vector<double>& weights) 
+{
 
     _weights = weights;
 
@@ -21,124 +20,75 @@ void HebbsNeuron::set_weights(std::vector<double>& weights) {
 
 }
 
-void HebbsNeuron::set_learning_rates(std::vector<double>& learning_rates) {
-
+void HebbsNeuron::set_learning_rates(const std::vector<double>& learning_rates) 
+{
     _learning_rates = learning_rates;
-
 }
 
-double HebbsNeuron::evaluate(std::vector<double>& inputs) {
+double HebbsNeuron::evaluate(const std::vector<double>& inputs) 
+{
 
     //Normalise Hebbs - normalise before using weights in evaluate
     normalise_weights();
 
-    double activation_val = 0.0;
-
-    for(std::size_t i = 0; i < inputs.size(); i++) {
-
-        //Print out execution
-        if(_TRACE) std::cout << "\n" << inputs.at(i) << " x " << _weights.at(i);
-
-        activation_val += inputs.at(i) * _weights.at(i);
-
-    }
-
-    //Recurrent input
-    if(_LAYER_SPEC._type == 1) {
-
-        activation_val += _previous_output * _weights.at(inputs.size());
-        activation_val += -1 * _weights.at(inputs.size()+1);
-
-        if(_TRACE) std::cout << "\n" << _previous_output << " x " << _weights.at(inputs.size()) << "\n";
-        if(_TRACE) std::cout << "\n" << "-1 x " << _weights.at(inputs.size()+1) << "\n";
-
-    } else {
-
-        //Bias input
-        activation_val += -1 * _weights.at(inputs.size());
-
-        if(_TRACE) std::cout << "\n" << "-1 x " << _weights.at(inputs.size()) << "\n";
-
-    }
-
-    double output = _LAYER_SPEC._activation_func->activate(activation_val);
+    const double output = propogate(inputs);
 
     //Allow for synaptic weight change - this is what makes it a plastic network
     synaptic_weight_change(inputs, output);
-
-    _previous_output = output;
 
     return output;
 
 }
 
 void HebbsNeuron::synaptic_weight_change(const std::vector<double>& inputs,
-                                    const double output) {
+                                         const double output) 
+{
 
     //Simple Hebbs
     //Here I am assuming that each synapse has a different learning rate
     //and these are the learning parameters that are evolved
-    for(std::size_t i = 0; i < inputs.size(); i++) {
-
-        double delta_w = _learning_rates.at(i) * inputs.at(i) * output;
-        _weights.at(i) += delta_w;
-
+    for(std::size_t i = 0; i < inputs.size(); i++) 
+    {
+        const double delta_w = _learning_rates[i] * inputs[i] * output;
+        _weights[i] += delta_w;
     }
 
-    if(_LAYER_SPEC._type == 1) {
+    if(_layer_spec.get_neuron_type() == LayerSpec::NeuronType::Recurrent) 
+    {
 
-        double delta_w_recurrent = _learning_rates.at(inputs.size()) * _previous_output * output;
-        _weights.at(inputs.size()) += delta_w_recurrent;
+        const double delta_w_recurrent = _learning_rates[inputs.size()] * 
+                                         _previous_output * output;
+        _weights[inputs.size()] += delta_w_recurrent;
 
         //Make sure to change bias as well
-        double delta_w_bias = _learning_rates.at(inputs.size()+1) * -1 * output;
-        _weights.at(inputs.size()+1) += delta_w_bias;
+        const double delta_w_bias = _learning_rates[inputs.size()+1] * output;
+        _weights[inputs.size()+1] += delta_w_bias;
 
-    } else {
-
-        double delta_w_bias = _learning_rates.at(inputs.size()) * -1 * output;
-        _weights.at(inputs.size()) += delta_w_bias;
-
+    } else 
+    {
+        const double delta_w_bias = _learning_rates[inputs.size()] * output;
+        _weights[inputs.size()] += delta_w_bias;
     }
 
 }
 
-void HebbsNeuron::normalise_weights() {
+void HebbsNeuron::normalise_weights() 
+{
 
     double sum_of_square_weights = 0.0;
 
-    for(std::size_t i = 0; i < _weights.size(); i++)
-        sum_of_square_weights += _weights.at(i) * _weights.at(i);
+    for(const auto& weight : _weights)
+        sum_of_square_weights += weight * weight;
 
-    double normalising_constant = sqrt(sum_of_square_weights);
+    const double normalising_constant = sqrt(sum_of_square_weights);
 
-    for(std::size_t i = 0; i < _weights.size(); i++)
-        _weights.at(i) /= normalising_constant;
-
-}
-
-void HebbsNeuron::print_weights() {
-
-    for(int i = 0; i < _weights.size(); i++)
-        std::cout << _weights[i] << ' ';
-    std::cout << "\n";
+    for(auto& weight : _weights)
+        weight /= normalising_constant;
 
 }
 
-void HebbsNeuron::print_weights_to_file(std::ofstream& file) {
-
-    for(std::size_t i = 0; i < _weights.size(); i++)
-        file << _weights.at(i) << ",";
-
-}
-
-void HebbsNeuron::print_output_to_file(std::ofstream& file) {
-
-    file << _previous_output << ",";
-
-}
-
-void HebbsNeuron::reset() {
+void HebbsNeuron::reset() 
+{
 
     _previous_output = 0.0;
 

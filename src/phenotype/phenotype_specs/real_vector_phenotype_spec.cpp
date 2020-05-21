@@ -1,5 +1,5 @@
 #include <phenotype/phenotype_specs/real_vector_phenotype_spec.h>
-#include <genotype/real_vector_genotype.h>
+#include <genotype/genotype.h>
 #include <phenotype/real_vector_phenotype.h>
 #include <gp_map/matrix_map.h>
 
@@ -12,13 +12,10 @@ Phenotype* RealVectorPhenotypeSpec::generate_phenotype(Genotype<double>& genotyp
                                                        GPMap<double>* gp_map) 
 {
 
-    RealVectorGenotype* real_vec_genotype =
-        dynamic_cast<RealVectorGenotype*>(&genotype);
-
     if(gp_map)
-        return gp_map->map(*real_vec_genotype, *this);
+        return gp_map->map(genotype, *this);
     else
-        return new RealVectorPhenotype(real_vec_genotype->get_genes());
+        return new RealVectorPhenotype(genotype.genes());
 
 }
 

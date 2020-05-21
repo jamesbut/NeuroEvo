@@ -99,7 +99,7 @@ public:
 
     Phenotype& get_phenotype() const 
     {
-        return *phenotype;
+        return *_phenotype;
     }
 
     PhenotypeSpec<G>& get_phenotype_spec() const 

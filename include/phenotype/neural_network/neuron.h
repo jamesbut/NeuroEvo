@@ -17,17 +17,27 @@ public:
 
     Neuron(const LayerSpec& layer_spec, const bool trace);
 
-    virtual void set_weights(std::vector<double>& weights);
-    virtual double evaluate(std::vector<double>& inputs);
+    virtual void set_weights(const std::vector<double>& weights);
+    virtual double evaluate(const std::vector<double>& inputs);
 
     virtual void reset();
-    auto clone() const { return std::unique_ptr<Neuron>(clone_impl()); };
+    auto clone() const 
+    { 
+        return std::unique_ptr<Neuron>(clone_impl()); 
+    };
 
-    void print_weights();
+    void print_weights() const;
+    void print_weights_to_file(std::ofstream& file) const;
+    void print_output_to_file(std::ofstream& file) const;
 
 protected:
 
-    virtual Neuron* clone_impl() const { return new Neuron(*this); };
+    virtual Neuron* clone_impl() const 
+    { 
+        return new Neuron(*this); 
+    };
+
+    double propogate(const std::vector<double>& inputs);
 
     const LayerSpec _layer_spec;
 
