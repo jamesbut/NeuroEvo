@@ -5,40 +5,37 @@
 #include <gp_map/dct_map.h>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-struct DCTMapSpec : GPMapSpec {
+class DCTMapSpec : public GPMapSpec<double> 
+{
 
 public:
 
-    DCTMapSpec(const unsigned C, const unsigned NUM_NEURONS, const unsigned INPUTS_PER_NEURON) :
-        C(C),
-        NUM_NEURONS(NUM_NEURONS),
-        INPUTS_PER_NEURON(INPUTS_PER_NEURON) {}
+    DCTMapSpec(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron) :
+        _c(c),
+        _num_neurons(num_neurons),
+        _inputs_per_neuron(inputs_per_neuron) {}
 
-    GPMap* generate_gp_map() override {
-
-        return new DCTMap(C, NUM_NEURONS, INPUTS_PER_NEURON);
-
+    GPMap<double>* generate_gp_map() override 
+    {
+        return new DCTMap(_c, _num_neurons, _inputs_per_neuron);
     }
 
-    GPMap* generate_gp_map(const std::string& file_name) override {
-
+    GPMap<double>* generate_gp_map(const std::string& file_name) override 
+    {
         //Nothing has to be read from file here
         //The genes are the coefficients of the inverse DCT
-        return new DCTMap(C, NUM_NEURONS, INPUTS_PER_NEURON);
-
+        return new DCTMap(_c, _num_neurons, _inputs_per_neuron);
     }
 
 private:
 
-    const unsigned C;
-    const unsigned NUM_NEURONS;
-    const unsigned INPUTS_PER_NEURON;
+    const unsigned _c;
+    const unsigned _num_neurons;
+    const unsigned _inputs_per_neuron;
 
 };
 
-} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

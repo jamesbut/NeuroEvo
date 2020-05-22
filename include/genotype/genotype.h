@@ -18,30 +18,33 @@ public:
 
     Genotype(const std::vector<G>& genes, Mutator<G>* mutator = nullptr) :
         _genes(genes),
-        _mutator(mutator) {
-        
+        _mutator(mutator) 
+    {
         if(!_mutator)
             std::cout << "NOTE: No mutator provided to genotype!" << std::endl;
-        
     }
 
-    const std::vector<G>& genes() const {
+    auto clone() const
+    {
+        return std::unique_ptr<Genotype<G>>(new Genotype<G>(*this));
+    }
+
+    const std::vector<G>& genes() const 
+    {
         return _genes;
     }
 
-    void mutate() {
-
+    void mutate() 
+    {
         if(_mutator)
             _mutator->mutate(_genes);
-
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype) {
-
+    friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype) 
+    {
         for(const auto& gene : genotype._genes)
             os << gene << " ";
         return os;
-
     }
 
 protected:

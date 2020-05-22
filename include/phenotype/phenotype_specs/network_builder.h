@@ -22,13 +22,13 @@ public:
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                    const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
-                   const ActivationFunction* activation_func = new Sigmoid()) :
+                   ActivationFunction* activation_func = new Sigmoid()) :
         _num_inputs(num_inputs),
         _num_outputs(num_outputs),
         _layer_specs(build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                        neurons_per_layer, neuron_type, activation_func)),
         PhenotypeSpec<G>(required_num_genes(num_inputs, num_outputs, num_hidden_layers,
-                                            neurons_per_layer, neuron_type)) {}
+                                            neurons_per_layer, neuron_type, activation_func)) {}
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const unsigned num_inputs, 
@@ -85,19 +85,30 @@ public:
     {
 
         if(evolve_init_weights)
-            _hebbs_spec = HebbsSpec(true, std::nullopt, print_weights_to_file,
-                                    weights_file_name, outputs_file_name);
+            _hebbs_spec.emplace(HebbsSpec(true, std::nullopt, print_weights_to_file,
+                                          weights_file_name, outputs_file_name));
         else
-            _hebbs_spec = HebbsSpec(false, default_init_weight, print_weights_to_file,
-                                    weights_file_name, outputs_file_name);
+            _hebbs_spec.emplace(HebbsSpec(false, default_init_weight, print_weights_to_file,
+                                          weights_file_name, outputs_file_name));
         
         //Alter number of params
         this->_num_params = required_num_genes(_num_inputs, _layer_specs);
 
     }
 
-    const HebbsSpec& get_hebbs_spec() const {
+    const HebbsSpec& get_hebbs_spec() const 
+    {
         return *_hebbs_spec;
+    }
+
+    unsigned get_num_inputs() const
+    {
+        return _num_inputs;
+    }
+
+    unsigned get_num_outputs() const
+    {
+        return _num_outputs;
     }
 
 protected:
@@ -106,11 +117,6 @@ protected:
     {
         return new NetworkBuilder(*this);
     } 
-
-    const unsigned get_num_outputs(const std::vector<LayerSpec>& layer_specs) const 
-    {
-        return layer_specs.back().get_num_neurons();
-    }
 
 private:
 
@@ -170,7 +176,7 @@ private:
                                       const unsigned num_hidden_layers,
                                       const unsigned neurons_per_layer,
                                       const LayerSpec::NeuronType neuron_type,
-                                      const ActivationFunction* activation_func) 
+                                      ActivationFunction* activation_func) 
     {
 
         //Build LayerSpecs from the specification

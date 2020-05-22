@@ -17,7 +17,8 @@
 namespace NeuroEvo {
 
 template <typename G>
-class SingleCartPole : public Domain<G> {
+class SingleCartPole : public Domain<G> 
+{
 
 public:
 
@@ -29,7 +30,8 @@ public:
         _random_start(random_start),
         _print_state_to_file(print_state),
         _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
-        Domain<G>(domain_trace, max_steps+1, render) {
+        Domain<G>(domain_trace, max_steps+1, render) 
+    {
 
         //Remove previous state file
         remove(_state_file_name.c_str());
@@ -38,21 +40,25 @@ public:
         _cart_pole.cart_width = _boundary * 2 / 10;
         _cart_pole.cart_height = _cart_pole.cart_width / 2;
 
-        _cart_pole.render_scale = _screen_width / (_boundary * 2);
+        _cart_pole.render_scale = this->_screen_width / (_boundary * 2);
 
     }
 
 
 protected:
 
-    void render() override {
+    void render() override 
+    {
 
+        //TODO: Fix render!!
+
+        /*
         sf::Event event;
-        while (_window.pollEvent(event))
+        while (this->_window.pollEvent(event))
             if (event.type == sf::Event::Closed)
-                _window.close();
+                this->_window.close();
 
-        _window.clear(sf::Color::Black);
+        this->_window.clear(sf::Color::Black);
 
         //Render cart
         const float cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
@@ -97,11 +103,13 @@ protected:
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+        */
     }
 
 private:
 
-    double single_run(Organism<G>& org, unsigned int rand_seed) override {
+    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    {
 
         //Seed random number generator with same seed as other members of the population
         srand48(rand_seed);
@@ -128,7 +136,7 @@ private:
 
         }
 
-        Phenotypes::Phenotype& phenotype = org.get_phenotype();
+        Phenotype& phenotype = org.get_phenotype();
 
         int steps = 0;
 
@@ -142,11 +150,13 @@ private:
         std::vector<double> outputs(2);
 
         //Start interaction loop
-        while(steps++ < _max_steps) {
+        while(steps++ < _max_steps) 
+        {
 
             if(_print_state_to_file) print_state_to_file(_cart_pole);
 
-            if(_domain_trace) {
+            if(this->_domain_trace) 
+            {
                 std::cout << "x: " << _cart_pole.x << std::endl;
                 std::cout << "x_dot: " << _cart_pole.x_dot << std::endl;
                 std::cout << "theta: " << _cart_pole.theta << std::endl;
@@ -154,14 +164,16 @@ private:
             }
 
             //Not sure what these random constants are
-            if(_markovian) {
+            if(_markovian) 
+            {
 
                 inputs.at(0) = (_cart_pole.x + 2.4) / 4.8;
                 inputs.at(1) = (_cart_pole.x_dot + 0.75) / 1.5;
                 inputs.at(2) = (_cart_pole.theta + _cart_pole.twelve_degrees) / 0.41;
                 inputs.at(3) = (_cart_pole.theta_dot + 1.0) / 2.0;
 
-            } else {
+            } else 
+            {
 
                 inputs.at(0) = (_cart_pole.x + 2.4) / 4.8;
                 inputs.at(1) = (_cart_pole.theta + _cart_pole.twelve_degrees) / 0.41;
@@ -173,7 +185,7 @@ private:
             //Decide which way to push based on which output unit it greater
             bool action = (outputs.at(0) > outputs.at(1)) ? true : false;
 
-            if(_domain_trace) std::cout << "action: " << action << std::endl;
+            if(this->_domain_trace) std::cout << "action: " << action << std::endl;
 
             //Apply action to cart pole
             double force = (action) ? _cart_pole.force_mag : -_cart_pole.force_mag;
@@ -181,15 +193,15 @@ private:
             double sin_theta = sin(_cart_pole.theta);
 
             double temp = (force + _cart_pole.polemass_length * _cart_pole.theta_dot * 
-                           _cart_pole.theta_dot * sin_theta) / _cart_pole.TOTAL_MASS;
+                           _cart_pole.theta_dot * sin_theta) / _cart_pole.total_mass;
 
-            double thetaacc = (_cart_pole.GRAVITY * sin_theta - cos_theta * temp) /
-                              (_cart_pole.POLE_HALF_LENGTH * 
-                                    (_cart_pole.FOUR_THIRDS - _cart_pole.POLE_MASS *
-                                     cos_theta * cos_theta / _cart_pole.TOTAL_MASS));
+            double thetaacc = (_cart_pole.gravity * sin_theta - cos_theta * temp) /
+                              (_cart_pole.pole_half_length * 
+                                    (_cart_pole.four_thirds - _cart_pole.pole_mass *
+                                     cos_theta * cos_theta / _cart_pole.total_mass));
 
-            double xacc = temp - _cart_pole.POLEMASS_LENGTH * thetaacc * cos_theta / 
-                          _cart_pole.TOTAL_MASS;
+            double xacc = temp - _cart_pole.polemass_length * thetaacc * cos_theta / 
+                          _cart_pole.total_mass;
 
             //Update the four state variables using Euler's method
             _cart_pole.x += _cart_pole.tau * _cart_pole.x_dot;
@@ -198,7 +210,7 @@ private:
             _cart_pole.theta_dot += _cart_pole.tau * thetaacc;
 
             //Render
-            if(_render)
+            if(this->_render)
                 render();
 
             //Check for failure
@@ -213,39 +225,38 @@ private:
 
     }
 
-    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override {
+    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    {
 
-        Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
+        NetworkBuilder<G>* network_builder = dynamic_cast<NetworkBuilder<G>*>(&pheno_spec);
 
         //If it is not a network
-        if(network_spec == nullptr) {
-
+        if(network_builder == nullptr) 
+        {
             std::cout << "Only network specifications are allowed with" <<
                         " the single cart pole domain!" << std::endl;
             return false;
-
         }
 
         //If it has the correct number of inputs and outputs
-        if(_markovian) {
+        if(_markovian) 
+        {
 
-            if(network_spec->num_inputs != 4 || network_spec->num_outputs != 2) {
-
+            if(network_builder->get_num_inputs() != 4 || network_builder->get_num_outputs() != 2) 
+            {
                 std::cout << "Number of inputs must be 4 and number of outputs" <<
                             " must be 2 for the markovian single part cole domain" << std::endl;
                 return false;
-
             }
 
-        } else {
-
-            if(network_spec->num_inputs != 2 || network_spec->num_outputs != 2) {
-
+        } else 
+        {
+            if(network_builder->get_num_inputs() != 2 || network_builder->get_num_outputs() != 2) 
+            {
                 std::cout << "Number of inputs must be 2 and number of outputs" <<
                             " must be 2 for the non-markovian single part cole domain" << 
                             std::endl;
                 return false;
-
             }
 
         }
@@ -255,7 +266,8 @@ private:
     }
 
     //Cart Pole struct to store cart variables
-    struct CartPole {
+    struct CartPole 
+    {
     
         const double gravity = 9.8;
         const double cart_mass = 1.0;
@@ -282,7 +294,8 @@ private:
 
     };
 
-    void print_state_to_file(CartPole& cart_pole) {
+    void print_state_to_file(CartPole& cart_pole) 
+    {
 
         std::ofstream state_file;
         state_file.open(_state_file_name, std::fstream::app);

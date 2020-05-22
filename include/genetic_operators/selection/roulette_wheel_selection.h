@@ -19,7 +19,7 @@ class RouletteWheelSelection : public Selection<G> {
 
 public:
 
-    RouletteWheelSelection(const double bias = 1);
+    RouletteWheelSelection(const double bias = 1) :
         _bias(bias),
         _uniform_distr(0., 1.) {}
 

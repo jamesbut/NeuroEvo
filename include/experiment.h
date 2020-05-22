@@ -64,10 +64,10 @@ public:
             int ga_completed = 0;
 
             // Build population
-            population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map_spec);
+            Population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map_spec);
 
             // Create a data collector for printing out generational information
-            DataCollector data_collector;
+            DataCollector<G> data_collector;
 
             do {
 

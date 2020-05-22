@@ -19,7 +19,8 @@
 namespace NeuroEvo {
 
 template <typename G>
-class Domain {
+class Domain 
+{
 
 public:
 
@@ -37,7 +38,8 @@ public:
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials
-    void evaluate_population(Population<G>& pop, const unsigned num_trials, const bool parallel) {
+    void evaluate_population(Population<G>& pop, const unsigned num_trials, const bool parallel) 
+    {
 
         std::vector<std::vector<double> > fitnesses;
 
@@ -68,11 +70,13 @@ public:
     }
 
     //Evaluate individual for a number of trials
-    double evaluate_org(Organism<G>& org, const unsigned num_trials) {
+    double evaluate_org(Organism<G>& org, const unsigned num_trials) 
+    {
 
         std::vector<double> fitnesses(num_trials);
 
-        for(unsigned int i = 0; i < num_trials; i++) {
+        for(unsigned i = 0; i < num_trials; i++) 
+        {
 
             //Need to reset the network
             org.genesis();
@@ -92,7 +96,10 @@ public:
     //Determines whether the current population
     //has 'completed' the domain, this normally
     //comes in the form of achieving a max fitness
-    bool complete() { return _complete; };
+    bool complete() 
+    { 
+        return _complete; 
+    };
 
 protected:
 
@@ -105,16 +112,13 @@ protected:
     virtual double single_run(Organism<G>& org, unsigned rand_seed) = 0;
 
     //Checks domain for completion - can be overriden
-    virtual bool check_for_completion(Population<G>& population) {
-
-        std::vector<Organism<G>>& pop_orgs = population.get_organisms();
-
-        for(std::size_t i = 0; i < pop_orgs.size(); i++)
-            if(pop_orgs.at(i).get_fitness() >= _completion_fitness)
+    virtual bool check_for_completion(Population<G>& population) 
+    {
+        for(const auto& org : population.get_organisms())
+            if(org.get_fitness() >= _completion_fitness)
                 return true;
 
         return false;
-
     }
 
     //All domains should implement how to render themselves

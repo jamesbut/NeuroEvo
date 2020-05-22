@@ -5,48 +5,47 @@
 #include <gp_map/matrix_map.h>
 
 namespace NeuroEvo {
-namespace GPMaps {
 
-struct MatrixMapSpec : GPMapSpec {
+class MatrixMapSpec : GPMapSpec<double>
+{
 
 public:
 
     // Create the identity Matrix Map
-    MatrixMapSpec(const unsigned HEIGHT, const unsigned WIDTH) :
-        HEIGHT(HEIGHT),
-        WIDTH(WIDTH) {}
+    MatrixMapSpec(const unsigned height, const unsigned width) :
+        height(height),
+        width(width) {}
 
     // Create a matrix map specified in a .im file
-    MatrixMapSpec(const std::string& IM_FILE_NAME) :
+    MatrixMapSpec(const std::string& im_file_name) :
         IM_FILE_NAME(std::string(NEURO_EVO_CMAKE_SRC_DIR) + "/config/interaction_matrices/"
-                     + IM_FILE_NAME) {}
+                     + im_file_name) {}
 
-    GPMap* generate_gp_map() override {
+    GPMap* generate_gp_map() override 
+    {
 
-        if(IM_FILE_NAME)
-            return new MatrixMap(*IM_FILE_NAME);
+        if(im_file_name)
+            return new MatrixMap(*im_file_name);
         else
-            return new MatrixMap(*HEIGHT, *WIDTH);
+            return new MatrixMap(*height, *width);
 
     }
 
     // This generates a matrix map from an organism file
-    GPMap* generate_gp_map(const std::string& file_name) override {
-
+    GPMap* generate_gp_map(const std::string& file_name) override 
+    {
         return new MatrixMap(file_name);
-
     }
 
 private:
 
-    std::optional<const unsigned> HEIGHT;
-    std::optional<const unsigned> WIDTH;
+    std::optional<const unsigned> _height;
+    std::optional<const unsigned> _width;
 
-    std::optional<const std::string> IM_FILE_NAME;
+    std::optional<const std::string> _im_file_name;
 
 };
 
-} // namespace GPMaps
 } // namespace NeuroEvo
 
 #endif

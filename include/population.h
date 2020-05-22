@@ -60,7 +60,7 @@ public:
 
             //Mutate new genome
             if(genotype_mutator)
-                genotype_mutator->mutate(child_organism.get_genotype().get_genes());
+                child_organism.get_genotype().mutate();
 
             //Only mutate GPMap if a GPMap mutator has been specified
             //and if the GPMap is vectorisable

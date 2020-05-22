@@ -5,7 +5,9 @@
 
 namespace NeuroEvo {
 
-class QuarticFunction : public Domain {
+template <typename G>
+class QuarticFunction : public Domain<G> 
+{
 
 public:
 
@@ -17,29 +19,26 @@ public:
         _c(c),
         _d(d),
         _e(e),
-        Domain(domain_trace, completion_fitness) {}
+        Domain<G>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override {
+    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    {
 
-        Phenotypes::RealVectorPhenotypeSpec* real_vec_pheno_spec;
-        real_vec_pheno_spec = dynamic_cast<Phenotypes::RealVectorPhenotypeSpec*>(&pheno_spec);
+        RealVectorPhenotypeSpec* real_vec_pheno_spec = 
+            dynamic_cast<RealVectorPhenotypeSpec*>(&pheno_spec);
 
-        if(real_vec_pheno_spec == nullptr) {
-
+        if(real_vec_pheno_spec == nullptr) 
+        {
             std::cerr << "Only real vector phenotype specifications are allowed" <<
                         "with the quartic domain!" << std::endl;
-
             return false;
-
         }
 
-        if(real_vec_pheno_spec->get_num_params() != 1) {
-
+        if(real_vec_pheno_spec->get_num_params() != 1) 
+        {
             std::cerr << "The number of genes needs to equal 1 for a 1-dimensional function!" << 
                 std::endl;
-
             return false;
-
         }
 
         return true;
@@ -48,7 +47,8 @@ public:
 
 private:
 
-    double single_run(Organism& org, unsigned rand_seed) override {
+    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    {
 
         //There are no inputs and outputs for a mathematical function
         //The output is just the value of the gene itself
