@@ -71,8 +71,10 @@ int main(int argc, const char* argv[])
     if(!experiment) exit(0);
     
     //Define genetic operators and parameters
-    const unsigned pop_size = 150;
-    const unsigned max_gens = 1000;
+    //const unsigned pop_size = 150;
+    const unsigned pop_size = 10;
+    //const unsigned max_gens = 1000;
+    const unsigned max_gens = 2;
     const double mutation_rate = 0.4;
     const double mutation_power = 1.0;
 
@@ -86,7 +88,7 @@ int main(int argc, const char* argv[])
     );
 
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, *mutator, *selector);
+    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, nullptr);
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

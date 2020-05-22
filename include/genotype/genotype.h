@@ -38,8 +38,12 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype) 
     {
-        for(const auto& gene : genotype._genes)
-            os << gene << " ";
+        for(std::size_t i = 0; i < genotype._genes.size(); i++)
+        {
+            os << genotype._genes[i];
+            if(i != genotype._genes.size()-1)
+                os << " ";
+        }
         return os;
     }
 

@@ -85,7 +85,7 @@ int main(int argc, const char* argv[])
     );
 
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, *mutator, *selector);
+    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, selector.get());
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

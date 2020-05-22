@@ -138,6 +138,13 @@ public:
 
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const Organism organism)
+    {
+        //Just print genotype for now
+        os << "[" << *organism._genotype << "]" << " Fitness: " << organism._fitness;
+        return os;
+    }
+
 private:
 
     //Use raw pointer here because the phenotype spec

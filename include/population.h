@@ -62,7 +62,6 @@ public:
 
     //Generates new population with the provided genetic operators
     void generate_new_population(Selection<G>* selector,
-                                 Mutator<G>* genotype_mutator,
                                  Mutator<G>* gp_map_mutator) 
     {
 
@@ -71,11 +70,12 @@ public:
         for(std::size_t i = 0; i < _pop_size; i++) {
 
             //Select a genome using given selection operator
-            Organism child_organism = selector->select(_organisms);
+            Organism<G> child_organism = _organisms[i];
+            if(selector)
+                child_organism = selector->select(_organisms);
 
             //Mutate new genome
-            if(genotype_mutator)
-                child_organism.get_genotype().mutate();
+            child_organism.get_genotype().mutate();
 
             //Only mutate GPMap if a GPMap mutator has been specified
             //and if the GPMap is vectorisable
@@ -92,6 +92,13 @@ public:
 
         _organisms = new_pop;
 
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Population& population)
+    {
+        for(std::size_t i = 0; i < population._organisms.size(); i++)
+            os << "Org: " << i << " " << population._organisms[i] << std::endl;
+        return os;
     }
 
 private:

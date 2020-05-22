@@ -51,13 +51,15 @@ public:
 
     void evolutionary_run(const unsigned pop_size,
                           const unsigned max_gens,
-                          Mutator<G>& mutator,
-                          Selection<G>& selector,
+                          Selection<G>* selector,
                           const bool trace = true,
                           const bool parallel = false,
                           const unsigned num_runs = 1,
                           const unsigned num_trials = 1) 
     {
+
+        if(selector == nullptr)
+            std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
 
         for(unsigned i = 0; i < num_runs; i++) {
 
@@ -75,6 +77,8 @@ public:
                 // Evaluate population
                 _domain.evaluate_population(population, num_trials, parallel);
 
+                std::cout << population;
+
                 // Check for completion
                 ga_completed = ga_finished(population, max_gens);
 
@@ -85,7 +89,7 @@ public:
                 if(ga_completed != 0) break;
 
                 // Generate new population using genetic operators
-                population.generate_new_population(&selector, &mutator, nullptr);
+                population.generate_new_population(selector, nullptr);
 
                 gen++;
 
