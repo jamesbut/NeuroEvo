@@ -118,7 +118,7 @@ public:
         _phenotype.reset(_phenotype_spec->generate_phenotype(*_genotype, _gp_map.get()));
     }
 
-    void print_org(const std::string& file_name) 
+    void save_org_to_file(const std::string& file_name) const
     {
         
         //Print fitness and then the genotype

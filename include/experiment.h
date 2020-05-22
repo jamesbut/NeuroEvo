@@ -53,6 +53,7 @@ public:
                           const unsigned max_gens,
                           Mutator<G>& mutator,
                           Selection<G>& selector,
+                          const bool trace = true,
                           const bool parallel = false,
                           const unsigned num_runs = 1,
                           const unsigned num_trials = 1) 
@@ -71,8 +72,6 @@ public:
 
             do {
 
-                std::cout << "Gen: " << gen << std::endl;
-
                 // Evaluate population
                 _domain.evaluate_population(population, num_trials, parallel);
 
@@ -80,7 +79,7 @@ public:
                 ga_completed = ga_finished(population, max_gens);
 
                 // Print population data after fitness evaluation
-                data_collector.collect_generational_data(population);
+                data_collector.collect_generational_data(population, trace);
 
                 // Break if completed
                 if(ga_completed != 0) break;

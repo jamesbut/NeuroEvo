@@ -59,7 +59,7 @@ public:
                                                      fitnesses.at(i).end(), 0.0) /
                                      fitnesses.at(i).size();
 
-            pop.get_organisms().at(i).set_fitness(average_fitness);
+            pop.set_organism_fitness(i, average_fitness);
 
         }
 
@@ -150,9 +150,10 @@ private:
                                                           const unsigned num_trials) {
 
         //Store fitnesses from runs
-        std::vector<std::vector<double> > fitnesses(pop.get_size(), std::vector<double>(num_trials));
+        std::vector<std::vector<double> > fitnesses(pop.get_size(), 
+                                                    std::vector<double>(num_trials));
 
-        std::vector<Organism<G>>& orgs = pop.get_organisms();
+        const std::vector<Organism<G>>& orgs = pop.get_organisms();
 
         for(unsigned int i = 0; i < num_trials; i++) {
 
@@ -161,14 +162,11 @@ private:
             //So they all generator the same random numbers for each run
             auto seed = lrand48();
 
-            for(std::size_t j = 0; j < pop.get_size(); j++) {
-
-                double fitness = single_run(orgs.at(j), seed);
-
-                fitnesses.at(j).at(i) = fitness;
-
-                orgs.at(j).genesis();
-
+            for(std::size_t j = 0; j < pop.get_size(); j++) 
+            {
+                const double fitness = single_run(pop.get_mutable_organism(j), seed);
+                fitnesses[j][i] = fitness;
+                pop.organism_genesis(j);
             }
 
         }

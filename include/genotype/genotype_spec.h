@@ -16,7 +16,11 @@ public:
                  Mutator<G>* mutator = nullptr) : 
         _num_genes(num_genes),
         _init_distr(init_distr),
-        _mutator(mutator) {}
+        _mutator(mutator) 
+    {
+        if(!_mutator)
+            std::cout << "NOTE: No mutator provided to genotype!" << std::endl;
+    }
 
     //Generate genotype from specification
     Genotype<G>* generate_genotype() {

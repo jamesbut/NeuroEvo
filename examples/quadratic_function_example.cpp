@@ -10,6 +10,7 @@
 #include <phenotype/phenotype_specs/real_vector_phenotype_spec.h>
 #include <domains/mathematical_functions/quadratic_function.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
+#include <genetic_operators/selection/truncation_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
 #include <util/random/uniform_real_distribution.h>
 
@@ -80,7 +81,8 @@ int main(int argc, const char* argv[])
     );
 
     std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        new NeuroEvo::RouletteWheelSelection<gene_type>()
+        //new NeuroEvo::RouletteWheelSelection<gene_type>()
+        new NeuroEvo::TruncationSelection<gene_type>(0.4)
     );
 
     // Run either an evolutionary run or an individual run

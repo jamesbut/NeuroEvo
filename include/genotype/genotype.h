@@ -18,11 +18,7 @@ public:
 
     Genotype(const std::vector<G>& genes, Mutator<G>* mutator = nullptr) :
         _genes(genes),
-        _mutator(mutator) 
-    {
-        if(!_mutator)
-            std::cout << "NOTE: No mutator provided to genotype!" << std::endl;
-    }
+        _mutator(mutator) {}
 
     auto clone() const
     {

@@ -19,11 +19,13 @@
 namespace NeuroEvo {
 
 template <typename G>
-class DataCollector {
+class DataCollector 
+{
 
 public:
 
-    DataCollector(const bool uuid_folders = true) {
+    DataCollector(const bool uuid_folders = true) 
+    {
     
         //First check to see whether data directory
         //exists and if not, create it
@@ -36,14 +38,16 @@ public:
         path << DATA_PATH << "/";
 
         //Use a UUID for folder name or the date and time
-        if(uuid_folders) {
+        if(uuid_folders) 
+        {
 
             //Create a unique indentifier for the directory name
             boost::uuids::uuid uuid = boost::uuids::random_generator()();
 
             folder_name << path.str() << boost::uuids::to_string(uuid);
 
-        } else {
+        } else 
+        {
 
             folder_name << path.str() << "population-";
 
@@ -61,106 +65,84 @@ public:
 
     }
 
-    void collect_generational_data(Population<G>& population) {
+    void collect_generational_data(Population<G>& population, const bool trace = true) 
+    {
+        
+        //Generational winner
+        const Organism<G>& gen_winner = calculate_generational_winner(population);
+        save_generational_winner_to_file(gen_winner);
 
-        print_population_to_file(population);
-        print_generational_winner(population);
-        print_best_winner_so_far(population);
+        //Best winner so far
+        calculate_best_winner_so_far(gen_winner);
+        save_best_winner_so_far_to_file();
 
-    }
+        //Save entire population to file
+        save_population_to_file(population);
 
-    void print_population_winner(Population<G>& population) {
-
-        std::vector<Organism<G>>& orgs = population.get_organisms();
-
-        //Find highest scoring organism in the population
-        double largest_fitness = orgs.at(0).get_fitness();
-        int best_org = 0;
-
-        for(std::size_t i = 1; i < population.get_size(); i++)
-            if(orgs.at(i).get_fitness() > largest_fitness) {
-                largest_fitness = orgs.at(i).get_fitness();
-                best_org = i;
-            }
-
-        //Print out highest scoring organism
-        std::stringstream file_name;
-        file_name << _folder_path << "/final_pop_winner";
-
-        orgs.at(best_org).print_org(file_name.str());
-
-        std::cout << "Final pop winner printed" << std::endl;
+        if(trace)
+            std::cout << "[Gen : " << population.get_gen_num()
+                      << " | Best winner so far fitness: " << _best_winner_so_far->get_fitness()
+                      << " | Gen winner fitness: " << gen_winner.get_fitness() << "]" << std::endl;
 
     }
 
-    void print_generational_winner(Population<G>& population) {
 
-        std::vector<Organism<G>>& orgs = population.get_organisms();
+private:
+
+    const Organism<G>& calculate_generational_winner(const Population<G>& population) const 
+    {
+        const std::vector<Organism<G>>& orgs = population.get_organisms();
 
         //Find highest scoring organism in the population
-        double largest_fitness = orgs.at(0).get_fitness();
-        int best_org = 0;
+        std::size_t gen_winner_index = 0;
+        double gen_winner_fitness = orgs.at(gen_winner_index).get_fitness();
 
         for(std::size_t i = 1; i < population.get_size(); i++)
-            if(orgs.at(i).get_fitness() > largest_fitness) {
-                largest_fitness = orgs.at(i).get_fitness();
-                best_org = i;
+            if(orgs[i].get_fitness() > gen_winner_fitness) 
+            {
+                gen_winner_index = i;
+                gen_winner_fitness = orgs[i].get_fitness();
             }
 
+        return orgs[gen_winner_index];
+    }
+
+    void calculate_best_winner_so_far(const Organism<G>& gen_winner) 
+    {
+        //Check whether gen winner beats the highest score so far
+        if(!_best_winner_so_far || gen_winner.get_fitness() > _best_winner_so_far->get_fitness())
+            _best_winner_so_far = gen_winner;
+    }
+
+    void save_generational_winner_to_file(const Organism<G>& gen_winner) const
+    {
         //Print out highest scoring organism
         std::stringstream file_name;
         file_name << _folder_path << "/generational_winner";
 
-        orgs.at(best_org).print_org(file_name.str());
-
+        gen_winner.save_org_to_file(file_name.str());
     }
 
-    void print_best_winner_so_far(Population<G>& population) {
-
-        std::vector<Organism<G>>& orgs = population.get_organisms();
-
-        //Find highest scoring organism in the population
-        double largest_fitness = orgs.at(0).get_fitness();
-        int best_org = 0;
-
-        for(std::size_t i = 1; i < population.get_size(); i++)
-            if(orgs.at(i).get_fitness() > largest_fitness) {
-                largest_fitness = orgs.at(i).get_fitness();
-                best_org = i;
-            }
-
-        //Check whether they beat the highest score so far
-        if(!best_fitness_so_far.has_value())
-            best_fitness_so_far = largest_fitness;
-        else {
-
-            if(largest_fitness > best_fitness_so_far)
-                best_fitness_so_far = largest_fitness;
-            else
-                //Don't print if the best fitness so far has not been beaten
-                return;
-
-        }
-
-        //Print out highest scoring organism
+    void save_best_winner_so_far_to_file() const
+    {
         std::stringstream file_name;
         file_name << _folder_path << "/best_winner_so_far";
 
-        orgs.at(best_org).print_org(file_name.str());
-
+        _best_winner_so_far->save_org_to_file(file_name.str());
     }
 
-    void delete_folder() const {
-
+    void delete_folder() const 
+    {
         boost::filesystem::remove_all(_folder_path);
-
     }
 
-    const std::string get_folder_path() { return _folder_path; };
+    const std::string& get_folder_path() const
+    { 
+        return _folder_path; 
+    };
 
-private:
-
-    void print_population_to_file(Population<G>& population) {
+    void save_population_to_file(Population<G>& population) 
+    {
 
         //Create and open file
         std::stringstream gen_file_name;
@@ -170,23 +152,13 @@ private:
         std::ofstream gen_file;
         gen_file.open(gen_file_name.str());
 
-        //Write genome fitness and genome data
-        std::vector<Organism<G>>& pop_orgs = population.get_organisms();
-
-        for(unsigned int i = 0; i < population.get_size(); i++) {
-
-            Organism<G>& org = pop_orgs.at(i);
-            Genotype<G>& genotype = org.get_genotype();
-
+        //Write genome fitness and genome data to file
+        for(const auto& org : population.get_organisms())
+        {
             //Write fitness
             gen_file << org.get_fitness();
 
-            //Write genome
-            //for(unsigned int j = 0; j < genotype.get_genes().size(); j++)
-            //  gen_file << "," << genotype.get_genes().at(j);
-
             gen_file << std::endl;
-
         }
 
         //Close file
@@ -198,7 +170,7 @@ private:
     //all data for a run
     std::string _folder_path;
 
-    std::optional<double> best_fitness_so_far;
+    std::optional<Organism<G>> _best_winner_so_far;
 
 };
 

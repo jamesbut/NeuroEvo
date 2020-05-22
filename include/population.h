@@ -30,9 +30,14 @@ public:
             _organisms.push_back(Organism(geno_spec, pheno_spec, gp_map_spec));
     }
 
-    std::vector<Organism<G>>& get_organisms() 
+    const std::vector<Organism<G>>& get_organisms() const
     {
         return _organisms;
+    }
+
+    Organism<G>& get_mutable_organism(const std::size_t org) 
+    {
+        return _organisms.at(org);
     }
 
     const unsigned get_size() const
@@ -43,6 +48,16 @@ public:
     const unsigned& get_gen_num() const 
     {
         return _gen;
+    }
+
+    void set_organism_fitness(const std::size_t org, const double fitness) 
+    {
+        _organisms.at(org).set_fitness(fitness);
+    }
+
+    void organism_genesis(const std::size_t org)
+    {
+        _organisms.at(org).genesis();
     }
 
     //Generates new population with the provided genetic operators

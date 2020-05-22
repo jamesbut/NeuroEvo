@@ -22,7 +22,7 @@ public:
         _percentage_selection(percentage_selection),
         _uniform_distr(0., 1.) {}
 
-    Organism<G> select(std::vector<Organism<G>>& orgs) override 
+    Organism<G> select(const std::vector<Organism<G>>& orgs) override 
     {
 
         // Get vector of sorted population indices
@@ -46,7 +46,7 @@ public:
 
 private:
 
-    std::vector<int> sort_population(std::vector<Organism<G>>& population) 
+    std::vector<int> sort_population(const std::vector<Organism<G>>& orgs) 
     {
 
         // Create vector of unsorted indices
