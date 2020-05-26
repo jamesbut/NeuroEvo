@@ -42,9 +42,15 @@ int main(int argc, const char* argv[])
         new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
     );
 
-    // Specify genotype
+    //Specify mutator and genotype
+    const double mutation_rate = 0.4;
+    const double mutation_power = 1.0;
+    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
+        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
+    );
+
     std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
-        new NeuroEvo::GenotypeSpec<gene_type>(num_genes, *genotype_distr)
+        new NeuroEvo::GenotypeSpec<gene_type>(num_genes, *genotype_distr, mutator)
     );
 
     // Build quadratic function domain
@@ -71,16 +77,10 @@ int main(int argc, const char* argv[])
     if(!experiment) exit(0);
     
     //Define genetic operators and parameters
-    //const unsigned pop_size = 150;
-    const unsigned pop_size = 10;
-    //const unsigned max_gens = 1000;
-    const unsigned max_gens = 2;
-    const double mutation_rate = 0.4;
-    const double mutation_power = 1.0;
-
-    std::unique_ptr<NeuroEvo::Mutator<gene_type>> mutator(
-        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
-    );
+    const unsigned pop_size = 150;
+    //const unsigned pop_size = 1;
+    const unsigned max_gens = 1000;
+    //const unsigned max_gens = 1;
 
     std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
         //new NeuroEvo::RouletteWheelSelection<gene_type>()
@@ -88,7 +88,7 @@ int main(int argc, const char* argv[])
     );
 
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, nullptr);
+    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, selector.get());
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

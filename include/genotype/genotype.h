@@ -16,7 +16,7 @@ class Genotype {
 
 public:
 
-    Genotype(const std::vector<G>& genes, Mutator<G>* mutator = nullptr) :
+    Genotype(const std::vector<G>& genes, std::shared_ptr<Mutator<G>> mutator = nullptr) :
         _genes(genes),
         _mutator(mutator) {}
 

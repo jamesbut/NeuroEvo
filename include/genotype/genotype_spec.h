@@ -13,7 +13,7 @@ class GenotypeSpec {
 public:
 
     GenotypeSpec(const unsigned num_genes, Distribution<G>& init_distr,
-                 Mutator<G>* mutator = nullptr) : 
+                 std::shared_ptr<Mutator<G>> mutator = nullptr) : 
         _num_genes(num_genes),
         _init_distr(init_distr),
         _mutator(mutator) 
@@ -30,7 +30,7 @@ public:
         for(std::size_t i = 0; i < genes.size(); i++)
             genes[i] = _init_distr.next();
 
-        return new Genotype<G>(genes, _mutator.get());
+        return new Genotype<G>(genes, _mutator);
 
     }
 

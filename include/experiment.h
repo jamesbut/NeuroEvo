@@ -77,8 +77,6 @@ public:
                 // Evaluate population
                 _domain.evaluate_population(population, num_trials, parallel);
 
-                std::cout << population;
-
                 // Check for completion
                 ga_completed = ga_finished(population, max_gens);
 
