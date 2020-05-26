@@ -48,7 +48,7 @@ public:
             _params_per_neuron = inputs_per_neuron + 2;
 
         //GRU
-        if(_neuron_type == GRU)
+        if(_neuron_type == GRU) 
             _params_per_neuron = (inputs_per_neuron * 3) + 6;
 
     }
