@@ -54,7 +54,7 @@ int main(int argc, const char* argv[])
 
     const unsigned num_inputs = 1;
     std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type>> pheno_spec(
-        new NeuroEvo::NetworkBuilder<gene_type>(num_inputs, layer_specs)
+        new NeuroEvo::NetworkBuilder(num_inputs, layer_specs)
     );
 
     // Specify the distribution used for the initial gene values

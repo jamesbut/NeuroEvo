@@ -16,7 +16,7 @@ public:
     bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
     {
 
-        NetworkBuilder<G>* network_builder = dynamic_cast<NetworkBuilder<G>*>(&pheno_spec);
+        NetworkBuilder* network_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
         if(network_builder == nullptr) 

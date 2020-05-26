@@ -31,11 +31,12 @@ public:
     };
 
     LayerSpec(const NeuronType neuron_type, const unsigned num_neurons,
-              const unsigned inputs_per_neuron, ActivationFunction* activation_func) :
+              const unsigned inputs_per_neuron, 
+              ActivationFunction* activation_func) :
         _neuron_type(neuron_type),
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron),
-        _activation_func(activation_func) 
+        _activation_func(activation_func->clone()) 
     {
 
         //Normal

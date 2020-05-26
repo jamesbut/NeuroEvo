@@ -4,16 +4,18 @@
 /*
  * A NetworkBuilder is used to define and build different types of neural
  * networks.
+ * For now networks can only be built from genotypes with genes of type double
+ * although this can be made generic in the future.
 */
 
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <util/maths/activation_functions/sigmoid.h>
+#include <phenotype/neural_network/network.h>
 
 namespace NeuroEvo {
 
-template <typename G>
-class NetworkBuilder : public PhenotypeSpec<G> 
+class NetworkBuilder : public PhenotypeSpec<double> 
 {
 
 public:
@@ -22,29 +24,36 @@ public:
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                    const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
+                   const bool trace = false,
                    ActivationFunction* activation_func = new Sigmoid()) :
         _num_inputs(num_inputs),
         _num_outputs(num_outputs),
+        _trace(trace),
         _layer_specs(build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                        neurons_per_layer, neuron_type, activation_func)),
-        PhenotypeSpec<G>(required_num_genes(num_inputs, num_outputs, num_hidden_layers,
-                                            neurons_per_layer, neuron_type, activation_func)) {}
+        PhenotypeSpec<double>(required_num_genes(num_inputs, num_outputs, 
+                                                 num_hidden_layers, neurons_per_layer, 
+                                                 neuron_type, activation_func)) {}
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const unsigned num_inputs, 
-                   const std::vector<LayerSpec>& layer_specs) :
+                   const std::vector<LayerSpec>& layer_specs,
+                   const bool trace = false) :
         _num_inputs(num_inputs),
         _num_outputs(layer_specs.back().get_num_neurons()),
         _layer_specs(layer_specs),
-        PhenotypeSpec<G>(required_num_genes(num_inputs, layer_specs)) {}
+        _trace(trace),
+        PhenotypeSpec<double>(required_num_genes(num_inputs, layer_specs)) {}
 
-    Phenotype* generate_phenotype(Genotype<G>& genotype,
-                                  GPMap<G>* gp_map) override {
+    Phenotype* generate_phenotype(Genotype<double>& genotype,
+                                  GPMap<double>* gp_map) override {
 
-        std::cerr << "Write how to generate network in NetworkBuilder!" << std::endl;
-        exit(0);
-        return nullptr;
+        //Check for GP Map!
 
+        //Check for Hebbian!        
+        
+        return new Network(genotype.genes(), _layer_specs, _trace);
+        
     }
 
     auto clone() const 
@@ -70,6 +79,11 @@ public:
     const std::vector<LayerSpec>& get_layer_specs() const
     {
         return _layer_specs;
+    }
+
+    bool get_trace() const 
+    {
+        return _trace;
     }
 
 private:    
@@ -244,6 +258,8 @@ private:
     const unsigned _num_outputs;
 
     std::vector<LayerSpec> _layer_specs;
+
+    const bool _trace;
 
     /* Optional parameters */
     std::optional<HebbsSpec> _hebbs_spec;

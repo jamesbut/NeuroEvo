@@ -29,10 +29,10 @@ int main(int argc, const char* argv[])
     const unsigned num_outputs = 2;
     const unsigned num_hidden_layers = 0;
     const unsigned neurons_per_layer = 0;
-    std::unique_ptr<NeuroEvo::NetworkBuilder<gene_type>> network_builder(
-        new NeuroEvo::NetworkBuilder<gene_type>(num_inputs, num_outputs,
-                                                num_hidden_layers, neurons_per_layer,
-                                                NeuroEvo::LayerSpec::NeuronType::Recurrent)
+    std::unique_ptr<NeuroEvo::NetworkBuilder> network_builder(
+        new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
+                                     num_hidden_layers, neurons_per_layer,
+                                     NeuroEvo::LayerSpec::NeuronType::Recurrent)
     );
 
     const bool evolve_init_weights = false;

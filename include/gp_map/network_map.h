@@ -20,7 +20,7 @@ class NetworkMap : public GPMap<double>
 
 public:
 
-    NetworkMap(NetworkBuilder<double>& net_spec, const std::string& file_name);
+    NetworkMap(NetworkBuilder& net_spec, const std::string& file_name);
 
     Phenotype* map(Genotype<double>& genotype,
                    PhenotypeSpec<double>& pheno_spec) override;
@@ -33,12 +33,12 @@ protected:
 
     NetworkMap* clone_impl() const override { return new NetworkMap(*this); };
 
-    Network<double> read_network(const std::string& file_name,
-                                 NetworkBuilder<double>& net_spec);
+    Network read_network(const std::string& file_name,
+                         NetworkBuilder& net_spec);
 
 private:
 
-    Network<double> _decoder;
+    Network _decoder;
 
 };
 

@@ -108,6 +108,17 @@ public:
 
     }
 
+    std::vector<double> activate(const std::vector<double>& inputs) override
+    {
+        if(_print_weights_to_file)
+        {
+            print_weights_to_file();
+            print_outputs_to_file();
+        }
+
+        return propogate(inputs);
+    }
+
 protected:
 
     virtual HebbsNetwork* clone_impl() const override 
@@ -121,6 +132,38 @@ private:
     {
         for(unsigned i = 0; i < _net_spec.layer_specs.size(); i++)
             _layers.push_back(HebbsLayer(_net_spec.layer_specs.at(i), _trace));
+    }
+
+    void print_weights_to_file() const
+    {
+
+        std::ofstream weight_file;
+        weight_file.open(_net_builder.get_hebbs_spec().get_weights_file_name(), 
+                         std::fstream::app);
+
+        for(const auto& layer : _layers)
+            layer.print_weights_to_file(weight_file);
+
+        weight_file << std::endl;
+
+        weight_file.close();
+
+    }
+
+    void print_outputs_to_file() const
+    {
+
+        std::ofstream output_file;
+        output_file.open(_net_builder.get_hebbs_spec().get_outputs_file_name(), 
+                         std::fstream::app);
+
+        for(const auto& layer : _layers)
+            layer.print_outputs_to_file(output_file);
+
+        output_file << std::endl;
+
+        output_file.close();
+
     }
 
 };

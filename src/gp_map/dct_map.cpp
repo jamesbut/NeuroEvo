@@ -25,8 +25,10 @@ Phenotype* DCTMap::map(Genotype<double>& genotype,
     Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
 
     //TODO: For now, can only turn into Fixed Network
-    NetworkBuilder<double>* net_spec = dynamic_cast<NetworkBuilder<double>*>(&pheno_spec);
-    return new Network(traits.get_vector(), *net_spec);
+    NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
+    return new Network(traits.get_vector(), 
+                       net_builder->get_layer_specs(), 
+                       net_builder->get_trace());
 
 }
 

@@ -78,13 +78,10 @@ int main(int argc, const char* argv[])
     
     //Define genetic operators and parameters
     const unsigned pop_size = 150;
-    //const unsigned pop_size = 1;
     const unsigned max_gens = 1000;
-    //const unsigned max_gens = 1;
 
     std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        //new NeuroEvo::RouletteWheelSelection<gene_type>()
-        new NeuroEvo::TruncationSelection<gene_type>(0.4)
+        new NeuroEvo::RouletteWheelSelection<gene_type>()
     );
 
     // Run either an evolutionary run or an individual run
