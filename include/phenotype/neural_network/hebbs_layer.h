@@ -7,7 +7,7 @@
 
 namespace NeuroEvo {
 
-class HebbsLayer : Layer {
+class HebbsLayer : public Layer {
 
 public:
 

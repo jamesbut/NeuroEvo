@@ -12,6 +12,8 @@
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <util/maths/activation_functions/sigmoid.h>
 #include <phenotype/neural_network/network.h>
+#include <phenotype/neural_network/hebbs_network.h>
+#include <phenotype/phenotype_specs/hebbs_spec.h>
 
 namespace NeuroEvo {
 
@@ -50,7 +52,9 @@ public:
 
         //Check for GP Map!
 
-        //Check for Hebbian!        
+        //Check for Hebbian
+        if(_hebbs_spec)
+           return new HebbsNetwork(genotype.genes(), _layer_specs, *_hebbs_spec, _trace);
         
         return new Network(genotype.genes(), _layer_specs, _trace);
         
@@ -85,9 +89,6 @@ public:
     {
         return _trace;
     }
-
-private:    
-    struct HebbsSpec;
 
 public:
 
@@ -201,57 +202,6 @@ private:
         return required_num_genes(num_inputs, layer_specs);
 
     } 
-
-    /* Contains information about a Hebbian specification. 
-     * A Hebbian network can either evolve the initial weights before hebbian training
-     * or it can not evolve them - if it doesn't evolve them, the question is whether
-     * the intial weights are set randomly or to a some default value.
-     */
-    struct HebbsSpec
-    {
-
-    public:
-
-        HebbsSpec(const bool evolve_init_weights,
-                  const std::optional<double> default_init_weight = std::nullopt,
-                  const bool print_weights_to_file = false,
-                  const std::optional<std::string>& weights_file_name = std::nullopt,
-                  const std::optional<std::string>& outputs_file_name = std::nullopt) :
-            _evolve_init_weights(evolve_init_weights),
-            _default_init_weight(default_init_weight), 
-            _print_weights_to_file(print_weights_to_file), 
-            _weights_file_name(weights_file_name), 
-            _outputs_file_name(outputs_file_name) {}
-
-        const bool get_evolve_init_weights() const 
-        {
-            return _evolve_init_weights;
-        }
-
-        const bool get_print_weights_to_file() const
-        {
-            return _print_weights_to_file;
-        }
-
-        const std::string& get_weights_file_name() const
-        {
-            return *_weights_file_name;
-        }
-
-        const std::string& get_outputs_file_name() const
-        {
-            return *_outputs_file_name;
-        }
-
-    private:
-
-        const bool _evolve_init_weights;
-        const std::optional<double> _default_init_weight;
-        const bool _print_weights_to_file;
-        const std::optional<std::string> _weights_file_name;
-        const std::optional<std::string> _outputs_file_name;
-
-    };
 
     /* Essential parameters of any network */
     const unsigned _num_inputs;

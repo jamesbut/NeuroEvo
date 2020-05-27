@@ -20,6 +20,14 @@ public:
 
     void reset() override;
 
+protected:
+
+    Neuron* clone_impl() const override
+    {
+        return new HebbsNeuron(*this);
+    }
+
+
 private:
 
     std::vector<double> _learning_rates;

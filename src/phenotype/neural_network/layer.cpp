@@ -5,23 +5,25 @@
 namespace NeuroEvo {
 
 Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
-    _layer_spec(layer_spec),
+    _params_per_neuron(layer_spec.get_params_per_neuron()),
+    _num_neurons(layer_spec.get_num_neurons()),
     _trace(trace) 
 {
 
-    if(_layer_spec.get_neuron_type() == LayerSpec::NeuronType::GRU)
-        for(unsigned i = 0; i < _layer_spec.get_num_neurons(); i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_layer_spec, _trace)));
+    if(layer_spec.get_neuron_type() == LayerSpec::NeuronType::GRU)
+        for(unsigned i = 0; i < layer_spec.get_num_neurons(); i++)
+            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(layer_spec, _trace)));
     else
-        for(unsigned i = 0; i < _layer_spec.get_num_neurons(); i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(_layer_spec, _trace)));
+        for(unsigned i = 0; i < layer_spec.get_num_neurons(); i++)
+            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(layer_spec, _trace)));
 
 }
 
 Layer::Layer(const Layer& layer) :
-    _layer_spec(layer._layer_spec),
+    _params_per_neuron(layer._params_per_neuron),
+    _num_neurons(layer._num_neurons),
     _trace(layer._trace),
-    _neurons(layer._layer_spec.get_num_neurons()) 
+    _neurons(layer._num_neurons) 
 {
 
     for(std::size_t i = 0; i < _neurons.size(); i++)
@@ -38,12 +40,12 @@ void Layer::set_weights(const std::vector<double>& weights)
     for(const auto& neuron : _neurons)
     {
 
-        end += _layer_spec.get_params_per_neuron();
+        end += _params_per_neuron;
 
         std::vector<double> tempW(start, end);
         neuron->set_weights(tempW);
 
-        start += _layer_spec.get_params_per_neuron();
+        start += _params_per_neuron;
 
     }
 
@@ -51,7 +53,7 @@ void Layer::set_weights(const std::vector<double>& weights)
 
 unsigned Layer::get_number_of_weights() const
 {
-    return _layer_spec.get_num_neurons() * _layer_spec.get_params_per_neuron();
+    return _num_neurons * _params_per_neuron;
 }
 
 std::vector<double> Layer::evaluate(const std::vector<double>& inputs) 

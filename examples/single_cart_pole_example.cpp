@@ -31,8 +31,7 @@ int main(int argc, const char* argv[])
     const unsigned neurons_per_layer = 0;
     std::unique_ptr<NeuroEvo::NetworkBuilder> network_builder(
         new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
-                                     num_hidden_layers, neurons_per_layer,
-                                     NeuroEvo::LayerSpec::NeuronType::Recurrent)
+                                     num_hidden_layers, neurons_per_layer)
     );
 
     const bool evolve_init_weights = false;
@@ -46,11 +45,16 @@ int main(int argc, const char* argv[])
         new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
     );
 
-    // Specify genotype
-    // This is done after specifying phenotype so the number
-    // of genes required is known.
+    // Specify genotype and mutator
+    const double mutation_rate = 0.4;
+    const double mutation_power = 1.0;
+    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
+        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
+    );
+
     std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
-        new NeuroEvo::GenotypeSpec<gene_type>(network_builder->get_num_params(), *genotype_distr)
+        new NeuroEvo::GenotypeSpec<gene_type>(network_builder->get_num_params(), *genotype_distr,
+                                              mutator)
     );
 
     // Build single cart pole domain
@@ -85,12 +89,6 @@ int main(int argc, const char* argv[])
     //Define genetic operators and parameters
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
-    const double mutation_rate = 0.4;
-    const double mutation_power = 1.0;
-
-    std::unique_ptr<NeuroEvo::Mutator<gene_type>> mutator(
-        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
-    );
 
     std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
         new NeuroEvo::RouletteWheelSelection<gene_type>()

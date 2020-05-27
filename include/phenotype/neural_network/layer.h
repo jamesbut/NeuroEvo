@@ -17,10 +17,17 @@ public:
     Layer(const LayerSpec& layer_spec, const bool trace);
 
     Layer(const Layer& layer);
+    /*  
     Layer& operator=(const Layer& layer) = default;
     ~Layer() = default;
     Layer(Layer&& layer) = default;
     Layer& operator=(Layer&& layer) = default;
+    */
+
+    auto clone() const
+    {
+        return std::unique_ptr<Layer>(clone_impl());
+    }
 
     void set_weights(const std::vector<double>& weights);
     unsigned get_number_of_weights() const;
@@ -35,9 +42,14 @@ public:
 
 protected:
 
-    //TODO: Have all the specs as references
-    LayerSpec _layer_spec;
-    bool _trace;
+    virtual Layer* clone_impl() const
+    {
+        return new Layer(*this);
+    }
+
+    const bool _trace;
+    const unsigned _params_per_neuron;
+    const unsigned _num_neurons;
 
     std::vector<std::unique_ptr<Neuron> > _neurons;
 

@@ -19,6 +19,9 @@ public:
             const bool trace = false) :
         _trace(trace)
     {
+        //TODO: Can't call this here!!
+        std::cerr << "See Network constructor!" << std::endl;
+        exit(0);
         create_net(layer_specs, trace);
     }
 
@@ -27,8 +30,18 @@ public:
             const bool trace = false) :
         _trace(trace)
     {
+        //TODO: Can't call this here!!
+        std::cerr << "See Network constructor!" << std::endl;
+        exit(0);
         create_net(layer_specs, trace);
         propogate_weights(traits);
+    }
+
+    Network(const Network& network) :
+        _trace(network._trace)
+    {
+        for(std::size_t i = 0; network._layers.size(); i++)
+            _layers[i] = network._layers[i]->clone();
     }
 
     void propogate_weights(const std::vector<double>& weights) 
@@ -40,12 +53,12 @@ public:
         for(auto& layer : _layers)
         {
 
-            end += layer.get_number_of_weights();
+            end += layer->get_number_of_weights();
 
             std::vector<double> tempW(start, end);
-            layer.set_weights(tempW);
+            layer->set_weights(tempW);
 
-            start += layer.get_number_of_weights();
+            start += layer->get_number_of_weights();
 
         }
 
@@ -72,7 +85,7 @@ protected:
     void print_params() override
     {
         for(auto& layer : _layers)
-            layer.print_params();
+            layer->print_params();
     }
 
     std::vector<double> propogate(const std::vector<double>& inputs) 
@@ -82,23 +95,23 @@ protected:
         for(std::size_t i = 0; i < _layers.size(); i++) 
         {
             if(_trace) std::cout << "\nLayer: " << i << std::endl;
-            ins = _layers[i].evaluate(ins);
+            ins = _layers[i]->evaluate(ins);
         }
 
         return ins;
     }
 
-private:
-
     virtual void create_net(const std::vector<LayerSpec>& layer_specs, const bool trace) 
     {
         for(const auto& layer_spec : layer_specs)
-            _layers.push_back(Layer(layer_spec, trace));
+            _layers.push_back(
+                std::unique_ptr<Layer>(new Layer(layer_spec, trace))
+            );
     }
 
     const bool _trace;
 
-    std::vector<Layer> _layers;
+    std::vector<std::unique_ptr<Layer>> _layers;
 
 };
 
