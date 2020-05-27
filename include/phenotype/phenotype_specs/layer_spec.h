@@ -97,6 +97,11 @@ public:
         return _params_per_neuron;
     }
 
+    unsigned get_num_weights() const
+    {
+        return _num_neurons * _params_per_neuron;
+    }
+
     const std::unique_ptr<ActivationFunction>& get_activation_func() const
     {
         return _activation_func;

@@ -25,10 +25,8 @@ Layer::Layer(const Layer& layer) :
     _trace(layer._trace),
     _neurons(layer._num_neurons) 
 {
-
     for(std::size_t i = 0; i < _neurons.size(); i++)
         _neurons[i] = layer._neurons[i]->clone();
-
 }
 
 void Layer::set_weights(const std::vector<double>& weights) 

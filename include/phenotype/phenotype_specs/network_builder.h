@@ -54,9 +54,29 @@ public:
 
         //Check for Hebbian
         if(_hebbs_spec)
-           return new HebbsNetwork(genotype.genes(), _layer_specs, *_hebbs_spec, _trace);
+        {
+
+            HebbsNetwork* network = new HebbsNetwork(*_hebbs_spec , _trace);
+            network->create_net(_layer_specs);
+
+            //Split genes for Hebbs network into weights and learning rates
+            const std::pair<std::vector<double>, std::vector<double>> split_genes =
+                split_hebbs_traits(genotype.genes());
+            network->propogate_weights(split_genes.first);
+            network->propogate_learning_rates(split_genes.second); 
+
+            return network;
+
+        } else 
+        {
         
-        return new Network(genotype.genes(), _layer_specs, _trace);
+            Network* network = new Network(_trace);
+            network->create_net(_layer_specs);
+            network->propogate_weights(genotype.genes());
+
+            return network;
+
+        }
         
     }
 
@@ -202,6 +222,55 @@ private:
         return required_num_genes(num_inputs, layer_specs);
 
     } 
+
+    const std::pair<std::vector<double>, std::vector<double>> 
+        split_hebbs_traits(const std::vector<double>& traits)
+    {
+        //Work out number of total connections
+        unsigned num_connections = 0;
+
+        for(const auto& layer_spec : _layer_specs)
+            num_connections += layer_spec.get_num_weights();
+
+        //If evolving weights as well as learning rates
+        if(_hebbs_spec->get_evolve_init_weights()) 
+        {
+
+            //Split genes into 2 - learning rates and initial weights
+            const std::vector<double> learning_rates(traits.begin(),
+                                                     traits.begin() + num_connections);
+
+            const std::vector<double> weights(traits.begin() + num_connections,
+                                              traits.end());
+
+            return std::make_pair(weights, learning_rates);
+
+        } else   //If just evolving learning rates
+        {    
+
+            std::vector<double> weights;
+            weights.reserve(num_connections);
+
+            //If the weights are randomly initialised or all set to some value
+            if(!_hebbs_spec->get_default_weight_init()) 
+            {
+
+                UniformRealDistribution _uniform_distr(0., 1.);
+
+                for(unsigned i = 0; i < num_connections; i++)
+                    weights.push_back(_uniform_distr.next());
+
+            } else 
+            {
+                for(unsigned i = 0; i < num_connections; i++)
+                    weights.push_back(*_hebbs_spec->get_default_weight_init());
+            }
+
+            return std::make_pair(weights, traits);
+
+        }
+
+    }
 
     /* Essential parameters of any network */
     const unsigned _num_inputs;

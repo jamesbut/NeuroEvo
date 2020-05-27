@@ -15,33 +15,23 @@ class Network : public Phenotype {
 
 public:
 
-    Network(const std::vector<LayerSpec>& layer_specs,
-            const bool trace = false) :
-        _trace(trace)
-    {
-        //TODO: Can't call this here!!
-        std::cerr << "See Network constructor!" << std::endl;
-        exit(0);
-        create_net(layer_specs, trace);
-    }
-
-    Network(const std::vector<double>& traits, 
-            const std::vector<LayerSpec>& layer_specs,
-            const bool trace = false) :
-        _trace(trace)
-    {
-        //TODO: Can't call this here!!
-        std::cerr << "See Network constructor!" << std::endl;
-        exit(0);
-        create_net(layer_specs, trace);
-        propogate_weights(traits);
-    }
+    Network(const bool trace = false) :
+        _trace(trace) {}
 
     Network(const Network& network) :
-        _trace(network._trace)
+        _trace(network._trace),
+        _layers(network._layers.size())
     {
-        for(std::size_t i = 0; network._layers.size(); i++)
+        for(std::size_t i = 0; i < _layers.size(); i++)
             _layers[i] = network._layers[i]->clone();
+    }
+
+    virtual void create_net(const std::vector<LayerSpec>& layer_specs) 
+    {
+        for(const auto& layer_spec : layer_specs)
+            _layers.push_back(
+                std::unique_ptr<Layer>(new Layer(layer_spec, _trace))
+            );
     }
 
     void propogate_weights(const std::vector<double>& weights) 
@@ -72,7 +62,7 @@ public:
     void reset() override
     {
         for(auto& layer : _layers)
-            layer.reset();
+            layer->reset();
     }
 
 protected:
@@ -101,13 +91,6 @@ protected:
         return ins;
     }
 
-    virtual void create_net(const std::vector<LayerSpec>& layer_specs, const bool trace) 
-    {
-        for(const auto& layer_spec : layer_specs)
-            _layers.push_back(
-                std::unique_ptr<Layer>(new Layer(layer_spec, trace))
-            );
-    }
 
     const bool _trace;
 

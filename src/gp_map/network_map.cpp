@@ -20,8 +20,14 @@ Phenotype* NetworkMap::map(Genotype<double>& genotype,
     NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
 
     if(net_builder != nullptr)
-        return new Network(traits, net_builder->get_layer_specs(), net_builder->get_trace());
-    else {
+    {
+        Network* network = new Network(net_builder->get_trace());
+        network->create_net(net_builder->get_layer_specs());
+        network->propogate_weights(traits);
+        return network;
+
+    } else 
+    {
         std::cerr << "Could not create Fixed Network from decoded traits" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -57,28 +63,34 @@ Network NetworkMap::read_network(const std::string& file_name,
     std::string line;
     std::vector<double> weights;
 
-    if(file.is_open()) {
+    if(file.is_open()) 
+    {
 
-    while(getline(file, line)) {
+        while(getline(file, line)) 
+        {
 
-        //Split line by white spaces
-        std::istringstream iss(line);
-        std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
-                                              std::istream_iterator<std::string>{}};
+            //Split line by white spaces
+            std::istringstream iss(line);
+            std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
+                                                std::istream_iterator<std::string>{}};
 
-        for(const auto& weight : split_string)
-            weights.push_back(std::stod(weight));
+            for(const auto& weight : split_string)
+                weights.push_back(std::stod(weight));
 
-    }
+        }
 
-    } else {
+    } else 
+    {
 
         std::cout << "Could not open: " << file_path.str() << std::endl;
         exit(EXIT_FAILURE);
 
     }
 
-    return Network(weights, net_builder.get_layer_specs(), net_builder.get_trace());
+    Network* network = new Network(net_builder.get_trace());
+    network->create_net(net_builder.get_layer_specs());
+    network->propogate_weights(weights);
+    return network;
 
 }
 

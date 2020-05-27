@@ -17,12 +17,6 @@ public:
     Layer(const LayerSpec& layer_spec, const bool trace);
 
     Layer(const Layer& layer);
-    /*  
-    Layer& operator=(const Layer& layer) = default;
-    ~Layer() = default;
-    Layer(Layer&& layer) = default;
-    Layer& operator=(Layer&& layer) = default;
-    */
 
     auto clone() const
     {

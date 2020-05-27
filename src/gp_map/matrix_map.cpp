@@ -39,10 +39,14 @@ Phenotype* MatrixMap::map(Genotype<double>& genotype,
    NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
 
     if(net_builder != nullptr)
-        return new Network(traits_vector, 
-                           net_builder->get_layer_specs(), 
-                           net_builder->get_trace());
-    else
+    {
+
+        Network* network = new Network(net_builder->get_trace());
+        network->create_net(net_builder->get_layer_specs());
+        network->propogate_weights(traits.get_vector());
+        return network;
+
+    } else
         return new RealVectorPhenotype(traits_vector);
 }
 

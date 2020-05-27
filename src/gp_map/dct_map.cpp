@@ -26,9 +26,10 @@ Phenotype* DCTMap::map(Genotype<double>& genotype,
 
     //TODO: For now, can only turn into Fixed Network
     NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
-    return new Network(traits.get_vector(), 
-                       net_builder->get_layer_specs(), 
-                       net_builder->get_trace());
+    Network* network = new Network(net_builder->get_trace());
+    network->create_net(net_builder->get_layer_specs());
+    network->propogate_weights(traits.get_vector());
+    return network;
 
 }
 
