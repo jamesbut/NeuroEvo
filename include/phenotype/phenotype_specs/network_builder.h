@@ -50,7 +50,9 @@ public:
     Phenotype* generate_phenotype(Genotype<double>& genotype,
                                   GPMap<double>* gp_map) override {
 
-        //Check for GP Map!
+        //Check for GPMap
+        if(gp_map)
+            return gp_map->map(genotype, *this);
 
         //Check for Hebbian
         if(_hebbs_spec)

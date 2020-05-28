@@ -14,7 +14,6 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inpu
 Phenotype* DCTMap::map(Genotype<double>& genotype,
                        PhenotypeSpec<double>& pheno_spec) 
 {
-
     // Assume genes are the DCT coefficients
     Utils::Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
 
