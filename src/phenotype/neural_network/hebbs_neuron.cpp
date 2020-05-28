@@ -7,8 +7,11 @@
 namespace NeuroEvo {
 
 //Constructor
-HebbsNeuron::HebbsNeuron(const LayerSpec& layer_spec, const bool trace) :
-    Neuron(layer_spec, trace) {}
+HebbsNeuron::HebbsNeuron(const unsigned num_inputs, 
+                         const LayerSpec::NeuronType& neuron_type, 
+                         const std::shared_ptr<ActivationFunction> activation_function,
+                         const bool trace) :
+    Neuron(neuron_type, neuron_type, activation_function, trace) {}
 
 void HebbsNeuron::set_weights(const std::vector<double>& weights) 
 {
@@ -27,7 +30,6 @@ void HebbsNeuron::set_learning_rates(const std::vector<double>& learning_rates)
 
 double HebbsNeuron::evaluate(const std::vector<double>& inputs) 
 {
-
     //Normalise Hebbs - normalise before using weights in evaluate
     normalise_weights();
 
@@ -37,13 +39,11 @@ double HebbsNeuron::evaluate(const std::vector<double>& inputs)
     synaptic_weight_change(inputs, output);
 
     return output;
-
 }
 
 void HebbsNeuron::synaptic_weight_change(const std::vector<double>& inputs,
                                          const double output) 
-{
-
+{   
     //Simple Hebbs
     //Here I am assuming that each synapse has a different learning rate
     //and these are the learning parameters that are evolved
@@ -53,7 +53,7 @@ void HebbsNeuron::synaptic_weight_change(const std::vector<double>& inputs,
         _weights[i] += delta_w;
     }
 
-    if(_layer_spec.get_neuron_type() == LayerSpec::NeuronType::Recurrent) 
+    if(_neuron_type == LayerSpec::NeuronType::Recurrent) 
     {
 
         const double delta_w_recurrent = _learning_rates[inputs.size()] * 
@@ -74,7 +74,6 @@ void HebbsNeuron::synaptic_weight_change(const std::vector<double>& inputs,
 
 void HebbsNeuron::normalise_weights() 
 {
-
     double sum_of_square_weights = 0.0;
 
     for(const auto& weight : _weights)

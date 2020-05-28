@@ -11,10 +11,13 @@ class HebbsNeuron : public Neuron {
 
 public:
 
-    HebbsNeuron(const LayerSpec& layer_spec, const bool trace = false);
+    HebbsNeuron(const unsigned num_input, 
+                const LayerSpec::NeuronType& neuron_type, 
+                const std::shared_ptr<ActivationFunction> activation_function,
+                const bool trace = false);
 
     void set_weights(const std::vector<double>& weights) override;
-    void set_learning_rates(const std::vector<double>& learning_rates);
+    void set_learning_rates(const std::vector<double>& learning_rates) override;
 
     double evaluate(const std::vector<double>& inputs) override;
 

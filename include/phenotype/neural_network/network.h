@@ -32,6 +32,9 @@ public:
             _layers.push_back(
                 std::unique_ptr<Layer>(new Layer(layer_spec, _trace))
             );
+
+        for(const auto& layer : _layers)
+            layer->create_layer();
     }
 
     void propogate_weights(const std::vector<double>& weights) 
@@ -53,6 +56,8 @@ public:
         }
 
     }
+
+    virtual void propogate_learning_rates(const std::vector<double>& learning_rates) {}
 
     virtual std::vector<double> activate(const std::vector<double>& inputs) override 
     {

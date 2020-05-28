@@ -53,9 +53,9 @@ private:
 
         //Different AND inputs
         std::vector<std::vector<double> > and_inputs {{1.0, 1.0},
-                                                    {1.0, 0.0},
-                                                    {0.0, 1.0},
-                                                    {0.0, 0.0}};
+                                                      {1.0, 0.0},
+                                                      {0.0, 1.0},
+                                                      {0.0, 0.0}};
 
         //Correct outputs for the respective AND inputs
         std::vector<double> correct_outputs {1.0, 0.0, 0.0, 0.0};
@@ -71,7 +71,6 @@ private:
                 std::cout << correct_outputs.at(i) << " " << output.at(0) << std::endl;
 
             fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
-
 
         }
 

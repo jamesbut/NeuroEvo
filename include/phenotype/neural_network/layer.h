@@ -23,7 +23,10 @@ public:
         return std::unique_ptr<Layer>(clone_impl());
     }
 
+    virtual void create_layer();
+
     void set_weights(const std::vector<double>& weights);
+    virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
     unsigned get_number_of_weights() const;
     std::vector<double> evaluate(const std::vector<double>& inputs);
 
@@ -42,8 +45,11 @@ protected:
     }
 
     const bool _trace;
+    const unsigned _inputs_per_neuron;
     const unsigned _params_per_neuron;
     const unsigned _num_neurons;
+    const LayerSpec::NeuronType _neuron_type;
+    const std::shared_ptr<ActivationFunction> _activation_function;
 
     std::vector<std::unique_ptr<Neuron> > _neurons;
 

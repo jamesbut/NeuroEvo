@@ -5,8 +5,12 @@
 
 namespace NeuroEvo {
 
-Neuron::Neuron(const LayerSpec& layer_spec, const bool trace) :
-    _layer_spec(layer_spec),
+Neuron::Neuron(const unsigned num_inputs, const LayerSpec::NeuronType& neuron_type, 
+               const std::shared_ptr<ActivationFunction> activation_function,
+               const bool trace) :
+    _num_inputs(num_inputs),
+    _neuron_type(neuron_type),
+    _activation_function(activation_function),
     _previous_output(0.0),
     _trace(trace) {}
 
@@ -33,7 +37,7 @@ double Neuron::propogate(const std::vector<double>& inputs)
     }
 
     //Recurrent input
-    if(_layer_spec.get_neuron_type() == LayerSpec::NeuronType::Recurrent) {
+    if(_neuron_type == LayerSpec::NeuronType::Recurrent) {
 
         activation_val += _previous_output * _weights[inputs.size()];
         activation_val += _weights[inputs.size()+1];
@@ -52,7 +56,7 @@ double Neuron::propogate(const std::vector<double>& inputs)
 
     }
 
-    const double output = _layer_spec.get_activation_func()->activate(activation_val);
+    const double output = _activation_function->activate(activation_val);
 
     _previous_output = output;
 

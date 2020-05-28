@@ -5,28 +5,39 @@
 namespace NeuroEvo {
 
 Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
+    _inputs_per_neuron(layer_spec.get_inputs_per_neuron()),
     _params_per_neuron(layer_spec.get_params_per_neuron()),
     _num_neurons(layer_spec.get_num_neurons()),
-    _trace(trace) 
-{
-
-    if(layer_spec.get_neuron_type() == LayerSpec::NeuronType::GRU)
-        for(unsigned i = 0; i < layer_spec.get_num_neurons(); i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(layer_spec, _trace)));
-    else
-        for(unsigned i = 0; i < layer_spec.get_num_neurons(); i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(layer_spec, _trace)));
-
-}
+    _neuron_type(layer_spec.get_neuron_type()),
+    _activation_function(layer_spec.get_activation_func()),
+    _trace(trace) {}
 
 Layer::Layer(const Layer& layer) :
+    _inputs_per_neuron(layer._inputs_per_neuron),
     _params_per_neuron(layer._params_per_neuron),
     _num_neurons(layer._num_neurons),
+    _neuron_type(layer._neuron_type),
+    _activation_function(layer._activation_function),
     _trace(layer._trace),
     _neurons(layer._num_neurons) 
 {
     for(std::size_t i = 0; i < _neurons.size(); i++)
         _neurons[i] = layer._neurons[i]->clone();
+}
+
+void Layer::create_layer()
+{
+    if(_neuron_type == LayerSpec::NeuronType::GRU)
+        for(unsigned i = 0; i < _num_neurons; i++)
+            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_inputs_per_neuron, 
+                                                                     _activation_function,
+                                                                     _trace)));
+    else
+        for(unsigned i = 0; i < _num_neurons; i++)
+            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(_inputs_per_neuron, 
+                                                                  _neuron_type,
+                                                                  _activation_function,
+                                                                  _trace)));
 }
 
 void Layer::set_weights(const std::vector<double>& weights) 

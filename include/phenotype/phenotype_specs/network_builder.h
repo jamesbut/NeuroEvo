@@ -56,7 +56,7 @@ public:
         if(_hebbs_spec)
         {
 
-            HebbsNetwork* network = new HebbsNetwork(*_hebbs_spec , _trace);
+            HebbsNetwork* network = new HebbsNetwork(*_hebbs_spec, _trace);
             network->create_net(_layer_specs);
 
             //Split genes for Hebbs network into weights and learning rates

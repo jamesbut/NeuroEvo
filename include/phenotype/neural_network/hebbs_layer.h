@@ -13,7 +13,8 @@ public:
 
     HebbsLayer(const LayerSpec& layer_spec, const bool trace);
 
-    void set_learning_rates(const std::vector<double>& learning_params);
+    void set_learning_rates(const std::vector<double>& learning_params) override;
+    void create_layer() override;
 
 };
 

@@ -102,7 +102,7 @@ public:
         return _num_neurons * _params_per_neuron;
     }
 
-    const std::unique_ptr<ActivationFunction>& get_activation_func() const
+    const std::shared_ptr<ActivationFunction>& get_activation_func() const
     {
         return _activation_func;
     }
@@ -125,7 +125,7 @@ private:
     unsigned _inputs_per_neuron;
     unsigned _params_per_neuron;
 
-    std::unique_ptr<ActivationFunction> _activation_func;
+    std::shared_ptr<ActivationFunction> _activation_func;
 
 };
 

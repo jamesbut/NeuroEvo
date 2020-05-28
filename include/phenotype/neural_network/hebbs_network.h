@@ -35,20 +35,17 @@ public:
             _layers.push_back(
                 std::unique_ptr<HebbsLayer>(new HebbsLayer(layer_spec, _trace))
             );
+
+        for(const auto& layer : _layers)
+            layer->create_layer();
     }
 
-    void propogate_learning_rates(const std::vector<double>& learning_rates) 
+    void propogate_learning_rates(const std::vector<double>& learning_rates) override
     {
         auto start = learning_rates.begin();
         auto end = learning_rates.begin();
 
-        //Dynamically cast to HebbsLayer in order to call Hebbs related methods
-        std::vector<HebbsLayer*> hebbs_layers;
-        hebbs_layers.reserve(_layers.size());
         for(auto& layer : _layers)
-            hebbs_layers.push_back(static_cast<HebbsLayer*>(layer.get()));
-
-        for(auto& layer : hebbs_layers)
         {
             end += layer->get_number_of_weights();
 
