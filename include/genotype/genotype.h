@@ -42,7 +42,7 @@ public:
         {
             os << genotype._genes[i];
             if(i != genotype._genes.size()-1)
-                os << " ";
+                os << ",";
         }
         return os;
     }

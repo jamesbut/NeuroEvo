@@ -27,7 +27,6 @@ double Neuron::evaluate(const std::vector<double>& inputs)
 
 double Neuron::propogate(const std::vector<double>& inputs)
 {
-
     double activation_val = 0.0;
 
     for(std::size_t i = 0; i < inputs.size(); i++) 
@@ -44,7 +43,7 @@ double Neuron::propogate(const std::vector<double>& inputs)
 
         if(_trace) 
         {
-            std::cout << "\n" << _previous_output << " x " << _weights[inputs.size()] << "\n";
+            std::cout << "\n" << _previous_output << " x " << _weights[inputs.size()];
             std::cout << "\n" << "1 x " << _weights[inputs.size()+1] << "\n\n";
         }
 

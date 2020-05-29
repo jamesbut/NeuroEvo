@@ -34,8 +34,7 @@ int main(int argc, const char* argv[])
     const unsigned neurons_per_layer = 0;
     std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type>> pheno_spec(
         new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
-                                     num_hidden_layers, neurons_per_layer,
-                                     NeuroEvo::LayerSpec::NeuronType::Recurrent)
+                                     num_hidden_layers, neurons_per_layer)
     );
 
     // Specify the distribution used for the initial gene values

@@ -4,6 +4,8 @@
 #include <util/random/distribution.h>
 #include <genotype/genotype.h>
 #include <genetic_operators/mutation/mutator.h>
+#include <fstream>
+#include <sstream>
 
 namespace NeuroEvo {
 
@@ -23,7 +25,8 @@ public:
     }
 
     //Generate genotype from specification
-    Genotype<G>* generate_genotype() {
+    Genotype<G>* generate_genotype() 
+    {
 
         std::vector<G> genes(_num_genes);
 
@@ -35,11 +38,38 @@ public:
     }
 
     //Generate genotype from file
-    Genotype<G>* generate_genotype(const std::string& file_name) {
-        //TODO: Write!
-        std::cerr << "Write generate_genotype in GenotypeSpec!" << std::endl;
-        exit(0);
-        return nullptr;
+    Genotype<G>* generate_genotype(const std::string& file_name) 
+    {
+
+        std::ifstream file(file_name);
+        std::string line;
+
+        //Read whole line from file
+        std::getline(file, line);
+
+        std::stringstream ss(line);
+
+        //Remove fitness
+        std::string fitness;
+        getline(ss, fitness, ',');
+
+        std::vector<G> genes;
+
+        while(ss.good()) {
+
+            std::string substr;
+            getline(ss, substr, ',');
+
+            //This cast will not always work
+            //In fact I don't think this will compile if the gene type is
+            //not double
+            //But it can stay for now
+            genes.push_back(std::stod(substr));
+
+        }
+
+        return new Genotype<G>(genes, _mutator);
+
     }
 
 private:

@@ -51,7 +51,7 @@ public:
                                   GPMap<double>* gp_map) override {
 
         //Check for GPMap
-        if(gp_map)
+        if(gp_map) 
             return gp_map->map(genotype, *this);
 
         //Check for Hebbian

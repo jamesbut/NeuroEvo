@@ -67,8 +67,8 @@ int main(int argc, const char* argv[])
     bool render = false;
     if(argc == 2) 
     {
-        domain_trace = true;
-        render = false;
+        domain_trace = false;
+        render = true;
     }
 
     std::unique_ptr<NeuroEvo::Domain<gene_type>> domain(
