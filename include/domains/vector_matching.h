@@ -19,6 +19,23 @@ public:
 
     bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
     {
+        VectorPhenotypeSpec<T>* vec_pheno_spec =
+            dynamic_cast<VectorPhenotypeSpec<T>*>(&pheno_spec);
+
+        if(vec_pheno_spec == nullptr)
+        {
+            std::cerr << "Only vector phenotype specifications are allowed" <<
+                " for the Vector Matching domain!" << std::endl;
+            return false;
+        }
+
+        if(vec_pheno_spec->get_num_params() != _matching_vector.size())
+        {
+            std::cerr << "The number of phenotype parameters does not match the size of the" <<
+                " matching vector" << std::endl;
+            return false;
+        }
+
         return true;
     }
 
@@ -30,17 +47,43 @@ private:
 
     double single_run(Organism<G, T>& org, unsigned rand_seed) override
     {
-        std::vector<T> phenotype_vector = org.get_phenotype().activate(std::vector<double>());
+        const std::vector<T> phenotype_vector = 
+            org.get_phenotype().activate(std::vector<double>());
 
-        const double fitness = 0.;
+        const double fitness = calculate_match_value(phenotype_vector);
 
         return fitness;
     }
 
     //Returns a value between 0 and 1 with 1 being a perfect match
-    double calculate_match_value(const std::vector<T>& phenotype_vector) 
+    double calculate_match_value(const std::vector<T>& phenotype_vector) const 
     {
+        unsigned num_matches = 0;
 
+        for(std::size_t i = 0; i < phenotype_vector.size(); i++)
+        {
+            if(this->_domain_trace)
+                std::cout << _matching_vector[i] << " " << phenotype_vector[i] << " ";
+
+            if(_matching_vector[i] == phenotype_vector[i])
+            {
+                num_matches += 1;
+                if(this->_domain_trace) std::cout << "Match!" << std::endl;
+
+            } else
+                if(this->_domain_trace) std::cout << "No match" << std::endl;
+
+        }
+
+        const double match_value = (double)num_matches / (double)phenotype_vector.size(); 
+
+        if(this->_domain_trace) 
+        {
+            std::cout << "Num matches: " << num_matches << std::endl;
+            std::cout << "Match value: " << match_value << std::endl;
+        }
+
+        return match_value;
     }
 
     std::vector<T> _matching_vector;
