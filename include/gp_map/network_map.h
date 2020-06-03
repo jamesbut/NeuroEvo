@@ -15,15 +15,15 @@
 
 namespace NeuroEvo {
 
-class NetworkMap : public GPMap<double>
+class NetworkMap : public GPMap<double, double>
 {
 
 public:
 
     NetworkMap(NetworkBuilder& net_spec, const std::string& file_name);
 
-    Phenotype* map(Genotype<double>& genotype,
-                   PhenotypeSpec<double>& pheno_spec) override;
+    Phenotype<double>* map(Genotype<double>& genotype,
+                           PhenotypeSpec<double, double>& pheno_spec) override;
 
     void print_gp_map(std::ofstream& file) override;
 

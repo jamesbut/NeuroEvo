@@ -14,6 +14,7 @@
 
 namespace NeuroEvo {
 
+template <typename T>
 class Phenotype 
 {
 
@@ -22,7 +23,7 @@ public:
     //Putting virtual here seems to make a big difference to the memory leak
     virtual ~Phenotype() = default;
 
-    virtual std::vector<double> activate(const std::vector<double>& inputs) = 0;
+    virtual std::vector<T> activate(const std::vector<double>& inputs) = 0;
     virtual void reset() = 0;
 
     auto clone() const { return std::unique_ptr<Phenotype>(clone_impl()); }

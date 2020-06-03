@@ -14,7 +14,7 @@
 namespace NeuroEvo {
 
 //Assume that DCTMap can only use genes of type double
-class DCTMap : public GPMap<double> 
+class DCTMap : public GPMap<double, double> 
 {
 
 public:
@@ -23,8 +23,8 @@ public:
     DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron);
 
     // Perform DCTIII (inverse DCTII) on genotype
-    Phenotype* map(Genotype<double>& genotype,
-                   PhenotypeSpec<double>& pheno_spec) override;
+    Phenotype<double>* map(Genotype<double>& genotype,
+                           PhenotypeSpec<double, double>& pheno_spec) override;
 
     std::optional<Utils::Matrix<double>> get_map() override 
     {

@@ -6,7 +6,7 @@
 namespace NeuroEvo {
 
 template <typename G>
-class QuarticFunction : public Domain<G> 
+class QuarticFunction : public Domain<G, double> 
 {
 
 public:
@@ -19,17 +19,17 @@ public:
         _c(c),
         _d(d),
         _e(e),
-        Domain<G>(domain_trace, completion_fitness) {}
+        Domain<G, double>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {
 
-        RealVectorPhenotypeSpec* real_vec_pheno_spec = 
-            dynamic_cast<RealVectorPhenotypeSpec*>(&pheno_spec);
+        VectorPhenotypeSpec* real_vec_pheno_spec = 
+            dynamic_cast<VectorPhenotypeSpec<double>*>(&pheno_spec);
 
         if(real_vec_pheno_spec == nullptr) 
         {
-            std::cerr << "Only real vector phenotype specifications are allowed" <<
+            std::cerr << "Only vector phenotype specifications are allowed" <<
                         "with the quartic domain!" << std::endl;
             return false;
         }
@@ -47,7 +47,7 @@ public:
 
 private:
 
-    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
 
         //There are no inputs and outputs for a mathematical function

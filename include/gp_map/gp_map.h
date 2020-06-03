@@ -12,17 +12,17 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class PhenotypeSpec;
 
-template <typename G>
+template <typename G, typename T>
 class GPMap 
 {
 
 public:
 
-    virtual Phenotype* map(Genotype<G>& genotype,
-                           PhenotypeSpec<G>& pheno_spec) = 0;
+    virtual Phenotype<T>* map(Genotype<G>& genotype,
+                              PhenotypeSpec<G, T>& pheno_spec) = 0;
 
     virtual ~GPMap() = default;
 

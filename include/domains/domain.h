@@ -18,7 +18,7 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class Domain 
 {
 
@@ -38,7 +38,7 @@ public:
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials
-    void evaluate_population(Population<G>& pop, const unsigned num_trials, const bool parallel) 
+    void evaluate_population(Population<G, T>& pop, const unsigned num_trials, const bool parallel) 
     {
 
         std::vector<std::vector<double> > fitnesses;
@@ -70,7 +70,7 @@ public:
     }
 
     //Evaluate individual for a number of trials
-    double evaluate_org(Organism<G>& org, const unsigned num_trials) 
+    double evaluate_org(Organism<G, T>& org, const unsigned num_trials) 
     {
 
         std::vector<double> fitnesses(num_trials);
@@ -91,7 +91,7 @@ public:
 
     }
 
-    virtual bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) = 0;
+    virtual bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) = 0;
 
     //Determines whether the current population
     //has 'completed' the domain, this normally
@@ -109,10 +109,10 @@ protected:
     //A random seed can be handed to this function in case there
     //is a random component to the domain and all individuals in the
     //population are required to be ran on the exact same domain.
-    virtual double single_run(Organism<G>& org, unsigned rand_seed) = 0;
+    virtual double single_run(Organism<G, T>& org, unsigned rand_seed) = 0;
 
     //Checks domain for completion - can be overriden
-    virtual bool check_for_completion(Population<G>& population) 
+    virtual bool check_for_completion(Population<G, T>& population) 
     {
         for(const auto& org : population.get_organisms())
             if(org.get_fitness() >= _completion_fitness)
@@ -146,14 +146,14 @@ protected:
 
 private:
 
-    std::vector<std::vector<double> > evaluate_pop_serial(Population<G>& pop,
+    std::vector<std::vector<double> > evaluate_pop_serial(Population<G, T>& pop,
                                                           const unsigned num_trials) {
 
         //Store fitnesses from runs
         std::vector<std::vector<double> > fitnesses(pop.get_size(), 
                                                     std::vector<double>(num_trials));
 
-        const std::vector<Organism<G>>& orgs = pop.get_organisms();
+        const std::vector<Organism<G, T>>& orgs = pop.get_organisms();
 
         for(unsigned int i = 0; i < num_trials; i++) {
 

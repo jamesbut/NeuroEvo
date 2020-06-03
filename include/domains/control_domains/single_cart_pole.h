@@ -18,7 +18,7 @@
 namespace NeuroEvo {
 
 template <typename G>
-class SingleCartPole : public Domain<G> 
+class SingleCartPole : public Domain<G, double> 
 {
 
 public:
@@ -31,7 +31,7 @@ public:
         _random_start(random_start),
         _print_state_to_file(print_state),
         _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
-        Domain<G>(domain_trace, max_steps+1, render) 
+        Domain<G, double>(domain_trace, max_steps+1, render) 
     {
 
         //Remove previous state file
@@ -104,7 +104,7 @@ protected:
 
 private:
 
-    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
 
         //Seed random number generator with same seed as other members of the population
@@ -131,8 +131,6 @@ private:
             _cart_pole.theta_dot = 0.0;
 
         }
-
-        Phenotype& phenotype = org.get_phenotype();
 
         int steps = 0;
 
@@ -176,7 +174,7 @@ private:
 
             }
 
-            outputs = phenotype.activate(inputs);
+            outputs = org.get_phenotype().activate(inputs);
 
             //Decide which way to push based on which output unit it greater
             bool action = (outputs.at(0) > outputs.at(1)) ? true : false;
@@ -221,7 +219,7 @@ private:
 
     }
 
-    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {
 
         NetworkBuilder* network_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);

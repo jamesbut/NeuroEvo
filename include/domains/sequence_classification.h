@@ -15,7 +15,7 @@
 namespace NeuroEvo {
 
 template <typename G>
-class SequenceClassification : public Domain<G>
+class SequenceClassification : public Domain<G, double>
 {
 
 public:
@@ -29,9 +29,9 @@ public:
         _input_values(std::vector<int>{1, -1}),
         _rng((std::random_device())()),
         _zeros_dist(zeros_lower, zeros_upper),
-        Domain<G>(domain_trace, completion_fitness) {}
+        Domain<G, double>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {
 
         NetworkBuilder* network_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
@@ -70,7 +70,7 @@ protected:
 
 private:
 
-    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
 
         //Generate sequences of inputs

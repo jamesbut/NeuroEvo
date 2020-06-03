@@ -11,21 +11,21 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inpu
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron) {}
 
-Phenotype* DCTMap::map(Genotype<double>& genotype,
-                       PhenotypeSpec<double>& pheno_spec) 
-{
-    // Assume genes are the DCT coefficients
-    Utils::Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
+    Phenotype<double>* DCTMap::map(Genotype<double>& genotype,
+                                   PhenotypeSpec<double, double>& pheno_spec) 
+    {
+        // Assume genes are the DCT coefficients
+        Utils::Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
 
-    // Only keep _C coefficients
-    remove_higher_frequencies(coefficients);
+        // Only keep _C coefficients
+        remove_higher_frequencies(coefficients);
 
-    // Use inverse DCT
-    Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
+        // Use inverse DCT
+        Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
 
-    //TODO: For now, can only turn into Fixed Network
-    NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
-    Network* network = new Network(net_builder->get_trace());
+        //TODO: For now, can only turn into Fixed Network
+        NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
+        Network* network = new Network(net_builder->get_trace());
     network->create_net(net_builder->get_layer_specs());
     network->propogate_weights(traits.get_vector());
     return network;

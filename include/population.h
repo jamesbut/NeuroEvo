@@ -15,14 +15,14 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class Population {
 
 public:
 
     Population(const unsigned pop_size, unsigned& gen_ref,
-               GenotypeSpec<G>& geno_spec, PhenotypeSpec<G>& pheno_spec,
-               GPMapSpec<G>* gp_map_spec) :
+               GenotypeSpec<G>& geno_spec, PhenotypeSpec<G, T>& pheno_spec,
+               GPMapSpec<G, T>* gp_map_spec) :
         _pop_size(pop_size),
         _gen(gen_ref) 
     {
@@ -30,12 +30,12 @@ public:
             _organisms.push_back(Organism(geno_spec, pheno_spec, gp_map_spec));
     }
 
-    const std::vector<Organism<G>>& get_organisms() const
+    const std::vector<Organism<G, T>>& get_organisms() const
     {
         return _organisms;
     }
 
-    Organism<G>& get_mutable_organism(const std::size_t org) 
+    Organism<G, T>& get_mutable_organism(const std::size_t org) 
     {
         return _organisms.at(org);
     }
@@ -61,16 +61,16 @@ public:
     }
 
     //Generates new population with the provided genetic operators
-    void generate_new_population(Selection<G>* selector,
+    void generate_new_population(Selection<G, T>* selector,
                                  Mutator<G>* gp_map_mutator) 
     {
 
-        std::vector<Organism<G>> new_pop;
+        std::vector<Organism<G, T>> new_pop;
 
         for(std::size_t i = 0; i < _pop_size; i++) {
 
             //Select a genome using given selection operator
-            Organism<G> child_organism = _organisms[i];
+            Organism<G, T> child_organism = _organisms[i];
             if(selector)
                 child_organism = selector->select(_organisms);
 
@@ -105,7 +105,7 @@ private:
 
     const unsigned _pop_size;
 
-    std::vector<Organism<G>> _organisms;
+    std::vector<Organism<G, T>> _organisms;
 
     unsigned& _gen;
 

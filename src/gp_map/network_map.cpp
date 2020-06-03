@@ -8,8 +8,8 @@ namespace NeuroEvo {
 NetworkMap::NetworkMap(NetworkBuilder& net_spec, const std::string& file_name) :
     _decoder(read_network(file_name, net_spec)) {}
 
-Phenotype* NetworkMap::map(Genotype<double>& genotype,
-                           PhenotypeSpec<double>& pheno_spec) 
+Phenotype<double>* NetworkMap::map(Genotype<double>& genotype,
+                                   PhenotypeSpec<double, double>& pheno_spec) 
 {
 
     //Query the decoder with the genes - it will output

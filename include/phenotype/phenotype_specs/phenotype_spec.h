@@ -13,11 +13,11 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class GPMap;
 
 //Generic phenotype spec
-template <typename G>
+template <typename G, typename T>
 class PhenotypeSpec {
 
 public:
@@ -30,7 +30,7 @@ public:
         _trace(false) {}
 
     //GPMap can be null
-    virtual Phenotype* generate_phenotype(Genotype<G>& genotype, GPMap<G>* gp_map) = 0;
+    virtual Phenotype<T>* generate_phenotype(Genotype<G>& genotype, GPMap<G, T>* gp_map) = 0;
 
     auto clone() const 
     { 

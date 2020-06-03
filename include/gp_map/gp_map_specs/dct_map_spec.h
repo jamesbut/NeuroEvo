@@ -6,7 +6,7 @@
 
 namespace NeuroEvo {
 
-class DCTMapSpec : public GPMapSpec<double> 
+class DCTMapSpec : public GPMapSpec<double, double> 
 {
 
 public:
@@ -16,12 +16,12 @@ public:
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron) {}
 
-    GPMap<double>* generate_gp_map() override 
+    GPMap<double, double>* generate_gp_map() override 
     {
         return new DCTMap(_c, _num_neurons, _inputs_per_neuron);
     }
 
-    GPMap<double>* generate_gp_map(const std::string& file_name) override 
+    GPMap<double, double>* generate_gp_map(const std::string& file_name) override 
     {
         //Nothing has to be read from file here
         //The genes are the coefficients of the inverse DCT

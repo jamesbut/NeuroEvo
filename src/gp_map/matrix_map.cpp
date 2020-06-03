@@ -1,7 +1,7 @@
 #include <gp_map/matrix_map.h>
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <phenotype/neural_network/network.h>
-#include <phenotype/real_vector_phenotype.h>
+#include <phenotype/vector_phenotype.h>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -26,8 +26,8 @@ MatrixMap::MatrixMap(const unsigned genotype_size,
 MatrixMap::MatrixMap(const std::string& file_name) :
     _interaction_matrix(read_matrix(file_name)) {}
 
-Phenotype* MatrixMap::map(Genotype<double>& genotype,
-                          PhenotypeSpec<double>& pheno_spec) 
+Phenotype<double>* MatrixMap::map(Genotype<double>& genotype,
+                                  PhenotypeSpec<double, double>& pheno_spec) 
 {
 
     const Utils::Matrix<double> genes(genotype.genes());
@@ -47,7 +47,7 @@ Phenotype* MatrixMap::map(Genotype<double>& genotype,
         return network;
 
     } else
-        return new RealVectorPhenotype(traits_vector);
+        return new VectorPhenotype<double>(traits_vector);
 }
 
 void MatrixMap::print_gp_map(std::ofstream& file) {

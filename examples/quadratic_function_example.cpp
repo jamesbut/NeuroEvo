@@ -7,7 +7,7 @@
 */
 
 #include <experiment.h>
-#include <phenotype/phenotype_specs/real_vector_phenotype_spec.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 #include <domains/mathematical_functions/quadratic_function.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/selection/truncation_selection.h>
@@ -27,12 +27,13 @@ int main(int argc, const char* argv[])
     }
 
     typedef double gene_type;
+    typedef double phenotype_output;
 
     // Build real vector phenotype - no network needed for
     // mathematical optimisation
     const unsigned num_genes = 1;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type>> pheno_spec(
-        new NeuroEvo::RealVectorPhenotypeSpec(num_genes)
+    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
+        new NeuroEvo::VectorPhenotypeSpec<gene_type>(num_genes)
     );
 
     // Specify the distribution used for the initial gene values
@@ -63,15 +64,17 @@ int main(int argc, const char* argv[])
     // if it is an individual run, change domain_trace to true
     if(argc == 2) domain_trace = true;
 
-    std::unique_ptr<NeuroEvo::Domain<gene_type>> domain(
+    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
         new NeuroEvo::QuadraticFunction<gene_type>(a, b, c, domain_trace, 0.9)
     );
 
     // Construct experiment
-    std::optional<NeuroEvo::Experiment<gene_type>> experiment = 
-        NeuroEvo::Experiment<gene_type>::construct(*domain, 
-                                                   *geno_spec, 
-                                                   *pheno_spec);
+    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
+        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
+            *domain, 
+            *geno_spec, 
+            *pheno_spec
+        );
 
     //Do not continue if experiment construction was not successful
     if(!experiment) exit(0);
@@ -80,8 +83,8 @@ int main(int argc, const char* argv[])
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
 
-    std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        new NeuroEvo::RouletteWheelSelection<gene_type>()
+    std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
+        new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
     // Run either an evolutionary run or an individual run

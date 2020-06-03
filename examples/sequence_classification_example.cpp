@@ -31,6 +31,7 @@ int main(int argc, const char* argv[])
     }
 
     typedef double gene_type;
+    typedef double phenotype_output;
 
     //Build a network from layers
     //Build hidden layer
@@ -53,7 +54,7 @@ int main(int argc, const char* argv[])
     std::vector<NeuroEvo::LayerSpec> layer_specs{hidden_layer, output_layer};
 
     const unsigned num_inputs = 1;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type>> pheno_spec(
+    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
         new NeuroEvo::NetworkBuilder(num_inputs, layer_specs)
     );
 
@@ -83,16 +84,18 @@ int main(int argc, const char* argv[])
     bool domain_trace = false;
     if(argc == 2) domain_trace = true;
 
-    std::unique_ptr<NeuroEvo::Domain<gene_type>> domain(
+    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
         new NeuroEvo::SequenceClassification<gene_type>(depth, zeros_upper,
                                                         zeros_lower, domain_trace)
     );
 
     // Construct experiment
-    std::optional<NeuroEvo::Experiment<gene_type>> experiment = 
-        NeuroEvo::Experiment<gene_type>::construct(*domain, 
-                                                   *geno_spec, 
-                                                   *pheno_spec);
+    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
+        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
+            *domain, 
+            *geno_spec, 
+            *pheno_spec
+        );
 
     //Do not continue if experiment construction was not successful
     if(!experiment) exit(0);
@@ -101,8 +104,8 @@ int main(int argc, const char* argv[])
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
 
-    std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        new NeuroEvo::RouletteWheelSelection<gene_type>()
+    std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
+        new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
     // Run either an evolutionary run or an individual run

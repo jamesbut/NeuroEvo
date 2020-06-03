@@ -18,13 +18,13 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class Organism {
 
 public:
 
-    Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G>& phenotype_spec,
-             GPMapSpec<G>* gp_map_spec) :
+    Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
+             GPMapSpec<G, T>* gp_map_spec) :
         _genotype(genotype_spec.generate_genotype()),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
@@ -32,8 +32,8 @@ public:
         _gp_map_spec(gp_map_spec),
         _fitness(0.0) {}
 
-    Organism(PhenotypeSpec<G>& phenotype_spec, Genotype<G>& genotype,
-             GPMapSpec<G>* gp_map_spec) :
+    Organism(PhenotypeSpec<G, T>& phenotype_spec, Genotype<G>& genotype,
+             GPMapSpec<G, T>* gp_map_spec) :
         _genotype(genotype.clone()),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
@@ -41,8 +41,8 @@ public:
         _gp_map_spec(gp_map_spec),
         _fitness(0.0) {}
         
-    Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G>& phenotype_spec,
-             GPMapSpec<G>* gp_map_spec, const std::string file_name) :
+    Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
+             GPMapSpec<G, T>* gp_map_spec, const std::string file_name) :
         _genotype(genotype_spec.generate_genotype(file_name)),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map(file_name) : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
@@ -92,22 +92,22 @@ public:
         return *_genotype;
     }
 
-    GPMap<G>* get_gp_map() const 
+    GPMap<G, T>* get_gp_map() const 
     {
         return _gp_map.get();
     }
 
-    Phenotype& get_phenotype() const 
+    Phenotype<T>& get_phenotype() const 
     {
         return *_phenotype;
     }
 
-    PhenotypeSpec<G>& get_phenotype_spec() const 
+    PhenotypeSpec<G, T>& get_phenotype_spec() const 
     {
         return *_phenotype_spec;
     }
 
-    GPMapSpec<G>* get_gp_map_spec() const 
+    GPMapSpec<G, T>* get_gp_map_spec() const 
     {
         return _gp_map_spec;
     }
@@ -151,12 +151,12 @@ private:
     //is created on the stack in main and I don't want
     //that to be deleted when the Organism gets deleted.
     //Maybe something cleaner can be done in future.
-    PhenotypeSpec<G>* _phenotype_spec;
-    GPMapSpec<G>* _gp_map_spec;
+    PhenotypeSpec<G, T>* _phenotype_spec;
+    GPMapSpec<G, T>* _gp_map_spec;
 
     std::unique_ptr<Genotype<G>> _genotype;
-    std::unique_ptr<GPMap<G>> _gp_map;
-    std::unique_ptr<Phenotype> _phenotype;
+    std::unique_ptr<GPMap<G, T>> _gp_map;
+    std::unique_ptr<Phenotype<T>> _phenotype;
 
     double _fitness;
 

@@ -11,8 +11,8 @@
 
 namespace NeuroEvo {
 
-template <typename G>
-class TruncationSelection : public Selection<G>
+template <typename G, typename T>
+class TruncationSelection : public Selection<G, T>
 {
 
 public:
@@ -22,7 +22,7 @@ public:
         _percentage_selection(percentage_selection),
         _uniform_distr(0., 1.) {}
 
-    Organism<G> select(const std::vector<Organism<G>>& orgs) override 
+    Organism<G, T> select(const std::vector<Organism<G, T>>& orgs) override 
     {
 
         // Get vector of sorted population indices
@@ -46,7 +46,7 @@ public:
 
 private:
 
-    std::vector<int> sort_population(const std::vector<Organism<G>>& orgs) 
+    std::vector<int> sort_population(const std::vector<Organism<G, T>>& orgs) 
     {
 
         // Create vector of unsorted indices

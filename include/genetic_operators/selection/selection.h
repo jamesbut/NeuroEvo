@@ -5,7 +5,7 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class Selection {
 
 public:
@@ -15,7 +15,7 @@ public:
     // Selects an organism from a population.
     // A new organism is created as the child on which
     // modifications can be applied.
-    virtual Organism<G> select(const std::vector<Organism<G>>& orgs) = 0;
+    virtual Organism<G, T> select(const std::vector<Organism<G, T>>& orgs) = 0;
 
 };
 

@@ -17,7 +17,7 @@
 
 namespace NeuroEvo {
 
-class NetworkBuilder : public PhenotypeSpec<double> 
+class NetworkBuilder : public PhenotypeSpec<double, double> 
 {
 
 public:
@@ -33,9 +33,9 @@ public:
         _trace(trace),
         _layer_specs(build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                        neurons_per_layer, neuron_type, activation_func)),
-        PhenotypeSpec<double>(required_num_genes(num_inputs, num_outputs, 
-                                                 num_hidden_layers, neurons_per_layer, 
-                                                 neuron_type, activation_func)) {}
+        PhenotypeSpec<double, double>(required_num_genes(num_inputs, num_outputs, 
+                                                         num_hidden_layers, neurons_per_layer, 
+                                                         neuron_type, activation_func)) {}
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const unsigned num_inputs, 
@@ -45,10 +45,11 @@ public:
         _num_outputs(layer_specs.back().get_num_neurons()),
         _layer_specs(layer_specs),
         _trace(trace),
-        PhenotypeSpec<double>(required_num_genes(num_inputs, layer_specs)) {}
+        PhenotypeSpec<double, double>(required_num_genes(num_inputs, layer_specs)) {}
 
-    Phenotype* generate_phenotype(Genotype<double>& genotype,
-                                  GPMap<double>* gp_map) override {
+    Phenotype<double>* generate_phenotype(Genotype<double>& genotype,
+                                          GPMap<double, double>* gp_map) override 
+    {
 
         //Check for GPMap
         if(gp_map) 

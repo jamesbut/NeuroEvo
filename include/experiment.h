@@ -11,17 +11,17 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class Experiment {
 
 public:
 
     //Constructs an experiment conditional on whether the phenotype specification is appropriate
     //for the domain
-    static std::optional<Experiment> construct(Domain<G>& domain,
+    static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GenotypeSpec<G>& geno_spec,
-                                               PhenotypeSpec<G>& pheno_spec,
-                                               GPMapSpec<G>* gp_map_spec = nullptr) 
+                                               PhenotypeSpec<G, T>& pheno_spec,
+                                               GPMapSpec<G, T>* gp_map_spec = nullptr) 
     {
 
         //Check phenotype specification is appropriate for domain
@@ -51,7 +51,7 @@ public:
 
     void evolutionary_run(const unsigned pop_size,
                           const unsigned max_gens,
-                          Selection<G>* selector,
+                          Selection<G, T>* selector,
                           const bool trace = true,
                           const bool parallel = false,
                           const unsigned num_runs = 1,
@@ -70,7 +70,7 @@ public:
             Population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map_spec);
 
             // Create a data collector for printing out generational information
-            DataCollector<G> data_collector;
+            DataCollector<G, T> data_collector;
 
             do {
 
@@ -112,16 +112,16 @@ public:
 private:
 
     //Cannot construct experiment because it is dependent on valid specifications
-    Experiment(Domain<G>& domain,
+    Experiment(Domain<G, T>& domain,
                GenotypeSpec<G>& geno_spec,
-               PhenotypeSpec<G>& pheno_spec,
-               GPMapSpec<G>* gp_map_spec) :
+               PhenotypeSpec<G, T>& pheno_spec,
+               GPMapSpec<G, T>* gp_map_spec) :
         _domain(domain), 
         _geno_spec(geno_spec),
         _pheno_spec(pheno_spec),
         _gp_map_spec(gp_map_spec) {}
 
-    int ga_finished(Population<G>& population, const unsigned max_gens) 
+    int ga_finished(Population<G, T>& population, const unsigned max_gens) 
     {
 
         if(population.get_gen_num() >= max_gens)
@@ -137,10 +137,10 @@ private:
     //In most cases the domain, genotype spec and phenotype spec will be the same for an 
     //evolutionary run and an individual run so they are saved as member variables and taken as 
     //constructor arguments
-    Domain<G>& _domain;
+    Domain<G, T>& _domain;
     GenotypeSpec<G>& _geno_spec;
-    PhenotypeSpec<G>& _pheno_spec;
-    GPMapSpec<G>* _gp_map_spec;
+    PhenotypeSpec<G, T>& _pheno_spec;
+    GPMapSpec<G, T>* _gp_map_spec;
 
 };
 

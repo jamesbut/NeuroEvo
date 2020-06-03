@@ -6,14 +6,14 @@
 namespace NeuroEvo {
 
 template <typename G>
-class AND : public Domain<G> {
+class AND : public Domain<G, double> {
 
 public:
 
     AND(const bool domain_trace, const double completion_fitness = 3.9) :
-        Domain<G>(domain_trace, completion_fitness) {}
+        Domain<G, double>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G>& pheno_spec) override 
+    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {
 
         NetworkBuilder* network_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
@@ -48,7 +48,7 @@ protected:
 
 private:
 
-    double single_run(Organism<G>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
 
         //Different AND inputs

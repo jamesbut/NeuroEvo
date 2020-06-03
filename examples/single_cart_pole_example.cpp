@@ -23,6 +23,7 @@ int main(int argc, const char* argv[])
     }
 
     typedef double gene_type;
+    typedef double phenotype_output;
 
     // Build Hebbs network
     const unsigned num_inputs = 2;
@@ -71,17 +72,19 @@ int main(int argc, const char* argv[])
         render = true;
     }
 
-    std::unique_ptr<NeuroEvo::Domain<gene_type>> domain(
+    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
         new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start,
                                                 print_state, domain_trace,
                                                 render)
     );
 
     // Construct experiment
-    std::optional<NeuroEvo::Experiment<gene_type>> experiment = 
-        NeuroEvo::Experiment<gene_type>::construct(*domain, 
-                                                   *geno_spec, 
-                                                   *network_builder);
+    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
+        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
+            *domain, 
+            *geno_spec, 
+            *network_builder
+        );
 
     //Do not continue if experiment construction was not successful
     if(!experiment) exit(0);
@@ -90,8 +93,8 @@ int main(int argc, const char* argv[])
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
 
-    std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        new NeuroEvo::RouletteWheelSelection<gene_type>()
+    std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
+        new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
     // Run either an evolutionary run or an individual run

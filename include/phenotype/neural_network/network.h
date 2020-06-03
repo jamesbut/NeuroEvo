@@ -11,7 +11,7 @@
 
 namespace NeuroEvo {
 
-class Network : public Phenotype {
+class Network : public Phenotype<double> {
 
 public:
 

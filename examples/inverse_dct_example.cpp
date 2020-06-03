@@ -25,6 +25,7 @@ int main(int argc, const char* argv[])
     }
 
     typedef double gene_type;
+    typedef double phenotype_output;
 
     // Specify a network with 2 input nodes, 1 output node,
     // 0 hidden layers and no recurrence.
@@ -32,7 +33,7 @@ int main(int argc, const char* argv[])
     const unsigned num_outputs = 1;
     const unsigned num_hidden_layers = 0;
     const unsigned neurons_per_layer = 0;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type>> pheno_spec(
+    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
         new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
                                      num_hidden_layers, neurons_per_layer)
     );
@@ -63,7 +64,7 @@ int main(int argc, const char* argv[])
     // C is the number of frequency coefficients to be used in
     // the mapping.
     const unsigned c = 3;
-    std::unique_ptr<NeuroEvo::GPMapSpec<gene_type>> gp_map_spec(
+    std::unique_ptr<NeuroEvo::GPMapSpec<gene_type, phenotype_output>> gp_map_spec(
         new NeuroEvo::DCTMapSpec(c, num_outputs, num_inputs+1)
     );
 
@@ -73,16 +74,18 @@ int main(int argc, const char* argv[])
     // If it is an individual run, change domain_trace to true
     if(argc == 2) domain_trace = true;
 
-    std::unique_ptr<NeuroEvo::Domain<gene_type>> domain(
+    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
         new NeuroEvo::AND<gene_type>(domain_trace)
     );
 
     //Constuct experiment
-    std::optional<NeuroEvo::Experiment<gene_type>> experiment = 
-        NeuroEvo::Experiment<gene_type>::construct(*domain, 
-                                                   *geno_spec, 
-                                                   *pheno_spec,
-                                                   gp_map_spec.get());
+    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
+        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
+            *domain, 
+            *geno_spec, 
+            *pheno_spec,
+            gp_map_spec.get()
+        );
 
     //Do not continue if experiment construction was not successful
     if(!experiment) exit(0);
@@ -91,8 +94,8 @@ int main(int argc, const char* argv[])
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
 
-    std::unique_ptr<NeuroEvo::Selection<gene_type>> selector(
-        new NeuroEvo::RouletteWheelSelection<gene_type>()
+    std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
+        new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
     // Run either an evolutionary run or an individual run

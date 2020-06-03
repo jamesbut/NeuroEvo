@@ -14,8 +14,8 @@
 
 namespace NeuroEvo {
 
-template <typename G>
-class RouletteWheelSelection : public Selection<G> {
+template <typename G, typename T>
+class RouletteWheelSelection : public Selection<G, T> {
 
 public:
 
@@ -24,7 +24,7 @@ public:
         _uniform_distr(0., 1.) {}
 
     //Selects genome according to roulette wheel selection
-    Organism<G> select(const std::vector<Organism<G>>& orgs) override 
+    Organism<G, T> select(const std::vector<Organism<G, T>>& orgs) override 
     {
         
         //Scale fitnesses
@@ -58,7 +58,7 @@ public:
 
 private:
 
-    std::vector<double> scale_fitnesses(const std::vector<Organism<G>>& orgs) 
+    std::vector<double> scale_fitnesses(const std::vector<Organism<G, T>>& orgs) 
     {
 
         //Find smallest fitness

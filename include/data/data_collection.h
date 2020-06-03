@@ -18,7 +18,7 @@
 
 namespace NeuroEvo {
 
-template <typename G>
+template <typename G, typename T>
 class DataCollector 
 {
 
@@ -65,11 +65,11 @@ public:
 
     }
 
-    void collect_generational_data(Population<G>& population, const bool trace = true) 
+    void collect_generational_data(Population<G, T>& population, const bool trace = true) 
     {
         
         //Generational winner
-        const Organism<G>& gen_winner = calculate_generational_winner(population);
+        const Organism<G, T>& gen_winner = calculate_generational_winner(population);
         save_generational_winner_to_file(gen_winner);
 
         //Best winner so far
@@ -89,9 +89,9 @@ public:
 
 private:
 
-    const Organism<G>& calculate_generational_winner(const Population<G>& population) const 
+    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) const 
     {
-        const std::vector<Organism<G>>& orgs = population.get_organisms();
+        const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
         //Find highest scoring organism in the population
         std::size_t gen_winner_index = 0;
@@ -107,14 +107,14 @@ private:
         return orgs[gen_winner_index];
     }
 
-    void calculate_best_winner_so_far(const Organism<G>& gen_winner) 
+    void calculate_best_winner_so_far(const Organism<G, T>& gen_winner) 
     {
         //Check whether gen winner beats the highest score so far
         if(!_best_winner_so_far || gen_winner.get_fitness() > _best_winner_so_far->get_fitness())
             _best_winner_so_far = gen_winner;
     }
 
-    void save_generational_winner_to_file(const Organism<G>& gen_winner) const
+    void save_generational_winner_to_file(const Organism<G, T>& gen_winner) const
     {
         //Print out highest scoring organism
         std::stringstream file_name;
@@ -141,7 +141,7 @@ private:
         return _folder_path; 
     };
 
-    void save_population_to_file(Population<G>& population) 
+    void save_population_to_file(Population<G, T>& population) 
     {
 
         //Create and open file
@@ -170,7 +170,7 @@ private:
     //all data for a run
     std::string _folder_path;
 
-    std::optional<Organism<G>> _best_winner_so_far;
+    std::optional<Organism<G, T>> _best_winner_so_far;
 
 };
 
