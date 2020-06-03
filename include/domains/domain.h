@@ -181,7 +181,8 @@ private:
     std::vector<std::vector<double> > evaluate_pop_parallel(Population<G>& pop,
                                                             const unsigned num_trials) {
 
-        std::vector<std::vector<double> > fitnesses(pop.get_size(), std::vector<double>(num_trials));
+        std::vector<std::vector<double> > fitnesses(pop.get_size(), 
+                                                    std::vector<double>(num_trials));
         std::vector<Organism>& orgs = pop.get_organisms();
 
         //Check shared memory is available for parallel execution

@@ -62,7 +62,7 @@ public:
 
     //Generates new population with the provided genetic operators
     void generate_new_population(Selection<G, T>* selector,
-                                 Mutator<G>* gp_map_mutator) 
+                                 Mutator<G>* gp_map_mutator = nullptr) 
     {
 
         std::vector<Organism<G, T>> new_pop;
@@ -79,8 +79,9 @@ public:
 
             //Only mutate GPMap if a GPMap mutator has been specified
             //and if the GPMap is vectorisable
-            if(gp_map_mutator && child_organism.get_gp_map()->get_map().has_value())
-                gp_map_mutator->mutate(child_organism.get_gp_map()->get_map()->get_vector());
+            //TODO: Removing GPMap mutation for now - might bring back later
+            //if(gp_map_mutator && child_organism.get_gp_map()->get_map().has_value())
+            //    gp_map_mutator->mutate(child_organism.get_gp_map()->get_map()->get_vector());
 
             //Create new phenotype out of newly modified genotype
             child_organism.genesis();
