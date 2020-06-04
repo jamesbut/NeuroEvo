@@ -23,10 +23,12 @@ public:
     //according to a distribution
     VectorMatching(const unsigned matching_vector_size,
                    const std::unique_ptr<Distribution<T>>& matching_vector_distr,
+                   const bool symmetric_match_vector = false,
                    const bool domain_trace = false, 
                    const double completion_fitness = 1.0) :
         _matching_vector(randomly_generate_matching_vector(matching_vector_size, 
-                                                           matching_vector_distr)),
+                                                           matching_vector_distr,
+                                                           symmetric_match_vector)),
         Domain<G, T>(domain_trace, completion_fitness) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
@@ -102,13 +104,45 @@ private:
 
     const std::vector<T> randomly_generate_matching_vector(
         const unsigned matching_vector_size,
-        const std::unique_ptr<Distribution<T>>& distr) const
+        const std::unique_ptr<Distribution<T>>& distr,
+        const bool symmetric_match_vector) const
     {
+        
         std::vector<T> matching_vector;
         matching_vector.reserve(matching_vector_size);
 
-        for(unsigned i = 0; i < matching_vector_size; i++)   
-            matching_vector.push_back(distr->next());
+        if(symmetric_match_vector) 
+        {
+            //If symmetric match vector, check whether matching vector size is even.
+            //If not exit - I don't think this is how I should handle the error but
+            //maybe I can come back to this later.
+            if(matching_vector_size % 2 != 0)
+            {
+                std::cerr << "Cannot have a symmetric match vector of odd size!" << std::endl;
+                exit(0);
+            }
+
+            //Randomly generate vector of half the size, duplicate, reverse and concatenate
+            const unsigned num_unique_elements = matching_vector_size/2;
+            std::vector<T> first_half_matching_vector;
+            first_half_matching_vector.reserve(num_unique_elements);
+
+            for(unsigned i = 0; i < num_unique_elements; i++)   
+                first_half_matching_vector.push_back(distr->next());
+
+            //Create symmetric second half
+            std::vector<T> second_half_matching_vector(first_half_matching_vector);
+            std::reverse(second_half_matching_vector.begin(), second_half_matching_vector.end());
+
+            //Concatenate
+            first_half_matching_vector.insert(first_half_matching_vector.begin(),
+                                              second_half_matching_vector.begin(),
+                                              second_half_matching_vector.end());
+            matching_vector = first_half_matching_vector;
+
+        } else
+            for(unsigned i = 0; i < matching_vector_size; i++)   
+                matching_vector.push_back(distr->next());
 
         return matching_vector;
     }
