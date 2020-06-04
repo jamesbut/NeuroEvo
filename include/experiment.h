@@ -53,16 +53,17 @@ public:
     void evolutionary_run(const unsigned pop_size,
                           const unsigned max_gens,
                           Selection<G, T>* selector,
-                          const bool trace = true,
-                          const bool parallel = false,
                           const unsigned num_runs = 1,
-                          const unsigned num_trials = 1) 
+                          const bool trace = true,
+                          const unsigned num_trials = 1,
+                          const bool parallel = false)
     {
 
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
 
-        for(unsigned i = 0; i < num_runs; i++) {
+        for(unsigned i = 0; i < num_runs; i++) 
+        {
 
             unsigned gen = 1;
             int ga_completed = 0;
@@ -105,6 +106,9 @@ public:
                 std::cout << "GA finished at gen: " << gen << " with no winner :(" << std::endl;
 
             }
+
+            //Reset domain for next run
+            _domain.reset();
 
         }
 

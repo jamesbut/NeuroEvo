@@ -38,7 +38,8 @@ public:
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials
-    void evaluate_population(Population<G, T>& pop, const unsigned num_trials, const bool parallel) 
+    void evaluate_population(Population<G, T>& pop, const unsigned num_trials, 
+                             const bool parallel) 
     {
 
         std::vector<std::vector<double> > fitnesses;
@@ -101,6 +102,12 @@ public:
         return _complete; 
     };
 
+    void reset()
+    {
+        _complete = false;
+       reset_domain();
+    }
+
 protected:
 
     //This function is abstract and all domains should implement
@@ -123,6 +130,9 @@ protected:
 
     //All domains should implement how to render themselves
     virtual void render() = 0;
+
+    //All domains should implement how they are reset
+    virtual void reset_domain() = 0;
 
     //The fitness at which the domain is considered
     //solved

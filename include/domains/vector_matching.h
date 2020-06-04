@@ -147,6 +147,8 @@ private:
         return matching_vector;
     }
 
+    void reset_domain() override {}
+
     std::vector<T> _matching_vector;
 
 };
