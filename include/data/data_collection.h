@@ -6,6 +6,9 @@
     run and prints it
 */
 
+#include <iomanip>
+#include <ios>
+#include <iostream>
 #include <population.h>
 #include <string>
 #include <optional>
@@ -15,6 +18,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <vector>
+#include <util/formatting.h>
 
 namespace NeuroEvo {
 
@@ -65,7 +70,7 @@ public:
 
     }
 
-    void collect_generational_data(Population<G, T>& population, const bool trace = true) 
+    void collect_generational_data(const Population<G, T>& population, const bool trace = true) 
     {
         
         //Generational winner
@@ -79,17 +84,56 @@ public:
         //Save entire population to file
         save_population_to_file(population);
 
-        if(trace)
-            std::cout << "[Gen : " << population.get_gen_num()
-                      << " | Best winner so far fitness: " << _best_winner_so_far->get_fitness()
-                      << " | Gen winner fitness: " << gen_winner.get_fitness() << "]" << std::endl;
+        //Calculate population average fitness
+        const double pop_average_fitness = calculate_population_avergage_fitness(population);
+
+        if(trace) print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
 
     }
 
-
 private:
 
-    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) const 
+    void print_info_to_screen(const Population<G, T>& population, 
+                              const double gen_winner_fitness,
+                              const double pop_average_fitness,
+                              const unsigned print_header_every = 1e6)
+    {
+        const unsigned column_width = 16;
+
+        //Print header titles every set amount of generations
+        if((population.get_gen_num()-1) % print_header_every == 0)
+        {
+            const std::vector<std::string> header_titles{"Gen", "Best Winner", 
+                                                        "Gen Winner", "Gen Average"};
+            print_table_row(header_titles, column_width, true, true);
+        }
+
+        //Print population data
+        const std::vector<double> row_data{(double)population.get_gen_num(),
+                                           _best_winner_so_far->get_fitness(),
+                                           gen_winner_fitness,
+                                           pop_average_fitness};
+        print_table_row(row_data, column_width);
+
+    }
+
+    void print_table_header(const std::vector<std::string>& header_titles, 
+                            const unsigned column_width) const
+    {
+        print_table_row(header_titles, column_width, true, true);
+    }
+
+    double calculate_population_avergage_fitness(const Population<G, T>& population) const 
+    {
+        double total_fitness = 0.;
+
+        for(const auto& org : population.get_organisms())
+            total_fitness += org.get_fitness();
+
+        return total_fitness / (double)population.get_size();
+    }
+
+    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) const
     {
         const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
@@ -141,7 +185,7 @@ private:
         return _folder_path; 
     };
 
-    void save_population_to_file(Population<G, T>& population) 
+    void save_population_to_file(const Population<G, T>& population) 
     {
 
         //Create and open file

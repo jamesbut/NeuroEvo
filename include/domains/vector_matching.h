@@ -13,7 +13,7 @@ public:
 
     VectorMatching(const std::vector<T>& matching_vector, 
                    const bool domain_trace = false, 
-                   const double completion_fitness = 0.0) :
+                   const double completion_fitness = 1.0) :
         _matching_vector(matching_vector),
         Domain<G, T>(domain_trace, completion_fitness) {}
 
@@ -55,6 +55,7 @@ private:
         return fitness;
     }
 
+    //Calculates how closely the phenotype vector matches the matching vector
     //Returns a value between 0 and 1 with 1 being a perfect match
     double calculate_match_value(const std::vector<T>& phenotype_vector) const 
     {
@@ -65,6 +66,7 @@ private:
             if(this->_domain_trace)
                 std::cout << _matching_vector[i] << " " << phenotype_vector[i] << " ";
 
+            //This comparison might not work so well for doubles
             if(_matching_vector[i] == phenotype_vector[i])
             {
                 num_matches += 1;

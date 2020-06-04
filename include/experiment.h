@@ -23,14 +23,15 @@ public:
                                                PhenotypeSpec<G, T>& pheno_spec,
                                                GPMapSpec<G, T>* gp_map_spec = nullptr) 
     {
-
+        
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(pheno_spec))
             return Experiment(domain, geno_spec, pheno_spec, gp_map_spec);
         return std::nullopt;
-
+        
     }
 
+    
     void individual_run(const std::string& organism_folder_name) 
     {
 
