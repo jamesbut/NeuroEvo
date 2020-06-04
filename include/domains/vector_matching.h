@@ -2,6 +2,8 @@
 #define _VECTOR_MATCHING_H_
 
 #include <domains/domain.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
+#include <util/random/distribution.h>
 
 namespace NeuroEvo {
 
@@ -15,6 +17,16 @@ public:
                    const bool domain_trace = false, 
                    const double completion_fitness = 1.0) :
         _matching_vector(matching_vector),
+        Domain<G, T>(domain_trace, completion_fitness) {}
+
+    //If a matching vector is not given then one is randomly generated
+    //according to a distribution
+    VectorMatching(const unsigned matching_vector_size,
+                   const std::unique_ptr<Distribution<T>>& matching_vector_distr,
+                   const bool domain_trace = false, 
+                   const double completion_fitness = 1.0) :
+        _matching_vector(randomly_generate_matching_vector(matching_vector_size, 
+                                                           matching_vector_distr)),
         Domain<G, T>(domain_trace, completion_fitness) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
@@ -86,6 +98,19 @@ private:
         }
 
         return match_value;
+    }
+
+    const std::vector<T> randomly_generate_matching_vector(
+        const unsigned matching_vector_size,
+        const std::unique_ptr<Distribution<T>>& distr) const
+    {
+        std::vector<T> matching_vector;
+        matching_vector.reserve(matching_vector_size);
+
+        for(unsigned i = 0; i < matching_vector_size; i++)   
+            matching_vector.push_back(distr->next());
+
+        return matching_vector;
     }
 
     std::vector<T> _matching_vector;
