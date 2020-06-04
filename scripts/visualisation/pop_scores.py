@@ -9,6 +9,7 @@ import sys
 import os
 import glob
 from inspect import getsourcefile
+from plotter import *
 
 # Append scripts/ directory to sys.path
 current_path = os.path.abspath(getsourcefile(lambda:0))
@@ -58,7 +59,6 @@ def read_csv_files(folder_name):
                 sys.exit()
 
             break
-    print(np.array(data))
 
     return np.array(data).astype(np.float)
 
@@ -88,7 +88,7 @@ def calculate_best_fitness_so_far(data):
         else:
             best_score_so_far.append(best_score_so_far[i-1])
 
-    return best_score_so_far
+    return np.array(best_score_so_far)
 
 # Returns a vector of the average fitness of the population
 # at each generation
@@ -129,9 +129,24 @@ if __name__ == '__main__':
 
     # Debug printing
     #print(data)
-    print(best_so_far_fitnesses)
+    #print(best_so_far_fitnesses)
     #print(average_fitnesses)
 
     # Draw plots
-    draw_plot(best_so_far_fitnesses, average_fitnesses)
+
+    # Create x vector of generations
+    x = np.arange(1, num_gens+1)
+
+    plotted_data_best = np.column_stack((x, best_so_far_fitnesses))
+    plotted_data_avg = np.column_stack((x, average_fitnesses))
+    plotted_data = np.array([plotted_data_best, plotted_data_avg])
+
+    xlabel = 'Generation'
+    ylabel = 'Fitness'
+
+    legend_labels = ["Best fitness so far", "Population avg fitness"]
+    plot_colours = ['r', 'b']
+
+    plot_2d_line(plotted_data, xlabel = xlabel, ylabel = ylabel, 
+                 legend_labels = legend_labels, plot_colours = plot_colours)
 
