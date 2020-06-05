@@ -6,6 +6,7 @@
     run and prints it
 */
 
+#include <algorithm>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -18,6 +19,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string.hpp>
 #include <vector>
 #include <util/formatting.h>
 
@@ -29,50 +31,26 @@ class DataCollector
 
 public:
 
-    DataCollector(const bool uuid_folders = true) 
+    DataCollector(const bool uuid_folders = true) :
+        _uuid_folders(uuid_folders),
+        _exp_dir_path(create_experiment_dir_path())
     {
-    
-        //First check to see whether data directory
-        //exists and if not, create it
-        if(!boost::filesystem::exists(DATA_PATH))
-            boost::filesystem::create_directory(DATA_PATH);
+        //Create experiment folder
+        boost::filesystem::create_directory(_exp_dir_path);
+    }
 
-        //Set up path
-        std::stringstream folder_name;
-        std::stringstream path;
-        path << DATA_PATH << "/";
-
-        //Use a UUID for folder name or the date and time
-        if(uuid_folders) 
-        {
-
-            //Create a unique indentifier for the directory name
-            boost::uuids::uuid uuid = boost::uuids::random_generator()();
-
-            folder_name << path.str() << boost::uuids::to_string(uuid);
-
-        } else 
-        {
-
-            folder_name << path.str() << "population-";
-
-            //Get data and time for folder name
-            boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
-
-            folder_name << timeLocal.date() << "-" << timeLocal.time_of_day();
-
-        }
-
-        _folder_path = folder_name.str();
-
-        //Create population data folder
-        boost::filesystem::create_directory(_folder_path);
-
+    void reset()
+    {
+        _run_dir_path.reset();
+        _best_winner_so_far.reset();
     }
 
     void collect_generational_data(const Population<G, T>& population, const bool trace = true) 
     {
-        
+        //Create folder to store information if it has not already been created
+        if(!_run_dir_path)
+            create_run_dir();
+
         //Generational winner
         const Organism<G, T>& gen_winner = calculate_generational_winner(population);
         save_generational_winner_to_file(gen_winner);
@@ -93,35 +71,6 @@ public:
 
 private:
 
-    void print_info_to_screen(const Population<G, T>& population, 
-                              const double gen_winner_fitness,
-                              const double pop_average_fitness,
-                              const unsigned print_header_every = 1e6)
-    {
-        const unsigned column_width = 16;
-
-        //Print header titles every set amount of generations
-        if((population.get_gen_num()-1) % print_header_every == 0)
-        {
-            const std::vector<std::string> header_titles{"Gen", "Best Winner", 
-                                                        "Gen Winner", "Gen Average"};
-            print_table_row(header_titles, column_width, true, true);
-        }
-
-        //Print population data
-        const std::vector<double> row_data{(double)population.get_gen_num(),
-                                           _best_winner_so_far->get_fitness(),
-                                           gen_winner_fitness,
-                                           pop_average_fitness};
-        print_table_row(row_data, column_width);
-
-    }
-
-    void print_table_header(const std::vector<std::string>& header_titles, 
-                            const unsigned column_width) const
-    {
-        print_table_row(header_titles, column_width, true, true);
-    }
 
     double calculate_population_avergage_fitness(const Population<G, T>& population) const 
     {
@@ -162,7 +111,7 @@ private:
     {
         //Print out highest scoring organism
         std::stringstream file_name;
-        file_name << _folder_path << "/generational_winner";
+        file_name << _run_dir_path.value() << "/generational_winner";
 
         gen_winner.save_org_to_file(file_name.str());
     }
@@ -170,27 +119,37 @@ private:
     void save_best_winner_so_far_to_file() const
     {
         std::stringstream file_name;
-        file_name << _folder_path << "/best_winner_so_far";
+        file_name << _run_dir_path.value() << "/best_winner_so_far";
 
         _best_winner_so_far->save_org_to_file(file_name.str());
     }
 
-    void delete_folder() const 
+    void delete_exp_dir() const 
     {
-        boost::filesystem::remove_all(_folder_path);
+        boost::filesystem::remove_all(_exp_dir_path);
     }
 
-    const std::string& get_folder_path() const
+    void delete_run_dir() const 
+    {
+        boost::filesystem::remove_all(_run_dir_path.value());
+    }
+
+    const std::string& get_exp_dir_path() const
     { 
-        return _folder_path; 
-    };
+        return _exp_dir_path; 
+    }
+    
+    const std::string& get_run_dir_path() const
+    { 
+        return _run_dir_path.value(); 
+    }
 
     void save_population_to_file(const Population<G, T>& population) 
     {
 
         //Create and open file
         std::stringstream gen_file_name;
-        gen_file_name << _folder_path << "/population-gen_"
+        gen_file_name << _run_dir_path.value() << "/population-gen_"
                     << std::to_string(population.get_gen_num());
 
         std::ofstream gen_file;
@@ -210,9 +169,123 @@ private:
 
     }
 
-    //Path to folder in which to store
-    //all data for a run
-    std::string _folder_path;
+    void print_info_to_screen(const Population<G, T>& population, 
+                              const double gen_winner_fitness,
+                              const double pop_average_fitness,
+                              const unsigned print_header_every = 1e6)
+    {
+        const unsigned column_width = 16;
+
+        //Print header titles every set amount of generations
+        if((population.get_gen_num()-1) % print_header_every == 0)
+        {
+            const std::vector<std::string> header_titles{"Gen", "Best Winner", 
+                                                        "Gen Winner", "Gen Average"};
+            print_table_row(header_titles, column_width, true, true);
+        }
+
+        //Print population data
+        const std::vector<double> row_data{(double)population.get_gen_num(),
+                                           _best_winner_so_far->get_fitness(),
+                                           gen_winner_fitness,
+                                           pop_average_fitness};
+        print_table_row(row_data, column_width);
+
+    }
+
+    void print_table_header(const std::vector<std::string>& header_titles, 
+                            const unsigned column_width) const
+    {
+        print_table_row(header_titles, column_width, true, true);
+    }
+
+    const std::string create_experiment_dir_name() const
+    {
+        //Get experiment directory names
+        std::vector<std::string> dir_names;
+
+        for(const auto& entry : std::filesystem::directory_iterator(DATA_PATH))
+        {
+            //Split path by "/" delimeter and take the final string in that path
+            std::vector<std::string> split_path;
+            const std::string dir_path = entry.path();
+            boost::split(split_path, dir_path, boost::is_any_of("/"));
+            dir_names.push_back(split_path.back());
+        }
+
+        //Get previous experiment numbers from directory names
+        std::vector<unsigned> exp_numbers;
+        exp_numbers.reserve(dir_names.size());
+
+        for(const auto& name : dir_names)
+        {
+            std::vector<std::string> split_string;
+            boost::split(split_string, name, boost::is_any_of("_"));
+            exp_numbers.push_back(std::stoi(split_string.back()));
+        }
+
+        //Find highest experiment number so far
+        unsigned max_exp_num = 0;
+        if(exp_numbers.size() != 0)
+           max_exp_num = *std::max_element(exp_numbers.begin(), exp_numbers.end());
+
+        //New folder name increments the exp number
+        const std::string new_dir_name = "exp_" + std::to_string(max_exp_num+1);
+
+        return new_dir_name;
+
+    }
+
+    const std::string create_experiment_dir_path() const
+    {
+        //First check to see whether data directory
+        //exists and if not, create it
+        if(!boost::filesystem::exists(DATA_PATH))
+            boost::filesystem::create_directory(DATA_PATH);
+
+        std::stringstream exp_dir_path;
+        exp_dir_path << DATA_PATH << "/" << create_experiment_dir_name(); 
+        return exp_dir_path.str();
+    }
+
+    //Create directory name for run
+    const std::string create_run_dir_name() const
+    {
+        //Use a UUID for folder name or the date and time
+        if(_uuid_folders) 
+        {
+            //Create a unique indentifier for the directory name
+            boost::uuids::uuid uuid = boost::uuids::random_generator()();
+            return boost::uuids::to_string(uuid);
+
+        } else 
+        {
+            //Get data and time for folder name
+            boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
+            std::stringstream dir_name;
+            dir_name << "population-" << timeLocal.date() << "-" << timeLocal.time_of_day(); 
+            return dir_name.str();
+
+        }
+
+    }
+
+    void create_run_dir() 
+    {
+        const std::string run_dir_name = create_run_dir_name();
+        
+        //Create run directory
+        std::stringstream run_dir_path;
+        run_dir_path << _exp_dir_path << "/" << run_dir_name; 
+        boost::filesystem::create_directory(run_dir_path.str());
+        _run_dir_path = run_dir_path.str();
+
+    }
+
+    const bool _uuid_folders;
+
+    const std::string _exp_dir_path;
+    std::optional<std::string> _run_dir_path;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
 

@@ -61,6 +61,9 @@ public:
 
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
+        
+        // Create a data collector for printing out generational information
+        DataCollector<G, T> data_collector;
 
         for(unsigned i = 0; i < num_runs; i++) 
         {
@@ -70,9 +73,6 @@ public:
 
             // Build population
             Population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map_spec);
-
-            // Create a data collector for printing out generational information
-            DataCollector<G, T> data_collector;
 
             do {
 
@@ -107,8 +107,8 @@ public:
 
             }
 
-            //Reset domain for next run
             _domain.reset();
+            data_collector.reset();
 
         }
 
