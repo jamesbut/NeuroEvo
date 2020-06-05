@@ -24,8 +24,9 @@ int main(int argc, const char* argv[])
     {
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run: ./sequence_classification_example" << std::endl;
-        std::cout << "Individual run:   ./sequence_classification_example *population directory*"
-                  << std::endl;
+        std::cout << 
+            "Individual run:   ./sequence_classification_example *exp dir*/*population directory*"
+            << std::endl;
 
         return -1;
     }

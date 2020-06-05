@@ -18,7 +18,8 @@ int main(int argc, const char* argv[])
     if(argc < 1 || argc > 2) {
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run:   ./and_example" << std::endl;
-        std::cout << "Individual run:     ./and_example *population directory*" << std::endl;
+        std::cout << "Individual run:     ./and_example *exp dir*/*population directory*" 
+            << std::endl;
         return -1;
     }
 

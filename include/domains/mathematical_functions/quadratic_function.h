@@ -43,10 +43,6 @@ public:
 
     }
 
-protected:
-
-    void render() override {}
-
 private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override 
@@ -63,6 +59,9 @@ private:
         return y;
 
     }
+
+    void render() override {}
+    void reset_domain() override {}
 
     const double _a;
     const double _b;

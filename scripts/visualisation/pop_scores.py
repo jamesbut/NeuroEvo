@@ -62,12 +62,12 @@ def read_csv_files(folder_name):
 
     return np.array(data).astype(np.float)
 
-# Finds most recently created folder
+# Finds most recent run in experiment 1
 def get_most_recent_folder():
 
-    folder = max(glob.glob(os.path.join(parent_dir + '/../data/', '*/')), key=os.path.getmtime)
+    folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')), key=os.path.getmtime)
     split_folder_str = folder.split("/")
-    return split_folder_str[-2]
+    return "exp_1/" + split_folder_str[-2]
 
 # Taking all the fitnesses for all the individuals at each generation
 # return a vector of the best score so far for each generation
@@ -113,8 +113,8 @@ if __name__ == '__main__':
     # NOTE: This is not the full folder path, that is accounted
     # for within the read_csv_files function
     # If no folder is given the most recently generated
-    # folder is used
-
+    # population in experiment 1 is used.
+ 
     if len(sys.argv) < 2:
         data_folder_name = get_most_recent_folder();
     else:

@@ -45,63 +45,6 @@ public:
 
     }
 
-
-protected:
-
-    void render() override 
-    {
-        sf::Event event;
-        while (this->_window.pollEvent(event))
-            if (event.type == sf::Event::Closed)
-                this->_window.close();
-
-        this->_window.clear(sf::Color::Black);
-
-        //Render cart
-        const float cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
-        const float cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
-        sf::Vector2f cart_size(cart_render_width, cart_render_height);
-        sf::RectangleShape cart(cart_size);
-
-        float cart_pos_x = (_cart_pole.x + _boundary) * 
-                           (_cart_pole.render_scale) - 
-                            _cart_pole.cart_width/2;
-        float cart_pos_y = this->_screen_height/2;
-        cart.setPosition(cart_pos_x, cart_pos_y);
-
-        this->_window.draw(cart);
-
-        //Render pole
-        const float pole_render_width = cart_render_width / 10;
-        const float pole_render_height = _cart_pole.pole_half_length * 2 * _cart_pole.render_scale;
-        sf::Vector2f pole_size(pole_render_width, pole_render_height);
-        sf::RectangleShape pole(pole_size);
-
-        pole.setOrigin(pole_render_width/2, pole_render_height);
-
-        float pole_pos_x = cart_pos_x + cart_render_width / 2;
-        float pole_pos_y = cart_pos_y;
-        pole.setPosition(pole_pos_x, pole_pos_y);
-
-        //Rotate pole
-        pole.rotate(_cart_pole.theta * (180.0 / M_PI));
-
-        this->_window.draw(pole);
-
-        //Render floor
-        sf::Vector2f floor_size(this->_screen_width, 10.);
-        sf::RectangleShape floor(floor_size);
-        floor.setPosition(0., this->_screen_height/2 + cart_render_height);
-
-        this->_window.draw(floor);
-
-        //Render all
-        this->_window.display();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    }
-
 private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override 
@@ -304,6 +247,62 @@ private:
         state_file.close();
 
     }
+
+    void render() override 
+    {
+        sf::Event event;
+        while (this->_window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
+                this->_window.close();
+
+        this->_window.clear(sf::Color::Black);
+
+        //Render cart
+        const float cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
+        const float cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
+        sf::Vector2f cart_size(cart_render_width, cart_render_height);
+        sf::RectangleShape cart(cart_size);
+
+        float cart_pos_x = (_cart_pole.x + _boundary) * 
+                           (_cart_pole.render_scale) - 
+                            _cart_pole.cart_width/2;
+        float cart_pos_y = this->_screen_height/2;
+        cart.setPosition(cart_pos_x, cart_pos_y);
+
+        this->_window.draw(cart);
+
+        //Render pole
+        const float pole_render_width = cart_render_width / 10;
+        const float pole_render_height = _cart_pole.pole_half_length * 2 * _cart_pole.render_scale;
+        sf::Vector2f pole_size(pole_render_width, pole_render_height);
+        sf::RectangleShape pole(pole_size);
+
+        pole.setOrigin(pole_render_width/2, pole_render_height);
+
+        float pole_pos_x = cart_pos_x + cart_render_width / 2;
+        float pole_pos_y = cart_pos_y;
+        pole.setPosition(pole_pos_x, pole_pos_y);
+
+        //Rotate pole
+        pole.rotate(_cart_pole.theta * (180.0 / M_PI));
+
+        this->_window.draw(pole);
+
+        //Render floor
+        sf::Vector2f floor_size(this->_screen_width, 10.);
+        sf::RectangleShape floor(floor_size);
+        floor.setPosition(0., this->_screen_height/2 + cart_render_height);
+
+        this->_window.draw(floor);
+
+        //Render all
+        this->_window.display();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    }
+
+    void reset_domain() override {}
 
     const int _max_steps;
     const bool _markovian;

@@ -21,7 +21,8 @@ int main(int argc, const char* argv[])
     if(argc < 1 || argc > 2) {
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run: ./quadratic_function_example" << std::endl;
-        std::cout << "Individual run:   ./quadratic_function_example *population directory*" 
+        std::cout 
+            << "Individual run:   ./quadratic_function_example *exp dir*/*population directory*" 
             << std::endl;
         return -1;
     }

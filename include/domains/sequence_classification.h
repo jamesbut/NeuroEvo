@@ -64,10 +64,6 @@ public:
 
     }
 
-protected:
-
-    void render() override {}
-
 private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override 
@@ -197,6 +193,9 @@ private:
         }
 
     }
+
+    void render() override {}
+    void reset_domain() override {}
 
     const unsigned _depth;
     const unsigned _zeros_lower;
