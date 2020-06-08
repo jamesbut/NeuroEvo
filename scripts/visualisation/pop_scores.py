@@ -99,7 +99,7 @@ def get_default_exp_and_run():
     folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')), 
                  key=os.path.getmtime)
     split_folder_str = folder.split("/")
-    return ["exp_1/" + split_folder_str[-2]]
+    return [["exp_1/" + split_folder_str[-2]]]
 
 def get_run_folder_names(exp_num):
 
@@ -197,51 +197,15 @@ def draw_plot(best_so_far_fitnesses, average_fitnesses):
     plt.plot(x, average_fitnesses)
     plt.show()
 
-if __name__ == '__main__':
-
-    # Take *exp number* *run folder name* as arguments
-    # They are both optional
-
-    # If no arguments are given the most recently generated
-    # population in experiment 1 is used.
-    if len(sys.argv) < 2:
-        data_folder_names = get_default_exp_and_run();
-    # If just experiment number is given, all the runs are collected
-    elif len(sys.argv) == 2:
-        exp_num = sys.argv[1]
-        data_folder_names = get_run_folder_names(exp_num)
-    elif len(sys.argv) == 3:
-        exp_num = sys.argv[1]
-        run_folder_name = sys.argv[2]
-        data_folder_names = ["exp_" + exp_num + "/" + run_folder_name]
-
-    if not data_folder_names:
-        print("Could not find folder to read from!")
-        sys.exit()
-
-    # Import data
-    data = read_experiment_data(data_folder_names)
-
-    # Calculate required measures
-    avg_best_so_far_fitnesses = calculate_avg_best_fitness_so_far(data)
-    median_avg_fitnesses = calculate_median_avg_fitness(data)
-    high_quantile_avg_fitnesses = calculate_high_quantile_avg_fitness(data)
-    low_quantile_avg_fitnesses = calculate_low_quantile_avg_fitness(data)
-
-    # Debug printing
-    #print(data)
-    #print(avg_best_so_far_fitnesses)
-    #print(avg_avg_fitnesses)
-
-    # Draw plots
+def plot_experiment(best_so_far, median_avg, high_q, low_q, colour):
 
     # Create x vector of generations
     x = np.arange(1, data.shape[1]+1)
 
-    plotted_data_best = np.column_stack((x, avg_best_so_far_fitnesses))
-    plotted_data_avg = np.column_stack((x, median_avg_fitnesses))
-    plotted_data_high_quantile = np.column_stack((x, high_quantile_avg_fitnesses))
-    plotted_data_low_quantile = np.column_stack((x, low_quantile_avg_fitnesses))
+    plotted_data_best = np.column_stack((x, best_so_far))
+    plotted_data_avg = np.column_stack((x, median_avg))
+    plotted_data_high_quantile = np.column_stack((x, high_q))
+    plotted_data_low_quantile = np.column_stack((x, low_q))
     plotted_data = np.array([plotted_data_best, plotted_data_avg, 
                              plotted_data_high_quantile, plotted_data_low_quantile])
 
@@ -250,16 +214,64 @@ if __name__ == '__main__':
 
     legend_labels = ["Best fitness so far", "Population avg fitness", 
                      "High quantile", "Low quantile"]
-    plot_colours = ['r', 'b', 'b', 'b']
-    line_styles = ['-', '-', '--', '--']
+    line_styles = ['--', '-', '--', '--']
     line_widths = [1., 1., 0.25, 0.25]
 
     for i in range(plotted_data.shape[0]):
         plt.plot(plotted_data[i,:,0], plotted_data[i,:,1], 
-                 color=plot_colours[i], linestyle=line_styles[i],
+                 color=colour, linestyle=line_styles[i],
                  linewidth=line_widths[i])
 
     plt.fill_between(x, low_quantile_avg_fitnesses, high_quantile_avg_fitnesses, 
-                     color='b', alpha=0.1)
+                     color=colour, alpha=0.1)
 
+
+if __name__ == '__main__':
+
+    # Take *exp number* *run folder name* as arguments
+    # They are both optional
+    # One can also give a comma seperated list of exp numbers to plot
+    # on the same plot
+
+    # If no arguments are given the most recently generated
+    # population in experiment 1 is used.
+    if len(sys.argv) < 2:
+        data_folder_names = get_default_exp_and_run();
+    # If just experiment number is given, all the runs are collected
+    elif len(sys.argv) == 2:
+        exp_nums = sys.argv[1].split(",")
+        data_folder_names = []
+        for exp_num in exp_nums:
+            data_folder_names.append(get_run_folder_names(exp_num))
+    elif len(sys.argv) == 3:
+        exp_num = sys.argv[1]
+        run_folder_name = sys.argv[2]
+        data_folder_names = [["exp_" + exp_num + "/" + run_folder_name]]
+
+    if not data_folder_names:
+        print("Could not find folder to read from!")
+        sys.exit()
+
+    exp_plot_colours = ['b', 'r']
+
+    # Import data
+    for i, exp_folder in enumerate(data_folder_names):
+
+        data = read_experiment_data(exp_folder)
+
+        # Calculate required measures
+        avg_best_so_far_fitnesses = calculate_avg_best_fitness_so_far(data)
+        median_avg_fitnesses = calculate_median_avg_fitness(data)
+        high_quantile_avg_fitnesses = calculate_high_quantile_avg_fitness(data)
+        low_quantile_avg_fitnesses = calculate_low_quantile_avg_fitness(data)
+
+        # Debug printing
+        #print(data)
+        #print(avg_best_so_far_fitnesses)
+        #print(avg_avg_fitnesses)
+
+        # Draw plots
+        plot_experiment(avg_best_so_far_fitnesses, median_avg_fitnesses, 
+                        high_quantile_avg_fitnesses, low_quantile_avg_fitnesses,
+                        exp_plot_colours[i])
     plt.show()
