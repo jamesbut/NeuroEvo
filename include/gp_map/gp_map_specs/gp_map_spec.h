@@ -1,6 +1,8 @@
 #ifndef _GP_MAP_SPEC_H_
 #define _GP_MAP_SPEC_H_
 
+#include <gp_map/gp_map.h>
+
 namespace NeuroEvo {
 
 template <typename G, typename T>

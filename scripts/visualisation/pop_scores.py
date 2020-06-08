@@ -252,7 +252,7 @@ if __name__ == '__main__':
         print("Could not find folder to read from!")
         sys.exit()
 
-    exp_plot_colours = ['b', 'r']
+    exp_plot_colours = ['b', 'r', 'g']
 
     # Import data
     for i, exp_folder in enumerate(data_folder_names):
