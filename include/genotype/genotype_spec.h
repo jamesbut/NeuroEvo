@@ -63,8 +63,6 @@ public:
                 getline(ss, substr, ',');
 
                 //This cast will not always work
-                //In fact I don't think this will compile if the gene type is
-                //not double
                 //But it can stay for now
                 genes.push_back(std::stod(substr));
 

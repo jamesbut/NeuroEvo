@@ -21,8 +21,8 @@ public:
 
     GPMap<G, G>* generate_gp_map(const std::string& file_name) override
     {
-        std::cerr << "Write generate_gp_map in GenotypeReflectionSpec" << std::endl;
-        exit(0);
+        //No information is stored in files for this map
+        return new GenotypeReflectorMap<G>();
     }
     
 };
