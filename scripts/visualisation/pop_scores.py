@@ -96,7 +96,8 @@ def read_run_data(folder_name):
 # Finds most recent run in experiment 1
 def get_default_exp_and_run():
 
-    folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')), key=os.path.getmtime)
+    folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')), 
+                 key=os.path.getmtime)
     split_folder_str = folder.split("/")
     return ["exp_1/" + split_folder_str[-2]]
 
@@ -114,12 +115,16 @@ def get_run_folder_names(exp_num):
 # Calculates the average best fitness so far over all the experimental runs
 def calculate_avg_best_fitness_so_far(data):
 
-    total_best_fitness = 0.
+    num_gens = data.shape[1]
+    num_runs = data.shape[0]
+    best_so_far_fitnesses = np.zeros((num_runs, num_gens))
 
-    for d in data:
-        total_best_fitness += calculate_best_fitness_so_far(d)
+    for i, d in enumerate(data):
+        best_so_far_fitnesses[i] = calculate_best_fitness_so_far(d)
 
-    return total_best_fitness / float(len(data))
+    best_so_far_means = np.mean(best_so_far_fitnesses, axis=0) 
+
+    return best_so_far_means
 
 
 # Taking all the fitnesses for all the individuals at each generation
@@ -143,15 +148,37 @@ def calculate_best_fitness_so_far(data):
 
     return np.array(best_score_so_far)
 
-# Calculates the average average fitness over all of the experimental runs
-def calculate_avg_avg_fitness(data):
+# Calculate the median average fitness over all experimental runs
+def calculate_median_avg_fitness(data):
 
-    total_avg_fitness = 0.
+    avg_fitnesses = calculate_avg_fitnesses(data)
+    median_avg_fitnesses = np.median(avg_fitnesses, axis=0) 
+    return median_avg_fitnesses
 
-    for d in data:
-        total_avg_fitness += calculate_average_fitness(d)
+# Calculate the 75th quantile of average fitness over all experimental runs
+def calculate_high_quantile_avg_fitness(data):
 
-    return total_avg_fitness / float(len(data))
+    avg_fitnesses = calculate_avg_fitnesses(data)
+    high_quantile_avg_fitnesses = np.quantile(avg_fitnesses, 0.75, axis=0) 
+    return high_quantile_avg_fitnesses
+
+# Calculate the 25th quantile of average fitness over all experimental runs
+def calculate_low_quantile_avg_fitness(data):
+
+    avg_fitnesses = calculate_avg_fitnesses(data)
+    low_quantile_avg_fitnesses = np.quantile(avg_fitnesses, 0.25, axis=0) 
+    return low_quantile_avg_fitnesses
+
+def calculate_avg_fitnesses(data):
+
+    num_gens = data.shape[1]
+    num_runs = data.shape[0]
+    average_fitnesses = np.zeros((num_runs, num_gens))
+
+    for i, d in enumerate(data):
+        average_fitnesses[i] = calculate_average_fitness(d)
+
+    return average_fitnesses
 
 # Returns a vector of the average fitness of the population
 # at each generation
@@ -188,12 +215,18 @@ if __name__ == '__main__':
         run_folder_name = sys.argv[2]
         data_folder_names = ["exp_" + exp_num + "/" + run_folder_name]
 
+    if not data_folder_names:
+        print("Could not find folder to read from!")
+        sys.exit()
+
     # Import data
     data = read_experiment_data(data_folder_names)
 
     # Calculate required measures
     avg_best_so_far_fitnesses = calculate_avg_best_fitness_so_far(data)
-    avg_avg_fitnesses = calculate_avg_avg_fitness(data)
+    median_avg_fitnesses = calculate_median_avg_fitness(data)
+    high_quantile_avg_fitnesses = calculate_high_quantile_avg_fitness(data)
+    low_quantile_avg_fitnesses = calculate_low_quantile_avg_fitness(data)
 
     # Debug printing
     #print(data)
@@ -206,15 +239,27 @@ if __name__ == '__main__':
     x = np.arange(1, data.shape[1]+1)
 
     plotted_data_best = np.column_stack((x, avg_best_so_far_fitnesses))
-    plotted_data_avg = np.column_stack((x, avg_avg_fitnesses))
-    plotted_data = np.array([plotted_data_best, plotted_data_avg])
+    plotted_data_avg = np.column_stack((x, median_avg_fitnesses))
+    plotted_data_high_quantile = np.column_stack((x, high_quantile_avg_fitnesses))
+    plotted_data_low_quantile = np.column_stack((x, low_quantile_avg_fitnesses))
+    plotted_data = np.array([plotted_data_best, plotted_data_avg, 
+                             plotted_data_high_quantile, plotted_data_low_quantile])
 
     xlabel = 'Generation'
     ylabel = 'Fitness'
 
-    legend_labels = ["Best fitness so far", "Population avg fitness"]
-    plot_colours = ['r', 'b']
+    legend_labels = ["Best fitness so far", "Population avg fitness", 
+                     "High quantile", "Low quantile"]
+    plot_colours = ['r', 'b', 'b', 'b']
+    line_styles = ['-', '-', '--', '--']
+    line_widths = [1., 1., 0.25, 0.25]
 
-    plot_2d_line(plotted_data, xlabel = xlabel, ylabel = ylabel, 
-                 legend_labels = legend_labels, plot_colours = plot_colours)
+    for i in range(plotted_data.shape[0]):
+        plt.plot(plotted_data[i,:,0], plotted_data[i,:,1], 
+                 color=plot_colours[i], linestyle=line_styles[i],
+                 linewidth=line_widths[i])
 
+    plt.fill_between(x, low_quantile_avg_fitnesses, high_quantile_avg_fitnesses, 
+                     color='b', alpha=0.1)
+
+    plt.show()
