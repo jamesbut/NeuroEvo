@@ -40,35 +40,43 @@ public:
     //Generate genotype from file
     Genotype<G>* generate_genotype(const std::string& file_name) 
     {
-
         std::ifstream file(file_name);
-        std::string line;
 
-        //Read whole line from file
-        std::getline(file, line);
+        if(file.is_open())
+        {
+            std::string line;
 
-        std::stringstream ss(line);
+            //Read whole line from file
+            std::getline(file, line);
 
-        //Remove fitness
-        std::string fitness;
-        getline(ss, fitness, ',');
+            std::stringstream ss(line);
 
-        std::vector<G> genes;
+            //Remove fitness
+            std::string fitness;
+            getline(ss, fitness, ',');
 
-        while(ss.good()) {
+            std::vector<G> genes;
 
-            std::string substr;
-            getline(ss, substr, ',');
+            while(ss.good()) {
 
-            //This cast will not always work
-            //In fact I don't think this will compile if the gene type is
-            //not double
-            //But it can stay for now
-            genes.push_back(std::stod(substr));
+                std::string substr;
+                getline(ss, substr, ',');
 
+                //This cast will not always work
+                //In fact I don't think this will compile if the gene type is
+                //not double
+                //But it can stay for now
+                genes.push_back(std::stod(substr));
+
+            }
+            
+            return new Genotype<G>(genes, _mutator);
+            
+        } else
+        {
+            std::cerr << "Could not open genotype file: " << file_name << std::endl;
+            exit(0);
         }
-
-        return new Genotype<G>(genes, _mutator);
 
     }
 

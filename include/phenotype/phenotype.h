@@ -20,6 +20,11 @@ class Phenotype
 
 public:
 
+    Phenotype() = default;
+
+    Phenotype(const unsigned num_params) :
+        _num_params(num_params) {}
+
     //Putting virtual here seems to make a big difference to the memory leak
     virtual ~Phenotype() = default;
 
@@ -30,9 +35,16 @@ public:
 
     virtual void print_params() = 0;
 
+    const std::optional<unsigned>& get_num_params() const
+    {
+        return _num_params;
+    }
+
 protected:
 
     virtual Phenotype* clone_impl() const = 0;
+
+    std::optional<unsigned> _num_params;
 
 };
 

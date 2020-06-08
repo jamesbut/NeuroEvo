@@ -19,10 +19,25 @@ public:
     Phenotype<G>* generate_phenotype(Genotype<G>& genotype,
                                      GPMap<G, G>* gp_map) override
     {
+        Phenotype<G>* phenotype;
         if(gp_map)
-            return gp_map->map(genotype, *this);
+            phenotype = gp_map->map(genotype, *this);
         else
-            return new VectorPhenotype<G>(genotype.genes());
+            phenotype = new VectorPhenotype<G>(genotype.genes());
+
+        //Check phenotype is of the correct size
+        if(phenotype->get_num_params().value() != this->_num_params)
+        {
+            std::cerr << "Created phenotype does not have the same number of params as"
+                << " specified in the phenotype spec!" << std::endl;
+            std::cerr << "Num params in phenotype spec: " << this->_num_params << std::endl;
+            std::cerr << "Actual number of params in phenotype: " << 
+                phenotype->get_num_params().value() << std::endl;
+            exit(0);
+        }
+
+        return phenotype;
+
     }
 
 protected:
