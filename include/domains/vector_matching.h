@@ -22,13 +22,13 @@ public:
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
     VectorMatching(const unsigned matching_vector_size,
-                   const std::unique_ptr<Distribution<T>>& matching_vector_distr,
+                   Distribution<T>* matching_vector_distr,
                    const bool symmetric_match_vector = false,
                    const bool domain_trace = false, 
                    const double completion_fitness = 1.0) :
-        _matching_vector(randomly_generate_matching_vector(matching_vector_size, 
-                                                           matching_vector_distr,
-                                                           symmetric_match_vector)),
+        _matching_vector_distr(matching_vector_distr),
+        _symmetric_match_vector(symmetric_match_vector),
+        _matching_vector(randomly_generate_matching_vector(matching_vector_size)),
         Domain<G, T>(domain_trace, completion_fitness) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
@@ -103,15 +103,13 @@ private:
     }
 
     const std::vector<T> randomly_generate_matching_vector(
-        const unsigned matching_vector_size,
-        const std::unique_ptr<Distribution<T>>& distr,
-        const bool symmetric_match_vector) const
+        const std::size_t matching_vector_size) const
     {
         
         std::vector<T> matching_vector;
         matching_vector.reserve(matching_vector_size);
 
-        if(symmetric_match_vector) 
+        if(_symmetric_match_vector) 
         {
             //If symmetric match vector, check whether matching vector size is even.
             //If not exit - I don't think this is how I should handle the error but
@@ -128,7 +126,7 @@ private:
             first_half_matching_vector.reserve(num_unique_elements);
 
             for(unsigned i = 0; i < num_unique_elements; i++)   
-                first_half_matching_vector.push_back(distr->next());
+                first_half_matching_vector.push_back(_matching_vector_distr->next());
 
             //Create symmetric second half
             std::vector<T> second_half_matching_vector(first_half_matching_vector);
@@ -142,13 +140,20 @@ private:
 
         } else
             for(unsigned i = 0; i < matching_vector_size; i++)   
-                matching_vector.push_back(distr->next());
+                matching_vector.push_back(_matching_vector_distr->next());
 
         return matching_vector;
     }
 
-    void reset_domain() override {}
+    void reset_domain() override 
+    {
+        //Reset matching vector if it was generated from a distribution
+        if(_matching_vector_distr)
+            _matching_vector = randomly_generate_matching_vector(_matching_vector.size());
+    }
 
+    const std::unique_ptr<Distribution<T>> _matching_vector_distr;
+    const bool _symmetric_match_vector;
     std::vector<T> _matching_vector;
 
 };
