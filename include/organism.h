@@ -82,7 +82,7 @@ public:
         _fitness = fitness;
     }
 
-    const double get_fitness() const 
+    double get_fitness() const 
     {
         return _fitness;
     }

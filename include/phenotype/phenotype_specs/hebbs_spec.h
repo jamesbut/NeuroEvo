@@ -22,12 +22,12 @@ public:
         _weights_file_name(weights_file_name), 
         _outputs_file_name(outputs_file_name) {}
 
-    const bool get_evolve_init_weights() const 
+    bool get_evolve_init_weights() const 
     {
         return _evolve_init_weights;
     }
 
-    const bool get_print_weights_to_file() const
+    bool get_print_weights_to_file() const
     {
         return _print_weights_to_file;
     }

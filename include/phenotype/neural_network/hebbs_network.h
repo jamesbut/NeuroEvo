@@ -26,8 +26,8 @@ public:
 
     HebbsNetwork(const HebbsSpec& hebbs_spec,
                  const bool trace = false) :
-        _hebbs_spec(hebbs_spec),
-        Network(trace) {}
+        Network(trace),
+        _hebbs_spec(hebbs_spec) {}
 
     void create_net(const std::vector<LayerSpec>& layer_specs) override
     {

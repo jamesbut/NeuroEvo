@@ -11,8 +11,8 @@ Neuron::Neuron(const unsigned num_inputs, const LayerSpec::NeuronType& neuron_ty
     _num_inputs(num_inputs),
     _neuron_type(neuron_type),
     _activation_function(activation_function),
-    _previous_output(0.0),
-    _trace(trace) {}
+    _trace(trace),
+    _previous_output(0.0) {}
 
 //Sets the weights of the Neuron
 void Neuron::set_weights(const std::vector<double>& weights) 

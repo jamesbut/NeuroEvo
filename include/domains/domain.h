@@ -299,7 +299,7 @@ private:
     }
 
     //Shared memory for parallel execution
-    std::optional<Utils::SharedFitnessMemory> _shared_fitness_mem;
+    std::optional<SharedFitnessMemory> _shared_fitness_mem;
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;

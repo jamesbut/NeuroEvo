@@ -15,8 +15,9 @@ class Layer {
 public:
 
     Layer(const LayerSpec& layer_spec, const bool trace);
-
     Layer(const Layer& layer);
+
+    virtual ~Layer() = default;
 
     auto clone() const
     {

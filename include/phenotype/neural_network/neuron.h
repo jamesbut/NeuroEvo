@@ -20,6 +20,8 @@ public:
            const std::shared_ptr<ActivationFunction> activation_function,
            const bool trace);
 
+    virtual ~Neuron() = default;
+
     virtual void set_weights(const std::vector<double>& weights);
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
     virtual double evaluate(const std::vector<double>& inputs);

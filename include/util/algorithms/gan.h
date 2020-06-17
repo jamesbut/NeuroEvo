@@ -12,7 +12,13 @@ namespace NeuroEvo {
 class GAN
 {
 
-    GAN(const Matrix<double>& true_data)
+public:
+
+    GAN(const Matrix<double>& true_data);
+
+private:
+
+    const Matrix<double> _true_data;
 
 };
 

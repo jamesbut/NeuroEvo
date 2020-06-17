@@ -4,8 +4,8 @@ namespace NeuroEvo {
 
 CharMutator::CharMutator(const double mutation_rate, const std::set<char>& char_set,
                          const std::optional<std::vector<double>>& char_distr) :
-    _char_distr(char_set, char_distr),
-    Mutator(mutation_rate) {}
+    Mutator(mutation_rate),
+    _char_distr(char_set, char_distr) {}
 
 char CharMutator::mutate_gene(char gene) {
 

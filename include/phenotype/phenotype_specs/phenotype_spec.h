@@ -26,8 +26,8 @@ public:
 
     PhenotypeSpec(const unsigned num_params) :
         _num_params(num_params),
-        _print_weights(false),
-        _trace(false) {}
+        _trace(false),
+        _print_weights(false) {}
 
     //GPMap can be null
     virtual Phenotype<T>* generate_phenotype(Genotype<G>& genotype, GPMap<G, T>* gp_map) = 0;

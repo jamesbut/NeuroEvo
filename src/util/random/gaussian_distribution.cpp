@@ -4,8 +4,8 @@ namespace NeuroEvo {
 
 GaussianDistribution::GaussianDistribution(const double mean, const double stddev,
                                            const std::optional<unsigned> seed) :
-    _distr(mean, stddev),
-    Distribution(seed) {}
+    Distribution(seed),
+    _distr(mean, stddev) {}
 
 double GaussianDistribution::next() {
     return _distr(_rng);

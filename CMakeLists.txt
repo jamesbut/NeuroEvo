@@ -14,8 +14,15 @@ project(neuro_evo)
 set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
+#The below packages should be optional
+
 # SFML used for rendering
 find_package(SFML COMPONENTS graphics REQUIRED)
+
+#Torch
+#Add torch path to cmake path
+set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.7/site-packages")
+find_package(Torch REQUIRED)
 
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
@@ -33,11 +40,6 @@ endif()
 add_compile_definitions(DATA_PATH="${DATA_PATH}")
 add_compile_definitions(NEURO_EVO_CMAKE_SRC_DIR="${NEURO_EVO_CMAKE_SRC_DIR}")
 
-include_directories(
-    include
-    ${Boost_INCLUDE_DIRS}
-)
-
 # Build all files in src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -46,8 +48,15 @@ add_library(neuroEvo SHARED
 )
 
 target_link_libraries(neuroEvo
+    ${TORCH_LIBRARIES}
     ${Boost_LIBRARIES}
     sfml-graphics
+)
+
+target_include_directories(neuroEvo PUBLIC
+    include
+    ${Boost_INCLUDE_DIRS}
+    #${TORCH_INCLUDE_DIRS}
 )
 
 # Library used for parallelisation

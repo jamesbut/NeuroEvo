@@ -9,27 +9,24 @@
 #include <util/memory/shared_memory.h>
 
 namespace NeuroEvo {
-namespace Utils {
 
 class SharedFitnessMemory {
 
 public:
 
-    SharedFitnessMemory(const int POP_SIZE, const int NUM_RUNS);
+    SharedFitnessMemory(const unsigned pop_size, const unsigned num_runs);
 
-    void write_fitness(const double fitness, const int individual, const int run);
-    double get_fitness(const int individual, const int run);
+    void write_fitness(const double fitness, const unsigned individual, const unsigned run);
+    double get_fitness(const unsigned individual, const unsigned run);
 
 private:
 
-    const int _POP_SIZE;
-    const int _NUM_RUNS;
+    const unsigned _num_runs;
 
     SharedMemory<double> _memory;
 
 };
 
-} // namespace Utils
 } // namespace NeuroEvo
 
 #endif

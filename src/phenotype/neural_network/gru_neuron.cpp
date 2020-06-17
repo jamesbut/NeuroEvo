@@ -33,8 +33,6 @@ void GRUNeuron::set_weights(const std::vector<double>& weights)
 
 double GRUNeuron::evaluate(const std::vector<double>& inputs) 
 {
-    std::vector<double>::iterator weight_iter = _weights.begin();
-    unsigned index = 0;
 
     //Reset gate
     double reset_input_sum = 0.0;

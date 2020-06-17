@@ -13,108 +13,107 @@
 namespace NeuroEvo {
 
 template <class T>
-class Matrix {
+class Matrix 
+{
 
 public:
 
     Matrix(const unsigned height, const unsigned width) :
-        _HEIGHT(height),
-        _WIDTH(width),
+        _height(height),
+        _width(width),
         _matrix(height * width, 0) {}
 
     Matrix(const std::vector<T>& vector) :
-        _HEIGHT(vector.size()),
-        _WIDTH(1),
+        _height(vector.size()),
+        _width(1),
         _matrix(vector) {}
 
     Matrix(const unsigned height, const unsigned width,
            const std::vector<T>& vector) :
-        _HEIGHT(height),
-        _WIDTH(width),
+        _height(height),
+        _width(width),
         _matrix(vector) {}
 
     Matrix(const std::vector<std::vector<T>>& matrix) :
-        _HEIGHT(matrix.size()),
-        _WIDTH(matrix.at(0).size()),
+        _height(matrix.size()),
+        _width(matrix.at(0).size()),
         _matrix(flatten(matrix)) {}
 
-    Matrix operator*(const Matrix& m) {
+    Matrix operator*(const Matrix& m) 
+    {
 
         //Check for valid matrix multiplication
-        if(this->_WIDTH != m._HEIGHT) {
-            std::string err_msg = "Matrices of size " + std::to_string(this->_HEIGHT) + "x" +
-                                  std::to_string(this->_WIDTH) + " and " +
-                                  std::to_string(m._HEIGHT) + "x" +
-                                  std::to_string(m._WIDTH) + " cannot be multiplied!";
+        if(this->_width != m._height) 
+        {
+            std::string err_msg = "Matrices of size " + std::to_string(this->_height) + "x" +
+                                  std::to_string(this->_width) + " and " +
+                                  std::to_string(m._height) + "x" +
+                                  std::to_string(m._width) + " cannot be multiplied!";
             std::cout << err_msg << std::endl;
             throw err_msg;
-
         }
 
-        Matrix matrix(this->_HEIGHT, m._WIDTH);
+        Matrix matrix(this->_height, m._width);
 
-        for(unsigned i = 0; i < this->_HEIGHT; i++)
-            for(unsigned j = 0; j < m._WIDTH; j++) {
+        for(unsigned i = 0; i < this->_height; i++)
+            for(unsigned j = 0; j < m._width; j++) 
+            {
                 T sum = 0;
-                for (unsigned k = 0; k < this->_WIDTH; k++)
-                    sum += this->_matrix.at(i * this->_WIDTH + k) * m._matrix.at(k *
-                           m._WIDTH + j);
-                matrix._matrix.at(i * matrix._WIDTH + j) = sum;
+                for (unsigned k = 0; k < this->_width; k++)
+                    sum += this->_matrix.at(i * this->_width + k) * m._matrix.at(k *
+                           m._width + j);
+                matrix._matrix.at(i * matrix._width + j) = sum;
             }
 
         return matrix;
 
     }
 
-
-    inline const unsigned get_height() const { return _HEIGHT; };
-    inline const unsigned get_width() const { return _WIDTH; };
+    inline unsigned get_height() const { return _height; };
+    inline unsigned get_width() const { return _width; };
 
     inline std::vector<T>& get_vector() { return _matrix; };
 
-    inline const T& at(const unsigned row, const unsigned column) const {
-
-        return _matrix.at(row * _WIDTH + column);
-
+    const T& at(const unsigned row, const unsigned column) const 
+    {
+        return _matrix.at(row * _width + column);
     };
 
-    inline void set(const unsigned row, const unsigned column, const T value) {
-
-        _matrix.at(row * _WIDTH + column) = value;
-
+    void set(const unsigned row, const unsigned column, const T value) 
+    {
+        _matrix.at(row * _width + column) = value;
     };
-
 
 private:
 
-    const unsigned _HEIGHT;
-    const unsigned _WIDTH;
+    const unsigned _height;
+    const unsigned _width;
 
     std::vector<T> _matrix;
 
-    inline std::vector<T> flatten(const std::vector<std::vector<T>>& matrix) {
-
+    std::vector<T> flatten(const std::vector<std::vector<T>>& matrix) 
+    {
         std::vector<T> vec;
         vec.reserve(matrix.size() * matrix.at(0).size());
 
         for(const auto& row : matrix)
             vec.insert(vec.end(), row.begin(), row.end());
         return vec;
-
     }
 
 };
 
 template <class T>
-std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) 
+{
 
-    for(unsigned i = 0; i < m.get_height(); i++) {
-
+    for(unsigned i = 0; i < m.get_height(); i++) 
+    {
         for(unsigned j = 0; j < m.get_width(); j++)
             os << m.at(i, j) << " ";
 
-        os << std::endl;
-
+        if(i != (m.get_height()-1))
+            os << std::endl;
     }
 
     return os;

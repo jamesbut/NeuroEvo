@@ -5,20 +5,20 @@
 namespace NeuroEvo {
 
 Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
+    _trace(trace),
     _inputs_per_neuron(layer_spec.get_inputs_per_neuron()),
     _params_per_neuron(layer_spec.get_params_per_neuron()),
     _num_neurons(layer_spec.get_num_neurons()),
     _neuron_type(layer_spec.get_neuron_type()),
-    _activation_function(layer_spec.get_activation_func()),
-    _trace(trace) {}
+    _activation_function(layer_spec.get_activation_func()) {}
 
 Layer::Layer(const Layer& layer) :
+    _trace(layer._trace),
     _inputs_per_neuron(layer._inputs_per_neuron),
     _params_per_neuron(layer._params_per_neuron),
     _num_neurons(layer._num_neurons),
     _neuron_type(layer._neuron_type),
     _activation_function(layer._activation_function),
-    _trace(layer._trace),
     _neurons(layer._num_neurons) 
 {
     for(std::size_t i = 0; i < _neurons.size(); i++)

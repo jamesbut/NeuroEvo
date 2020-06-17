@@ -40,7 +40,7 @@ public:
         return _organisms.at(org);
     }
 
-    const unsigned get_size() const
+    unsigned get_size() const
     {
         return _pop_size;
     }

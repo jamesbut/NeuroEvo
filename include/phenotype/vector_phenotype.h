@@ -17,8 +17,8 @@ class VectorPhenotype : public Phenotype<T>
 public:
 
     VectorPhenotype(const std::vector<T>& traits) :
-        _traits(traits),
-        Phenotype<T>(traits.size()) {}
+        Phenotype<T>(traits.size()),
+        _traits(traits) {}
 
     std::vector<T> activate(const std::vector<double>& inputs) override 
     {
