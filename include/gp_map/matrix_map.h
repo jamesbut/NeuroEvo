@@ -29,7 +29,7 @@ public:
 
     void print_gp_map(std::ofstream& file) override;
 
-    std::optional<Utils::Matrix<double>> get_map() override 
+    std::optional<Matrix<double>> get_map() override 
     { 
         return _interaction_matrix; 
     };
@@ -45,9 +45,9 @@ private:
 
     //Matrix defining the affect the the genome has on each of the phenotypic
     //traits
-    Utils::Matrix<double> _interaction_matrix;
+    Matrix<double> _interaction_matrix;
 
-    Utils::Matrix<double> read_matrix(const std::string& file_name);
+    Matrix<double> read_matrix(const std::string& file_name);
 
 };
 

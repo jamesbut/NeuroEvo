@@ -30,9 +30,9 @@ Phenotype<double>* MatrixMap::map(Genotype<double>& genotype,
                                   PhenotypeSpec<double, double>& pheno_spec) 
 {
 
-    const Utils::Matrix<double> genes(genotype.genes());
+    const Matrix<double> genes(genotype.genes());
 
-    Utils::Matrix<double> traits = _interaction_matrix * genes;
+    Matrix<double> traits = _interaction_matrix * genes;
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this
@@ -68,7 +68,7 @@ void MatrixMap::print_gp_map(std::ofstream& file) {
 
 }
 
-Utils::Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
+Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
 
     std::vector<std::vector<double>> vector_matrix;
 
@@ -113,7 +113,7 @@ Utils::Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
 
     }
 
-    return Utils::Matrix<double>(vector_matrix);
+    return Matrix<double>(vector_matrix);
 
 }
 

@@ -39,7 +39,7 @@ public:
 
     }
 
-    std::optional<Utils::Matrix<double>> get_map() override 
+    std::optional<Matrix<double>> get_map() override 
     {
         std::cerr << "Implement get_map in GenotypeReflectorMap" << std::endl;
         exit(0);

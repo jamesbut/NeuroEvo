@@ -32,7 +32,7 @@ public:
     // if it can be represented in vector or Matrix format.
     // If the map cannot be represented in Matrix format, the optional
     // should just be empty
-    virtual std::optional<Utils::Matrix<double>> get_map() = 0;
+    virtual std::optional<Matrix<double>> get_map() = 0;
 
     auto clone() const 
     { 

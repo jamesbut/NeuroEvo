@@ -43,7 +43,7 @@ void NetworkMap::print_gp_map(std::ofstream& file)
 
 }
 
-std::optional<Utils::Matrix<double>> NetworkMap::get_map() 
+std::optional<Matrix<double>> NetworkMap::get_map() 
 {
 
     //TODO: Write this

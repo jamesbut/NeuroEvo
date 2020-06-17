@@ -26,9 +26,9 @@ public:
     Phenotype<double>* map(Genotype<double>& genotype,
                            PhenotypeSpec<double, double>& pheno_spec) override;
 
-    std::optional<Utils::Matrix<double>> get_map() override 
+    std::optional<Matrix<double>> get_map() override 
     {
-        return std::optional<Utils::Matrix<double>>();
+        return std::optional<Matrix<double>>();
     };
 
     void print_gp_map(std::ofstream& file) override {};
@@ -43,7 +43,7 @@ private:
     const unsigned _num_neurons;
     const unsigned _inputs_per_neuron;
 
-    void remove_higher_frequencies(Utils::Matrix<double>& coefficients);
+    void remove_higher_frequencies(Matrix<double>& coefficients);
 
 };
 

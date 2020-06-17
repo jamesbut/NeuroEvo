@@ -15,24 +15,24 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inpu
                                    PhenotypeSpec<double, double>& pheno_spec) 
     {
         // Assume genes are the DCT coefficients
-        Utils::Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
+        Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
 
         // Only keep _C coefficients
         remove_higher_frequencies(coefficients);
 
         // Use inverse DCT
-        Utils::Matrix<double> traits = Utils::DCTIII(coefficients);
+        Matrix<double> traits = Utils::DCTIII(coefficients);
 
         //TODO: For now, can only turn into Fixed Network
         NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
         Network* network = new Network(net_builder->get_trace());
-    network->create_net(net_builder->get_layer_specs());
-    network->propogate_weights(traits.get_vector());
-    return network;
+        network->create_net(net_builder->get_layer_specs());
+        network->propogate_weights(traits.get_vector());
+        return network;
 
 }
 
-void DCTMap::remove_higher_frequencies(Utils::Matrix<double>& coefficients) 
+void DCTMap::remove_higher_frequencies(Matrix<double>& coefficients) 
 {
 
     const unsigned& height = coefficients.get_height();
