@@ -2,6 +2,7 @@
 #define _SIGMOID_H_
 
 #include <util/maths/activation_functions/activation_function.h>
+#include <math.h>
 
 namespace NeuroEvo {
 

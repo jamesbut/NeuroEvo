@@ -1,6 +1,7 @@
 #ifndef _HEBBS_NEURON_H_
 #define _HEBBS_NEURON_H_
 
+#include <algorithm>
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <phenotype/neural_network/neuron.h>
 #include <vector>
@@ -13,7 +14,7 @@ public:
 
     HebbsNeuron(const unsigned num_input, 
                 const LayerSpec::NeuronType& neuron_type, 
-                const std::shared_ptr<ActivationFunction> activation_function,
+                const std::unique_ptr<ActivationFunction>& activation_function,
                 const bool trace = false);
 
     void set_weights(const std::vector<double>& weights) override;

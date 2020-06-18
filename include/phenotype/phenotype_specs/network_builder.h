@@ -33,8 +33,9 @@ public:
                                                          neuron_type, activation_func)),
         _num_inputs(num_inputs),
         _num_outputs(num_outputs),
-        _layer_specs(build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
-                                       neurons_per_layer, neuron_type, activation_func)),
+        _layer_specs(LayerSpec::build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
+                                                  neurons_per_layer, neuron_type, 
+                                                  activation_func)),
         _trace(trace) {}
 
     //Build with layer specs in which one can provde more fine grained detail
@@ -158,38 +159,6 @@ protected:
 
 private:
 
-    std::vector<LayerSpec> build_layer_specs(const unsigned num_inputs,
-                                             const unsigned num_outputs,
-                                             const unsigned num_hidden_layers,
-                                             const unsigned neurons_per_layer,
-                                             const LayerSpec::NeuronType neuron_type,
-                                             ActivationFunction* activation_func) 
-    {
-
-        std::vector<LayerSpec> layer_specs;
-
-        if(num_hidden_layers == 0)
-            layer_specs.push_back(LayerSpec(neuron_type, num_outputs, 
-                                            num_inputs, activation_func));
-        else 
-        {
-
-            layer_specs.push_back(LayerSpec(neuron_type, neurons_per_layer, 
-                                            num_inputs, activation_func));
-
-            for(unsigned i = 1; i < num_hidden_layers; i++)
-                layer_specs.push_back(LayerSpec(neuron_type, neurons_per_layer, 
-                                                neurons_per_layer, activation_func));
-
-            layer_specs.push_back(LayerSpec(neuron_type, num_outputs, 
-                                            neurons_per_layer, activation_func));
-
-        }
-
-        return layer_specs;
-
-    }
-
     unsigned required_num_genes(const unsigned num_inputs,
                                       const std::vector<LayerSpec>& layer_specs)
     {
@@ -218,10 +187,11 @@ private:
     {
 
         //Build LayerSpecs from the specification
-        std::vector<LayerSpec> layer_specs = build_layer_specs(num_inputs, num_outputs,
-                                                               num_hidden_layers, 
-                                                               neurons_per_layer,
-                                                               neuron_type, activation_func);
+        std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs, num_outputs,
+                                                                          num_hidden_layers, 
+                                                                          neurons_per_layer,
+                                                                          neuron_type, 
+                                                                          activation_func);
         return required_num_genes(num_inputs, layer_specs);
 
     } 

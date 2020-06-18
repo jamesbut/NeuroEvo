@@ -18,7 +18,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <util/formatting.h>
@@ -260,11 +260,15 @@ private:
 
         } else 
         {
+            //TODO: Come back and fix this!
             //Get data and time for folder name
+            /*
             boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
             std::stringstream dir_name;
             dir_name << "population-" << timeLocal.date() << "-" << timeLocal.time_of_day(); 
             return dir_name.str();
+            */
+            return "population-cannot-calculate-current-time";
 
         }
 

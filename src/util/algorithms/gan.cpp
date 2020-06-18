@@ -1,6 +1,6 @@
 #include <util/algorithms/gan.h>
 
-//#include <torch/torch.h>
+//#include <torch/types.h>
 
 namespace NeuroEvo {
 

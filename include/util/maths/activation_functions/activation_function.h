@@ -6,9 +6,12 @@
     function.
 */
 
+#include <memory>
+
 namespace NeuroEvo {
 
-class ActivationFunction {
+class ActivationFunction 
+{
 
 public:
 

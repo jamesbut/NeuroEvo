@@ -5,6 +5,7 @@
 #include <memory>
 #include <iostream>
 #include <util/maths/activation_functions/activation_function.h>
+#include <vector>
 
 /*
     Defines an activation function description
@@ -36,7 +37,7 @@ public:
         _neuron_type(neuron_type),
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron),
-        _activation_func(activation_func->clone()) 
+        _activation_func(activation_func)
     {
 
         //Normal
@@ -58,7 +59,7 @@ public:
         _num_neurons(layer_spec._num_neurons),
         _inputs_per_neuron(layer_spec._inputs_per_neuron),
         _params_per_neuron(layer_spec._params_per_neuron),
-        _activation_func(layer_spec._activation_func.get()->clone()) {}
+        _activation_func(layer_spec._activation_func) {}
 
     LayerSpec& operator=(const LayerSpec& layer_spec) 
     {
@@ -67,9 +68,43 @@ public:
         _num_neurons = layer_spec._num_neurons;
         _inputs_per_neuron = layer_spec._inputs_per_neuron;
         _params_per_neuron = layer_spec._params_per_neuron;
-        _activation_func = layer_spec._activation_func.get()->clone();
+        _activation_func = layer_spec._activation_func;
 
         return *this;
+
+    }
+
+    //A static function to build a number of layers according to a specification
+    //This is helpful
+    static std::vector<LayerSpec> build_layer_specs(const unsigned num_inputs,
+                                                    const unsigned num_outputs,
+                                                    const unsigned num_hidden_layers,
+                                                    const unsigned neurons_per_layer,
+                                                    const LayerSpec::NeuronType neuron_type,
+                                                    ActivationFunction* activation_func) 
+    {
+
+        std::vector<LayerSpec> layer_specs;
+
+        if(num_hidden_layers == 0)
+            layer_specs.push_back(LayerSpec(neuron_type, num_outputs, 
+                                            num_inputs, activation_func));
+        else 
+        {
+
+            layer_specs.push_back(LayerSpec(neuron_type, neurons_per_layer, 
+                                            num_inputs, activation_func));
+
+            for(unsigned i = 1; i < num_hidden_layers; i++)
+                layer_specs.push_back(LayerSpec(neuron_type, neurons_per_layer, 
+                                                neurons_per_layer, activation_func));
+
+            layer_specs.push_back(LayerSpec(neuron_type, num_outputs, 
+                                            neurons_per_layer, activation_func));
+
+        }
+
+        return layer_specs;
 
     }
 
@@ -102,7 +137,7 @@ public:
         return _num_neurons * _params_per_neuron;
     }
 
-    const std::shared_ptr<ActivationFunction>& get_activation_func() const
+    const ActivationFunction* get_activation_func() const
     {
         return _activation_func;
     }
@@ -125,7 +160,7 @@ private:
     unsigned _inputs_per_neuron;
     unsigned _params_per_neuron;
 
-    std::shared_ptr<ActivationFunction> _activation_func;
+    ActivationFunction* _activation_func;
 
 };
 
