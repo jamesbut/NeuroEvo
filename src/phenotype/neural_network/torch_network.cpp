@@ -46,6 +46,8 @@ torch::nn::Sequential TorchNetwork::build_network(const std::vector<LayerSpec>& 
     const std::int64_t num_inputs = 1;
     const std::int64_t num_outputs = 1;
 
+    std::vector<torch::nn::Module> modules;
+
     torch::nn::Sequential net(
         (torch::nn::Linear(torch::nn::LinearOptions(num_inputs, num_outputs))),
         torch::nn::ReLU()

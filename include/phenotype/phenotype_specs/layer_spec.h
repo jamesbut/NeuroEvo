@@ -7,6 +7,9 @@
 #include <util/maths/activation_functions/activation_function.h>
 #include <vector>
 
+//TODO: REMOVE
+#include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
+
 /*
     Defines an activation function description
     and implements that activation function.
