@@ -10,7 +10,7 @@
 
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
-#include <util/maths/activation_functions/sigmoid.h>
+#include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
 #include <phenotype/neural_network/network.h>
 #include <phenotype/neural_network/hebbs_network.h>
 #include <phenotype/phenotype_specs/hebbs_spec.h>
@@ -27,7 +27,7 @@ public:
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                    const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
                    const bool trace = false,
-                   ActivationFunction* activation_func = new Sigmoid()) :
+                   ActivationFunctionSpec* activation_func = new SigmoidSpec()) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, num_outputs, 
                                                          num_hidden_layers, neurons_per_layer, 
                                                          neuron_type, activation_func)),
@@ -183,7 +183,7 @@ private:
                                       const unsigned num_hidden_layers,
                                       const unsigned neurons_per_layer,
                                       const LayerSpec::NeuronType neuron_type,
-                                      ActivationFunction* activation_func) 
+                                      ActivationFunctionSpec* activation_func) 
     {
 
         //Build LayerSpecs from the specification

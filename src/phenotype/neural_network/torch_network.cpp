@@ -41,17 +41,26 @@ torch::Tensor TorchNetwork::forward(torch::Tensor x)
     return _net->forward(x);
 }
 
+//Build network from layer specifications
 torch::nn::Sequential TorchNetwork::build_network(const std::vector<LayerSpec>& layer_specs) const
 {
-    const std::int64_t num_inputs = 1;
-    const std::int64_t num_outputs = 1;
 
-    std::vector<torch::nn::Module> modules;
+    torch::nn::Sequential net;
 
-    torch::nn::Sequential net(
-        (torch::nn::Linear(torch::nn::LinearOptions(num_inputs, num_outputs))),
-        torch::nn::ReLU()
-    );
+    for(const auto& layer_spec : layer_specs)
+    {
+        //Add linear layer
+        auto linear_layer = torch::nn::Linear(
+                torch::nn::LinearOptions(layer_spec.get_inputs_per_neuron(),
+                                         layer_spec.get_num_neurons())
+                );
+        net->push_back(torch::nn::AnyModule(linear_layer));
+
+        //Add activation function
+        auto activation_function = layer_spec.get_activation_func_spec()->create_torch_module(); 
+        net->push_back(activation_function);
+
+    }
 
     return net;
 

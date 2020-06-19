@@ -10,7 +10,7 @@ Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
     _params_per_neuron(layer_spec.get_params_per_neuron()),
     _num_neurons(layer_spec.get_num_neurons()),
     _neuron_type(layer_spec.get_neuron_type()),
-    _activation_function(layer_spec.get_activation_func()->clone()) {}
+    _activation_function(layer_spec.get_activation_func_spec()->create_activation_function()) {}
 
 Layer::Layer(const Layer& layer) :
     _trace(layer._trace),

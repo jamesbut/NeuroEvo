@@ -1,8 +1,10 @@
 #ifndef _SIGMOID_SPEC_
 #define _SIGMOID_SPEC_
 
+#include "util/maths/activation_functions/sigmoid.h"
 #include <torch/nn/modules/activation.h>
 #include <util/maths/activation_functions/activation_function_specs/activation_function_spec.h>
+#include <util/maths/activation_functions/sigmoid.h>
 
 namespace NeuroEvo {
 
@@ -15,6 +17,18 @@ public:
     {
         torch::nn::AnyModule sigmoid_module((torch::nn::Sigmoid()));
         return sigmoid_module;
+    }
+
+    ActivationFunction* create_activation_function() const override
+    {
+        return new Sigmoid(); 
+    }
+
+protected:
+
+    SigmoidSpec* clone_impl() const override
+    {
+        return new SigmoidSpec(*this);
     }
 
 };
