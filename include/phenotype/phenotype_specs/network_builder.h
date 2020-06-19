@@ -8,6 +8,7 @@
  * although this can be made generic in the future.
 */
 
+#include <memory>
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
@@ -28,7 +29,8 @@ public:
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                    const bool torch_net = false,
                    const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
-                   ActivationFunctionSpec* activation_func = new SigmoidSpec(),
+                   const std::shared_ptr<ActivationFunctionSpec> activation_func = 
+                       std::make_shared<ActivationFunctionSpec>(SigmoidSpec()),
                    const bool trace = false) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, num_outputs, 
                                                          num_hidden_layers, neurons_per_layer, 
@@ -79,9 +81,9 @@ public:
         } else if (_torch_net)
         {
             
-            TorchNetwork* torch_network = new TorchNetwork(_layer_specs, _trace);
-            //TODO: Set torch net weights
-
+            TorchNetwork* torch_network = new TorchNetwork(_layer_specs, 
+                                                           genotype.genes(), 
+                                                           _trace);
             return torch_network;
 
         } else
@@ -178,7 +180,7 @@ protected:
 private:
 
     unsigned required_num_genes(const unsigned num_inputs,
-                                      const std::vector<LayerSpec>& layer_specs)
+                                const std::vector<LayerSpec>& layer_specs)
     {
 
         unsigned num_genes = 0;
@@ -197,11 +199,11 @@ private:
     }
 
     unsigned required_num_genes(const unsigned num_inputs,
-                                      const unsigned num_outputs,
-                                      const unsigned num_hidden_layers,
-                                      const unsigned neurons_per_layer,
-                                      const LayerSpec::NeuronType neuron_type,
-                                      ActivationFunctionSpec* activation_func) 
+                                const unsigned num_outputs,
+                                const unsigned num_hidden_layers,
+                                const unsigned neurons_per_layer,
+                                const LayerSpec::NeuronType neuron_type,
+                                const std::shared_ptr<ActivationFunctionSpec>& activation_func) 
     {
 
         //Build LayerSpecs from the specification

@@ -55,6 +55,7 @@ torch::nn::Sequential TorchNetwork::build_network(
 
     torch::nn::Sequential net;
 
+    //Build network from layer specs
     for(const auto& layer_spec : layer_specs)
     {
         //Add linear layer

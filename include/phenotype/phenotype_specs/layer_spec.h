@@ -34,7 +34,7 @@ public:
 
     LayerSpec(const NeuronType neuron_type, const unsigned num_neurons,
               const unsigned inputs_per_neuron, 
-              ActivationFunctionSpec* activation_func_spec) :
+              const std::shared_ptr<ActivationFunctionSpec> activation_func_spec) :
         _neuron_type(neuron_type),
         _num_neurons(num_neurons),
         _inputs_per_neuron(inputs_per_neuron),
@@ -77,12 +77,13 @@ public:
 
     //A static function to build a number of layers according to a specification
     //This is helpful
-    static std::vector<LayerSpec> build_layer_specs(const unsigned num_inputs,
-                                                    const unsigned num_outputs,
-                                                    const unsigned num_hidden_layers,
-                                                    const unsigned neurons_per_layer,
-                                                    const LayerSpec::NeuronType neuron_type,
-                                                    ActivationFunctionSpec* activation_func_spec) 
+    static std::vector<LayerSpec> build_layer_specs(
+            const unsigned num_inputs,
+            const unsigned num_outputs,
+            const unsigned num_hidden_layers,
+            const unsigned neurons_per_layer,
+            const LayerSpec::NeuronType neuron_type,
+            const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec) 
     {
 
         std::vector<LayerSpec> layer_specs;
@@ -138,7 +139,7 @@ public:
         return _num_neurons * _params_per_neuron;
     }
 
-    const std::unique_ptr<ActivationFunctionSpec>& get_activation_func_spec() const
+    const std::shared_ptr<ActivationFunctionSpec>& get_activation_func_spec() const
     {
         return _activation_func_spec;
     }
@@ -162,7 +163,8 @@ private:
     unsigned _params_per_neuron;
 
     //ActivationFunction* _activation_func;
-    std::unique_ptr<ActivationFunctionSpec> _activation_func_spec;
+    //std::unique_ptr<ActivationFunctionSpec> _activation_func_spec;
+    std::shared_ptr<ActivationFunctionSpec> _activation_func_spec;
 
 };
 
