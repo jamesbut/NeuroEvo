@@ -1,7 +1,6 @@
 #ifndef _SIGMOID_SPEC_
 #define _SIGMOID_SPEC_
 
-#include "util/maths/activation_functions/sigmoid.h"
 #include <torch/nn/modules/activation.h>
 #include <util/maths/activation_functions/activation_function_specs/activation_function_spec.h>
 #include <util/maths/activation_functions/sigmoid.h>

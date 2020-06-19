@@ -4,7 +4,13 @@
 namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace) :
-    _net(build_network(layer_specs)),
+    _net(build_network(layer_specs, std::nullopt)),
+    _trace(trace) {}
+
+TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, 
+                           const std::vector<double>& init_weights, 
+                           const bool trace) :
+    _net(build_network(layer_specs, init_weights)),
     _trace(trace) {}
 
 std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
@@ -42,7 +48,9 @@ torch::Tensor TorchNetwork::forward(torch::Tensor x)
 }
 
 //Build network from layer specifications
-torch::nn::Sequential TorchNetwork::build_network(const std::vector<LayerSpec>& layer_specs) const
+torch::nn::Sequential TorchNetwork::build_network(
+        const std::vector<LayerSpec>& layer_specs,
+        const std::optional<const std::vector<double>>& init_weights)
 {
 
     torch::nn::Sequential net;
@@ -62,6 +70,34 @@ torch::nn::Sequential TorchNetwork::build_network(const std::vector<LayerSpec>& 
 
     }
 
+    //Set param size
+    _num_params.emplace(calculate_num_net_params(net));
+
+    //If initial weights are given, set parameters of net
+    if(init_weights)
+    {
+
+        //Check init weights are same size as parameters
+        if(_num_params != init_weights->size())
+        {
+            std::cerr << "Initial weights given to TorchNet does not match the parameter size" <<
+                std::endl;
+            exit(0);
+        }
+
+        //Set weights in net
+        std::size_t init_weight_index = 0;
+        for(const auto& params : net->parameters())
+        {
+            const auto& flattened_params = params.flatten();
+            for(int64_t i = 0; i < flattened_params.flatten().size(0); i++)
+            {
+                flattened_params[i] = init_weights.value()[init_weight_index];
+                init_weight_index++;
+            }
+        }
+    }
+
     return net;
 
 }
@@ -69,5 +105,23 @@ torch::nn::Sequential TorchNetwork::build_network(const std::vector<LayerSpec>& 
 void TorchNetwork::reset() {}
 
 void TorchNetwork::print_params() {}
+
+
+unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const
+{
+
+    //Iterate through params and count
+    int64_t net_params_size = 0;
+    for(const auto& params : net->parameters())
+    {
+        auto sizes = params.sizes();
+        int64_t params_size = 1;
+        for(const auto& size : sizes)
+            params_size *= size;
+        net_params_size += params_size;
+    }
+
+    return net_params_size;
+}
 
 } // namespace NeuroEvo

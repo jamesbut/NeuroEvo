@@ -14,6 +14,7 @@
 #include <phenotype/neural_network/network.h>
 #include <phenotype/neural_network/hebbs_network.h>
 #include <phenotype/phenotype_specs/hebbs_spec.h>
+#include <phenotype/neural_network/torch_network.h>
 
 namespace NeuroEvo {
 
@@ -25,9 +26,10 @@ public:
     //Build with hidden layers all of the same size and type
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
+                   const bool torch_net = false,
                    const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
-                   const bool trace = false,
-                   ActivationFunctionSpec* activation_func = new SigmoidSpec()) :
+                   ActivationFunctionSpec* activation_func = new SigmoidSpec(),
+                   const bool trace = false) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, num_outputs, 
                                                          num_hidden_layers, neurons_per_layer, 
                                                          neuron_type, activation_func)),
@@ -36,16 +38,19 @@ public:
         _layer_specs(LayerSpec::build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                                   neurons_per_layer, neuron_type, 
                                                   activation_func)),
+        _torch_net(torch_net),
         _trace(trace) {}
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const unsigned num_inputs, 
                    const std::vector<LayerSpec>& layer_specs,
+                   const bool torch_net = false,
                    const bool trace = false) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, layer_specs)),
         _num_inputs(num_inputs),
         _num_outputs(layer_specs.back().get_num_neurons()),
         _layer_specs(layer_specs),
+        _torch_net(torch_net),
         _trace(trace) {}
 
     Phenotype<double>* generate_phenotype(Genotype<double>& genotype,
@@ -71,7 +76,15 @@ public:
 
             return network;
 
-        } else 
+        } else if (_torch_net)
+        {
+            
+            TorchNetwork* torch_network = new TorchNetwork(_layer_specs, _trace);
+            //TODO: Set torch net weights
+
+            return torch_network;
+
+        } else
         {
         
             Network* network = new Network(_trace);
@@ -102,6 +115,11 @@ public:
         //TODO: Write!
         std::cerr << "Write add_layer in NetworkBuilder" << std::endl;
         exit(0);
+    }
+
+    void make_torch_net()
+    {
+        _torch_net = true;
     }
 
     const std::vector<LayerSpec>& get_layer_specs() const
@@ -250,6 +268,8 @@ private:
     const unsigned _num_outputs;
 
     std::vector<LayerSpec> _layer_specs;
+
+    bool _torch_net;
 
     const bool _trace;
 
