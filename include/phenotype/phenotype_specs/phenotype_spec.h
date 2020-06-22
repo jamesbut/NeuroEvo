@@ -18,7 +18,8 @@ class GPMap;
 
 //Generic phenotype spec
 template <typename G, typename T>
-class PhenotypeSpec {
+class PhenotypeSpec 
+{
 
 public:
 
@@ -37,7 +38,7 @@ public:
         return std::unique_ptr<PhenotypeSpec>(clone_impl()); 
     }
 
-    const unsigned& get_num_params() 
+    const unsigned& get_num_params() const
     { 
         return _num_params; 
     }

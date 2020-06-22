@@ -27,32 +27,28 @@ public:
     //Build with hidden layers all of the same size and type
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
-                   const bool torch_net = false,
-                   const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard,
-                   const std::shared_ptr<ActivationFunctionSpec> activation_func = 
-                       std::make_shared<ActivationFunctionSpec>(SigmoidSpec()),
-                   const bool trace = false) :
+                   const bool trace = false,
+                   const std::shared_ptr<ActivationFunctionSpec> activation_func_spec = 
+                       std::shared_ptr<ActivationFunctionSpec>(new SigmoidSpec()),
+                   const LayerSpec::NeuronType neuron_type = LayerSpec::NeuronType::Standard) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, num_outputs, 
                                                          num_hidden_layers, neurons_per_layer, 
-                                                         neuron_type, activation_func)),
+                                                         neuron_type, activation_func_spec)),
         _num_inputs(num_inputs),
         _num_outputs(num_outputs),
         _layer_specs(LayerSpec::build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                                   neurons_per_layer, neuron_type, 
-                                                  activation_func)),
-        _torch_net(torch_net),
+                                                  activation_func_spec)),
         _trace(trace) {}
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const unsigned num_inputs, 
                    const std::vector<LayerSpec>& layer_specs,
-                   const bool torch_net = false,
                    const bool trace = false) :
         PhenotypeSpec<double, double>(required_num_genes(num_inputs, layer_specs)),
         _num_inputs(num_inputs),
         _num_outputs(layer_specs.back().get_num_neurons()),
         _layer_specs(layer_specs),
-        _torch_net(torch_net),
         _trace(trace) {}
 
     Phenotype<double>* generate_phenotype(Genotype<double>& genotype,
@@ -78,12 +74,22 @@ public:
 
             return network;
 
-        } else if (_torch_net)
+        //If it is a torch network
+        } else if (_default_torch_net_init)
         {
+
+            TorchNetwork* torch_network;
             
-            TorchNetwork* torch_network = new TorchNetwork(_layer_specs, 
-                                                           genotype.genes(), 
-                                                           _trace);
+            //If torch network is initialised by the Torch default initialiser
+            //So this just ignores the genotype given to this function
+            if(_default_torch_net_init.value())
+                torch_network = new TorchNetwork(_layer_specs, 
+                                                _trace);
+            //If torch network is initialised by given genotype
+            else 
+                torch_network = new TorchNetwork(_layer_specs, 
+                                                genotype.genes(), 
+                                                _trace);
             return torch_network;
 
         } else
@@ -119,9 +125,9 @@ public:
         exit(0);
     }
 
-    void make_torch_net()
+    void make_torch_net(const bool default_torch_net_init)
     {
-        _torch_net = true;
+        _default_torch_net_init = std::optional<bool>(default_torch_net_init);
     }
 
     const std::vector<LayerSpec>& get_layer_specs() const
@@ -271,7 +277,12 @@ private:
 
     std::vector<LayerSpec> _layer_specs;
 
-    bool _torch_net;
+    //This serves 2 purposes: if this optional is not set then the network will not
+    //be a Torch network.
+    //If it is set then the value of the boolean will determine whether the Torch network
+    //will be initialised according to the default torch settings or by the genotype
+    //that is supplied.
+    std::optional<bool> _default_torch_net_init;
 
     const bool _trace;
 
