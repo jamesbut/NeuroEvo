@@ -14,7 +14,7 @@ public:
 
     HebbsNeuron(const unsigned num_input, 
                 const LayerSpec::NeuronType& neuron_type, 
-                const std::unique_ptr<ActivationFunction>& activation_function,
+                const std::shared_ptr<ActivationFunction> activation_function,
                 const bool trace = false);
 
     void set_weights(const std::vector<double>& weights) override;

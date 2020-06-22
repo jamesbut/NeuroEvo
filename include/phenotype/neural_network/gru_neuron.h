@@ -11,7 +11,7 @@ class GRUNeuron : public Neuron
 public:
 
     GRUNeuron(const unsigned num_inputs, 
-              const std::unique_ptr<ActivationFunction>& activation_function,
+              const std::shared_ptr<ActivationFunction> activation_function,
               const bool trace);
 
     void set_weights(const std::vector<double>& weights) override;

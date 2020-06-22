@@ -23,13 +23,13 @@ public:
     SequenceClassification(const unsigned depth, const unsigned zeros_upper,
                            const unsigned zeros_lower, const bool domain_trace = false,
                            const double completion_fitness = 1) :
+        Domain<G, double>(domain_trace, completion_fitness),
         _depth(depth),
-        _zeros_upper(zeros_upper),
         _zeros_lower(zeros_lower),
+        _zeros_upper(zeros_upper),
         _input_values(std::vector<int>{1, -1}),
         _rng((std::random_device())()),
-        _zeros_dist(zeros_lower, zeros_upper),
-        Domain<G, double>(domain_trace, completion_fitness) {}
+        _zeros_dist(zeros_lower, zeros_upper) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {

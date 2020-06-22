@@ -35,7 +35,7 @@ public:
         double fitness_so_far = 0.0;
         double rand_num = _uniform_distr.next();
 
-        int chosen_org;
+        unsigned chosen_org = 0;
 
         for(size_t i = 0; i < scaled_fitnesses.size(); i++) {
 

@@ -14,7 +14,7 @@
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
 #include <util/random/uniform_real_distribution.h>
-#include <util/maths/activation_functions/sigmoid.h>
+#include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -39,7 +39,9 @@ int main(int argc, const char* argv[])
     const auto hl_layer_type = NeuroEvo::LayerSpec::NeuronType::GRU;
     const unsigned hl_num_neurons = 3;
     const unsigned hl_inputs_per_neuron = 1;    // the number of inputs to the hidden layer
-    NeuroEvo::ActivationFunction* hl_activation_spec(new NeuroEvo::Sigmoid(1));
+    const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> hl_activation_spec(
+        new NeuroEvo::SigmoidSpec()
+    );
     NeuroEvo::LayerSpec hidden_layer(hl_layer_type, hl_num_neurons,
                                      hl_inputs_per_neuron, hl_activation_spec);
 
@@ -47,7 +49,9 @@ int main(int argc, const char* argv[])
     const auto ol_layer_type = NeuroEvo::LayerSpec::NeuronType::Standard;
     const unsigned ol_num_neurons = 1;
     const unsigned ol_inputs_per_neuron = 3;    // the number of inputs to the output layer
-    NeuroEvo::ActivationFunction* ol_activation_spec(new NeuroEvo::Sigmoid(1));
+    const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> ol_activation_spec(
+        new NeuroEvo::SigmoidSpec()
+    );
     NeuroEvo::LayerSpec output_layer(ol_layer_type, ol_num_neurons,
                                      ol_inputs_per_neuron, ol_activation_spec);
 

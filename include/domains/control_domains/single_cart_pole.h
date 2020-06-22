@@ -26,12 +26,12 @@ public:
     SingleCartPole(const bool markovian, const bool random_start,
                    const bool print_state, const bool domain_trace,
                    const bool render = false, const int max_steps = 100000) :
+        Domain<G, double>(domain_trace, max_steps+1, render) ,
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
         _print_state_to_file(print_state),
-        _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
-        Domain<G, double>(domain_trace, max_steps+1, render) 
+        _state_file_name(std::string(DATA_PATH) + "/single_cp_state")
     {
 
         //Remove previous state file

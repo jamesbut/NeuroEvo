@@ -14,10 +14,10 @@ public:
 
     QuadraticFunction(const double a, const double b, const double c,
                       const bool domain_trace, const double completion_fitness = 0.0) :
+        Domain<G, double>(domain_trace, completion_fitness),
         _a(a),
         _b(b),
-        _c(c),
-        Domain<G, double>(domain_trace, completion_fitness) {}
+        _c(c) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
     {

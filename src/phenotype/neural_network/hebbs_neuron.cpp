@@ -9,7 +9,7 @@ namespace NeuroEvo {
 //Constructor
 HebbsNeuron::HebbsNeuron(const unsigned num_inputs, 
                          const LayerSpec::NeuronType& neuron_type, 
-                         const std::unique_ptr<ActivationFunction>& activation_function,
+                         const std::shared_ptr<ActivationFunction> activation_function,
                          const bool trace) :
     Neuron(neuron_type, neuron_type, activation_function, trace) {}
 

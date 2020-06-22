@@ -28,12 +28,12 @@ public:
            const bool render = false, const unsigned int screen_width = 1280, 
            const unsigned int screen_height = 960) :
         _completion_fitness(completion_fitness),
+        _complete(false),
         _domain_trace(domain_trace),
         _render(render),
         _screen_width(screen_width),
         _screen_height(screen_height),
-        _window(initialise_sfml()),
-        _complete(false) {}
+        _window(initialise_sfml()) {}
 
     virtual ~Domain() = default;
 
@@ -162,8 +162,6 @@ private:
         //Store fitnesses from runs
         std::vector<std::vector<double> > fitnesses(pop.get_size(), 
                                                     std::vector<double>(num_trials));
-
-        const std::vector<Organism<G, T>>& orgs = pop.get_organisms();
 
         for(unsigned int i = 0; i < num_trials; i++) {
 

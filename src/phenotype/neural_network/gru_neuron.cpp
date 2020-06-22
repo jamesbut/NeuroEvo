@@ -3,7 +3,7 @@
 namespace NeuroEvo {
 
 GRUNeuron::GRUNeuron(const unsigned num_inputs, 
-                     const std::unique_ptr<ActivationFunction>& activation_function,
+                     const std::shared_ptr<ActivationFunction> activation_function,
                      const bool trace) :
     Neuron(num_inputs, LayerSpec::NeuronType::GRU, activation_function, trace) 
 {

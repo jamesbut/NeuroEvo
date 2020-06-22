@@ -25,37 +25,37 @@ public:
 
     Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
              GPMapSpec<G, T>* gp_map_spec) :
+        _phenotype_spec(&phenotype_spec),
+        _gp_map_spec(gp_map_spec),
         _genotype(genotype_spec.generate_genotype()),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
-        _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _fitness(0.0) {}
 
     Organism(PhenotypeSpec<G, T>& phenotype_spec, Genotype<G>& genotype,
              GPMapSpec<G, T>* gp_map_spec) :
+        _phenotype_spec(&phenotype_spec),
+        _gp_map_spec(gp_map_spec),
         _genotype(genotype.clone()),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
-        _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _fitness(0.0) {}
         
     Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
              GPMapSpec<G, T>* gp_map_spec, const std::string file_name) :
+        _phenotype_spec(&phenotype_spec),
+        _gp_map_spec(gp_map_spec),
         _genotype(genotype_spec.generate_genotype(file_name)),
         _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map(file_name) : nullptr),
         _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
-        _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _fitness(0.0) {}
 
     Organism(const Organism& organism) :
+        _phenotype_spec(&organism.get_phenotype_spec()),
+        _gp_map_spec(organism.get_gp_map_spec()),
         _genotype(organism.get_genotype().clone()),
         _gp_map(organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr),
         _phenotype(organism.get_phenotype().clone()),
-        _phenotype_spec(&organism.get_phenotype_spec()),
-        _gp_map_spec(organism.get_gp_map_spec()),
         _fitness(organism.get_fitness()) {}
 
     Organism& operator=(const Organism& organism) 
