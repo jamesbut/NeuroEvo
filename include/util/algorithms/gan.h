@@ -16,17 +16,28 @@ class GAN
 
 public:
 
-    GAN(const Matrix<double>& true_data, NetworkBuilder& generator_builder,
+    GAN(torch::Tensor& real_data, NetworkBuilder& generator_builder,
         NetworkBuilder& discriminator_builder, 
         std::unique_ptr<Distribution<double>> init_net_weight_distr = 
             std::unique_ptr<Distribution<double>>(nullptr));
+
+    void train(const unsigned num_epochs, const unsigned batch_size);
+
+    torch::Tensor test_discriminator(const torch::Tensor& x) const;
 
 private:
 
     TorchNetwork* build_network(NetworkBuilder& net_builder, 
                                 std::unique_ptr<Distribution<double>>& init_net_weight_distr);
 
-    const Matrix<double> _true_data;
+    //Generates batches of batch size and returns a pair of the data and the targets
+    const std::vector<std::pair<torch::Tensor, torch::Tensor>> 
+        generate_batches(const unsigned batch_size, 
+                         const torch::Tensor& data, 
+                         const torch::Tensor& data_labels,
+                         const bool shuffle_data = true) const;
+
+    torch::Tensor _real_data;
 
     std::unique_ptr<TorchNetwork> _generator;
     std::unique_ptr<TorchNetwork> _discriminator;

@@ -47,6 +47,16 @@ torch::Tensor TorchNetwork::forward(torch::Tensor x)
     return _net->forward(x);
 }
 
+std::vector<torch::Tensor> TorchNetwork::parameters(bool recurse) const
+{
+    return _net->parameters(recurse);
+}
+
+void TorchNetwork::zero_grad()
+{
+    _net->zero_grad();
+}
+
 //Build network from layer specifications
 torch::nn::Sequential TorchNetwork::build_network(
         const std::vector<LayerSpec>& layer_specs,
