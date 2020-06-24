@@ -60,7 +60,7 @@ public:
         _num_neurons(layer_spec._num_neurons),
         _inputs_per_neuron(layer_spec._inputs_per_neuron),
         _params_per_neuron(layer_spec._params_per_neuron),
-        _activation_func_spec(layer_spec._activation_func_spec->clone()) {}
+        _activation_func_spec(layer_spec._activation_func_spec) {}
 
     LayerSpec& operator=(const LayerSpec& layer_spec) 
     {
@@ -69,7 +69,7 @@ public:
         _num_neurons = layer_spec._num_neurons;
         _inputs_per_neuron = layer_spec._inputs_per_neuron;
         _params_per_neuron = layer_spec._params_per_neuron;
-        _activation_func_spec.reset(layer_spec._activation_func_spec.get());
+        _activation_func_spec = layer_spec._activation_func_spec;
 
         return *this;
 
@@ -162,8 +162,6 @@ private:
     unsigned _inputs_per_neuron;
     unsigned _params_per_neuron;
 
-    //ActivationFunction* _activation_func;
-    //std::unique_ptr<ActivationFunctionSpec> _activation_func_spec;
     std::shared_ptr<ActivationFunctionSpec> _activation_func_spec;
 
 };

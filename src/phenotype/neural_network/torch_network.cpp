@@ -65,6 +65,9 @@ torch::nn::Sequential TorchNetwork::build_network(
 
     torch::nn::Sequential net;
 
+    //Set number of inputs
+    _num_inputs = layer_specs[0].get_inputs_per_neuron();
+
     //Build network from layer specs
     for(const auto& layer_spec : layer_specs)
     {
@@ -75,9 +78,13 @@ torch::nn::Sequential TorchNetwork::build_network(
                 );
         net->push_back(torch::nn::AnyModule(linear_layer));
 
-        //Add activation function
-        auto activation_function = layer_spec.get_activation_func_spec()->create_torch_module(); 
-        net->push_back(activation_function);
+        //Add activation function if one is given
+        if(layer_spec.get_activation_func_spec())
+        {
+            auto activation_function = layer_spec.get_activation_func_spec()
+                                                 ->create_torch_module(); 
+            net->push_back(activation_function);
+        }
 
     }
 
@@ -117,6 +124,10 @@ void TorchNetwork::reset() {}
 
 void TorchNetwork::print_params() {}
 
+unsigned TorchNetwork::get_num_inputs() const
+{
+    return _num_inputs;
+}
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const
 {

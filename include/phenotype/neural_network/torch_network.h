@@ -31,6 +31,8 @@ public:
     void reset() override;
     void print_params() override;
 
+    unsigned get_num_inputs() const;
+
 private:
 
     torch::nn::Sequential build_network(
@@ -46,7 +48,10 @@ private:
 
     torch::nn::Sequential _net;
 
+    unsigned _num_inputs;
+
     const bool _trace;
+
 
 };
 

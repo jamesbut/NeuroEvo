@@ -24,6 +24,7 @@ public:
     void train(const unsigned num_epochs, const unsigned batch_size);
 
     torch::Tensor test_discriminator(const torch::Tensor& x) const;
+    torch::Tensor test_generator(const torch::Tensor& x) const;
 
 private:
 

@@ -55,7 +55,10 @@ double Neuron::propogate(const std::vector<double>& inputs)
 
     }
 
-    const double output = _activation_function->activate(activation_val);
+    double output = activation_val;
+    //Apply activation function if there is one there
+    if(_activation_function)
+        output = _activation_function->activate(activation_val);
 
     _previous_output = output;
 
