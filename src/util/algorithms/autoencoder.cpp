@@ -5,15 +5,18 @@ namespace NeuroEvo {
 
 
 AutoEncoder::AutoEncoder(const torch::Tensor& training_data, 
+                         const torch::Tensor& test_data,
                          NetworkBuilder& encoder_builder,
                          NetworkBuilder& decoder_builder,
                          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
     _training_data(training_data),
+    _test_data(test_data),
     _encoder(build_torch_network(encoder_builder, std::move(init_net_weight_distr))),
     _decoder(build_torch_network(decoder_builder, std::move(init_net_weight_distr))),
     _autoencoder(*_encoder, *_decoder) {}
 
-void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size) 
+void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
+                        const unsigned test_every) 
 {
 
     const double learning_rate = 1e-3;
@@ -21,15 +24,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size)
         _autoencoder->parameters(), torch::optim::AdamOptions(learning_rate)
     );
 
-    
-    /*
-    std::cout << "Encoder params:" << std::endl;
-    std::cout << _encoder->parameters() << std::endl;
-    std::cout << "Decoder params:" << std::endl;
-    std::cout << _decoder->parameters() << std::endl;
-    std::cout << "AE params:" << std::endl;
-    std::cout << _autoencoder->parameters() << std::endl;
-    */
+    torch::Tensor avg_test_loss = torch::zeros({1});
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
@@ -59,8 +54,21 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size)
 
         torch::Tensor avg_loss = total_loss / _training_data.size(0);
 
-        std::cout << "Epoch: " << i << " | Loss: " << avg_loss.item<float>() 
-            << std::endl;
+        /* Test on test set */
+        if((i+1) % test_every == 0)
+        {
+            auto test_output = test_autoencoder(_test_data);
+            torch::Tensor test_loss = torch::nn::functional::mse_loss(
+                test_output, 
+                _test_data,
+                torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
+            );
+
+            avg_test_loss = test_loss / _test_data.size(0);
+        }
+
+        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() 
+            << " | Test Loss: " << avg_test_loss.item<float>() << std::endl;
 
     }
 
