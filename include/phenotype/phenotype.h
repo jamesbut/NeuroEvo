@@ -31,7 +31,7 @@ public:
     virtual std::vector<T> activate(const std::vector<double>& inputs) = 0;
     virtual void reset() = 0;
 
-    auto clone() const { return std::unique_ptr<Phenotype>(clone_impl()); }
+    auto clone_phenotype() const { return std::unique_ptr<Phenotype>(clone_impl()); }
 
     virtual void print_params() = 0;
 

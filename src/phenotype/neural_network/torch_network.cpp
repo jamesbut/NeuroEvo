@@ -5,13 +5,21 @@ namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace) :
     _net(build_network(layer_specs, std::nullopt)),
-    _trace(trace) {}
+    _trace(trace) {
+
+    register_module("net", _net);
+
+}
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, 
                            const std::vector<double>& init_weights, 
                            const bool trace) :
     _net(build_network(layer_specs, init_weights)),
-    _trace(trace) {}
+    _trace(trace) {
+
+    register_module("net", _net);
+
+}
 
 std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
 {
@@ -56,7 +64,7 @@ void TorchNetwork::zero_grad()
 {
     _net->zero_grad();
 }
-
+    
 //Build network from layer specifications
 torch::nn::Sequential TorchNetwork::build_network(
         const std::vector<LayerSpec>& layer_specs,

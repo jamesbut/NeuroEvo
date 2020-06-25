@@ -6,6 +6,7 @@
 #include <util/algorithms/gan.h>
 #include <genotype/genotype_spec.h>
 #include <util/random/gaussian_distribution.h>
+#include <util/torch_utils.h>
 
 namespace NeuroEvo {
 
@@ -13,8 +14,8 @@ GAN::GAN(torch::Tensor& real_data, NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
     _real_data(real_data),
-    _generator(build_network(generator_builder, init_net_weight_distr)),
-    _discriminator(build_network(discriminator_builder, init_net_weight_distr)) {}
+    _generator(build_torch_network(generator_builder, std::move(init_net_weight_distr))),
+    _discriminator(build_torch_network(discriminator_builder, std::move(init_net_weight_distr))) {}
 
 void GAN::train(const unsigned num_epochs, const unsigned batch_size)
 {
@@ -125,80 +126,6 @@ torch::Tensor GAN::test_discriminator(const torch::Tensor& x) const
 torch::Tensor GAN::test_generator(const torch::Tensor& x) const
 {
     return _generator->forward(x);
-}
-
-//Build network depending on whether an initial weight distribution has been defined
-TorchNetwork* GAN::build_network(NetworkBuilder& net_builder, 
-                                 std::unique_ptr<Distribution<double>>& init_net_weight_distr)
-{
-    
-    //Create initial genotype 
-    std::unique_ptr<Genotype<double>> init_genotype(new Genotype<double>());
-    if(init_net_weight_distr)
-    {
-        GenotypeSpec<double> genotype_spec(net_builder.get_num_params(), 
-                                           *init_net_weight_distr);
-        init_genotype.reset(genotype_spec.generate_genotype());
-    } 
-        
-    //Build and cast torch network
-    Phenotype<double>* torch_net = net_builder.generate_phenotype(*init_genotype, nullptr);
-    TorchNetwork* torch_net_cast = dynamic_cast<TorchNetwork*>(torch_net); 
-    if(!torch_net_cast)
-    {
-        std::cerr << "Only TorchNetworks can be used to build a GAN!" << std::endl;
-        exit(0);
-    }
-
-    return torch_net_cast; 
-
-}
-
-const std::vector<std::pair<torch::Tensor, torch::Tensor>> 
-    GAN::generate_batches(const unsigned batch_size, 
-                          const torch::Tensor& data, 
-                          const torch::Tensor& data_labels,
-                          const bool shuffle_data) const
-{
-
-    std::vector<std::pair<torch::Tensor, torch::Tensor>> batches;
-
-    //Shuffle data
-    std::vector<int64_t> data_indexes(data.size(0));
-    std::iota(data_indexes.begin(), data_indexes.end(), 0);
-    if(shuffle_data)
-        std::shuffle(data_indexes.begin(), data_indexes.end(), std::default_random_engine{});
-
-    int64_t current_data_index = 0;
-
-    while(current_data_index < data.size(0))
-    {
-
-        //Build single batch
-        auto remaining_data_size = data.size(0) - current_data_index;
-        const int64_t this_batch_size = 
-            remaining_data_size > (int)batch_size ? batch_size : remaining_data_size;
-
-        //Allocate tensor space
-        torch::Tensor data_batch = torch::zeros({this_batch_size, data.size(1)});
-        torch::Tensor label_batch = torch::zeros({this_batch_size, 1});
-
-        //Move data into the tensors
-        for(int64_t i = 0; i < this_batch_size; i++)
-        {
-            auto index = data_indexes[current_data_index];
-            data_batch.index_put_({i}, data.index({index}));
-            label_batch.index_put_({i}, data_labels.index({index}));
-            current_data_index++;
-        }
-
-        //Push batch onto batches
-        batches.push_back(std::pair<torch::Tensor, torch::Tensor>(data_batch, 
-                                                                  label_batch));
-    }
-
-    return batches;
-
 }
 
 } // namespace NeuroEvo

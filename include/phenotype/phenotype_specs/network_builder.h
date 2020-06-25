@@ -54,7 +54,7 @@ public:
     Phenotype<double>* generate_phenotype(Genotype<double>& genotype,
                                           GPMap<double, double>* gp_map) override 
     {
-
+        
         //Check for GPMap
         if(gp_map) 
             return gp_map->map(genotype, *this);
@@ -84,12 +84,12 @@ public:
             //So this just ignores the genotype given to this function
             if(_default_torch_net_init.value())
                 torch_network = new TorchNetwork(_layer_specs, 
-                                                _trace);
+                                                 _trace);
             //If torch network is initialised by given genotype
             else 
                 torch_network = new TorchNetwork(_layer_specs, 
-                                                genotype.genes(), 
-                                                _trace);
+                                                 genotype.genes(), 
+                                                 _trace);
             return torch_network;
 
         } else
@@ -125,9 +125,14 @@ public:
         exit(0);
     }
 
-    void make_torch_net(const bool default_torch_net_init)
+    void make_torch_net(const bool default_torch_net_init = true)
     {
         _default_torch_net_init = std::optional<bool>(default_torch_net_init);
+    }
+
+    bool is_torch_net() const
+    {
+        return _default_torch_net_init.has_value();
     }
 
     const std::vector<LayerSpec>& get_layer_specs() const
@@ -204,16 +209,18 @@ private:
 
     }
 
-    unsigned required_num_genes(const unsigned num_inputs,
-                                const unsigned num_outputs,
-                                const unsigned num_hidden_layers,
-                                const unsigned neurons_per_layer,
-                                const LayerSpec::NeuronType neuron_type,
-                                const std::shared_ptr<ActivationFunctionSpec>& activation_func) 
+    unsigned required_num_genes(
+        const unsigned num_inputs,
+        const unsigned num_outputs,
+        const unsigned num_hidden_layers,
+        const unsigned neurons_per_layer,
+        const LayerSpec::NeuronType neuron_type,
+        const std::shared_ptr<ActivationFunctionSpec>& activation_func) 
     {
 
         //Build LayerSpecs from the specification
-        std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs, num_outputs,
+        std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs, 
+                                                                          num_outputs,
                                                                           num_hidden_layers, 
                                                                           neurons_per_layer,
                                                                           neuron_type, 

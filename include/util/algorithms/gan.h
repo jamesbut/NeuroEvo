@@ -28,16 +28,6 @@ public:
 
 private:
 
-    TorchNetwork* build_network(NetworkBuilder& net_builder, 
-                                std::unique_ptr<Distribution<double>>& init_net_weight_distr);
-
-    //Generates batches of batch size and returns a pair of the data and the targets
-    const std::vector<std::pair<torch::Tensor, torch::Tensor>> 
-        generate_batches(const unsigned batch_size, 
-                         const torch::Tensor& data, 
-                         const torch::Tensor& data_labels,
-                         const bool shuffle_data = true) const;
-
     torch::Tensor _real_data;
 
     std::unique_ptr<TorchNetwork> _generator;

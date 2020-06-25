@@ -11,7 +11,7 @@
 
 namespace NeuroEvo {
 
-class TorchNetwork : public Phenotype<double>
+class TorchNetwork : public Phenotype<double>, public torch::nn::Module
 {
 
 public:
@@ -25,13 +25,14 @@ public:
     std::vector<double> activate(const std::vector<double>& inputs) override;
     torch::Tensor forward(torch::Tensor x);
 
-    void zero_grad();
+    void zero_grad() override;
     std::vector<torch::Tensor> parameters(bool recurse = true) const;
 
     void reset() override;
     void print_params() override;
 
     unsigned get_num_inputs() const;
+    torch::nn::Sequential& get_net();
 
 private:
 

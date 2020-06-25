@@ -55,7 +55,7 @@ public:
         _gp_map_spec(organism.get_gp_map_spec()),
         _genotype(organism.get_genotype().clone()),
         _gp_map(organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr),
-        _phenotype(organism.get_phenotype().clone()),
+        _phenotype(organism.get_phenotype().clone_phenotype()),
         _fitness(organism.get_fitness()) {}
 
     Organism& operator=(const Organism& organism) 
@@ -63,7 +63,7 @@ public:
 
         _genotype = organism.get_genotype().clone();
         _gp_map = organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr;
-        _phenotype = organism.get_phenotype().clone();
+        _phenotype = organism.get_phenotype().clone_phenotype();
         _phenotype_spec = &organism.get_phenotype_spec();
         _gp_map_spec = organism.get_gp_map_spec();
         _fitness = organism.get_fitness();
