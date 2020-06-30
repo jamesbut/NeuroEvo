@@ -24,9 +24,9 @@ public:
     void train(const unsigned num_epochs, const unsigned batch_size, 
                const unsigned test_every = 1e6);
 
-    torch::Tensor test_encoder(const torch::Tensor& x) const;
-    torch::Tensor test_decoder(const torch::Tensor& x) const;
-    torch::Tensor test_autoencoder(const torch::Tensor& x) const;
+    torch::Tensor encode(const torch::Tensor& x) const;
+    torch::Tensor decode(const torch::Tensor& x) const;
+    torch::Tensor forward(const torch::Tensor& x) const;
 
 private:
 

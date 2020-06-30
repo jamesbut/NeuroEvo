@@ -73,8 +73,9 @@ torch::nn::Sequential TorchNetwork::build_network(
 
     torch::nn::Sequential net;
 
-    //Set number of inputs
+    //Set number of inputs and number of outputs
     _num_inputs = layer_specs[0].get_inputs_per_neuron();
+    _num_outputs = layer_specs.back().get_num_neurons();
 
     //Build network from layer specs
     for(const auto& layer_spec : layer_specs)
@@ -135,6 +136,11 @@ void TorchNetwork::print_params() {}
 unsigned TorchNetwork::get_num_inputs() const
 {
     return _num_inputs;
+}
+
+unsigned TorchNetwork::get_num_outputs() const
+{
+    return _num_outputs;
 }
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const

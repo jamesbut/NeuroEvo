@@ -3,7 +3,6 @@
 
 namespace NeuroEvo {
 
-
 AutoEncoder::AutoEncoder(const torch::Tensor& training_data, 
                          const torch::Tensor& test_data,
                          NetworkBuilder& encoder_builder,
@@ -57,7 +56,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         /* Test on test set */
         if((i+1) % test_every == 0)
         {
-            auto test_output = test_autoencoder(_test_data);
+            auto test_output = forward(_test_data);
             torch::Tensor test_loss = torch::nn::functional::mse_loss(
                 test_output, 
                 _test_data,
@@ -74,17 +73,17 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
 }
 
-torch::Tensor AutoEncoder::test_encoder(const torch::Tensor& x) const
+torch::Tensor AutoEncoder::encode(const torch::Tensor& x) const
 {
     return _encoder->forward(x);
 }
 
-torch::Tensor AutoEncoder::test_decoder(const torch::Tensor& x) const
+torch::Tensor AutoEncoder::decode(const torch::Tensor& x) const
 {
     return _decoder->forward(x);
 }
 
-torch::Tensor AutoEncoder::test_autoencoder(const torch::Tensor &x) const
+torch::Tensor AutoEncoder::forward(const torch::Tensor &x) const
 {
     return _decoder->forward(_encoder->forward(x));
 }

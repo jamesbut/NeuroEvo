@@ -10,20 +10,21 @@
 
 namespace NeuroEvo {
 
-GAN::GAN(torch::Tensor& real_data, NetworkBuilder& generator_builder,
+GAN::GAN(const torch::Tensor& real_data, NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
     _real_data(real_data),
     _generator(build_torch_network(generator_builder, std::move(init_net_weight_distr))),
     _discriminator(build_torch_network(discriminator_builder, std::move(init_net_weight_distr))) {}
 
-void GAN::train(const unsigned num_epochs, const unsigned batch_size)
+void GAN::train(const unsigned num_epochs, const unsigned batch_size, const bool trace)
 {
     
     //This was part of the tutorial but stop loss reducing to zero - maybe it is important
     //for a GAN
     //torch::Tensor real_labels = torch::empty(_real_data.size(0)).uniform_(0.8, 1.0);
-    torch::Tensor real_labels = torch::ones(_real_data.size(0));
+    //torch::Tensor real_labels = torch::ones(_real_data.size(0));
+    torch::Tensor real_labels = torch::ones({_real_data.size(0), 1});
 
     const double generator_learning_rate = 2e-4;
     const double discriminator_learning_rate = 5e-4;
@@ -62,7 +63,10 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size)
             /* Train discriminator on fake data */
             //Generate fake data using generator
             //Draw noise from unit normal distribution
-            auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()});
+            //auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()});
+            //Draw noise from a uniform distribution [0,1]
+            auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()});
+            
             torch::Tensor fake_data = _generator->forward(noise);
 
             /*
@@ -110,9 +114,10 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size)
         //Divide by size of fake data
         torch::Tensor avg_g_loss = total_g_loss / _real_data.size(0);
         
-        std::cout << "Epoch: " << i << " | Discriminator loss: " 
-            << avg_d_loss.item<float>() << " | Generator loss: "
-            << avg_g_loss.item<float>() <<  std::endl;
+        if(trace)
+            std::cout << "Epoch: " << i << " | Discriminator loss: " 
+                << avg_d_loss.item<float>() << " | Generator loss: "
+                << avg_g_loss.item<float>() <<  std::endl;
  
     }
 

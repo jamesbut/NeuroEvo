@@ -32,7 +32,7 @@ public:
     void print_params() override;
 
     unsigned get_num_inputs() const;
-    torch::nn::Sequential& get_net();
+    unsigned get_num_outputs() const;
 
 private:
 
@@ -50,6 +50,7 @@ private:
     torch::nn::Sequential _net;
 
     unsigned _num_inputs;
+    unsigned _num_outputs;
 
     const bool _trace;
 
