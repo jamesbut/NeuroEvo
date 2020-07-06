@@ -162,4 +162,9 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output, const torch::Tenso
 
 }
 
+const std::unique_ptr<TorchNetwork>& VAE::get_decoder() const
+{
+    return _decoder;
+}
+
 } // namespace NeuroEvo

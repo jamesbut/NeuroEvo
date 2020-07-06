@@ -32,6 +32,8 @@ public:
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> forward(const torch::Tensor& x,
                                                                     const bool trace = false);
 
+    const std::unique_ptr<TorchNetwork>& get_decoder() const; 
+
 private:
 
     torch::Tensor sample(const torch::Tensor& mu, const torch::Tensor& log_var,

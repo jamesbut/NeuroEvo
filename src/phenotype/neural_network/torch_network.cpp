@@ -5,20 +5,26 @@ namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace) :
     _net(build_network(layer_specs, std::nullopt)),
-    _trace(trace) {
-
+    _trace(trace) 
+{
     register_module("net", _net);
-
 }
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, 
                            const std::vector<double>& init_weights, 
                            const bool trace) :
     _net(build_network(layer_specs, init_weights)),
-    _trace(trace) {
-
+    _trace(trace) 
+{
     register_module("net", _net);
+}
 
+TorchNetwork::TorchNetwork(const std::string& file_path, const std::vector<LayerSpec>& layer_specs,
+                           const bool trace) :
+    _net(read(file_path, layer_specs)),
+    _trace(trace)
+{
+    register_module("net", _net);
 }
 
 std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
@@ -131,7 +137,23 @@ torch::nn::Sequential TorchNetwork::build_network(
 
 void TorchNetwork::reset() {}
 
-void TorchNetwork::print_params() {}
+void TorchNetwork::print_params() 
+{
+    std::cout << _net->parameters() << std::endl;
+}
+
+void TorchNetwork::write(const std::string& file_path) const 
+{
+    torch::save(_net, file_path); 
+}
+
+torch::nn::Sequential TorchNetwork::read(const std::string& file_path,
+                                         const std::vector<LayerSpec>& layer_specs)
+{
+    torch::nn::Sequential net = build_network(layer_specs, std::nullopt);
+    torch::load(net, file_path);
+    return net;
+}
 
 unsigned TorchNetwork::get_num_inputs() const
 {
