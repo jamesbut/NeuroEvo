@@ -72,8 +72,17 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
             const auto [output, mu, log_var] = forward(batch.first);
 
             torch::Tensor loss = loss_function(output, batch.second, mu, log_var);
+
+            loss.backward();
+            total_loss += loss;
+
+            optimizer.step();
             
         }
+
+        auto avg_loss = total_loss / _training_data.size(0);
+
+        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() << std::endl;
 
     }
     
@@ -129,18 +138,27 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output, const torch::Tenso
 {
 
     //The difference between the input and the output (reconstruction loss)
+    torch::Tensor reconstruction_loss = torch::nn::functional::mse_loss(
+        output, 
+        input,
+        torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
+    );
+
+    //The difference between the input and the output (reconstruction loss)
+    /*
     const torch::Tensor BCE_loss = torch::nn::functional::binary_cross_entropy(
         output, 
         input,
         torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
     );
+    */
 
     //https://arxiv.org/abs/1312.6114
     //I think this is difference between the output gauss params and a unit normal
     torch::Tensor KLD_loss = -0.5 * torch::sum(1 + log_var - mu.pow(2) - log_var.exp());
     KLD_loss /= output.size(0);
 
-    return BCE_loss + KLD_loss;
+    return reconstruction_loss + KLD_loss;
 
 }
 
