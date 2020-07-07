@@ -49,7 +49,10 @@ public:
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path)
+        {
             create_run_dir();
+            _run_dir_paths.push_back(_run_dir_path.value());
+        }
 
         //Generational winner
         const Organism<G, T>& gen_winner = calculate_generational_winner(population);
@@ -65,8 +68,14 @@ public:
         //Calculate population average fitness
         const double pop_average_fitness = calculate_population_avergage_fitness(population);
 
-        if(trace) print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
+        if(trace) 
+            print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
 
+    }
+
+    const std::vector<std::string>& get_run_dir_paths() const
+    {
+        return _run_dir_paths;
     }
 
 private:
@@ -82,7 +91,8 @@ private:
         return total_fitness / (double)population.get_size();
     }
 
-    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) const
+    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) 
+        const
     {
         const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
@@ -103,7 +113,8 @@ private:
     void calculate_best_winner_so_far(const Organism<G, T>& gen_winner) 
     {
         //Check whether gen winner beats the highest score so far
-        if(!_best_winner_so_far || gen_winner.get_fitness() > _best_winner_so_far->get_fitness())
+        if(!_best_winner_so_far || gen_winner.get_fitness() > 
+                _best_winner_so_far->get_fitness())
             _best_winner_so_far = gen_winner;
     }
 
@@ -290,6 +301,8 @@ private:
 
     const std::string _exp_dir_path;
     std::optional<std::string> _run_dir_path;
+    //Store run direcory paths for later use
+    std::vector<std::string> _run_dir_paths;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
 

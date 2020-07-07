@@ -38,7 +38,8 @@ public:
     }
 
     //Generate genotype from file
-    Genotype<G>* generate_genotype(const std::string& file_name) 
+    static Genotype<G>* generate_genotype(const std::string& file_name,
+                                          const std::shared_ptr<Mutator<G>> mutator = nullptr) 
     {
         std::ifstream file(file_name);
 
@@ -68,7 +69,7 @@ public:
 
             }
             
-            return new Genotype<G>(genes, _mutator);
+            return new Genotype<G>(genes, mutator);
             
         } else
         {

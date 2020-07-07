@@ -6,20 +6,26 @@
 
 namespace NeuroEvo {
 
-class NetworkMapSpec : GPMapSpec<double> {
+class NetworkMapSpec : public GPMapSpec<double, double> {
 
 public:
+
+    NetworkMapSpec(NetworkBuilder& net_builder) :
+        _net_builder(net_builder) {}
 
     NetworkMapSpec(NetworkBuilder& net_builder, const std::string& file_name) :
         _net_builder(net_builder),
         _file_name(file_name) {}
 
-    GPMap* generate_gp_map() override 
+    GPMap<double, double>* generate_gp_map() override 
     {
-        return new NetworkMap(_net_builder, _file_name);
+        if(_file_name)
+            return new NetworkMap(_net_builder, _file_name.value());
+        else
+            return new NetworkMap(_net_builder);
     }
 
-    GPMap* generate_gp_map(const std::string& file_name) override 
+    GPMap<double, double>* generate_gp_map(const std::string& file_name) override 
     {
         return new NetworkMap(_net_builder, file_name);
     }
@@ -27,7 +33,7 @@ public:
 private:
 
     NetworkBuilder _net_builder;
-    const std::string _file_name;
+    std::optional<const std::string> _file_name;
 
 
 };

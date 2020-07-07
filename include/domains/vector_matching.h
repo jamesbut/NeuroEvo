@@ -16,8 +16,8 @@ public:
     VectorMatching(const std::vector<T>& matching_vector, 
                    const bool domain_trace = false, 
                    const double completion_fitness = 1.0) :
-        _matching_vector(matching_vector),
-        Domain<G, T>(domain_trace, completion_fitness) {}
+        Domain<G, T>(domain_trace, completion_fitness),
+        _matching_vector(matching_vector) {}
 
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
@@ -26,10 +26,10 @@ public:
                    const bool symmetric_match_vector = false,
                    const bool domain_trace = false, 
                    const double completion_fitness = 1.0) :
+        Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector_distr(matching_vector_distr),
         _symmetric_match_vector(symmetric_match_vector),
-        _matching_vector(randomly_generate_matching_vector(matching_vector_size)),
-        Domain<G, T>(domain_trace, completion_fitness) {}
+        _matching_vector(randomly_generate_matching_vector(matching_vector_size)) {}
 
     bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
     {

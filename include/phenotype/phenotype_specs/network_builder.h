@@ -83,8 +83,14 @@ public:
             //If torch network is initialised by the Torch default initialiser
             //So this just ignores the genotype given to this function
             if(_default_torch_net_init.value())
-                torch_network = new TorchNetwork(_layer_specs, 
-                                                 _trace);
+                //If the torch network is read from file
+                if(_read_file_path)
+                    torch_network = new TorchNetwork(_read_file_path.value(), 
+                                                     _layer_specs,
+                                                     _trace);
+                else
+                    torch_network = new TorchNetwork(_layer_specs, 
+                                                     _trace);
             //If torch network is initialised by given genotype
             else 
                 torch_network = new TorchNetwork(_layer_specs, 
@@ -128,6 +134,11 @@ public:
     void make_torch_net(const bool default_torch_net_init = true)
     {
         _default_torch_net_init = std::optional<bool>(default_torch_net_init);
+    }
+
+    void add_read_file(const std::string& file_path) 
+    {
+        _read_file_path = file_path;
     }
 
     bool is_torch_net() const
@@ -295,6 +306,8 @@ private:
 
     /* Optional parameters */
     std::optional<HebbsSpec> _hebbs_spec;
+
+    std::optional<std::string> _read_file_path;
 
 };
 

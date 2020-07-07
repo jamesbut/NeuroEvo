@@ -5,8 +5,17 @@
 
 namespace NeuroEvo {
 
+NetworkMap::NetworkMap(NetworkBuilder& net_spec)
+{
+    Genotype<double> placeholder_genotype;
+    _decoder.reset(net_spec.generate_phenotype(placeholder_genotype, nullptr));
+}
+
 NetworkMap::NetworkMap(NetworkBuilder& net_spec, const std::string& file_name) :
     _decoder(read_network(file_name, net_spec)) {}
+
+NetworkMap::NetworkMap(const NetworkMap& network_map) :
+    _decoder(network_map._decoder->clone_phenotype()) {}
 
 Phenotype<double>* NetworkMap::map(Genotype<double>& genotype,
                                    PhenotypeSpec<double, double>& pheno_spec) 
@@ -14,7 +23,7 @@ Phenotype<double>* NetworkMap::map(Genotype<double>& genotype,
 
     //Query the decoder with the genes - it will output
     //the weights of the phenotype
-    std::vector<double> traits = _decoder.activate(genotype.genes());
+    std::vector<double> traits = _decoder->activate(genotype.genes());
 
     //TODO: This is hacky, I want to change this
     NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
@@ -52,8 +61,8 @@ std::optional<Matrix<double>> NetworkMap::get_map()
 
 }
 
-Network NetworkMap::read_network(const std::string& file_name,
-                                 NetworkBuilder& net_builder) 
+Phenotype<double>* NetworkMap::read_network(const std::string& file_name,
+                                            NetworkBuilder& net_builder) 
 {
 
     std::stringstream file_path;

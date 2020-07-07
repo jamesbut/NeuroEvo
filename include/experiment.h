@@ -30,7 +30,6 @@ public:
         return std::nullopt;
         
     }
-
     
     void individual_run(const std::string& organism_folder_name) 
     {
@@ -62,9 +61,6 @@ public:
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
         
-        // Create a data collector for printing out generational information
-        DataCollector<G, T> data_collector;
-
         for(unsigned i = 0; i < num_runs; i++) 
         {
 
@@ -83,7 +79,7 @@ public:
                 ga_completed = ga_finished(population, max_gens);
 
                 // Print population data after fitness evaluation
-                data_collector.collect_generational_data(population, trace);
+                _data_collector.collect_generational_data(population, trace);
 
                 // Break if completed
                 if(ga_completed != 0) break;
@@ -108,10 +104,15 @@ public:
             }
 
             _domain.reset();
-            data_collector.reset();
+            _data_collector.reset();
 
         }
 
+    }
+
+    const DataCollector<G, T>& get_data_collector() const
+    {
+        return _data_collector;
     }
 
 private:
@@ -124,7 +125,8 @@ private:
         _domain(domain), 
         _geno_spec(geno_spec),
         _pheno_spec(pheno_spec),
-        _gp_map_spec(gp_map_spec) {}
+        _gp_map_spec(gp_map_spec),
+        _data_collector() {}
 
     int ga_finished(Population<G, T>& population, const unsigned max_gens) 
     {
@@ -146,6 +148,8 @@ private:
     GenotypeSpec<G>& _geno_spec;
     PhenotypeSpec<G, T>& _pheno_spec;
     GPMapSpec<G, T>* _gp_map_spec;
+
+    DataCollector<G, T> _data_collector;
 
 };
 
