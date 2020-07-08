@@ -151,7 +151,15 @@ torch::nn::Sequential TorchNetwork::read(const std::string& file_path,
                                          const std::vector<LayerSpec>& layer_specs)
 {
     torch::nn::Sequential net = build_network(layer_specs, std::nullopt);
-    torch::load(net, file_path);
+
+    if(std::filesystem::exists(file_path))
+        torch::load(net, file_path);
+    else
+    {
+        std::cerr << "File: " << file_path << " does not exist!" << std::endl;
+        exit(0);
+    }
+
     return net;
 }
 

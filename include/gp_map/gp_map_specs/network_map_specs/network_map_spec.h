@@ -2,11 +2,13 @@
 #define _NETWORK_MAP_SPEC_H_
 
 #include <gp_map/gp_map_specs/gp_map_spec.h>
-#include <gp_map/network_map.h>
+#include <gp_map/network_maps/network_map.h>
 
 namespace NeuroEvo {
 
-class NetworkMapSpec : public GPMapSpec<double, double> {
+template<typename G, typename T>
+class NetworkMapSpec : public GPMapSpec<G, T> 
+{
 
 public:
 
@@ -17,24 +19,13 @@ public:
         _net_builder(net_builder),
         _file_name(file_name) {}
 
-    GPMap<double, double>* generate_gp_map() override 
-    {
-        if(_file_name)
-            return new NetworkMap(_net_builder, _file_name.value());
-        else
-            return new NetworkMap(_net_builder);
-    }
+    GPMap<G, T>* generate_gp_map() override = 0;
+    GPMap<G, T>* generate_gp_map(const std::string& file_name) override = 0;
 
-    GPMap<double, double>* generate_gp_map(const std::string& file_name) override 
-    {
-        return new NetworkMap(_net_builder, file_name);
-    }
-
-private:
+protected:
 
     NetworkBuilder _net_builder;
     std::optional<const std::string> _file_name;
-
 
 };
 
