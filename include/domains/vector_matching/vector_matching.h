@@ -14,8 +14,8 @@ class VectorMatching : public Domain<G, T>
 public: 
 
     VectorMatching(const std::vector<T>& matching_vector, 
-                   const bool domain_trace = false, 
-                   const double completion_fitness = 1.0) :
+                   const bool domain_trace, 
+                   const double completion_fitness) :
         Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector(matching_vector) {}
 
@@ -23,9 +23,9 @@ public:
     //according to a distribution
     VectorMatching(const unsigned matching_vector_size,
                    Distribution<T>* matching_vector_distr,
-                   const bool symmetric_match_vector = false,
-                   const bool domain_trace = false, 
-                   const double completion_fitness = 1.0) :
+                   const bool symmetric_match_vector,
+                   const bool domain_trace, 
+                   const double completion_fitness) :
         Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector_distr(matching_vector_distr),
         _symmetric_match_vector(symmetric_match_vector),
@@ -55,6 +55,9 @@ public:
 
 protected:
 
+    //Calculates how closely the phenotype vector matches the matching vector
+    //This is calculated differently depending on the trait type
+    virtual double calculate_match_value(const std::vector<T>& phenotype_vector) const = 0;
     void render() override {}
 
 private: 
@@ -67,39 +70,6 @@ private:
         const double fitness = calculate_match_value(phenotype_vector);
 
         return fitness;
-    }
-
-    //Calculates how closely the phenotype vector matches the matching vector
-    //Returns a value between 0 and 1 with 1 being a perfect match
-    double calculate_match_value(const std::vector<T>& phenotype_vector) const 
-    {
-        unsigned num_matches = 0;
-
-        for(std::size_t i = 0; i < phenotype_vector.size(); i++)
-        {
-            if(this->_domain_trace)
-                std::cout << _matching_vector[i] << " " << phenotype_vector[i] << " ";
-
-            //This comparison might not work so well for doubles
-            if(_matching_vector[i] == phenotype_vector[i])
-            {
-                num_matches += 1;
-                if(this->_domain_trace) std::cout << "Match!" << std::endl;
-
-            } else
-                if(this->_domain_trace) std::cout << "No match" << std::endl;
-
-        }
-
-        const double match_value = (double)num_matches / (double)phenotype_vector.size(); 
-
-        if(this->_domain_trace) 
-        {
-            std::cout << "Num matches: " << num_matches << std::endl;
-            std::cout << "Match value: " << match_value << std::endl;
-        }
-
-        return match_value;
     }
 
     const std::vector<T> randomly_generate_matching_vector(
@@ -154,6 +124,9 @@ private:
 
     const std::unique_ptr<Distribution<T>> _matching_vector_distr;
     const bool _symmetric_match_vector;
+
+protected:
+
     std::vector<T> _matching_vector;
 
 };
