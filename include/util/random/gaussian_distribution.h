@@ -9,7 +9,7 @@ class GaussianDistribution : public Distribution<double> {
 
 public:
 
-    GaussianDistribution(const double mean, const double stddev,
+    GaussianDistribution(const double mean = 0., const double stddev = 1.,
                          const std::optional<unsigned> seed = std::nullopt);
 
     double next() override;
