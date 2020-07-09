@@ -21,12 +21,12 @@ public:
     static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GenotypeSpec<G>& geno_spec,
                                                PhenotypeSpec<G, T>& pheno_spec,
-                                               GPMapSpec<G, T>* gp_map_spec = nullptr) 
+                                               GPMap<G, T>& gp_map) 
     {
         
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(pheno_spec))
-            return Experiment(domain, geno_spec, pheno_spec, gp_map_spec);
+            return Experiment(domain, geno_spec, pheno_spec, gp_map);
         return std::nullopt;
         
     }
@@ -38,7 +38,7 @@ public:
         std::stringstream best_winner_path;
         best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
 
-        Organism organism(_geno_spec, _pheno_spec, _gp_map_spec, best_winner_path.str());
+        Organism organism(_geno_spec, _pheno_spec, _gp_map, best_winner_path.str());
 
         // Run
         // TODO: Move number of trials as function argument
@@ -68,7 +68,7 @@ public:
             int ga_completed = 0;
 
             // Build population
-            Population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map_spec);
+            Population population(pop_size, gen, _geno_spec, _pheno_spec, _gp_map);
 
             do {
 
@@ -121,11 +121,11 @@ private:
     Experiment(Domain<G, T>& domain,
                GenotypeSpec<G>& geno_spec,
                PhenotypeSpec<G, T>& pheno_spec,
-               GPMapSpec<G, T>* gp_map_spec) :
+               GPMap<G, T>& gp_map) :
         _domain(domain), 
         _geno_spec(geno_spec),
         _pheno_spec(pheno_spec),
-        _gp_map_spec(gp_map_spec),
+        _gp_map(gp_map),
         _data_collector() {}
 
     int ga_finished(Population<G, T>& population, const unsigned max_gens) 
@@ -147,7 +147,7 @@ private:
     Domain<G, T>& _domain;
     GenotypeSpec<G>& _geno_spec;
     PhenotypeSpec<G, T>& _pheno_spec;
-    GPMapSpec<G, T>* _gp_map_spec;
+    GPMap<G, T>& _gp_map;
 
     DataCollector<G, T> _data_collector;
 

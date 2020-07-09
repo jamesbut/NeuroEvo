@@ -51,14 +51,12 @@ public:
         _layer_specs(layer_specs),
         _trace(trace) {}
 
-    Phenotype<double>* generate_phenotype(Genotype<double>& genotype,
-                                          GPMap<double, double>* gp_map) override 
+    //This function builds the network but it is the GPMaps responsibility to set
+    //the weights from the genotype
+    //One can provide initial weights to the network though
+    Phenotype<double>* build_network(const std::optional<const std::vector<double>>& init_weights
+                                     = std::nullopt) 
     {
-        
-        //Check for GPMap
-        if(gp_map) 
-            return gp_map->map(genotype, *this);
-
         //Check for Hebbian
         if(_hebbs_spec)
         {
@@ -66,11 +64,11 @@ public:
             HebbsNetwork* network = new HebbsNetwork(*_hebbs_spec, _trace);
             network->create_net(_layer_specs);
 
-            //Split genes for Hebbs network into weights and learning rates
-            const std::pair<std::vector<double>, std::vector<double>> split_genes =
-                split_hebbs_traits(genotype.genes());
-            network->propogate_weights(split_genes.first);
-            network->propogate_learning_rates(split_genes.second); 
+            //Split weights for Hebbs network into weights and learning rates
+            const std::pair<std::vector<double>, std::vector<double>> split_weights =
+                split_hebbs_traits(init_weights.value());
+            network->propogate_weights(split_weights.first);
+            network->propogate_learning_rates(split_weights.second); 
 
             return network;
 
@@ -80,9 +78,9 @@ public:
 
             TorchNetwork* torch_network;
             
-            //If torch network is initialised by the Torch default initialiser
-            //So this just ignores the genotype given to this function
-            if(_default_torch_net_init.value())
+            //If weights are not given
+            //if(_default_torch_net_init.value())
+            if(!init_weights)
                 //If the torch network is read from file
                 if(_read_file_path)
                     torch_network = new TorchNetwork(_read_file_path.value(), 
@@ -91,10 +89,10 @@ public:
                 else
                     torch_network = new TorchNetwork(_layer_specs, 
                                                      _trace);
-            //If torch network is initialised by given genotype
+            //If torch network is initialised by given weights
             else 
                 torch_network = new TorchNetwork(_layer_specs, 
-                                                 genotype.genes(), 
+                                                 init_weights.value(), 
                                                  _trace);
             return torch_network;
 
@@ -103,13 +101,16 @@ public:
         
             Network* network = new Network(_trace);
             network->create_net(_layer_specs);
-            network->propogate_weights(genotype.genes());
+
+            if(init_weights)
+                network->propogate_weights(init_weights.value());
 
             return network;
 
         }
         
     }
+
 
     auto clone() const 
     { 

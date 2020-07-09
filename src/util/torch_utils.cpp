@@ -15,18 +15,22 @@ TorchNetwork* build_torch_network(
         exit(0);
     }
 
-    //Create initial genotype 
-    std::unique_ptr<Genotype<double>> init_genotype(new Genotype<double>());
+    //Build and cast torch network
+    Phenotype<double>* torch_net = net_builder.build_network();
+
+    //If initial weights are given set them
     if(init_net_weight_distr)
     {
-        GenotypeSpec<double> genotype_spec(net_builder.get_num_params(), 
-                                           *init_net_weight_distr);
-        init_genotype.reset(genotype_spec.generate_genotype());
-    } 
-        
+        //Create init weights
+        std::vector<double> init_weights(net_builder.get_num_params());
+        for(std::size_t i = 0; i < init_weights.size(); i++)
+            init_weights[i] = init_net_weight_distr->next();
+            
+        torch_net = net_builder.build_network(init_weights);
 
-    //Build and cast torch network
-    Phenotype<double>* torch_net = net_builder.generate_phenotype(*init_genotype, nullptr);
+    } else
+        torch_net = net_builder.build_network();
+
     TorchNetwork* torch_net_cast = dynamic_cast<TorchNetwork*>(torch_net); 
     if(!torch_net_cast)
     {

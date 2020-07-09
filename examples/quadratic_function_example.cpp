@@ -13,6 +13,7 @@
 #include <genetic_operators/selection/truncation_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
 #include <util/random/uniform_real_distribution.h>
+#include <gp_map/vector_maps/vector_map.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -55,6 +56,10 @@ int main(int argc, const char* argv[])
         new NeuroEvo::GenotypeSpec<gene_type>(num_genes, *genotype_distr, mutator)
     );
 
+    std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
+        new NeuroEvo::VectorMap<gene_type>()
+    );
+
     // Build quadratic function domain
     const double a = -1;
     const double b = 22;
@@ -74,7 +79,8 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *pheno_spec
+            *pheno_spec,
+            *gp_map
         );
 
     //Do not continue if experiment construction was not successful

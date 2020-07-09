@@ -6,11 +6,11 @@
 
 #include <experiment.h>
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <gp_map/gp_map_specs/dct_map_spec.h>
 #include <domains/boolean_functions/and.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
 #include <util/random/uniform_real_distribution.h>
+#include <gp_map/dct_map.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -64,8 +64,8 @@ int main(int argc, const char* argv[])
     // C is the number of frequency coefficients to be used in
     // the mapping.
     const unsigned c = 3;
-    std::unique_ptr<NeuroEvo::GPMapSpec<gene_type, phenotype_output>> gp_map_spec(
-        new NeuroEvo::DCTMapSpec(c, num_outputs, num_inputs+1)
+    std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
+        new NeuroEvo::DCTMap(c, num_outputs, num_inputs+1)
     );
 
     // Build AND domain
@@ -84,7 +84,7 @@ int main(int argc, const char* argv[])
             *domain, 
             *geno_spec, 
             *pheno_spec,
-            gp_map_spec.get()
+            *gp_map
         );
 
     //Do not continue if experiment construction was not successful

@@ -4,19 +4,12 @@
 /*
     A PhenotypeSpec defines the specification of the phenotype
     to be used.
-    It also describes how to generate the phenotype from the genotype
-    and GPMap.
 */
 
 #include <phenotype/phenotype.h>
-#include <gp_map/gp_map.h>
 
 namespace NeuroEvo {
 
-template <typename G, typename T>
-class GPMap;
-
-//Generic phenotype spec
 template <typename G, typename T>
 class PhenotypeSpec 
 {
@@ -29,9 +22,6 @@ public:
         _num_params(num_params),
         _trace(false),
         _print_weights(false) {}
-
-    //GPMap can be null
-    virtual Phenotype<T>* generate_phenotype(Genotype<G>& genotype, GPMap<G, T>* gp_map) = 0;
 
     auto clone() const 
     { 

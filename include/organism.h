@@ -14,7 +14,6 @@
 #include <iostream>
 #include <fstream>
 #include <gp_map/gp_map.h>
-#include <gp_map/gp_map_specs/gp_map_spec.h>
 
 namespace NeuroEvo {
 
@@ -24,37 +23,33 @@ class Organism {
 public:
 
     Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
-             GPMapSpec<G, T>* gp_map_spec) :
+             GPMap<G, T>& gp_map) :
         _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _genotype(genotype_spec.generate_genotype()),
-        _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
-        _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
+        _gp_map(gp_map.clone()),
+        _phenotype(gp_map.map(*_genotype, phenotype_spec)),
         _fitness(0.0) {}
 
-    Organism(PhenotypeSpec<G, T>& phenotype_spec, Genotype<G>& genotype,
-             GPMapSpec<G, T>* gp_map_spec) :
+    Organism(Genotype<G>& genotype, PhenotypeSpec<G, T>& phenotype_spec, 
+             GPMap<G, T>& gp_map) :
         _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _genotype(genotype.clone()),
-        _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map() : nullptr),
-        _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
+        _gp_map(gp_map.clone()),
+        _phenotype(gp_map.map(*_genotype, phenotype_spec)),
         _fitness(0.0) {}
         
     Organism(GenotypeSpec<G>& genotype_spec, PhenotypeSpec<G, T>& phenotype_spec,
-             GPMapSpec<G, T>* gp_map_spec, const std::string file_name) :
+             GPMap<G, T>& gp_map, const std::string file_name) :
         _phenotype_spec(&phenotype_spec),
-        _gp_map_spec(gp_map_spec),
         _genotype(genotype_spec.generate_genotype(file_name)),
-        _gp_map(gp_map_spec ? gp_map_spec->generate_gp_map(file_name) : nullptr),
-        _phenotype(phenotype_spec.generate_phenotype(*_genotype, _gp_map.get())),
+        _gp_map(gp_map.clone()),
+        _phenotype(gp_map.map(*_genotype, phenotype_spec)),
         _fitness(0.0) {}
 
     Organism(const Organism& organism) :
         _phenotype_spec(&organism.get_phenotype_spec()),
-        _gp_map_spec(organism.get_gp_map_spec()),
         _genotype(organism.get_genotype().clone()),
-        _gp_map(organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr),
+        _gp_map(organism._gp_map->clone()),
         _phenotype(organism.get_phenotype().clone_phenotype()),
         _fitness(organism.get_fitness()) {}
 
@@ -62,10 +57,9 @@ public:
     {
 
         _genotype = organism.get_genotype().clone();
-        _gp_map = organism.get_gp_map() ? organism.get_gp_map()->clone() : nullptr;
+        _gp_map = organism._gp_map->clone();
         _phenotype = organism.get_phenotype().clone_phenotype();
         _phenotype_spec = &organism.get_phenotype_spec();
-        _gp_map_spec = organism.get_gp_map_spec();
         _fitness = organism.get_fitness();
 
         return *this;
@@ -92,9 +86,9 @@ public:
         return *_genotype;
     }
 
-    GPMap<G, T>* get_gp_map() const 
+    GPMap<G, T>& get_gp_map() const 
     {
-        return _gp_map.get();
+        return *_gp_map;
     }
 
     Phenotype<T>& get_phenotype() const 
@@ -107,15 +101,10 @@ public:
         return *_phenotype_spec;
     }
 
-    GPMapSpec<G, T>* get_gp_map_spec() const 
-    {
-        return _gp_map_spec;
-    }
-
     //Creates new phenotype out of modified genotype
     void genesis() 
     {
-        _phenotype.reset(_phenotype_spec->generate_phenotype(*_genotype, _gp_map.get()));
+        _phenotype.reset(_gp_map->map(*_genotype, *_phenotype_spec));
     }
 
     void save_org_to_file(const std::string& file_name) const
@@ -152,7 +141,6 @@ private:
     //that to be deleted when the Organism gets deleted.
     //Maybe something cleaner can be done in future.
     PhenotypeSpec<G, T>* _phenotype_spec;
-    GPMapSpec<G, T>* _gp_map_spec;
 
     std::unique_ptr<Genotype<G>> _genotype;
     std::unique_ptr<GPMap<G, T>> _gp_map;

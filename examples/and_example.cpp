@@ -10,6 +10,7 @@
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
 #include <util/random/uniform_real_distribution.h>
+#include <gp_map/vector_to_network_map.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -58,6 +59,10 @@ int main(int argc, const char* argv[])
                                               mutator)
     );
 
+    std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
+        new NeuroEvo::VectorToNetworkMap()
+    );
+
     // Build AND domain
     bool domain_trace = false;
 
@@ -73,7 +78,8 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *pheno_spec
+            *pheno_spec,
+            *gp_map
         );
 
     //Do not continue if experiment construction was not successful

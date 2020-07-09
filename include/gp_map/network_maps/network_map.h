@@ -19,11 +19,8 @@ class NetworkMap : public GPMap<G, T>
 
 public:
 
-    NetworkMap(NetworkBuilder& net_spec) 
-    {
-        Genotype<double> placeholder_genotype;
-        _decoder.reset(net_spec.generate_phenotype(placeholder_genotype, nullptr));
-    }
+    NetworkMap(NetworkBuilder& net_spec) :
+        _decoder(net_spec.build_network()) {}
 
     NetworkMap(NetworkBuilder& net_spec, const std::string& file_name) :
         _decoder(read_network(file_name, net_spec)) {}
@@ -34,19 +31,7 @@ public:
     Phenotype<T>* map(Genotype<G>& genotype,
                       PhenotypeSpec<G, T>& pheno_spec) override = 0;
 
-    void print_gp_map(std::ofstream& file) override
-    {
-        //TODO: Write this
-        //std::cerr << "Write print_gp_map in NetworkMap!" << std::endl;
-        //exit(0);
-    }
-
-    std::optional<Matrix<double>> get_map() override
-    {
-        //TODO: Write this
-        std::cerr << "Write get_map in NetworkMap" << std::endl;
-        exit(0);
-    }
+    void print_gp_map(std::ofstream& file) const override {}
 
 protected:
 

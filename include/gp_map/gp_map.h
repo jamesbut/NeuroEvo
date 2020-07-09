@@ -13,9 +13,6 @@
 namespace NeuroEvo {
 
 template <typename G, typename T>
-class PhenotypeSpec;
-
-template <typename G, typename T>
 class GPMap 
 {
 
@@ -26,13 +23,7 @@ public:
 
     virtual ~GPMap() = default;
 
-    virtual void print_gp_map(std::ofstream& file) = 0;
-
-    // The GPMap can be accessed and modified by the mutator functions
-    // if it can be represented in vector or Matrix format.
-    // If the map cannot be represented in Matrix format, the optional
-    // should just be empty
-    virtual std::optional<Matrix<double>> get_map() = 0;
+    virtual void print_gp_map(std::ofstream& file) const = 0;
 
     auto clone() const 
     { 

@@ -22,12 +22,12 @@ public:
 
     Population(const unsigned pop_size, unsigned& gen_ref,
                GenotypeSpec<G>& geno_spec, PhenotypeSpec<G, T>& pheno_spec,
-               GPMapSpec<G, T>* gp_map_spec) :
+               GPMap<G, T>& gp_map) :
         _pop_size(pop_size),
         _gen(gen_ref) 
     {
         for(std::size_t i = 0; i < _pop_size; i++)
-            _organisms.push_back(Organism(geno_spec, pheno_spec, gp_map_spec));
+            _organisms.push_back(Organism(geno_spec, pheno_spec, gp_map));
     }
 
     const std::vector<Organism<G, T>>& get_organisms() const

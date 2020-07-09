@@ -50,7 +50,7 @@ Phenotype<double>* MatrixMap::map(Genotype<double>& genotype,
         return new VectorPhenotype<double>(traits_vector);
 }
 
-void MatrixMap::print_gp_map(std::ofstream& file) {
+void MatrixMap::print_gp_map(std::ofstream& file) const {
 
     file << "\n\n";
 

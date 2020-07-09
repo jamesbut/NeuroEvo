@@ -26,12 +26,7 @@ public:
     Phenotype<double>* map(Genotype<double>& genotype,
                            PhenotypeSpec<double, double>& pheno_spec) override;
 
-    std::optional<Matrix<double>> get_map() override 
-    {
-        return std::optional<Matrix<double>>();
-    };
-
-    void print_gp_map(std::ofstream& file) override {};
+    void print_gp_map(std::ofstream& file) const override {};
 
 protected:
 
