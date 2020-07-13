@@ -13,10 +13,10 @@ public:
     AND(const bool domain_trace, const double completion_fitness = 3.9) :
         Domain<G, double>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
     {
 
-        NetworkBuilder* network_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
+        const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
         if(network_builder == nullptr) 

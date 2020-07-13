@@ -31,10 +31,9 @@ public:
         _symmetric_match_vector(symmetric_match_vector),
         _matching_vector(randomly_generate_matching_vector(matching_vector_size)) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) override
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override
     {
-        VectorPhenotypeSpec<T>* vec_pheno_spec =
-            dynamic_cast<VectorPhenotypeSpec<T>*>(&pheno_spec);
+         auto vec_pheno_spec = dynamic_cast<const VectorPhenotypeSpec*>(&pheno_spec);
 
         if(vec_pheno_spec == nullptr)
         {

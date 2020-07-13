@@ -9,6 +9,7 @@
     mapping.
     For now a matrix map is only defined for doubles but
     this can be changed to be generic in the future.
+    Also it is only defined for network phenotypes for now.
 */
 
 #include <gp_map/gp_map.h>
@@ -21,11 +22,11 @@ class MatrixMap : public GPMap<double, double>
 
 public:
 
-    MatrixMap(const unsigned genotype_size, const unsigned phenotype_size);
-    MatrixMap(const std::string& file_name);
+    MatrixMap(const unsigned genotype_size, const unsigned phenotype_size,
+              const PhenotypeSpec* pheno_spec);
+    MatrixMap(const std::string& file_name, const PhenotypeSpec* pheno_spec);
 
-    Phenotype<double>* map(Genotype<double>& genotype,
-                           PhenotypeSpec<double, double>& pheno_spec) override;
+    Phenotype<double>* map(Genotype<double>& genotype) override;
 
     void print_gp_map(std::ofstream& file) const override;
 

@@ -15,23 +15,9 @@ class VectorToNetworkMap : public GPMap<double, double>
 
 public:
 
-    Phenotype<double>* map(Genotype<double>& genotype,
-                           PhenotypeSpec<double, double>& net_builder) override
-    {
-        NetworkBuilder* net_builder_cast = dynamic_cast<NetworkBuilder*>(&net_builder); 
+    VectorToNetworkMap(const NetworkBuilder* net_builder);
 
-        if(net_builder_cast == nullptr)
-        {
-            std::cerr << "Must pass NetworkBuilder to VectorToNetworkMap map function" << 
-                std::endl;
-            exit(0);
-        }
-
-        //Set network weights as the genes
-        auto network = net_builder_cast->build_network(genotype.genes());
-        return network;
-
-    }
+    Phenotype<double>* map(Genotype<double>& genotype) override;
 
     void print_gp_map(std::ofstream& file) const override {}
 

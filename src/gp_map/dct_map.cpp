@@ -1,3 +1,4 @@
+#include "gp_map/gp_map.h"
 #include <gp_map/dct_map.h>
 #include <util/maths/fourier.h>
 #include <phenotype/phenotype_specs/network_builder.h>
@@ -6,13 +7,14 @@
 
 namespace NeuroEvo {
 
-DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron) :
+DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
+               const NetworkBuilder* net_builder) :
+    GPMap<double, double>(net_builder),
     _c(c),
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron) {}
 
-    Phenotype<double>* DCTMap::map(Genotype<double>& genotype,
-                                   PhenotypeSpec<double, double>& pheno_spec) 
+    Phenotype<double>* DCTMap::map(Genotype<double>& genotype)
     {
         // Assume genes are the DCT coefficients
         Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
@@ -24,7 +26,7 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inpu
         Matrix<double> traits = Utils::DCTIII(coefficients);
 
         //TODO: For now, can only turn into Fixed Network
-        NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
+        auto net_builder = dynamic_cast<const NetworkBuilder*>(_pheno_spec.get());
         Network* network = new Network(net_builder->get_trace());
         network->create_net(net_builder->get_layer_specs());
         network->propogate_weights(traits.get_vector());

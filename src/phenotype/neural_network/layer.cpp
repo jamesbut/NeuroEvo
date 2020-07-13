@@ -27,7 +27,7 @@ Layer::Layer(const Layer& layer) :
 
 void Layer::create_layer()
 {
-    if(_neuron_type == LayerSpec::NeuronType::GRU)
+    if(_neuron_type == NeuronType::GRU)
         for(unsigned i = 0; i < _num_neurons; i++)
             _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_inputs_per_neuron, 
                                                                      _activation_function,

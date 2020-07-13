@@ -31,13 +31,6 @@ int main(int argc, const char* argv[])
     typedef double gene_type;
     typedef double phenotype_output;
 
-    // Build real vector phenotype - no network needed for
-    // mathematical optimisation
-    const unsigned num_genes = 1;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
-        new NeuroEvo::VectorPhenotypeSpec<gene_type>(num_genes)
-    );
-
     // Specify the distribution used for the initial gene values
     const double init_gene_lower_bound = 0;
     const double init_gene_upper_bound = 1;
@@ -52,12 +45,13 @@ int main(int argc, const char* argv[])
         new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
     );
 
+    const unsigned num_genes = 1;
     std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
         new NeuroEvo::GenotypeSpec<gene_type>(num_genes, *genotype_distr, mutator)
     );
 
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
-        new NeuroEvo::VectorMap<gene_type>()
+        new NeuroEvo::VectorMap<gene_type>(new NeuroEvo::VectorPhenotypeSpec(num_genes))
     );
 
     // Build quadratic function domain
@@ -79,7 +73,6 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *pheno_spec,
             *gp_map
         );
 

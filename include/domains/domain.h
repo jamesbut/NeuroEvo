@@ -92,7 +92,7 @@ public:
 
     }
 
-    virtual bool check_phenotype_spec(PhenotypeSpec<G, T>& pheno_spec) = 0;
+    virtual bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) = 0;
 
     //Determines whether the current population
     //has 'completed' the domain, this normally

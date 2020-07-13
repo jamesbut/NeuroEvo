@@ -16,7 +16,7 @@ class Neuron {
 public:
 
     Neuron(const unsigned num_inputs, 
-           const LayerSpec::NeuronType& neuron_type, 
+           const NeuronType& neuron_type, 
            const std::shared_ptr<ActivationFunction> activation_function,
            const bool trace);
 
@@ -46,7 +46,7 @@ protected:
     double propogate(const std::vector<double>& inputs);
 
     const unsigned _num_inputs;
-    const LayerSpec::NeuronType _neuron_type;
+    const NeuronType _neuron_type;
     const std::shared_ptr<ActivationFunction> _activation_function;
 
     const bool _trace;

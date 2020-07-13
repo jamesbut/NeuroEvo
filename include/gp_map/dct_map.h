@@ -10,6 +10,7 @@
 */
 
 #include <gp_map/gp_map.h>
+#include <phenotype/phenotype_specs/network_builder.h>
 
 namespace NeuroEvo {
 
@@ -20,11 +21,11 @@ class DCTMap : public GPMap<double, double>
 public:
 
     // c represents the number of coefficients that will be used in the reconstruction
-    DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron);
+    DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
+           const NetworkBuilder* net_builder);
 
     // Perform DCTIII (inverse DCTII) on genotype
-    Phenotype<double>* map(Genotype<double>& genotype,
-                           PhenotypeSpec<double, double>& pheno_spec) override;
+    Phenotype<double>* map(Genotype<double>& genotype) override;
 
     void print_gp_map(std::ofstream& file) const override {};
 

@@ -2,7 +2,7 @@
 #define _GP_MAP_
 
 /*
-    A GPMap transforms a genotype into a phenotype.
+    A GPMap transforms a genotype into a phenotype by using a phenotype specification
 */
 
 #include <phenotype/phenotype.h>
@@ -18,10 +18,21 @@ class GPMap
 
 public:
 
-    virtual Phenotype<T>* map(Genotype<G>& genotype,
-                              PhenotypeSpec<G, T>& pheno_spec) = 0;
+    //I assume the phenotype specification will not change throughout an experiment
+    GPMap(const PhenotypeSpec* pheno_spec) :
+        _pheno_spec(pheno_spec) {}
+
+    GPMap(const GPMap& gpmap) :
+        _pheno_spec(gpmap._pheno_spec->clone()) {}
 
     virtual ~GPMap() = default;
+
+    virtual Phenotype<T>* map(Genotype<G>& genotype) = 0;
+
+    const PhenotypeSpec* get_pheno_spec() const
+    {
+        return _pheno_spec.get();
+    }
 
     virtual void print_gp_map(std::ofstream& file) const = 0;
 
@@ -34,6 +45,8 @@ public:
 protected:
 
     virtual GPMap* clone_impl() const = 0;
+
+    const std::unique_ptr<const PhenotypeSpec> _pheno_spec;
 
 };
 

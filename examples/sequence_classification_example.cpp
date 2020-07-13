@@ -37,7 +37,7 @@ int main(int argc, const char* argv[])
 
     //Build a network from layers
     //Build hidden layer
-    const auto hl_layer_type = NeuroEvo::LayerSpec::NeuronType::GRU;
+    const auto hl_layer_type = NeuroEvo::NeuronType::GRU;
     const unsigned hl_num_neurons = 3;
     const unsigned hl_inputs_per_neuron = 1;    // the number of inputs to the hidden layer
     const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> hl_activation_spec(
@@ -47,7 +47,7 @@ int main(int argc, const char* argv[])
                                      hl_inputs_per_neuron, hl_activation_spec);
 
     //Build output layer
-    const auto ol_layer_type = NeuroEvo::LayerSpec::NeuronType::Standard;
+    const auto ol_layer_type = NeuroEvo::NeuronType::Standard;
     const unsigned ol_num_neurons = 1;
     const unsigned ol_inputs_per_neuron = 3;    // the number of inputs to the output layer
     const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> ol_activation_spec(
@@ -60,9 +60,7 @@ int main(int argc, const char* argv[])
     std::vector<NeuroEvo::LayerSpec> layer_specs{hidden_layer, output_layer};
 
     const unsigned num_inputs = 1;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
-        new NeuroEvo::NetworkBuilder(num_inputs, layer_specs)
-    );
+    auto pheno_spec = new NeuroEvo::NetworkBuilder(num_inputs, layer_specs);
 
     // Specify the distribution used for the initial gene values
     const double init_gene_lower_bound = 0;
@@ -83,7 +81,7 @@ int main(int argc, const char* argv[])
     );
 
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
-        new NeuroEvo::VectorToNetworkMap()
+        new NeuroEvo::VectorToNetworkMap(pheno_spec)
     );
 
     // Build sequence classification domain
@@ -104,7 +102,6 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *pheno_spec,
             *gp_map
         );
 

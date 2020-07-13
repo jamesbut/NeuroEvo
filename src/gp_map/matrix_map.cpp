@@ -11,7 +11,9 @@
 namespace NeuroEvo {
 
 MatrixMap::MatrixMap(const unsigned genotype_size,
-                     const unsigned phenotype_size) :
+                     const unsigned phenotype_size,
+                     const PhenotypeSpec* pheno_spec) :
+    GPMap<double, double>(pheno_spec),
     _interaction_matrix(phenotype_size, genotype_size) 
 {
 
@@ -23,11 +25,11 @@ MatrixMap::MatrixMap(const unsigned genotype_size,
 
 }
 
-MatrixMap::MatrixMap(const std::string& file_name) :
+MatrixMap::MatrixMap(const std::string& file_name, const PhenotypeSpec* pheno_spec) :
+    GPMap<double, double>(pheno_spec),
     _interaction_matrix(read_matrix(file_name)) {}
 
-Phenotype<double>* MatrixMap::map(Genotype<double>& genotype,
-                                  PhenotypeSpec<double, double>& pheno_spec) 
+Phenotype<double>* MatrixMap::map(Genotype<double>& genotype)
 {
 
     const Matrix<double> genes(genotype.genes());
@@ -36,7 +38,7 @@ Phenotype<double>* MatrixMap::map(Genotype<double>& genotype,
     std::vector<double> traits_vector = traits.get_vector();
 
     //TODO: This is hacky, I want to change this
-   NetworkBuilder* net_builder = dynamic_cast<NetworkBuilder*>(&pheno_spec);
+   auto net_builder = dynamic_cast<const NetworkBuilder*>(_pheno_spec.get());
 
     if(net_builder != nullptr)
     {

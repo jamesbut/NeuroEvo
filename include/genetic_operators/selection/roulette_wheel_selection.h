@@ -51,7 +51,6 @@ public:
         }
 
         return Organism(orgs.at(chosen_org).get_genotype(),
-                        orgs.at(chosen_org).get_phenotype_spec(),
                         orgs.at(chosen_org).get_gp_map());
 
     }

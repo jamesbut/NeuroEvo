@@ -19,15 +19,15 @@ public:
         _b(b),
         _c(c) {}
 
-    bool check_phenotype_spec(PhenotypeSpec<G, double>& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
     {
 
-        VectorPhenotypeSpec<double>* real_vec_pheno_spec = 
-            dynamic_cast<VectorPhenotypeSpec<double>*>(&pheno_spec);
+        const VectorPhenotypeSpec* real_vec_pheno_spec = 
+            dynamic_cast<const VectorPhenotypeSpec*>(&pheno_spec);
 
         if(real_vec_pheno_spec == nullptr) 
         {
-            std::cerr << "Only vector phenotype specifications are allowed" <<
+            std::cerr << "Only vector phenotype specifications are allowed " <<
                         "with the quadratic domain!" << std::endl;
             return false;
         }

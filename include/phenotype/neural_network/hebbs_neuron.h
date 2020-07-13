@@ -13,7 +13,7 @@ class HebbsNeuron : public Neuron {
 public:
 
     HebbsNeuron(const unsigned num_input, 
-                const LayerSpec::NeuronType& neuron_type, 
+                const NeuronType& neuron_type, 
                 const std::shared_ptr<ActivationFunction> activation_function,
                 const bool trace = false);
 

@@ -49,7 +49,7 @@ protected:
     const unsigned _inputs_per_neuron;
     const unsigned _params_per_neuron;
     const unsigned _num_neurons;
-    const LayerSpec::NeuronType _neuron_type;
+    const NeuronType _neuron_type;
     const std::shared_ptr<ActivationFunction> _activation_function;
 
     std::vector<std::unique_ptr<Neuron> > _neurons;

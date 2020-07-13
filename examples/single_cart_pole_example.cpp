@@ -32,10 +32,8 @@ int main(int argc, const char* argv[])
     const unsigned num_outputs = 2;
     const unsigned num_hidden_layers = 0;
     const unsigned neurons_per_layer = 0;
-    std::unique_ptr<NeuroEvo::NetworkBuilder> network_builder(
-        new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
-                                     num_hidden_layers, neurons_per_layer)
-    );
+    auto network_builder = new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
+                                                        num_hidden_layers, neurons_per_layer);
 
     const bool evolve_init_weights = false;
     const double default_init_weight = 1.;
@@ -61,7 +59,7 @@ int main(int argc, const char* argv[])
     );
 
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
-        new NeuroEvo::VectorToNetworkMap()
+        new NeuroEvo::VectorToNetworkMap(network_builder)
     );
 
     // Build single cart pole domain
@@ -89,7 +87,6 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *network_builder,
             *gp_map
         );
 

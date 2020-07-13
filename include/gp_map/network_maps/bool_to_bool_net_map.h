@@ -10,10 +10,9 @@ class BoolToBoolNetMap : public NetworkMap<bool, bool>
 
 public:
 
-    BoolToBoolNetMap(NetworkBuilder& net_builder);
+    BoolToBoolNetMap(NetworkBuilder& decoder_spec, const PhenotypeSpec* pheno_spec);
 
-    Phenotype<bool>* map(Genotype<bool>& genotype,
-                         PhenotypeSpec<bool, bool>& pheno_spec) override;
+    Phenotype<bool>* map(Genotype<bool>& genotype) override;
 
 private:
 

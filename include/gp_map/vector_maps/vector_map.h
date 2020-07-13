@@ -16,9 +16,10 @@ class VectorMap : public GPMap<G, G>
 
 public:
 
-    //TODO: Change to specific classes if I can
-    Phenotype<G>* map(Genotype<G>& genotype,
-                      PhenotypeSpec<G, G>& pheno_spec) override
+    VectorMap(const VectorPhenotypeSpec* pheno_spec) :
+        GPMap<G, G>(pheno_spec) {}
+
+    Phenotype<G>* map(Genotype<G>& genotype) override
     {
         const std::vector<G> traits(genotype.genes().begin(), genotype.genes().end());
         return new VectorPhenotype<G>(traits);

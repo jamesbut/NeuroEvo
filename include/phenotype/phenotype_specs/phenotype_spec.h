@@ -10,37 +10,22 @@
 
 namespace NeuroEvo {
 
-template <typename G, typename T>
 class PhenotypeSpec 
 {
 
 public:
 
+    PhenotypeSpec(const unsigned num_params);
+
     virtual ~PhenotypeSpec() = default;
 
-    PhenotypeSpec(const unsigned num_params) :
-        _num_params(num_params),
-        _trace(false),
-        _print_weights(false) {}
+    const unsigned& get_num_params() const;
+    bool get_trace() const; 
+    bool get_print_weights() const;
 
-    auto clone() const 
+    auto clone() const
     { 
         return std::unique_ptr<PhenotypeSpec>(clone_impl()); 
-    }
-
-    const unsigned& get_num_params() const
-    { 
-        return _num_params; 
-    }
-
-    bool get_trace() const 
-    {
-        return _trace;
-    }
-
-    bool get_print_weights() const
-    {
-        return _print_weights;
     }
 
 protected:

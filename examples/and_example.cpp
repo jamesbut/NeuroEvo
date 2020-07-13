@@ -33,10 +33,8 @@ int main(int argc, const char* argv[])
     const unsigned num_outputs = 1;
     const unsigned num_hidden_layers = 0;
     const unsigned neurons_per_layer = 0;
-    std::unique_ptr<NeuroEvo::PhenotypeSpec<gene_type, phenotype_output>> pheno_spec(
-        new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
-                                     num_hidden_layers, neurons_per_layer)
-    );
+    auto pheno_spec = new NeuroEvo::NetworkBuilder(num_inputs, num_outputs,
+                                                   num_hidden_layers, neurons_per_layer);
 
     // Specify the distribution used for the initial gene values
     const double init_gene_lower_bound = 0;
@@ -60,7 +58,7 @@ int main(int argc, const char* argv[])
     );
 
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
-        new NeuroEvo::VectorToNetworkMap()
+        new NeuroEvo::VectorToNetworkMap(pheno_spec)
     );
 
     // Build AND domain
@@ -78,7 +76,6 @@ int main(int argc, const char* argv[])
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
             *geno_spec, 
-            *pheno_spec,
             *gp_map
         );
 

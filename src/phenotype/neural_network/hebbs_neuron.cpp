@@ -8,7 +8,7 @@ namespace NeuroEvo {
 
 //Constructor
 HebbsNeuron::HebbsNeuron(const unsigned num_inputs, 
-                         const LayerSpec::NeuronType& neuron_type, 
+                         const NeuronType& neuron_type, 
                          const std::shared_ptr<ActivationFunction> activation_function,
                          const bool trace) :
     Neuron(neuron_type, neuron_type, activation_function, trace) {}
@@ -53,7 +53,7 @@ void HebbsNeuron::synaptic_weight_change(const std::vector<double>& inputs,
         _weights[i] += delta_w;
     }
 
-    if(_neuron_type == LayerSpec::NeuronType::Recurrent) 
+    if(_neuron_type == NeuronType::Recurrent) 
     {
 
         const double delta_w_recurrent = _learning_rates[inputs.size()] * 

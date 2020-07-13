@@ -19,17 +19,20 @@ class NetworkMap : public GPMap<G, T>
 
 public:
 
-    NetworkMap(NetworkBuilder& net_spec) :
-        _decoder(net_spec.build_network()) {}
+    NetworkMap(NetworkBuilder& decoder_spec, const PhenotypeSpec* pheno_spec) :
+        GPMap<G, T>(pheno_spec),
+        _decoder(decoder_spec.build_network()) {}
 
-    NetworkMap(NetworkBuilder& net_spec, const std::string& file_name) :
-        _decoder(read_network(file_name, net_spec)) {}
+    NetworkMap(NetworkBuilder& decoder_spec, const PhenotypeSpec* pheno_spec, 
+               const std::string& file_name) :
+        GPMap<G, T>(pheno_spec),
+        _decoder(read_network(file_name, decoder_spec)) {}
 
     NetworkMap(const NetworkMap& network_map) :
+        GPMap<G, T>(network_map._pheno_spec.get()),
         _decoder(network_map._decoder->clone_phenotype()) {}
 
-    Phenotype<T>* map(Genotype<G>& genotype,
-                      PhenotypeSpec<G, T>& pheno_spec) override = 0;
+    Phenotype<T>* map(Genotype<G>& genotype) override = 0;
 
     void print_gp_map(std::ofstream& file) const override {}
 
@@ -38,7 +41,7 @@ protected:
     NetworkMap* clone_impl() const override = 0;
 
     Phenotype<double>* read_network(const std::string& file_name,
-                                    NetworkBuilder& net_builder)
+                                    NetworkBuilder& decoder_spec)
     {
 
         std::stringstream file_path;
@@ -72,8 +75,8 @@ protected:
 
         }
 
-        Network* network = new Network(net_builder.get_trace());
-        network->create_net(net_builder.get_layer_specs());
+        Network* network = new Network(decoder_spec.get_trace());
+        network->create_net(decoder_spec.get_layer_specs());
         network->propogate_weights(weights);
         return network;
 

@@ -6,20 +6,16 @@
 
 namespace NeuroEvo {
 
-template <typename G>
-class VectorPhenotypeSpec : public PhenotypeSpec<G, G> {
+class VectorPhenotypeSpec : public PhenotypeSpec 
+{
 
 public:
 
-    VectorPhenotypeSpec(const unsigned num_genes) :
-        PhenotypeSpec<G, G>(num_genes) {}
+    VectorPhenotypeSpec(const unsigned num_genes);
 
 protected:
 
-    VectorPhenotypeSpec* clone_impl() const override 
-    {
-        return new VectorPhenotypeSpec(*this);
-    };
+    VectorPhenotypeSpec* clone_impl() const override;
 
 };
 
