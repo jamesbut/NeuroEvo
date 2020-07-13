@@ -7,7 +7,7 @@ BoolToBoolNetMap::BoolToBoolNetMap(NetworkBuilder& net_builder,
                                    const PhenotypeSpec* pheno_spec) :
     NetworkMap<bool, bool>(net_builder, pheno_spec) {}
 
-Phenotype<bool>* BoolToBoolNetMap::map(Genotype<bool> &genotype)
+Phenotype<bool>* BoolToBoolNetMap::map(Genotype<bool>& genotype)
 {
     //Push genotype through decoder
     const std::vector<double> double_genotype(genotype.genes().begin(), genotype.genes().end());

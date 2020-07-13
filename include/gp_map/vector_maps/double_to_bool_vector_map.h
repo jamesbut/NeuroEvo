@@ -6,6 +6,7 @@
  */
 
 #include <gp_map/gp_map.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 
 namespace NeuroEvo {
 
@@ -13,6 +14,8 @@ class DoubleToBoolVectorMap : public GPMap<double, bool>
 {
 
 public:
+
+    DoubleToBoolVectorMap(const VectorPhenotypeSpec* pheno_spec);
 
     Phenotype<bool>* map(Genotype<double>& genotype) override;
 

@@ -3,6 +3,11 @@
 
 #include <gp_map/network_maps/network_map.h>
 
+/*
+ * Defines a network decoder where the input and output of the decoder
+ * are both boolean vectors 
+ */
+
 namespace NeuroEvo {
 
 class BoolToBoolNetMap : public NetworkMap<bool, bool>

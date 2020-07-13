@@ -126,6 +126,11 @@ void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
 
 }
 
+void NetworkBuilder::set_trace(const bool trace)
+{
+    _trace = trace;
+}
+
 bool NetworkBuilder::is_torch_net() const
 {
     return _default_torch_net_init.has_value();

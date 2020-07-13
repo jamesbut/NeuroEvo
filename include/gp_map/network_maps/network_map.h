@@ -60,7 +60,7 @@ protected:
                 //Split line by white spaces
                 std::istringstream iss(line);
                 std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
-                                                    std::istream_iterator<std::string>{}};
+                                                      std::istream_iterator<std::string>{}};
 
                 for(const auto& weight : split_string)
                     weights.push_back(std::stod(weight));
