@@ -29,7 +29,10 @@ public:
         Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector_distr(matching_vector_distr),
         _symmetric_match_vector(symmetric_match_vector),
-        _matching_vector(randomly_generate_matching_vector(matching_vector_size)) {}
+        _matching_vector(randomly_generate_matching_vector(matching_vector_size)) 
+    {
+        print_matching_vector();
+    }
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override
     {
@@ -119,6 +122,15 @@ private:
         //Reset matching vector if it was generated from a distribution
         if(_matching_vector_distr)
             _matching_vector = randomly_generate_matching_vector(_matching_vector.size());
+        print_matching_vector();
+    }
+
+    void print_matching_vector() const
+    {
+        std::cout << "Matching vector: "; 
+        for(const auto& v : this->_matching_vector)
+            std::cout << v << " ";
+        std::cout << std::endl;
     }
 
     const std::unique_ptr<Distribution<T>> _matching_vector_distr;
