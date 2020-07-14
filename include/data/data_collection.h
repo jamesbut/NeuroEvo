@@ -74,13 +74,12 @@ public:
 
     }
 
-    const std::vector<std::string>& get_run_dir_paths() const
+    const std::vector<const std::string>& get_run_dir_paths() const
     {
         return _run_dir_paths;
     }
 
 private:
-
 
     double calculate_population_avergage_fitness(const Population<G, T>& population) const 
     {
@@ -310,7 +309,7 @@ private:
     const std::string _exp_dir_path;
     std::optional<std::string> _run_dir_path;
     //Store run direcory paths for later use
-    std::vector<std::string> _run_dir_paths;
+    std::vector<const std::string> _run_dir_paths;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
 

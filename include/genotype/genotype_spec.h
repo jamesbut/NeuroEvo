@@ -52,9 +52,9 @@ public:
 
             std::stringstream ss(line);
 
-            //Remove fitness
-            std::string fitness;
-            getline(ss, fitness, ',');
+            //Get fitness
+            std::string fitness_str;
+            getline(ss, fitness_str, ',');
 
             std::vector<G> genes;
 
@@ -69,7 +69,7 @@ public:
 
             }
             
-            return new Genotype<G>(genes, mutator);
+            return new Genotype<G>(genes, std::stod(fitness_str), mutator);
             
         } else
         {

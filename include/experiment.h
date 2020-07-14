@@ -63,6 +63,8 @@ public:
         for(unsigned i = 0; i < num_runs; i++) 
         {
 
+            std::cout << "Run: " << i << std::endl;
+
             unsigned gen = 1;
             int ga_completed = 0;
 
