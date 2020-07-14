@@ -45,7 +45,7 @@ public:
         _best_winner_so_far.reset();
     }
 
-    void collect_generational_data(const Population<G, T>& population, const bool trace = true) 
+    void collect_generational_data(const Population<G, T>& population, const bool trace = true)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path)
@@ -67,6 +67,7 @@ public:
 
         //Calculate population average fitness
         const double pop_average_fitness = calculate_population_avergage_fitness(population);
+        
 
         if(trace) 
             print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
@@ -132,7 +133,14 @@ private:
         std::stringstream file_name;
         file_name << _run_dir_path.value() << "/best_winner_so_far";
 
-        _best_winner_so_far->save_org_to_file(file_name.str());
+        if(_best_winner_so_far.has_value())
+            _best_winner_so_far->save_org_to_file(file_name.str());
+        else
+        {
+            std::cerr << "There is no best winner so far set to save to file" << std::endl;
+            exit(0);
+        }
+
     }
 
     void delete_exp_dir() const 

@@ -89,7 +89,7 @@ public:
                 gen++;
 
             } while (ga_completed == 0);
-
+            
             // Check whether the domain was solved or not
             if(ga_completed == 1) {
 

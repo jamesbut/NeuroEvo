@@ -29,7 +29,7 @@ public:
         _decoder(read_network(file_name, decoder_spec)) {}
 
     NetworkMap(const NetworkMap& network_map) :
-        GPMap<G, T>(network_map._pheno_spec.get()),
+        GPMap<G, T>(network_map),
         _decoder(network_map._decoder->clone_phenotype()) {}
 
     Phenotype<T>* map(Genotype<G>& genotype) override = 0;
