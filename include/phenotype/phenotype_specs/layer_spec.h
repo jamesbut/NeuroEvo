@@ -32,9 +32,10 @@ class LayerSpec
 
 public:
 
-    LayerSpec(const NeuronType neuron_type, const unsigned num_neurons,
+    LayerSpec(const unsigned num_neurons,
               const unsigned inputs_per_neuron, 
-              const std::shared_ptr<ActivationFunctionSpec> activation_func_spec);
+              const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+              const NeuronType neuron_type = NeuronType::Standard);
 
     LayerSpec(const LayerSpec& layer_spec);
     LayerSpec& operator=(const LayerSpec& layer_spec);

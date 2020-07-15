@@ -56,16 +56,16 @@ Phenotype<double>* NetworkBuilder::build_network(
             //If the torch network is read from file
             if(_read_file_path)
                 torch_network = new TorchNetwork(_read_file_path.value(), 
-                                                    _layer_specs,
-                                                    _trace);
+                                                 _layer_specs,
+                                                 _trace);
             else
                 torch_network = new TorchNetwork(_layer_specs, 
-                                                    _trace);
+                                                 _trace);
         //If torch network is initialised by given weights
         else 
             torch_network = new TorchNetwork(_layer_specs, 
-                                                init_weights.value(), 
-                                                _trace);
+                                             init_weights.value(), 
+                                             _trace);
         return torch_network;
 
     } else
