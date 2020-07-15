@@ -1,7 +1,6 @@
 #ifndef _DOUBLE_TO_BOOL_NET_MAP_
 #define _DOUBLE_TO_BOOL_NET_MAP_
 
-#include "phenotype/phenotype.h"
 #include <gp_map/network_maps/network_map.h>
 
 /*

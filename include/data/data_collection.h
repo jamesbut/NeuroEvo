@@ -31,12 +31,14 @@ class DataCollector
 
 public:
 
-    DataCollector(const bool uuid_folders = true) :
-        _uuid_folders(uuid_folders),
-        _exp_dir_path(create_experiment_dir_path())
+    DataCollector(const bool dump_data = true) :
+        _uuid_folders(true),
+        _dump_data(dump_data),
+        _exp_dir_path(_dump_data ? std::optional(create_experiment_dir_path()) : std::nullopt)
     {
         //Create experiment folder
-        boost::filesystem::create_directory(_exp_dir_path);
+        if(_exp_dir_path.has_value())
+            boost::filesystem::create_directory(_exp_dir_path.value());
     }
 
     void reset()
@@ -48,7 +50,7 @@ public:
     void collect_generational_data(const Population<G, T>& population, const bool trace = true)
     {
         //Create folder to store information if it has not already been created
-        if(!_run_dir_path)
+        if(!_run_dir_path && _dump_data)
         {
             create_run_dir();
             _run_dir_paths.push_back(_run_dir_path.value());
@@ -56,18 +58,17 @@ public:
 
         //Generational winner
         const Organism<G, T>& gen_winner = calculate_generational_winner(population);
-        save_generational_winner_to_file(gen_winner);
+        if(_dump_data) save_generational_winner_to_file(gen_winner);
 
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
-        save_best_winner_so_far_to_file();
+        if(_dump_data) save_best_winner_so_far_to_file();
 
         //Save entire population to file
-        save_population_to_file(population);
+        if(_dump_data) save_population_to_file(population);
 
         //Calculate population average fitness
         const double pop_average_fitness = calculate_population_avergage_fitness(population);
-        
 
         if(trace) 
             print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
@@ -144,7 +145,8 @@ private:
 
     void delete_exp_dir() const 
     {
-        boost::filesystem::remove_all(_exp_dir_path);
+        if(_exp_dir_path.has_value())
+            boost::filesystem::remove_all(_exp_dir_path.value());
     }
 
     void delete_run_dir() const 
@@ -152,7 +154,7 @@ private:
         boost::filesystem::remove_all(_run_dir_path.value());
     }
 
-    const std::string& get_exp_dir_path() const
+    const std::optional<std::string>& get_exp_dir_path() const
     { 
         return _exp_dir_path; 
     }
@@ -298,15 +300,16 @@ private:
         
         //Create run directory
         std::stringstream run_dir_path;
-        run_dir_path << _exp_dir_path << "/" << run_dir_name; 
+        run_dir_path << _exp_dir_path.value() << "/" << run_dir_name; 
         boost::filesystem::create_directory(run_dir_path.str());
         _run_dir_path = run_dir_path.str();
 
     }
 
     const bool _uuid_folders;
+    const bool _dump_data;
 
-    const std::string _exp_dir_path;
+    const std::optional<std::string> _exp_dir_path;
     std::optional<std::string> _run_dir_path;
     //Store run direcory paths for later use
     std::vector<const std::string> _run_dir_paths;

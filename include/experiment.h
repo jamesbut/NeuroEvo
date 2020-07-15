@@ -20,12 +20,13 @@ public:
     //for the domain
     static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GenotypeSpec<G>& geno_spec,
-                                               GPMap<G, T>& gp_map) 
+                                               GPMap<G, T>& gp_map,
+                                               const bool dump_data = true) 
     {
         
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(*gp_map.get_pheno_spec()))
-            return Experiment(domain, geno_spec, gp_map);
+            return Experiment(domain, geno_spec, gp_map, dump_data);
         return std::nullopt;
         
     }
@@ -121,11 +122,12 @@ private:
     //Cannot construct experiment because it is dependent on valid specifications
     Experiment(Domain<G, T>& domain,
                GenotypeSpec<G>& geno_spec,
-               GPMap<G, T>& gp_map) :
+               GPMap<G, T>& gp_map,
+               const bool dump_data) :
         _domain(domain), 
         _geno_spec(geno_spec),
         _gp_map(gp_map),
-        _data_collector() {}
+        _data_collector(dump_data) {}
 
     int ga_finished(Population<G, T>& population, const unsigned max_gens) 
     {

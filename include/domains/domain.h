@@ -97,7 +97,7 @@ public:
     //Determines whether the current population
     //has 'completed' the domain, this normally
     //comes in the form of achieving a max fitness
-    bool complete() 
+    bool complete() const 
     { 
         return _complete; 
     };
@@ -106,6 +106,11 @@ public:
     {
         _complete = false;
        reset_domain();
+    }
+
+    double get_completion_fitness() const
+    {
+        return _completion_fitness;
     }
 
 protected:

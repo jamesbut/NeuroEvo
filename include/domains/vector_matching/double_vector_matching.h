@@ -13,14 +13,14 @@ public:
 
     DoubleVectorMatching(const std::vector<double>& matching_vector,
                          const bool domain_trace = false,
-                         const double completion_fitness = 1e-6) :
+                         const double completion_fitness = -1e-3) :
         VectorMatching<G, double>(matching_vector, domain_trace, completion_fitness) {}
 
     DoubleVectorMatching(const unsigned matching_vector_size,
                          Distribution<double>* matching_vector_distr,
                          const bool symmetric_match_vector = false,
                          const bool domain_trace = false,
-                         const double completion_fitness = 1e-6) :
+                         const double completion_fitness = -1e-3) :
         VectorMatching<G, double>(matching_vector_size, matching_vector_distr, 
                                   symmetric_match_vector, domain_trace, completion_fitness) {}
 
