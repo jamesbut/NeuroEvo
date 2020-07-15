@@ -60,6 +60,8 @@ public:
 
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
+
+        unsigned num_winners = 0;
         
         for(unsigned i = 0; i < num_runs; i++) 
         {
@@ -98,6 +100,7 @@ public:
 
                 std::cout << "FOUND WINNER!" << std::endl;
                 std::cout << "Gen: " << gen << std::endl;
+                num_winners++;
 
             } else if (ga_completed == 2) {
 
@@ -109,6 +112,8 @@ public:
             _data_collector.reset();
 
         }
+
+        std::cout << "Num winners: " << num_winners << "/" << num_runs;
 
     }
 
