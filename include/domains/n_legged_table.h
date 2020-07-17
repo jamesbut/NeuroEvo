@@ -9,21 +9,23 @@
 */
 
 #include <domains/domain.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 
 namespace NeuroEvo {
 
-class NLeggedTable : public Domain {
+template <typename G>
+class NLeggedTable : public Domain<G, double> {
 
 public:
 
-    NLeggedTable(const unsigned num_legs, const bool domain_trace = false);
-        _num_legs(num_legs),
-        Domain(domain_trace, 100) {}
+    NLeggedTable(const unsigned num_legs, const bool domain_trace = false) :
+        Domain<G, double>(domain_trace, 100.),
+        _num_legs(num_legs) {}
 
-    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override {
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override {
 
-        Phenotypes::RealVectorPhenotypeSpec* real_vec_pheno_spec;
-        real_vec_pheno_spec = dynamic_cast<Phenotypes::RealVectorPhenotypeSpec*>(&pheno_spec);
+        const VectorPhenotypeSpec* real_vec_pheno_spec = 
+            dynamic_cast<const VectorPhenotypeSpec*>(&pheno_spec);
 
         if(real_vec_pheno_spec == nullptr) {
 
@@ -48,7 +50,7 @@ public:
 
 private:
 
-    double single_run(Organism& org, unsigned rand_seed) override {
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override {
 
         std::vector<double> inputs = std::vector<double>();
         std::vector<double> leg_sizes = org.get_phenotype().activate(inputs);
@@ -68,7 +70,7 @@ private:
         //double fitness = -std_dev - (mean/10);
 
 
-        if(_domain_trace) {
+        if(this->_domain_trace) {
             std::cout << "Genotype:" << std::endl;
             org.get_genotype().print_genotype();
             std::cout << "Phenotype:" << std::endl;
