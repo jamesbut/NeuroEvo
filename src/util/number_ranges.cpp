@@ -17,6 +17,31 @@ std::vector<double> create_range(const double lower_bound, const double upper_bo
     return number_range;
 }
 
+std::vector<std::pair<double, double>> create_range_2d(const double lower_bound, 
+                                                             const double upper_bound, 
+                                                             const double increment)
+{
+    std::vector<std::pair<double, double>> range_pairs;
+    const unsigned approx_num_vals = pow(((upper_bound - lower_bound) / increment), 2);
+    range_pairs.reserve(approx_num_vals);
+
+    double x_val = lower_bound;
+    double y_val = lower_bound;
+
+    while(x_val <= upper_bound)
+    {
+        while(y_val <= upper_bound)
+        {
+            range_pairs.push_back(std::pair<double, double>(x_val, y_val));
+            y_val += increment;
+        }
+        y_val = lower_bound;
+        x_val += increment;
+    }
+
+    return range_pairs;
+}
+
 std::vector<double> create_range_w_size(const double lower_bound, const double upper_bound,
                                         const unsigned num_values)
 {

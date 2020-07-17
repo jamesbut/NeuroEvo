@@ -20,10 +20,12 @@ class Phenotype
 
 public:
 
-    Phenotype() = default;
+    Phenotype(const bool trace) :
+        _trace(trace) {}
 
-    Phenotype(const unsigned num_params) :
-        _num_params(num_params) {}
+    Phenotype(const unsigned num_params, const bool trace) :
+        _num_params(num_params),
+        _trace(trace) {}
 
     //Putting virtual here seems to make a big difference to the memory leak
     virtual ~Phenotype() = default;
@@ -40,11 +42,18 @@ public:
         return _num_params;
     }
 
+    void set_trace(const bool trace) 
+    {
+        _trace = trace;
+    }
+
 protected:
 
     virtual Phenotype* clone_impl() const = 0;
 
     std::optional<unsigned> _num_params;
+
+    bool _trace;
 
 };
 

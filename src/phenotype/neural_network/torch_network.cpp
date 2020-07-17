@@ -4,8 +4,8 @@
 namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace) :
-    _net(build_network(layer_specs, std::nullopt)),
-    _trace(trace) 
+    Phenotype<double>(trace),
+    _net(build_network(layer_specs, std::nullopt))
 {
     register_module("net", _net);
 }
@@ -13,16 +13,16 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, 
                            const std::vector<double>& init_weights, 
                            const bool trace) :
-    _net(build_network(layer_specs, init_weights)),
-    _trace(trace) 
+    Phenotype<double>(trace),
+    _net(build_network(layer_specs, init_weights))
 {
     register_module("net", _net);
 }
 
 TorchNetwork::TorchNetwork(const std::string& file_path, const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
-    _net(read(file_path, layer_specs)),
-    _trace(trace)
+    Phenotype<double>(trace),
+    _net(read(file_path, layer_specs))
 {
     register_module("net", _net);
 }
@@ -31,9 +31,10 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
 {
 
     //Convert input to torch tensor
-    torch::Tensor input_tensor = torch::zeros(inputs.size());
+    torch::Tensor input_tensor = torch::zeros({1, (int64_t)inputs.size()});
     for(unsigned i = 0; i < inputs.size(); i++)
-        input_tensor[i] = inputs[i];
+        input_tensor.index_put_({0, (int64_t)i}, inputs[i]);
+    
 
     if(_trace) 
     {
@@ -44,13 +45,14 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
     //Forward pass
     const torch::Tensor output_tensor = forward(input_tensor);
 
-    if(_trace) std::cout << "Outputs:" << std::endl << output_tensor << std::endl;
+    if(_trace) 
+        std::cout << "Outputs:" << std::endl << output_tensor << std::endl;
 
     //Convert output tensor to vector
     std::vector<double> outputs;
-    outputs.reserve(output_tensor.size(0));
-    for(unsigned i = 0; i < output_tensor.size(0); i++)
-        outputs.push_back(*output_tensor[i].data_ptr<float>());
+    outputs.reserve(output_tensor.size(1));
+    for(unsigned i = 0; i < output_tensor.size(1); i++)
+        outputs.push_back(*output_tensor[0][i].data_ptr<float>());
 
     return outputs;
 

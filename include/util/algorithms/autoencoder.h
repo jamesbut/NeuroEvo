@@ -14,10 +14,10 @@ class AutoEncoder
 
 public:
 
-    AutoEncoder(const torch::Tensor& training_data, 
-                const torch::Tensor& test_data, 
-                NetworkBuilder& encoder_builder,
+    AutoEncoder(NetworkBuilder& encoder_builder,
                 NetworkBuilder& decoder_builder, 
+                const torch::Tensor& training_data, 
+                const std::optional<const torch::Tensor>& test_data = std::nullopt, 
                 std::unique_ptr<Distribution<double>> init_net_weight_distr = 
                     std::unique_ptr<Distribution<double>>(nullptr));
 
@@ -28,10 +28,12 @@ public:
     torch::Tensor decode(const torch::Tensor& x) const;
     torch::Tensor forward(const torch::Tensor& x) const;
 
+    const std::unique_ptr<TorchNetwork>& get_decoder() const;
+
 private:
 
     const torch::Tensor _training_data;
-    const torch::Tensor _test_data;
+    const std::optional<const torch::Tensor> _test_data;
 
     std::unique_ptr<TorchNetwork> _encoder;
     std::unique_ptr<TorchNetwork> _decoder;

@@ -62,9 +62,6 @@ private:
     unsigned _num_inputs;
     unsigned _num_outputs;
 
-    const bool _trace;
-
-
 };
 
 } // namespace NeuroEvo

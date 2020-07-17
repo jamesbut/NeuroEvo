@@ -43,8 +43,8 @@ int main(int argc, const char* argv[])
     const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> hl_activation_spec(
         new NeuroEvo::SigmoidSpec()
     );
-    NeuroEvo::LayerSpec hidden_layer(hl_layer_type, hl_num_neurons,
-                                     hl_inputs_per_neuron, hl_activation_spec);
+    NeuroEvo::LayerSpec hidden_layer(hl_num_neurons, hl_inputs_per_neuron, 
+                                     hl_activation_spec, hl_layer_type);
 
     //Build output layer
     const auto ol_layer_type = NeuroEvo::NeuronType::Standard;
@@ -53,14 +53,13 @@ int main(int argc, const char* argv[])
     const std::shared_ptr<NeuroEvo::ActivationFunctionSpec> ol_activation_spec(
         new NeuroEvo::SigmoidSpec()
     );
-    NeuroEvo::LayerSpec output_layer(ol_layer_type, ol_num_neurons,
-                                     ol_inputs_per_neuron, ol_activation_spec);
+    NeuroEvo::LayerSpec output_layer(ol_num_neurons, ol_inputs_per_neuron, 
+                                     ol_activation_spec, ol_layer_type);
 
     // Build a network from the layer specifications
     std::vector<NeuroEvo::LayerSpec> layer_specs{hidden_layer, output_layer};
 
-    const unsigned num_inputs = 1;
-    auto pheno_spec = new NeuroEvo::NetworkBuilder(num_inputs, layer_specs);
+    auto pheno_spec = new NeuroEvo::NetworkBuilder(layer_specs);
 
     // Specify the distribution used for the initial gene values
     const double init_gene_lower_bound = 0;

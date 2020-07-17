@@ -17,10 +17,10 @@ class Network : public Phenotype<double>
 public:
 
     Network(const bool trace = false) :
-        _trace(trace) {}
+        Phenotype<double>(trace) {} 
 
     Network(const Network& network) :
-        _trace(network._trace),
+        Phenotype<double>(network._trace),
         _layers(network._layers.size())
     {
         for(std::size_t i = 0; i < _layers.size(); i++)
@@ -96,9 +96,6 @@ protected:
 
         return ins;
     }
-
-
-    const bool _trace;
 
     std::vector<std::unique_ptr<Layer>> _layers;
 

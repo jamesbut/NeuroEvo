@@ -10,8 +10,9 @@
 
 namespace NeuroEvo {
 
-GAN::GAN(const torch::Tensor& real_data, NetworkBuilder& generator_builder,
+GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
+         const torch::Tensor& real_data,
          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
     _real_data(real_data),
     _generator(build_torch_network(generator_builder, std::move(init_net_weight_distr))),
@@ -131,6 +132,11 @@ torch::Tensor GAN::test_discriminator(const torch::Tensor& x) const
 torch::Tensor GAN::test_generator(const torch::Tensor& x) const
 {
     return _generator->forward(x);
+}
+
+const std::unique_ptr<TorchNetwork>& GAN::get_generator() const
+{
+    return _generator;
 }
 
 } // namespace NeuroEvo

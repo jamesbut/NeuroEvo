@@ -17,11 +17,10 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_out
                                               activation_func_spec)),
     _trace(trace) {}
 
-NetworkBuilder::NetworkBuilder(const unsigned num_inputs, 
-                               const std::vector<LayerSpec>& layer_specs,
+NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                                const bool trace) :
-    PhenotypeSpec(required_num_genes(num_inputs, layer_specs)),
-    _num_inputs(num_inputs),
+    PhenotypeSpec(required_num_genes(layer_specs)),
+    _num_inputs(layer_specs.front().get_inputs_per_neuron()),
     _num_outputs(layer_specs.back().get_num_neurons()),
     _layer_specs(layer_specs),
     _trace(trace) {}
@@ -122,7 +121,7 @@ void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
                                         weights_file_name, outputs_file_name));
     
     //Alter number of params
-    this->_num_params = required_num_genes(_num_inputs, _layer_specs);
+    this->_num_params = required_num_genes(_layer_specs);
 
 }
 
@@ -171,8 +170,7 @@ NetworkBuilder* NetworkBuilder::clone_impl() const
     return new NetworkBuilder(*this);
 } 
 
-unsigned NetworkBuilder::required_num_genes(const unsigned num_inputs,
-                                            const std::vector<LayerSpec>& layer_specs)
+unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_specs)
 {
 
     unsigned num_genes = 0;
@@ -206,7 +204,7 @@ unsigned NetworkBuilder::required_num_genes(
                                                                         neurons_per_layer,
                                                                         neuron_type, 
                                                                         activation_func);
-    return required_num_genes(num_inputs, layer_specs);
+    return required_num_genes(layer_specs);
 
 } 
 

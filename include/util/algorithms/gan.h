@@ -16,8 +16,9 @@ class GAN
 
 public:
 
-    GAN(const torch::Tensor& real_data, NetworkBuilder& generator_builder,
+    GAN(NetworkBuilder& generator_builder,
         NetworkBuilder& discriminator_builder, 
+        const torch::Tensor& real_data,
         std::unique_ptr<Distribution<double>> init_net_weight_distr = 
             std::unique_ptr<Distribution<double>>(nullptr));
 
@@ -25,6 +26,8 @@ public:
 
     torch::Tensor test_discriminator(const torch::Tensor& x) const;
     torch::Tensor test_generator(const torch::Tensor& x) const;
+
+    const std::unique_ptr<TorchNetwork>& get_generator() const;
 
 private:
 

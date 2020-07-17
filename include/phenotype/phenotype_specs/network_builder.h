@@ -33,8 +33,7 @@ public:
                    const NeuronType neuron_type = NeuronType::Standard);
 
     //Build with layer specs in which one can provde more fine grained detail
-    NetworkBuilder(const unsigned num_inputs, 
-                   const std::vector<LayerSpec>& layer_specs,
+    NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                    const bool trace = false);
 
     //This function builds the network but it is the GPMaps responsibility to set
@@ -70,8 +69,7 @@ protected:
 
 private:
 
-    unsigned required_num_genes(const unsigned num_inputs,
-                                const std::vector<LayerSpec>& layer_specs);
+    unsigned required_num_genes(const std::vector<LayerSpec>& layer_specs);
     unsigned required_num_genes(
         const unsigned num_inputs,
         const unsigned num_outputs,
