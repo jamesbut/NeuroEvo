@@ -18,6 +18,8 @@ class GPMap
 
 public:
 
+    //Do not implement default constructor! We always want _pheno_spec set to something 
+
     //I assume the phenotype specification will not change throughout an experiment
     GPMap(const PhenotypeSpec* pheno_spec) :
         _pheno_spec(pheno_spec) {}

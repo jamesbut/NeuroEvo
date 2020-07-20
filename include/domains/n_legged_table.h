@@ -22,7 +22,8 @@ public:
         Domain<G, double>(domain_trace, 100.),
         _num_legs(num_legs) {}
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override {
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    {
 
         const VectorPhenotypeSpec* real_vec_pheno_spec = 
             dynamic_cast<const VectorPhenotypeSpec*>(&pheno_spec);
@@ -30,7 +31,7 @@ public:
         if(real_vec_pheno_spec == nullptr) {
 
             std::cerr << "Only real vector phenotype specifications are allowed" <<
-                        "with the n-legged table domain!" << std::endl;
+                         "with the n-legged table domain!" << std::endl;
 
             return false;
 
@@ -48,31 +49,37 @@ public:
 
     }
 
+protected:
+
+    void render() override {}
+    void reset_domain() override {}
+
 private:
 
-    double single_run(Organism<G, double>& org, unsigned rand_seed) override {
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
+    {
 
-        std::vector<double> inputs = std::vector<double>();
-        std::vector<double> leg_sizes = org.get_phenotype().activate(inputs);
+        const std::vector<double> inputs = std::vector<double>();
+        const std::vector<double> leg_sizes = org.get_phenotype().activate(inputs);
 
 
         //Calculate mean and std deviation of leg_sizes
         const double mean = std::accumulate(leg_sizes.begin(), leg_sizes.end(), 0.0) /
-                            leg_sizes.size();
+                                            leg_sizes.size();
         std::vector<double> diff(leg_sizes.size());
         std::transform(leg_sizes.begin(), leg_sizes.end(), diff.begin(),
-                    [mean](double x) { return x - mean; });
-        double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-        double std_dev = std::sqrt(sq_sum / leg_sizes.size());
+                       [mean](double x) { return x - mean; });
+        const double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+        const double std_dev = std::sqrt(sq_sum / leg_sizes.size());
 
         //double fitness = -std_dev;
-        double fitness = -std_dev - fabs(mean/10);
-        //double fitness = -std_dev - (mean/10);
+        //const double fitness = -std_dev - fabs(mean/10);
+        const double fitness = -std_dev + (mean/10);
 
 
         if(this->_domain_trace) {
             std::cout << "Genotype:" << std::endl;
-            org.get_genotype().print_genotype();
+            std::cout << org.get_genotype() << std::endl;
             std::cout << "Phenotype:" << std::endl;
             org.get_phenotype().print_params();
             std::cout << "Mean: " << mean << std::endl;
