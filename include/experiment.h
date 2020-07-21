@@ -9,6 +9,7 @@
 #include <population.h>
 #include <domains/domain.h>
 #include <util/file_utils.h>
+#include <thread>
 
 namespace NeuroEvo {
 
@@ -64,7 +65,31 @@ public:
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
 
         unsigned num_winners = 0;
-        
+
+        /*
+        //Check number of cores in machine
+        auto concurrent_threads_supported = std::thread::hardware_concurrency();
+
+        std::vector<std::thread> threads(concurrent_threads_supported);
+
+        unsigned num_runs_completed = 0; 
+
+        while(num_runs_completed < num_runs)
+        {
+            std::thread(run, pop_size, max_gens, selector, num_runs_completed, num_winners, 
+                        trace, num_trials, domain_parallel);
+
+            //Wait until jobs finish
+            for(auto& thread : threads)
+            {
+                thread.join();
+                num_runs_completed++;
+            }
+        }
+
+        exit(0);
+        */
+
         for(unsigned i = 0; i < num_runs; i++) 
         {
             run(pop_size, max_gens, selector, i, num_winners, trace, num_trials, domain_parallel);
