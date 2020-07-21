@@ -31,15 +31,10 @@ class DataCollector
 
 public:
 
-    DataCollector(const bool dump_data = true) :
+    //If one does not want to dump the data then just provide a nullopt to the constructor
+    DataCollector(const std::optional<std::string>& exp_dir_path) :
         _uuid_folders(true),
-        _dump_data(dump_data),
-        _exp_dir_path(_dump_data ? std::optional(create_experiment_dir_path()) : std::nullopt)
-    {
-        //Create experiment folder
-        if(_exp_dir_path.has_value())
-            boost::filesystem::create_directory(_exp_dir_path.value());
-    }
+        _exp_dir_path(exp_dir_path) {}
 
     void reset()
     {
@@ -50,7 +45,7 @@ public:
     void collect_generational_data(const Population<G, T>& population, const bool trace = true)
     {
         //Create folder to store information if it has not already been created
-        if(!_run_dir_path && _dump_data)
+        if(!_run_dir_path && _exp_dir_path.has_value())
         {
             create_run_dir();
             _run_dir_paths.push_back(_run_dir_path.value());
@@ -58,14 +53,14 @@ public:
 
         //Generational winner
         const Organism<G, T>& gen_winner = calculate_generational_winner(population);
-        if(_dump_data) save_generational_winner_to_file(gen_winner);
+        if(_exp_dir_path.has_value()) save_generational_winner_to_file(gen_winner);
 
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
-        if(_dump_data) save_best_winner_so_far_to_file();
+        if(_exp_dir_path.has_value()) save_best_winner_so_far_to_file();
 
         //Save entire population to file
-        if(_dump_data) save_population_to_file(population);
+        if(_exp_dir_path.has_value()) save_population_to_file(population);
 
         //Calculate population average fitness
         const double pop_average_fitness = calculate_population_avergage_fitness(population);
@@ -78,6 +73,16 @@ public:
     const std::vector<const std::string>& get_run_dir_paths() const
     {
         return _run_dir_paths;
+    }
+
+    //Creates experiment directory and returns path
+    //This path is more often than not given to the object constructor
+    static const std::string create_exp_dir()
+    {
+        const std::string exp_dir_path = create_experiment_dir_path();
+        if(!boost::filesystem::exists(exp_dir_path))
+            boost::filesystem::create_directory(exp_dir_path);
+        return exp_dir_path;
     }
 
 private:
@@ -154,7 +159,7 @@ private:
         boost::filesystem::remove_all(_run_dir_path.value());
     }
 
-    const std::optional<std::string>& get_exp_dir_path() const
+    const std::optional<const std::string>& get_exp_dir_path() const
     { 
         return _exp_dir_path; 
     }
@@ -219,7 +224,7 @@ private:
         print_table_row(header_titles, column_width, true, true);
     }
 
-    const std::string create_experiment_dir_name() const
+    static const std::string create_experiment_dir_name()
     {
         //Get experiment directory names
         std::vector<std::string> dir_names;
@@ -256,7 +261,7 @@ private:
 
     }
 
-    const std::string create_experiment_dir_path() const
+    static const std::string create_experiment_dir_path()
     {
         //First check to see whether data directory
         //exists and if not, create it
@@ -307,9 +312,8 @@ private:
     }
 
     const bool _uuid_folders;
-    const bool _dump_data;
 
-    const std::optional<std::string> _exp_dir_path;
+    const std::optional<const std::string> _exp_dir_path;
     std::optional<std::string> _run_dir_path;
     //Store run direcory paths for later use
     std::vector<const std::string> _run_dir_paths;

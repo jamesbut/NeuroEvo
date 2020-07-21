@@ -113,6 +113,11 @@ public:
         return _completion_fitness;
     }
 
+    auto clone() const 
+    {
+        return std::unique_ptr<Domain>(clone_impl());
+    }
+
 protected:
 
     //This function is abstract and all domains should implement
@@ -132,6 +137,8 @@ protected:
 
         return false;
     }
+
+    virtual Domain* clone_impl() const = 0;
 
     //All domains should implement how to render themselves
     virtual void render() = 0;

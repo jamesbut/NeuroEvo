@@ -22,6 +22,10 @@ public:
         Domain<G, double>(domain_trace, 100.),
         _num_legs(num_legs) {}
 
+    NLeggedTable(const NLeggedTable& n_legged_table) :
+        Domain<G, double>(n_legged_table._domain_trace, n_legged_table._completion_fitness),
+        _num_legs(n_legged_table._num_legs) {}
+
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
     {
 
@@ -53,6 +57,11 @@ protected:
 
     void render() override {}
     void reset_domain() override {}
+
+    NLeggedTable<G>* clone_impl() const override
+    {
+        return new NLeggedTable<G>(*this);
+    }
 
 private:
 
