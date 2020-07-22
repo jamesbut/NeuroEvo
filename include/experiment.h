@@ -10,6 +10,7 @@
 #include <domains/domain.h>
 #include <util/file_utils.h>
 #include <thread>
+#include <util/concurrency/run_scheduler.h>
 
 namespace NeuroEvo {
 
@@ -66,33 +67,24 @@ public:
 
         unsigned num_winners = 0;
 
-        /*
-        //Check number of cores in machine
-        auto concurrent_threads_supported = std::thread::hardware_concurrency();
-
-        std::vector<std::thread> threads(concurrent_threads_supported);
-
-        unsigned num_runs_completed = 0; 
-
-        while(num_runs_completed < num_runs)
+        //Run runs in parallel
+        if(parallel_runs)
         {
-            std::thread(run, pop_size, max_gens, selector, num_runs_completed, num_winners, 
-                        trace, num_trials, domain_parallel);
+            //Trace is off in parallel runs
+            const bool trace = false;
+            const RunArguments<G, T> run_args{pop_size, max_gens, selector, &_domain, &_geno_spec, 
+                                              &_gp_map, _exp_dir_path, num_winners, trace, 
+                                              num_trials, domain_parallel};
+            RunScheduler<G, T> scheduler(run_args, num_runs);
+            scheduler.dispatch(run);
 
-            //Wait until jobs finish
-            for(auto& thread : threads)
-            {
-                thread.join();
-                num_runs_completed++;
-            }
-        }
-
-        exit(0);
-        */
-
-        for(unsigned i = 0; i < num_runs; i++) 
+        } else 
         {
-            run(pop_size, max_gens, selector, i, num_winners, trace, num_trials, domain_parallel);
+            //This flag is only needed for parallelisation
+            bool completed_flag = false;
+            for(unsigned i = 0; i < num_runs; i++) 
+                run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, _exp_dir_path,
+                    num_winners, completed_flag, trace, num_trials, domain_parallel);
         }
 
         std::cout << "Num winners: " << num_winners << "/" << num_runs << std::endl;
@@ -123,41 +115,45 @@ private:
         _exp_dir_path(dump_data ? std::optional(DataCollector<G, T>::create_exp_dir()) : 
                                   std::nullopt) {} 
 
-    int ga_finished(Population<G, T>& population, const unsigned max_gens) 
+    static int ga_finished(Population<G, T>& population, Domain<G, T>& domain, 
+                           const unsigned max_gens) 
     {
 
         if(population.get_gen_num() >= max_gens)
             return 2;
 
-        if(_domain.complete())
+        if(domain.complete())
             return 1;
 
         return 0;
 
     }
 
-    void run(const unsigned pop_size,
-             const unsigned max_gens,
-             Selection<G, T>* selector,
-             const unsigned run_num,
-             unsigned& num_winners,
-             const bool trace = true,
-             const unsigned num_trials = 1,
-             const bool domain_parallel = false)
+    static void run(const unsigned pop_size,
+                    const unsigned max_gens,
+                    Selection<G, T>* selector,
+                    Domain<G, T>* m_domain,
+                    GenotypeSpec<G>* m_geno_spec,
+                    GPMap<G, T>* m_gp_map,
+                    const std::optional<const std::string>& exp_dir_path,
+                    unsigned& num_winners,
+                    bool& completed_flag,
+                    const bool trace = true,
+                    const unsigned num_trials = 1,
+                    const bool domain_parallel = false)
     {
-        std::cout << "Run: " << run_num << std::endl;
 
         //Copy domain
-        std::unique_ptr<Domain<G, T>> domain = _domain.clone();        
+        std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
 
         //Create new data collector
-        DataCollector<G, T> data_collector(_exp_dir_path);
+        DataCollector<G, T> data_collector(exp_dir_path);
 
         unsigned gen = 1;
         int ga_completed = 0;
 
         // Build population
-        Population population(pop_size, gen, _geno_spec, _gp_map);
+        Population population(pop_size, gen, *m_geno_spec, *m_gp_map);
 
         do {
 
@@ -165,7 +161,7 @@ private:
             domain->evaluate_population(population, num_trials, domain_parallel);
 
             // Check for completion
-            ga_completed = ga_finished(population, max_gens);
+            ga_completed = ga_finished(population, *domain, max_gens);
 
             // Print population data after fitness evaluation
             data_collector.collect_generational_data(population, trace);
@@ -183,6 +179,7 @@ private:
         // Check whether the domain was solved or not
         if(ga_completed == 1) {
 
+            //if(trace)
             std::cout << "FOUND WINNER!" << std::endl;
             std::cout << "Gen: " << gen << std::endl;
             num_winners++;
@@ -192,6 +189,8 @@ private:
             std::cout << "GA finished at gen: " << gen << " with no winner :(" << std::endl;
 
         }
+
+        completed_flag = true;
 
     }
 

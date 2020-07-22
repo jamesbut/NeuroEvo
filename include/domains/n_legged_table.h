@@ -18,8 +18,9 @@ class NLeggedTable : public Domain<G, double> {
 
 public:
 
-    NLeggedTable(const unsigned num_legs, const bool domain_trace = false) :
-        Domain<G, double>(domain_trace, 100.),
+    NLeggedTable(const unsigned num_legs, const bool domain_trace = false, 
+                 const double completion_fitness = 100.) :
+        Domain<G, double>(domain_trace, completion_fitness),
         _num_legs(num_legs) {}
 
     NLeggedTable(const NLeggedTable& n_legged_table) :

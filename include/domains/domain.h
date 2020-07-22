@@ -32,8 +32,11 @@ public:
         _domain_trace(domain_trace),
         _render(render),
         _screen_width(screen_width),
-        _screen_height(screen_height),
-        _window(initialise_sfml()) {}
+        _screen_height(screen_height)
+    {
+        if(_render)
+            _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
+    }
 
     virtual ~Domain() = default;
 
