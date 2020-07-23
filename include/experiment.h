@@ -83,8 +83,11 @@ public:
             //This flag is only needed for parallelisation
             bool completed_flag = false;
             for(unsigned i = 0; i < num_runs; i++) 
+            {
+                std::cout << "Starting run: " << i << std::endl;
                 run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, _exp_dir_path,
                     num_winners, completed_flag, trace, num_trials, domain_parallel);
+            }
         }
 
         std::cout << "Num winners: " << num_winners << "/" << num_runs << std::endl;
