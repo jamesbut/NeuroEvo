@@ -62,6 +62,10 @@ public:
                           const bool domain_parallel = false)
     {
 
+        //Create experiment directory
+        if(_dump_data)
+            _exp_dir_path = std::make_optional(DataCollector<G, T>::create_exp_dir());
+
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
 
@@ -94,14 +98,21 @@ public:
 
     }
 
-    const std::optional<const std::string>& get_exp_dir_path() const
+    const std::optional<std::string>& get_exp_dir_path() const
     {
         return _exp_dir_path;
     }
 
-    const std::vector<const std::string> get_run_dir_paths() const
+    std::vector<const std::string> get_run_dir_paths() const
     {
-        return collect_dirs_in(_exp_dir_path.value());
+        if(_exp_dir_path.has_value())
+            return collect_dirs_in(_exp_dir_path.value());
+        else
+        {
+            std::cerr << "_exp_dir_path does not have a value in order to collect run dirs" <<
+                std::endl;
+            exit(0);
+        }
     }
 
 
@@ -115,8 +126,8 @@ private:
         _domain(domain), 
         _geno_spec(geno_spec),
         _gp_map(gp_map),
-        _exp_dir_path(dump_data ? std::optional(DataCollector<G, T>::create_exp_dir()) : 
-                                  std::nullopt) {} 
+        _exp_dir_path(std::nullopt),
+        _dump_data(dump_data) {}
 
     static int ga_finished(Population<G, T>& population, Domain<G, T>& domain, 
                            const unsigned max_gens) 
@@ -204,7 +215,8 @@ private:
     GenotypeSpec<G>& _geno_spec;
     GPMap<G, T>& _gp_map;
 
-    const std::optional<const std::string> _exp_dir_path;
+    std::optional<std::string> _exp_dir_path;
+    const bool _dump_data;
 
 };
 
