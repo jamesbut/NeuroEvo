@@ -161,7 +161,7 @@ private:
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
 
         //Create new data collector
-        DataCollector<G, T> data_collector(exp_dir_path);
+        DataCollector<G, T> data_collector(exp_dir_path, max_gens);
 
         unsigned gen = 1;
         int ga_completed = 0;

@@ -22,6 +22,7 @@
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <util/formatting.h>
+#include <util/statistics/statistic.h>
 
 namespace NeuroEvo {
 
@@ -32,9 +33,17 @@ class DataCollector
 public:
 
     //If one does not want to dump the data then just provide a nullopt to the constructor
-    DataCollector(const std::optional<std::string>& exp_dir_path) :
+    DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens) :
         _uuid_folders(true),
-        _exp_dir_path(exp_dir_path) {}
+        _exp_dir_path(exp_dir_path) 
+    {
+        //We can reserve up to max gens for member vectors so that they never have to resize
+        _mean_gen_fitnesses.reserve(max_gens);
+        _median_gen_fitnesses.reserve(max_gens);
+        _lq_gen_fitnesses.reserve(max_gens);
+        _uq_gen_fitnesses.reserve(max_gens);
+        _best_so_far_fitnesses.reserve(max_gens);
+    }
 
     void reset()
     {
@@ -61,15 +70,13 @@ public:
         calculate_best_winner_so_far(gen_winner);
         if(_exp_dir_path.has_value()) save_best_winner_so_far_to_file();
 
-        //Calculate population average fitness
-        const double pop_average_fitness = calculate_population_avergage_fitness(population);
-        _mean_gen_fitnesses.push_back(pop_average_fitness);
+        calculate_population_statistics(population);
 
         //Save entire population to file
         if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
 
         if(trace) 
-            print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
+            print_info_to_screen(population, gen_winner.get_fitness(), _mean_gen_fitnesses.back());
 
     }
 
@@ -89,6 +96,16 @@ public:
     }
 
 private:
+
+    void calculate_population_statistics(const Population<G, T>& population)
+    {
+        const std::vector<double> fitnesses = population.get_fitnesses();
+
+        _mean_gen_fitnesses.push_back(calculate_mean(fitnesses));
+        _median_gen_fitnesses.push_back(calculate_median(fitnesses));
+        _lq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.25));
+        _uq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.75));
+    }
 
     double calculate_population_avergage_fitness(const Population<G, T>& population) const 
     {
@@ -197,26 +214,58 @@ private:
         //Close file
         gen_file.close();
 
-        //If final gen, dump mean and best fitnesses from over all the generations
+        //If final gen, dump population statistics from over all the generations
         if(final_gen)
-        {
-            std::string mean_fitnesses_file_name = _run_dir_path.value() + "/mean_fitnesses"; 
-            std::ofstream mean_fitnesses_file(mean_fitnesses_file_name);
+            save_population_statistics_to_file();
 
-            for(const auto& fitness : _mean_gen_fitnesses)
-                mean_fitnesses_file << fitness << std::endl;
+    }
 
-            mean_fitnesses_file.close();
+    void save_population_statistics_to_file() const 
+    {
+        //Fitness means
+        const std::string mean_fitnesses_file_name = _run_dir_path.value() + "/mean_fitnesses"; 
+        std::ofstream mean_fitnesses_file(mean_fitnesses_file_name);
 
-            std::string best_fitnesses_file_name = _run_dir_path.value() + "/best_fitnesses"; 
-            std::ofstream best_fitnesses_file(best_fitnesses_file_name);
+        for(const auto& fitness : _mean_gen_fitnesses)
+            mean_fitnesses_file << fitness << std::endl;
 
-            for(const auto& fitness : _best_so_far_fitnesses)
-                best_fitnesses_file << fitness << std::endl;
+        mean_fitnesses_file.close();
 
-            best_fitnesses_file.close();
-        }
+        //Fitness medians
+        const std::string median_fitnesses_file_name = _run_dir_path.value() + "/median_fitnesses";
+        std::ofstream median_fitnesses_file(median_fitnesses_file_name);
 
+        for(const auto& fitness : _median_gen_fitnesses)
+            median_fitnesses_file << fitness << std::endl;
+
+        median_fitnesses_file.close();
+
+        //Fitness lower quantiles
+        const std::string lq_fitnesses_file_name = _run_dir_path.value() + "/lq_fitnesses";
+        std::ofstream lq_fitnesses_file(lq_fitnesses_file_name);
+
+        for(const auto& fitness : _lq_gen_fitnesses)
+            lq_fitnesses_file << fitness << std::endl;
+
+        lq_fitnesses_file.close();
+
+        //Fitness upper quantiles
+        const std::string uq_fitnesses_file_name = _run_dir_path.value() + "/uq_fitnesses";
+        std::ofstream uq_fitnesses_file(uq_fitnesses_file_name);
+
+        for(const auto& fitness : _uq_gen_fitnesses)
+            uq_fitnesses_file << fitness << std::endl;
+
+        uq_fitnesses_file.close();
+
+        //Best fitnesses so far
+        const std::string best_fitnesses_file_name = _run_dir_path.value() + "/best_fitnesses"; 
+        std::ofstream best_fitnesses_file(best_fitnesses_file_name);
+
+        for(const auto& fitness : _best_so_far_fitnesses)
+            best_fitnesses_file << fitness << std::endl;
+
+        best_fitnesses_file.close();
     }
 
     void print_info_to_screen(const Population<G, T>& population, 
@@ -347,6 +396,10 @@ private:
 
     //Data structures to store data over the generations
     std::vector<double> _mean_gen_fitnesses;
+    std::vector<double> _median_gen_fitnesses;
+    std::vector<double> _lq_gen_fitnesses;
+    std::vector<double> _uq_gen_fitnesses;
+
     std::vector<double> _best_so_far_fitnesses;
 
 };
