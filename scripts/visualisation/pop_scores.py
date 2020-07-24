@@ -5,6 +5,7 @@
 import numpy as np
 np.set_printoptions(suppress=True)
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches 
 import csv
 import sys
 import os
@@ -158,7 +159,9 @@ if __name__ == '__main__':
         print("Could not find folder to read from!")
         sys.exit()
 
-    exp_plot_colours = ['b', 'r', 'g']
+    exp_plot_colours = ['b', 'r', 'g', 'm', 'y']
+    legend_labels = ['Direct map', 'Baseline map', 'AE', 'VAE', 'GAN']
+    legend_items = []
 
     # Import data
     for i, exp_folder in enumerate(data_folder_names):
@@ -174,7 +177,13 @@ if __name__ == '__main__':
         lq_mean_fitnesses = np.quantile(mean_fitnesses, 0.25, axis=0)
         uq_mean_fitnesses = np.quantile(mean_fitnesses, 0.75, axis=0)
 
+        print(median_mean_fitnesses)
+
         plot_experiment(mean_best_so_far_fitnesses, median_mean_fitnesses,
                         uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])
+
+        legend_items.append(mpatches.Patch(color=exp_plot_colours[i], label=legend_labels[i]))
+
+    plt.legend(handles=legend_items)
 
     plt.show()
