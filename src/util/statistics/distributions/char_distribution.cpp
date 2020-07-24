@@ -1,4 +1,4 @@
-#include <util/random/char_distribution.h>
+#include <util/statistics/distributions/char_distribution.h>
 
 namespace NeuroEvo {
 

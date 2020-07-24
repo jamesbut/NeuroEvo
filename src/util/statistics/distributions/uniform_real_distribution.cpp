@@ -1,4 +1,4 @@
-#include <util/random/uniform_real_distribution.h>
+#include <util/statistics/distributions/uniform_real_distribution.h>
 
 namespace NeuroEvo {
 

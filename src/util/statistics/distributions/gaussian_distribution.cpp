@@ -1,4 +1,4 @@
-#include <util/random/gaussian_distribution.h>
+#include <util/statistics/distributions/gaussian_distribution.h>
 
 namespace NeuroEvo {
 

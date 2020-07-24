@@ -1,7 +1,7 @@
 #ifndef _GENOTYPE_SPEC_H_
 #define _GENOTYPE_SPEC_H_
 
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 #include <genotype/genotype.h>
 #include <genetic_operators/mutation/mutator.h>
 #include <fstream>

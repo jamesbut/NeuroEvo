@@ -5,7 +5,7 @@
     A uniform distribution over reals
 */
 
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 
 namespace NeuroEvo {
 

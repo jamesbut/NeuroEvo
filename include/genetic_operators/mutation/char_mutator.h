@@ -7,7 +7,7 @@
 
 #include <genetic_operators/mutation/mutator.h>
 #include <set>
-#include <util/random/char_distribution.h>
+#include <util/statistics/distributions/char_distribution.h>
 
 namespace NeuroEvo {
 

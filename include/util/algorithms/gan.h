@@ -7,7 +7,7 @@
 
 #include <util/maths/matrix.h>
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 
 namespace NeuroEvo {
 

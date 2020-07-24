@@ -3,7 +3,7 @@
 
 #include <domains/domain.h>
 #include <phenotype/phenotype_specs/vector_phenotype_spec.h>
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 
 namespace NeuroEvo {
 

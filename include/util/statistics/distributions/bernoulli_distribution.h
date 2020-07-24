@@ -1,7 +1,7 @@
 #ifndef _BERNOULLI_DISTRIBUTION_H_
 #define _BERNOULLI_DISTRIBUTION_H_
 
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 
 /*
     A bernoulli distribution that returns a boolean according to a p parameter

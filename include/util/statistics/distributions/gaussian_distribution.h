@@ -1,7 +1,7 @@
 #ifndef _GAUSSIAN_DISTRIBUTION_H_
 #define _GAUSSIAN_DISTRIBUTION_H_
 
-#include <util/random/distribution.h>
+#include <util/statistics/distributions/distribution.h>
 
 namespace NeuroEvo {
 

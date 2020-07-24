@@ -1,4 +1,4 @@
-#include <util/random/bernoulli_distribution.h>
+#include <util/statistics/distributions/bernoulli_distribution.h>
 
 namespace NeuroEvo {
 

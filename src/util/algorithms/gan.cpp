@@ -5,7 +5,7 @@
 #include <torch/nn/options/loss.h>
 #include <util/algorithms/gan.h>
 #include <genotype/genotype_spec.h>
-#include <util/random/gaussian_distribution.h>
+#include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
 
 namespace NeuroEvo {

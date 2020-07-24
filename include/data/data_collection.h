@@ -42,7 +42,9 @@ public:
         _best_winner_so_far.reset();
     }
 
-    void collect_generational_data(const Population<G, T>& population, const bool trace = true)
+    void collect_generational_data(const Population<G, T>& population, 
+                                   const bool final_gen, 
+                                   const bool trace = true)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path && _exp_dir_path.has_value())
@@ -59,11 +61,12 @@ public:
         calculate_best_winner_so_far(gen_winner);
         if(_exp_dir_path.has_value()) save_best_winner_so_far_to_file();
 
-        //Save entire population to file
-        if(_exp_dir_path.has_value()) save_population_to_file(population);
-
         //Calculate population average fitness
         const double pop_average_fitness = calculate_population_avergage_fitness(population);
+        _mean_gen_fitnesses.push_back(pop_average_fitness);
+
+        //Save entire population to file
+        if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
 
         if(trace) 
             print_info_to_screen(population, gen_winner.get_fitness(), pop_average_fitness);
@@ -122,6 +125,9 @@ private:
         if(!_best_winner_so_far || gen_winner.get_fitness() > 
                 _best_winner_so_far->get_fitness())
             _best_winner_so_far = gen_winner;
+
+        //Save best winner so far fitness
+        _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness());
     }
 
     void save_generational_winner_to_file(const Organism<G, T>& gen_winner) const
@@ -169,7 +175,7 @@ private:
         return _run_dir_path.value(); 
     }
 
-    void save_population_to_file(const Population<G, T>& population) 
+    void save_population_to_file(const Population<G, T>& population, const bool final_gen) 
     {
 
         //Create and open file
@@ -180,17 +186,36 @@ private:
         std::ofstream gen_file;
         gen_file.open(gen_file_name.str());
 
-        //Write genome fitness and genome data to file
+        //Write genome fitness to file
         for(const auto& org : population.get_organisms())
         {
             //Write fitness
             gen_file << org.get_fitness();
-
             gen_file << std::endl;
         }
 
         //Close file
         gen_file.close();
+
+        //If final gen, dump mean and best fitnesses from over all the generations
+        if(final_gen)
+        {
+            std::string mean_fitnesses_file_name = _run_dir_path.value() + "/mean_fitnesses"; 
+            std::ofstream mean_fitnesses_file(mean_fitnesses_file_name);
+
+            for(const auto& fitness : _mean_gen_fitnesses)
+                mean_fitnesses_file << fitness << std::endl;
+
+            mean_fitnesses_file.close();
+
+            std::string best_fitnesses_file_name = _run_dir_path.value() + "/best_fitnesses"; 
+            std::ofstream best_fitnesses_file(best_fitnesses_file_name);
+
+            for(const auto& fitness : _best_so_far_fitnesses)
+                best_fitnesses_file << fitness << std::endl;
+
+            best_fitnesses_file.close();
+        }
 
     }
 
@@ -205,7 +230,7 @@ private:
         if((population.get_gen_num()-1) % print_header_every == 0)
         {
             const std::vector<std::string> header_titles{"Gen", "Best Winner", 
-                                                        "Gen Winner", "Gen Average"};
+                                                         "Gen Winner", "Gen Average"};
             print_table_row(header_titles, column_width, true, true);
         }
 
@@ -319,6 +344,10 @@ private:
     std::vector<const std::string> _run_dir_paths;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
+
+    //Data structures to store data over the generations
+    std::vector<double> _mean_gen_fitnesses;
+    std::vector<double> _best_so_far_fitnesses;
 
 };
 

@@ -176,12 +176,13 @@ private:
 
             // Check for completion
             ga_completed = ga_finished(population, *domain, max_gens);
+            bool final_gen = ga_completed == 0 ? false : true;
 
             // Print population data after fitness evaluation
-            data_collector.collect_generational_data(population, trace);
+            data_collector.collect_generational_data(population, final_gen, trace);
 
             // Break if completed
-            if(ga_completed != 0) break;
+            if(final_gen) break;
 
             // Generate new population using genetic operators
             population.generate_new_population(selector, nullptr);
