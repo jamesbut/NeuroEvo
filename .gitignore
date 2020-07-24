@@ -3,3 +3,4 @@ data/
 .vscode/
 *.swp
 __pycache__
+.DS_Store

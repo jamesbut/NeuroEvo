@@ -195,6 +195,8 @@ private:
     void save_population_to_file(const Population<G, T>& population, const bool final_gen) 
     {
 
+        //The statistics files seem to be enough information to store for now
+        /*
         //Create and open file
         std::stringstream gen_file_name;
         gen_file_name << _run_dir_path.value() << "/population-gen_"
@@ -213,6 +215,7 @@ private:
 
         //Close file
         gen_file.close();
+        */
 
         //If final gen, dump population statistics from over all the generations
         if(final_gen)

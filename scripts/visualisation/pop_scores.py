@@ -3,6 +3,7 @@
 # population fitness and the best so far fitness
 
 import numpy as np
+np.set_printoptions(suppress=True)
 import matplotlib.pyplot as plt
 import csv
 import sys
@@ -18,80 +19,72 @@ parent_dir = current_dir[:current_dir.rfind(os.path.sep)]
 sys.path.insert(0, parent_dir)
 
 # Fills remaining generations with the value from the last generation
-def fill_remaining_generations(exp_data):
+#def fill_remaining_generations(exp_data):
+#
+#    # Find max number of generations
+#    max_gens = 0
+#    for data in exp_data:
+#        if data.shape[0] > max_gens:
+#            max_gens = data.shape[0]
+#
+#    # Fill remianing generations
+#    for i, data in enumerate(exp_data):
+#        final_gen_2d_arr = np.array([data[-1,:]])
+#        while data.shape[0] < max_gens:
+#            data = np.concatenate((data, final_gen_2d_arr))
+#        exp_data[i] = data
+#
+#    return exp_data
 
-    # Find max number of generations
-    max_gens = 0
-    for data in exp_data:
-        if data.shape[0] > max_gens:
-            max_gens = data.shape[0]
+def process_string_list(l):
 
-    # Fill remianing generations
-    for i, data in enumerate(exp_data):
-        final_gen_2d_arr = np.array([data[-1,:]])
-        while data.shape[0] < max_gens:
-            data = np.concatenate((data, final_gen_2d_arr))
-        exp_data[i] = data
+    #Remove carriage returns and convert to floats
+    for i, value in enumerate(l):
+        l[i] = float(value.strip())
 
-    return exp_data
 
 def read_experiment_data(folder_names):
 
-    exp_data = [] 
+    mean_fitnesses = []
+    best_fitnesses = []
 
     for name in folder_names:
-        exp_data.append(read_run_data(name))
+        mf, bf = read_run_data(name)
+        mean_fitnesses.append(mf)
+        best_fitnesses.append(bf)
 
-    exp_data = fill_remaining_generations(exp_data)
+    return np.array(mean_fitnesses), np.array(best_fitnesses)
 
-    return np.rollaxis(np.dstack(exp_data), -1)
-
-# Keeps track of how many files are read,
-# hence how many generations there are
-num_gens = 0
-
-# Read data from all generations from csv files
+#Read in fitness means and best fitnesses so far for the run
 def read_run_data(folder_name):
 
-    # Path where the data is stored from the main programs runs
     full_folder_path = parent_dir + '/../data/' + folder_name
+    means_file_name = full_folder_path + '/mean_fitnesses'
+    best_fitnesses_file_name = full_folder_path + '/best_fitnesses'
 
-    data = []
-    file_num = 1
-    global num_gens
+    mean_fitnesses = []
 
-    # Continue until no more generational files can be found
-    while True:
+    try: 
+        with open(means_file_name, 'r') as means_file:
+           mean_fitnesses = means_file.readlines()
+    except FileNotFoundError:
+        print("Could not find file: ", means_file_name)
+        sys.exit()
 
-        full_file_name = full_folder_path + '/population-gen_' + str(file_num)
+    best_fitnesses = []
 
-        gen_data = []
+    try:
+        with open(best_fitnesses_file_name, 'r') as best_file:
+            best_fitnesses = best_file.readlines()
+    except FileNotFoundError:
+        print("Could not find file: ", best_fitnesses_file_name)
+        sys.exit()
 
-        try:
-            with open(full_file_name) as data_file:
-                csv_reader = csv.reader(data_file, delimiter=',')
+    #Clean up data
+    process_string_list(mean_fitnesses)
+    process_string_list(best_fitnesses)
 
-                #Only take the first column which is the genome fitness
-                for row in csv_reader:
-                    gen_data.append(row[0])
-
-                data.append(gen_data)
-
-            file_num += 1
-            num_gens += 1
-
-        except FileNotFoundError:
-
-            if file_num == 1:
-                print("Could not find population file!")
-                print("Terminating!..")
-                sys.exit()
-
-            break
-
-    num_gens = 0
-
-    return np.array(data).astype(np.float)
+    return mean_fitnesses, best_fitnesses
 
 # Finds most recent run in experiment 1
 def get_default_exp_and_run():
@@ -112,100 +105,15 @@ def get_run_folder_names(exp_num):
 
     return split_folders
 
-# Calculates the average best fitness so far over all the experimental runs
-def calculate_avg_best_fitness_so_far(data):
-
-    num_gens = data.shape[1]
-    num_runs = data.shape[0]
-    best_so_far_fitnesses = np.zeros((num_runs, num_gens))
-
-    for i, d in enumerate(data):
-        best_so_far_fitnesses[i] = calculate_best_fitness_so_far(d)
-
-    best_so_far_means = np.mean(best_so_far_fitnesses, axis=0) 
-
-    return best_so_far_means
-
-
-# Taking all the fitnesses for all the individuals at each generation
-# return a vector of the best score so far for each generation
-def calculate_best_fitness_so_far(data):
-
-    best_scores = []
-
-    # Put best scores for each generation in best scores
-    for gen in data:
-        best_scores.append(max(gen))
-
-    best_score_so_far = [best_scores[0]]
-
-    # Find the best score so far for each gen to plot
-    for i in range(1, len(best_scores)):
-        if best_scores[i] > best_score_so_far[i-1]:
-            best_score_so_far.append(best_scores[i])
-        else:
-            best_score_so_far.append(best_score_so_far[i-1])
-
-    return np.array(best_score_so_far)
-
-# Calculate the median average fitness over all experimental runs
-def calculate_median_avg_fitness(data):
-
-    avg_fitnesses = calculate_avg_fitnesses(data)
-    median_avg_fitnesses = np.median(avg_fitnesses, axis=0) 
-    return median_avg_fitnesses
-
-# Calculate the 75th quantile of average fitness over all experimental runs
-def calculate_high_quantile_avg_fitness(data):
-
-    avg_fitnesses = calculate_avg_fitnesses(data)
-    high_quantile_avg_fitnesses = np.quantile(avg_fitnesses, 0.75, axis=0) 
-    return high_quantile_avg_fitnesses
-
-# Calculate the 25th quantile of average fitness over all experimental runs
-def calculate_low_quantile_avg_fitness(data):
-
-    avg_fitnesses = calculate_avg_fitnesses(data)
-    low_quantile_avg_fitnesses = np.quantile(avg_fitnesses, 0.25, axis=0) 
-    return low_quantile_avg_fitnesses
-
-def calculate_avg_fitnesses(data):
-
-    num_gens = data.shape[1]
-    num_runs = data.shape[0]
-    average_fitnesses = np.zeros((num_runs, num_gens))
-
-    for i, d in enumerate(data):
-        average_fitnesses[i] = calculate_average_fitness(d)
-
-    return average_fitnesses
-
-# Returns a vector of the average fitness of the population
-# at each generation
-def calculate_average_fitness(data):
-
-    return np.mean(data, axis=1)
-
-# Draws best so far and average population fitness on
-# same plot
-def draw_plot(best_so_far_fitnesses, average_fitnesses):
+def plot_experiment(mean_best_so_far, median_means, uq_means, lq_means, colour):
 
     # Create x vector of generations
-    x = np.arange(1, num_gens+1)
+    x = np.arange(1, mean_best_so_far.shape[0]+1)
 
-    plt.plot(x, best_so_far_fitnesses)
-    plt.plot(x, average_fitnesses)
-    plt.show()
-
-def plot_experiment(best_so_far, median_avg, high_q, low_q, colour):
-
-    # Create x vector of generations
-    x = np.arange(1, data.shape[1]+1)
-
-    plotted_data_best = np.column_stack((x, best_so_far))
-    plotted_data_avg = np.column_stack((x, median_avg))
-    plotted_data_high_quantile = np.column_stack((x, high_q))
-    plotted_data_low_quantile = np.column_stack((x, low_q))
+    plotted_data_best = np.column_stack((x, mean_best_so_far))
+    plotted_data_avg = np.column_stack((x, median_means))
+    plotted_data_high_quantile = np.column_stack((x, uq_means))
+    plotted_data_low_quantile = np.column_stack((x, lq_means))
     plotted_data = np.array([plotted_data_best, plotted_data_avg, 
                              plotted_data_high_quantile, plotted_data_low_quantile])
 
@@ -222,9 +130,7 @@ def plot_experiment(best_so_far, median_avg, high_q, low_q, colour):
                  color=colour, linestyle=line_styles[i],
                  linewidth=line_widths[i])
 
-    plt.fill_between(x, low_quantile_avg_fitnesses, high_quantile_avg_fitnesses, 
-                     color=colour, alpha=0.1)
-
+    plt.fill_between(x, lq_means, uq_means, color=colour, alpha=0.1)
 
 if __name__ == '__main__':
 
@@ -257,21 +163,18 @@ if __name__ == '__main__':
     # Import data
     for i, exp_folder in enumerate(data_folder_names):
 
-        data = read_experiment_data(exp_folder)
+        print("Exp num: " + exp_nums[i] + " Colour: " + exp_plot_colours[i])
 
-        # Calculate required measures
-        avg_best_so_far_fitnesses = calculate_avg_best_fitness_so_far(data)
-        median_avg_fitnesses = calculate_median_avg_fitness(data)
-        high_quantile_avg_fitnesses = calculate_high_quantile_avg_fitness(data)
-        low_quantile_avg_fitnesses = calculate_low_quantile_avg_fitness(data)
+        #Read data
+        mean_fitnesses, best_fitnesses = read_experiment_data(exp_folder)
 
-        # Debug printing
-        #print(data)
-        #print(avg_best_so_far_fitnesses)
-        #print(avg_avg_fitnesses)
+        #Calculate statistics
+        mean_best_so_far_fitnesses = np.mean(best_fitnesses, axis=0)
+        median_mean_fitnesses = np.median(mean_fitnesses, axis=0)  
+        lq_mean_fitnesses = np.quantile(mean_fitnesses, 0.25, axis=0)
+        uq_mean_fitnesses = np.quantile(mean_fitnesses, 0.75, axis=0)
 
-        # Draw plots
-        plot_experiment(avg_best_so_far_fitnesses, median_avg_fitnesses, 
-                        high_quantile_avg_fitnesses, low_quantile_avg_fitnesses,
-                        exp_plot_colours[i])
+        plot_experiment(mean_best_so_far_fitnesses, median_mean_fitnesses,
+                        uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])
+
     plt.show()
