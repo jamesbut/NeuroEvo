@@ -25,6 +25,11 @@ void Neuron::set_trace(const bool trace)
     _trace = trace;
 }
 
+std::vector<double> Neuron::get_weights() const
+{
+    return _weights;
+}
+
 double Neuron::evaluate(const std::vector<double>& inputs) 
 {
     return propogate(inputs);

@@ -19,11 +19,11 @@ class NetworkMap : public GPMap<G, T>
 
 public:
 
-    NetworkMap(NetworkBuilder& decoder_spec, const PhenotypeSpec* pheno_spec) :
+    NetworkMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec) :
         GPMap<G, T>(pheno_spec),
         _decoder(decoder_spec.build_network()) {}
 
-    NetworkMap(NetworkBuilder& decoder_spec, const PhenotypeSpec* pheno_spec, 
+    NetworkMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec, 
                const std::string& file_name) :
         GPMap<G, T>(pheno_spec),
         _decoder(read_network(file_name, decoder_spec)) {}

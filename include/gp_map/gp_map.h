@@ -21,7 +21,7 @@ public:
     //Do not implement default constructor! We always want _pheno_spec set to something 
 
     //I assume the phenotype specification will not change throughout an experiment
-    GPMap(const PhenotypeSpec* pheno_spec) :
+    GPMap(PhenotypeSpec* pheno_spec) :
         _pheno_spec(pheno_spec) {}
 
     GPMap(const GPMap& gpmap) :
@@ -36,6 +36,11 @@ public:
         return _pheno_spec.get();
     }
 
+    void set_pheno_spec_trace(const bool trace)
+    {
+        _pheno_spec->set_trace(trace);
+    }
+
     virtual void print_gp_map(std::ofstream& file) const = 0;
 
     auto clone() const 
@@ -48,7 +53,7 @@ protected:
 
     virtual GPMap* clone_impl() const = 0;
 
-    const std::unique_ptr<const PhenotypeSpec> _pheno_spec;
+    const std::unique_ptr<PhenotypeSpec> _pheno_spec;
 
 };
 

@@ -76,6 +76,18 @@ void Network::print_params()
         layer->print_params();
 }
 
+std::vector<double> Network::get_weights() const
+{
+    std::vector<double> weights;
+    for(const auto& layer : _layers)
+    {
+        auto layer_weights = layer->get_weights();
+        weights.insert(weights.end(), layer_weights.begin(), layer_weights.end());
+    }
+    return weights;
+
+}
+
 std::vector<double> Network::propogate(const std::vector<double>& inputs) 
 {
     std::vector<double> ins = inputs;

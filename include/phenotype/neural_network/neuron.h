@@ -26,6 +26,8 @@ public:
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
     void set_trace(const bool trace);
 
+    std::vector<double> get_weights() const;
+
     virtual double evaluate(const std::vector<double>& inputs);
 
     virtual void reset();

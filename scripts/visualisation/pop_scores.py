@@ -2,12 +2,13 @@
 # which includes the genome fitnesses and plot the average
 # population fitness and the best so far fitness
 
+import sys
 import numpy as np
 np.set_printoptions(suppress=True)
+np.set_printoptions(threshold=sys.maxsize)
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches 
 import csv
-import sys
 import os
 import glob
 from inspect import getsourcefile
@@ -53,8 +54,6 @@ def read_experiment_data(folder_names):
         mf, bf = read_run_data(name)
         mean_fitnesses.append(mf)
         best_fitnesses.append(bf)
-
-    print(best_fitnesses)
 
     return np.array(mean_fitnesses), np.array(best_fitnesses)
 
@@ -179,7 +178,8 @@ if __name__ == '__main__':
         lq_mean_fitnesses = np.quantile(mean_fitnesses, 0.25, axis=0)
         uq_mean_fitnesses = np.quantile(mean_fitnesses, 0.75, axis=0)
 
-        print(median_mean_fitnesses)
+        #NOTE: If best fitnesses are lower on the graph than mean fitnesses remember we are
+        #comparing a median and a mean
 
         plot_experiment(mean_best_so_far_fitnesses, median_mean_fitnesses,
                         uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])

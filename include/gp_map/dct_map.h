@@ -22,7 +22,7 @@ public:
 
     // c represents the number of coefficients that will be used in the reconstruction
     DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
-           const NetworkBuilder* net_builder);
+           NetworkBuilder* net_builder);
 
     // Perform DCTIII (inverse DCTII) on genotype
     Phenotype<double>* map(Genotype<double>& genotype) override;

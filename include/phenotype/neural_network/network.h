@@ -29,6 +29,8 @@ public:
 
     void set_trace(const bool trace) override;
 
+    std::vector<double> get_weights() const;
+
 protected:
 
     virtual Network* clone_impl() const override 

@@ -52,6 +52,20 @@ public:
 
     }
 
+    //Tests and individual given a set of genes and GPMap
+    void individual_run(const std::vector<G> genes, GPMap<G, T>& gp_map)
+    {
+        gp_map.set_pheno_spec_trace(true);
+        Genotype<G> genotype(genes);
+        Organism<G, T> organism(genotype, gp_map);
+
+        _domain.set_trace(true);
+        double fitness = _domain.evaluate_org(organism);
+
+        std::cout << "Individual run fitness: " << fitness << std::endl;
+
+    }
+
     void evolutionary_run(const unsigned pop_size,
                           const unsigned max_gens,
                           Selection<G, T>* selector,

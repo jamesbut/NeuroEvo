@@ -15,13 +15,15 @@ class PhenotypeSpec
 
 public:
 
-    PhenotypeSpec(const unsigned num_params);
+    PhenotypeSpec(const unsigned num_params, const bool trace = false);
 
     virtual ~PhenotypeSpec() = default;
 
     const unsigned& get_num_params() const;
     bool get_trace() const; 
     bool get_print_weights() const;
+
+    void set_trace(const bool trace);
 
     auto clone() const
     { 

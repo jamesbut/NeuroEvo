@@ -72,6 +72,17 @@ unsigned Layer::get_number_of_weights() const
     return _num_neurons * _params_per_neuron;
 }
 
+std::vector<double> Layer::get_weights() const
+{
+    std::vector<double> weights; 
+    for(const auto& neuron : _neurons)
+    {
+        auto neuron_weights = neuron->get_weights();
+        weights.insert(weights.end(), neuron_weights.begin(), neuron_weights.end());
+    }
+    return weights;
+}
+
 std::vector<double> Layer::evaluate(const std::vector<double>& inputs) 
 {
 

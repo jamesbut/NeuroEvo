@@ -15,7 +15,7 @@ class VectorToNetworkMap : public GPMap<double, double>
 
 public:
 
-    VectorToNetworkMap(const NetworkBuilder* net_builder);
+    VectorToNetworkMap(NetworkBuilder* net_builder);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 

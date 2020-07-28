@@ -52,7 +52,6 @@ public:
                       const bool print_weights_to_file = false,
                       const std::optional<std::string>& weights_file_name = std::nullopt,
                       const std::optional<std::string>& outputs_file_name = std::nullopt);
-    void set_trace(const bool trace);
 
     bool is_torch_net() const;
     const std::vector<LayerSpec>& get_layer_specs() const;
@@ -93,8 +92,6 @@ private:
     //will be initialised according to the default torch settings or by the genotype
     //that is supplied.
     std::optional<bool> _default_torch_net_init;
-
-    bool _trace;
 
     /* Optional parameters */
     std::optional<HebbsSpec> _hebbs_spec;

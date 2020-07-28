@@ -9,21 +9,20 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_out
                                const NeuronType neuron_type) :
     PhenotypeSpec(required_num_genes(num_inputs, num_outputs, 
                                      num_hidden_layers, neurons_per_layer, 
-                                     neuron_type, activation_func_spec)),
+                                     neuron_type, activation_func_spec),
+                  trace),
     _num_inputs(num_inputs),
     _num_outputs(num_outputs),
     _layer_specs(LayerSpec::build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                               neurons_per_layer, neuron_type, 
-                                              activation_func_spec)),
-    _trace(trace) {}
+                                              activation_func_spec)) {}
 
 NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                                const bool trace) :
-    PhenotypeSpec(required_num_genes(layer_specs)),
+    PhenotypeSpec(required_num_genes(layer_specs), trace),
     _num_inputs(layer_specs.front().get_inputs_per_neuron()),
     _num_outputs(layer_specs.back().get_num_neurons()),
-    _layer_specs(layer_specs),
-    _trace(trace) {}
+    _layer_specs(layer_specs) {}
 
 Phenotype<double>* NetworkBuilder::build_network(
         const std::optional<const std::vector<double>>& init_weights) const
@@ -134,11 +133,6 @@ void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
     //Alter number of params
     this->_num_params = required_num_genes(_layer_specs);
 
-}
-
-void NetworkBuilder::set_trace(const bool trace)
-{
-    _trace = trace;
 }
 
 bool NetworkBuilder::is_torch_net() const

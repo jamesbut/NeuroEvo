@@ -2,7 +2,7 @@
 
 namespace NeuroEvo {
 
-VectorToNetworkMap::VectorToNetworkMap(const NetworkBuilder* net_builder) :
+VectorToNetworkMap::VectorToNetworkMap(NetworkBuilder* net_builder) :
     GPMap<double, double>(net_builder) {}
 
 Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)

@@ -15,7 +15,7 @@ class DoubleToBoolVectorMap : public GPMap<double, bool>
 
 public:
 
-    DoubleToBoolVectorMap(const VectorPhenotypeSpec* pheno_spec);
+    DoubleToBoolVectorMap(VectorPhenotypeSpec* pheno_spec);
 
     Phenotype<bool>* map(Genotype<double>& genotype) override;
 

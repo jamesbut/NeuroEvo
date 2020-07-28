@@ -74,7 +74,7 @@ public:
     }
 
     //Evaluate individual for a number of trials
-    double evaluate_org(Organism<G, T>& org, const unsigned num_trials) 
+    double evaluate_org(Organism<G, T>& org, const unsigned num_trials = 1) 
     {
 
         std::vector<double> fitnesses(num_trials);

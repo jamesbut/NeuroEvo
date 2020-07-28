@@ -29,7 +29,9 @@ public:
     void set_trace(const bool trace);
     void set_weights(const std::vector<double>& weights);
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
+
     unsigned get_number_of_weights() const;
+    std::vector<double> get_weights() const;
 
     std::vector<double> evaluate(const std::vector<double>& inputs);
 

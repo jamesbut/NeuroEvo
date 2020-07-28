@@ -8,7 +8,7 @@
 namespace NeuroEvo {
 
 DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
-               const NetworkBuilder* net_builder) :
+               NetworkBuilder* net_builder) :
     GPMap<double, double>(net_builder),
     _c(c),
     _num_neurons(num_neurons),

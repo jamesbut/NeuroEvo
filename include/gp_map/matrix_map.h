@@ -23,8 +23,8 @@ class MatrixMap : public GPMap<double, double>
 public:
 
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size,
-              const PhenotypeSpec* pheno_spec);
-    MatrixMap(const std::string& file_name, const PhenotypeSpec* pheno_spec);
+              PhenotypeSpec* pheno_spec);
+    MatrixMap(const std::string& file_name, PhenotypeSpec* pheno_spec);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 
