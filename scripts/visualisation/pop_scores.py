@@ -54,6 +54,8 @@ def read_experiment_data(folder_names):
         mean_fitnesses.append(mf)
         best_fitnesses.append(bf)
 
+    print(best_fitnesses)
+
     return np.array(mean_fitnesses), np.array(best_fitnesses)
 
 #Read in fitness means and best fitnesses so far for the run

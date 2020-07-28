@@ -35,7 +35,8 @@ public:
     //If one does not want to dump the data then just provide a nullopt to the constructor
     DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens) :
         _uuid_folders(true),
-        _exp_dir_path(exp_dir_path) 
+        _exp_dir_path(exp_dir_path),
+        _max_gens(max_gens)
     {
         //We can reserve up to max gens for member vectors so that they never have to resize
         _mean_gen_fitnesses.reserve(max_gens);
@@ -71,6 +72,8 @@ public:
         if(_exp_dir_path.has_value()) save_best_winner_so_far_to_file();
 
         calculate_population_statistics(population);
+        if(final_gen)
+            complete_statistics();
 
         //Save entire population to file
         if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
@@ -105,6 +108,20 @@ private:
         _median_gen_fitnesses.push_back(calculate_median(fitnesses));
         _lq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.25));
         _uq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.75));
+    }
+
+    //Fills the remainder of the statistics up to max gens if the run was finished early 
+    //This helps with the python plots
+    void complete_statistics()
+    {
+        while(_mean_gen_fitnesses.size() < _max_gens)
+        {
+            _mean_gen_fitnesses.push_back(_mean_gen_fitnesses.back());
+            _median_gen_fitnesses.push_back(_median_gen_fitnesses.back());
+            _lq_gen_fitnesses.push_back(_lq_gen_fitnesses.back());
+            _uq_gen_fitnesses.push_back(_uq_gen_fitnesses.back());
+            _best_so_far_fitnesses.push_back(_best_so_far_fitnesses.back());
+        }
     }
 
     double calculate_population_avergage_fitness(const Population<G, T>& population) const 
@@ -396,6 +413,8 @@ private:
     std::vector<const std::string> _run_dir_paths;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
+
+    const unsigned _max_gens;
 
     //Data structures to store data over the generations
     std::vector<double> _mean_gen_fitnesses;
