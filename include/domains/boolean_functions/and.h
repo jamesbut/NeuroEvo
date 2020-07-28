@@ -10,8 +10,11 @@ class AND : public Domain<G, double> {
 
 public:
 
-    AND(const bool domain_trace, const double completion_fitness = 3.9) :
+    AND(const bool domain_trace = false, const double completion_fitness = 3.9) :
         Domain<G, double>(domain_trace, completion_fitness) {}
+
+    AND(const AND& and_domain) :
+        Domain<G, double>(and_domain._domain_trace, and_domain._completion_fitness) {}
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
     {
@@ -40,6 +43,13 @@ public:
 
         return true;
 
+    }
+
+protected:
+
+    AND<G>* clone_impl() const override
+    {
+        return new AND<G>(*this);
     }
 
 private:

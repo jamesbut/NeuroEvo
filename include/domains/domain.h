@@ -121,6 +121,11 @@ public:
         return std::unique_ptr<Domain>(clone_impl());
     }
 
+    void set_trace(const bool trace)
+    {
+        _domain_trace = trace;
+    }
+
 protected:
 
     //This function is abstract and all domains should implement
@@ -158,7 +163,7 @@ protected:
     //some fitness has been reached
     bool _complete;
 
-    const bool _domain_trace;
+    bool _domain_trace;
 
     //Rendering variables
     const bool _render;

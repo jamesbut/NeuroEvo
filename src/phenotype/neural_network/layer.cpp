@@ -60,6 +60,13 @@ void Layer::set_weights(const std::vector<double>& weights)
 
 }
 
+void Layer::set_trace(const bool trace)
+{
+   _trace = trace; 
+   for(const auto& neuron : _neurons)
+       neuron->set_trace(trace);
+}
+
 unsigned Layer::get_number_of_weights() const
 {
     return _num_neurons * _params_per_neuron;

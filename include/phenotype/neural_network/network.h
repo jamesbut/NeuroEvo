@@ -7,7 +7,6 @@
 
 #include <phenotype/phenotype.h>
 #include <phenotype/neural_network/layer.h>
-#include <fstream>
 
 namespace NeuroEvo {
 
@@ -16,60 +15,19 @@ class Network : public Phenotype<double>
 
 public:
 
-    Network(const bool trace = false) :
-        Phenotype<double>(trace) {} 
+    Network(const bool trace = false);
+    Network(const Network& network);
 
-    Network(const Network& network) :
-        Phenotype<double>(network._trace),
-        _layers(network._layers.size())
-    {
-        for(std::size_t i = 0; i < _layers.size(); i++)
-            _layers[i] = network._layers[i]->clone();
-    }
+    virtual void create_net(const std::vector<LayerSpec>& layer_specs);
 
-    virtual void create_net(const std::vector<LayerSpec>& layer_specs) 
-    {
-        for(const auto& layer_spec : layer_specs)
-            _layers.push_back(
-                std::unique_ptr<Layer>(new Layer(layer_spec, _trace))
-            );
-
-        for(const auto& layer : _layers)
-            layer->create_layer();
-    }
-
-    void propogate_weights(const std::vector<double>& weights) 
-    {
-
-        auto start = weights.begin();
-        auto end = weights.begin();
-
-        for(auto& layer : _layers)
-        {
-
-            end += layer->get_number_of_weights();
-
-            std::vector<double> tempW(start, end);
-            layer->set_weights(tempW);
-
-            start += layer->get_number_of_weights();
-
-        }
-
-    }
-
+    void propogate_weights(const std::vector<double>& weights);
     virtual void propogate_learning_rates(const std::vector<double>& learning_rates) {}
 
-    virtual std::vector<double> activate(const std::vector<double>& inputs) override 
-    {
-        return propogate(inputs);
-    }
+    virtual std::vector<double> activate(const std::vector<double>& inputs) override;
 
-    void reset() override
-    {
-        for(auto& layer : _layers)
-            layer->reset();
-    }
+    void reset() override;
+
+    void set_trace(const bool trace) override;
 
 protected:
 
@@ -78,24 +36,9 @@ protected:
         return new Network(*this); 
     };
 
-    void print_params() override
-    {
-        for(auto& layer : _layers)
-            layer->print_params();
-    }
+    void print_params() override;
 
-    std::vector<double> propogate(const std::vector<double>& inputs) 
-    {
-        std::vector<double> ins = inputs;
-
-        for(std::size_t i = 0; i < _layers.size(); i++) 
-        {
-            if(_trace) std::cout << "\nLayer: " << i << std::endl;
-            ins = _layers[i]->evaluate(ins);
-        }
-
-        return ins;
-    }
+    std::vector<double> propogate(const std::vector<double>& inputs);
 
     std::vector<std::unique_ptr<Layer>> _layers;
 

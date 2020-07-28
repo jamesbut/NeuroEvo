@@ -42,7 +42,7 @@ public:
         return _num_params;
     }
 
-    void set_trace(const bool trace) 
+    virtual void set_trace(const bool trace) 
     {
         _trace = trace;
     }

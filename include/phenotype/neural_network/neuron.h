@@ -24,6 +24,8 @@ public:
 
     virtual void set_weights(const std::vector<double>& weights);
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
+    void set_trace(const bool trace);
+
     virtual double evaluate(const std::vector<double>& inputs);
 
     virtual void reset();
@@ -49,7 +51,7 @@ protected:
     const NeuronType _neuron_type;
     const std::shared_ptr<ActivationFunction> _activation_function;
 
-    const bool _trace;
+    bool _trace;
 
     double _previous_output;
     std::vector<double> _weights;

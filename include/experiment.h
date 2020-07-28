@@ -115,6 +115,11 @@ public:
         }
     }
 
+    void set_domain_trace(const bool domain_trace)
+    {
+        _domain.set_trace(domain_trace);
+    }
+
 
 private:
 

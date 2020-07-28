@@ -26,16 +26,20 @@ public:
     {
 
         // Get vector of sorted population indices
-        std::vector<int> sorted_pop_indices = sort_population(orgs);
+        std::vector<unsigned> sorted_pop_indices = sort_population(orgs);
 
         // Only consider the top performers
-        const int num_orgs_considered = floor(_percentage_selection * orgs.size());
-        std::vector<int> considered_indices(&sorted_pop_indices[0], 
-                                            &sorted_pop_indices[num_orgs_considered]);
+        unsigned num_orgs_considered = floor(_percentage_selection * orgs.size());
+        if(num_orgs_considered < 1)
+            num_orgs_considered = 1;
+
+        std::vector<unsigned> considered_indices(&sorted_pop_indices[0], 
+                                                 &sorted_pop_indices[num_orgs_considered]);
 
         // Choose uniformly amongst the top performers
         const double rand_num = _uniform_distr.next();
-        const int chosen_org = considered_indices[floor(rand_num * considered_indices.size())];
+        const unsigned chosen_org = 
+            considered_indices[floor(rand_num * considered_indices.size())];
 
         //Create copy of this org and return
         return Organism(orgs.at(chosen_org).get_genotype(),
@@ -45,11 +49,11 @@ public:
 
 private:
 
-    std::vector<int> sort_population(const std::vector<Organism<G, T>>& orgs) 
+    std::vector<unsigned> sort_population(const std::vector<Organism<G, T>>& orgs) 
     {
 
         // Create vector of unsorted indices
-        std::vector<int> sorted_indices(orgs.size());
+        std::vector<unsigned> sorted_indices(orgs.size());
         std::iota(begin(sorted_indices), end(sorted_indices), 0);
 
         // Sort indices by population fitness

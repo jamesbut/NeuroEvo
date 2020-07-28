@@ -69,12 +69,23 @@ Phenotype<double>* NetworkBuilder::build_network(
 
     } else
     {
-    
         Network* network = new Network(_trace);
         network->create_net(_layer_specs);
 
         if(init_weights)
-            network->propogate_weights(init_weights.value());
+        {
+            //Check to see whether genes size is the same as the number of traits required
+            if(init_weights->size() == network->get_num_params())
+                network->propogate_weights(init_weights.value());
+            else
+            {
+                std::cerr << "The number of genes given to build the network was not equal"
+                    << " to the number of params required by the network" << std::endl;
+                std::cerr << "Num genes: " << init_weights->size() << " Num params required: "
+                    << network->get_num_params().value() << std::endl;
+                exit(0);
+            }
+        }
 
         return network;
 

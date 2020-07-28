@@ -26,9 +26,11 @@ public:
 
     virtual void create_layer();
 
+    void set_trace(const bool trace);
     void set_weights(const std::vector<double>& weights);
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
     unsigned get_number_of_weights() const;
+
     std::vector<double> evaluate(const std::vector<double>& inputs);
 
     void reset();
@@ -45,7 +47,7 @@ protected:
         return new Layer(*this);
     }
 
-    const bool _trace;
+    bool _trace;
     const unsigned _inputs_per_neuron;
     const unsigned _params_per_neuron;
     const unsigned _num_neurons;
