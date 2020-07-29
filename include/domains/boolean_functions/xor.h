@@ -6,28 +6,32 @@
 namespace NeuroEvo {
 
 template <typename G>
-class XOR : public Domain<G> {
+class XOR : public Domain<G, double> {
 
 public:
 
-    XOR(const bool domain_trace, const double completion_fitness = 3.9) :
-        Domain(domain_trace, completion_fitness) {}
+    XOR(const bool domain_trace = false, const double completion_fitness = 3.9) :
+        Domain<G, double>(domain_trace, completion_fitness) {}
 
-    bool check_phenotype_spec(Phenotypes::PhenotypeSpec& pheno_spec) override {
+    XOR(const XOR& xor_domain) :
+        Domain<G, double>(xor_domain._domain_trace, xor_domain._completion_fitness) {}
 
-        Phenotypes::NetworkSpec* network_spec = dynamic_cast<Phenotypes::NetworkSpec*>(&pheno_spec);
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    {
+
+        const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
-        if(network_spec == nullptr) {
+        if(network_builder == nullptr) {
 
-            std::cout << "Only network specifications are allowed with" <<
+            std::cout << "Only network builders are allowed with" <<
                         " boolean domains!" << std::endl;
             return false;
 
         }
 
-        //Check for 1 input and 1 output
-        if(network_spec->NUM_INPUTS != 2 || network_spec->NUM_OUTPUTS != 1) {
+        //Check for 2 inputs and 1 output
+        if(network_builder->get_num_inputs() != 2 || network_builder->get_num_outputs() != 1) {
 
                 std::cout << "Number of inputs must be 2 and number of outputs" <<
                             " must be 1 for the XOR domain" << std::endl;
@@ -41,36 +45,42 @@ public:
 
 private:
 
-    double single_run(Organism& org, unsigned rand_seed) override {
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
+    {
 
         //Different XOR inputs
-        std::vector<std::vector<double> > xor_inputs {{1.0, 1.0},
-                                                    {1.0, 0.0},
-                                                    {0.0, 1.0},
-                                                    {0.0, 0.0}};
+        const std::vector<std::vector<double> > xor_inputs {{1.0, 1.0},
+                                                            {1.0, 0.0},
+                                                            {0.0, 1.0},
+                                                            {0.0, 0.0}};
 
         //Correct outputs for the respective XOR inputs
-        std::vector<double> correct_outputs {0.0, 1.0, 1.0, 0.0};
+        const std::vector<double> correct_outputs {0.0, 1.0, 1.0, 0.0};
 
         double fitness = 0.0;
 
-        for(std::size_t i = 0; i < xor_inputs.size(); i++) {
+        for(std::size_t i = 0; i < xor_inputs.size(); i++) 
+        {
+            const std::vector<double> inputs = xor_inputs.at(i);
+            const std::vector<double> output = org.get_phenotype().activate(inputs);
 
-            std::vector<double> inputs = xor_inputs.at(i);
-            std::vector<double> output = org.get_phenotype().activate(inputs);
-
-            if(_DOMAIN_TRACE) {
-                std::cout << "Domain outputs:\n" << std::endl;
-                std::cout << correct_outputs.at(i) << " " << output.at(0) << std::endl;
-                std::cout << "---------------------------------" << std::endl;
-            }
+            if(this->_domain_trace)
+                std::cout << "Target: " << correct_outputs.at(i) << " " << 
+                    "| Network output: " << output.at(0) << std::endl;
 
             fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
-
         }
 
         return fitness;
 
+    }
+
+    void render() override {}
+    void reset_domain() override {}
+
+    XOR<G>* clone_impl() const override
+    {
+        return new XOR<G>(*this);
     }
 
 };

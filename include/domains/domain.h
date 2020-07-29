@@ -74,7 +74,8 @@ public:
     }
 
     //Evaluate individual for a number of trials
-    double evaluate_org(Organism<G, T>& org, const unsigned num_trials = 1) 
+    double evaluate_org(Organism<G, T>& org, const unsigned num_trials = 1,
+                        const bool verbosity = true) 
     {
 
         std::vector<double> fitnesses(num_trials);
@@ -87,7 +88,9 @@ public:
 
             //Need to seed with random number
             fitnesses.at(i) = single_run(org, lrand48());
-            std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
+
+            if(verbosity)
+                std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
 
         }
 

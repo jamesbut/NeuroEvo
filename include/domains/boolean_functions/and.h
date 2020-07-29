@@ -31,7 +31,7 @@ public:
 
         }
 
-        //Check for 1 input and 1 output
+        //Check for 2 inputs and 1 output
         if(network_builder->get_num_inputs() != 2 || network_builder->get_num_outputs() != 1) 
         {
 
@@ -45,12 +45,7 @@ public:
 
     }
 
-protected:
 
-    AND<G>* clone_impl() const override
-    {
-        return new AND<G>(*this);
-    }
 
 private:
 
@@ -58,27 +53,26 @@ private:
     {
 
         //Different AND inputs
-        std::vector<std::vector<double> > and_inputs {{1.0, 1.0},
-                                                      {1.0, 0.0},
-                                                      {0.0, 1.0},
-                                                      {0.0, 0.0}};
+        const std::vector<std::vector<double> > and_inputs {{1.0, 1.0},
+                                                            {1.0, 0.0},
+                                                            {0.0, 1.0},
+                                                            {0.0, 0.0}};
 
         //Correct outputs for the respective AND inputs
-        std::vector<double> correct_outputs {1.0, 0.0, 0.0, 0.0};
+        const std::vector<double> correct_outputs {1.0, 0.0, 0.0, 0.0};
 
         double fitness = 0.0;
 
-        for(std::size_t i = 0; i < and_inputs.size(); i++) {
-
-            std::vector<double> inputs = and_inputs.at(i);
-            std::vector<double> output = org.get_phenotype().activate(inputs);
+        for(std::size_t i = 0; i < and_inputs.size(); i++) 
+        {
+            const std::vector<double> inputs = and_inputs.at(i);
+            const std::vector<double> output = org.get_phenotype().activate(inputs);
 
             if(this->_domain_trace)
                 std::cout << "Target: " << correct_outputs.at(i) << " " << 
                     "| Network output: " << output.at(0) << std::endl;
 
             fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
-
         }
 
         return fitness;
@@ -87,6 +81,11 @@ private:
 
     void render() override {}
     void reset_domain() override {}
+
+    AND<G>* clone_impl() const override
+    {
+        return new AND<G>(*this);
+    }
 
 };
 
