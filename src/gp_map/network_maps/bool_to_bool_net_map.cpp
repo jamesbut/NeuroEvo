@@ -4,7 +4,7 @@
 namespace NeuroEvo {
 
 BoolToBoolNetMap::BoolToBoolNetMap(NetworkBuilder& net_builder, 
-                                   PhenotypeSpec* pheno_spec) :
+                                   VectorPhenotypeSpec* pheno_spec) :
     NetworkMap<bool, bool>(net_builder, pheno_spec) {}
 
 Phenotype<bool>* BoolToBoolNetMap::map(Genotype<bool>& genotype)

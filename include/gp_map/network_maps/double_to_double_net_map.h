@@ -2,6 +2,7 @@
 #define _DOUBLE_TO_DOUBLE_NET_MAP_
 
 #include <gp_map/network_maps/network_map.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 
 /*
  * Defines a network decoder where the input and output of the decoder
@@ -15,7 +16,7 @@ class DoubleToDoubleNetMap : public NetworkMap<double, double>
 
 public:
 
-    DoubleToDoubleNetMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec);
+    DoubleToDoubleNetMap(NetworkBuilder& decoder_spec, VectorPhenotypeSpec* pheno_spec);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 

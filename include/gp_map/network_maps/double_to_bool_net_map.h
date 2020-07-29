@@ -2,6 +2,7 @@
 #define _DOUBLE_TO_BOOL_NET_MAP_
 
 #include <gp_map/network_maps/network_map.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 
 /*
  * Defines a network decoder where the input and output of the decoder
@@ -15,7 +16,7 @@ class DoubleToBoolNetMap : public NetworkMap<double, bool>
 
 public:
 
-    DoubleToBoolNetMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec);
+    DoubleToBoolNetMap(NetworkBuilder& decoder_spec, VectorPhenotypeSpec* pheno_spec);
 
     Phenotype<bool>* map(Genotype<double>& genotype) override;
 
