@@ -6,10 +6,11 @@
  */
 
 #include <phenotype/phenotype_specs/network_builder.h>
+#include <util/models/generative_models/generative_model.h>
 
 namespace NeuroEvo {
 
-class VAE
+class VAE : public GenerativeModel
 {
 
 public:
@@ -17,16 +18,16 @@ public:
     VAE(NetworkBuilder& encoder_builder,
         NetworkBuilder& decoder_builder,
         const torch::Tensor& training_data,
-        const torch::Tensor test_data = torch::empty({0}),
+        const std::optional<const torch::Tensor>& test_data = std::nullopt,
         std::unique_ptr<Distribution<double>> init_net_weight_distr =
             std::unique_ptr<Distribution<double>>(nullptr));
 
-    void train(const unsigned num_epochs, const unsigned batch_size,
-                const unsigned test_every = 1e6);
+    virtual void train(const unsigned num_epochs, const unsigned batch_size,
+                       const bool trace = false, const unsigned test_every = 1e6) override;
 
     //Returns a mean and log var
     std::pair<torch::Tensor, torch::Tensor> encode(const torch::Tensor& x);
-    torch::Tensor decode(const torch::Tensor& z) const;
+    torch::Tensor generate(const torch::Tensor& z) const override;
 
     //Returns output of VAE, mu and log_var from sampling
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> forward(const torch::Tensor& x,
@@ -41,9 +42,6 @@ private:
 
     torch::Tensor loss_function(const torch::Tensor& output, const torch::Tensor& input,
                                 const torch::Tensor& mu, const torch::Tensor& log_var);
-
-    const torch::Tensor _training_data;
-    const torch::Tensor _test_data;
 
     std::unique_ptr<TorchNetwork> _encoder;
     std::unique_ptr<TorchNetwork> _decoder;

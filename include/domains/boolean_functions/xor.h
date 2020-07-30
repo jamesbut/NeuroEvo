@@ -65,8 +65,13 @@ private:
             const std::vector<double> output = org.get_phenotype().activate(inputs);
 
             if(this->_domain_trace)
-                std::cout << "Target: " << correct_outputs.at(i) << " " << 
+            {
+                std::cout << "Inputs: ";
+                for(const auto& input : inputs)
+                    std::cout << input << " ";
+                std::cout << "| Target: " << correct_outputs.at(i) << " " << 
                     "| Network output: " << output.at(0) << std::endl;
+            }
 
             fitness += 1 - (fabs(correct_outputs.at(i) - output.at(0)));
         }

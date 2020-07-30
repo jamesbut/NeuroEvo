@@ -34,12 +34,15 @@ public:
         
     }
     
-    void individual_run(const std::string& organism_folder_name) 
+    void individual_run(const std::string& organism_folder_name, const bool pheno_trace = false) 
     {
 
         // View the run of the saved best_winner_so_far
         std::stringstream best_winner_path;
         best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
+
+        if(pheno_trace)
+            _gp_map.set_pheno_spec_trace(pheno_trace);
 
         Organism organism(_geno_spec, _gp_map, best_winner_path.str());
 

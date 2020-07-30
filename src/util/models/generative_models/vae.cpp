@@ -1,6 +1,6 @@
 #include <ATen/Functions.h>
 #include <torch/nn/functional/loss.h>
-#include <util/algorithms/vae.h>
+#include <util/models/generative_models/vae.h>
 #include <util/torch_utils.h>
 
 namespace NeuroEvo {
@@ -10,10 +10,9 @@ namespace NeuroEvo {
 VAE::VAE(NetworkBuilder& encoder_builder,
          NetworkBuilder& decoder_builder,
          const torch::Tensor& training_data, 
-         const torch::Tensor test_data,
+         const std::optional<const torch::Tensor>& test_data,
          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
-    _training_data(training_data),
-    _test_data(test_data),
+    GenerativeModel(training_data, test_data),
     _encoder(build_torch_network(encoder_builder, std::move(init_net_weight_distr))),
     _decoder(build_torch_network(decoder_builder, std::move(init_net_weight_distr))),
     _encoder_mean_linear_layer(torch::nn::LinearOptions(_encoder->get_num_outputs(),
@@ -26,7 +25,7 @@ VAE::VAE(NetworkBuilder& encoder_builder,
 }
 
 void VAE::train(const unsigned num_epochs, const unsigned batch_size,
-                const unsigned test_every)
+                const bool trace, const unsigned test_every)
 {
 
     const double learning_rate = 1e-3;
@@ -96,7 +95,7 @@ std::pair<torch::Tensor, torch::Tensor> VAE::encode(const torch::Tensor& x)
     return {mu, log_var};
 }
 
-torch::Tensor VAE::decode(const torch::Tensor& z) const
+torch::Tensor VAE::generate(const torch::Tensor& z) const
 {
     return _decoder->forward(z);
 }
@@ -113,7 +112,7 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> VAE::forward(const torch
     if(trace)
         std::cout << "Sampled z: " << std::endl << z << std::endl;
 
-    return std::make_tuple(decode(z), mu, log_var);
+    return std::make_tuple(generate(z), mu, log_var);
 }
 
 //Sample from the distribution with mu and logvar params

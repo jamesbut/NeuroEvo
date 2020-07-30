@@ -3,7 +3,7 @@
 #include <torch/data/dataloader.h>
 #include <torch/nn/functional/loss.h>
 #include <torch/nn/options/loss.h>
-#include <util/algorithms/gan.h>
+#include <util/models/generative_models/gan.h>
 #include <genotype/genotype_spec.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
@@ -14,18 +14,19 @@ GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          const torch::Tensor& real_data,
          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
-    _real_data(real_data),
+    GenerativeModel(real_data, std::nullopt),
     _generator(build_torch_network(generator_builder, std::move(init_net_weight_distr))),
     _discriminator(build_torch_network(discriminator_builder, std::move(init_net_weight_distr))) {}
 
-void GAN::train(const unsigned num_epochs, const unsigned batch_size, const bool trace)
+void GAN::train(const unsigned num_epochs, const unsigned batch_size, 
+                const bool trace, const unsigned test_every)
 {
     
     //This was part of the tutorial but stop loss reducing to zero - maybe it is important
     //for a GAN
     //torch::Tensor real_labels = torch::empty(_real_data.size(0)).uniform_(0.8, 1.0);
     //torch::Tensor real_labels = torch::ones(_real_data.size(0));
-    torch::Tensor real_labels = torch::ones({_real_data.size(0), 1});
+    torch::Tensor real_labels = torch::ones({_training_data.size(0), 1});
 
     const double generator_learning_rate = 2e-4;
     const double discriminator_learning_rate = 5e-4;
@@ -42,7 +43,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size, const bool
     {
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> real_batches =
-            generate_batches(batch_size, _real_data, real_labels);
+            generate_batches(batch_size, _training_data, real_labels);
 
         torch::Tensor total_d_loss = torch::zeros(1);
         torch::Tensor total_g_loss = torch::zeros(1);
@@ -111,9 +112,9 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size, const bool
         }
 
         //Divide by total number of data points seen
-        torch::Tensor avg_d_loss = total_d_loss / (_real_data.size(0) * 2);
+        torch::Tensor avg_d_loss = total_d_loss / (_training_data.size(0) * 2);
         //Divide by size of fake data
-        torch::Tensor avg_g_loss = total_g_loss / _real_data.size(0);
+        torch::Tensor avg_g_loss = total_g_loss / _training_data.size(0);
         
         if(trace)
             std::cout << "Epoch: " << i << " | Discriminator loss: " 
@@ -124,12 +125,12 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size, const bool
 
 }
 
-torch::Tensor GAN::test_discriminator(const torch::Tensor& x) const
+torch::Tensor GAN::discriminate(const torch::Tensor& x) const
 {
     return _discriminator->forward(x);
 }
 
-torch::Tensor GAN::test_generator(const torch::Tensor& x) const
+torch::Tensor GAN::generate(const torch::Tensor& x) const 
 {
     return _generator->forward(x);
 }

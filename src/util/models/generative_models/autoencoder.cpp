@@ -1,5 +1,5 @@
 #include <util/torch_utils.h>
-#include <util/algorithms/autoencoder.h>
+#include <util/models/generative_models/autoencoder.h>
 
 namespace NeuroEvo {
 
@@ -8,14 +8,13 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          const torch::Tensor& training_data,  
                          const std::optional<const torch::Tensor>& test_data,
                          std::unique_ptr<Distribution<double>> init_net_weight_distr) :
-    _training_data(training_data),
-    _test_data(test_data),
+    GenerativeModel(training_data, test_data),
     _encoder(build_torch_network(encoder_builder, std::move(init_net_weight_distr))),
     _decoder(build_torch_network(decoder_builder, std::move(init_net_weight_distr))),
     _autoencoder(*_encoder, *_decoder) {}
 
 void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
-                        const unsigned test_every) 
+                        const bool trace, const unsigned test_every) 
 {
 
     const double learning_rate = 1e-3;
@@ -78,7 +77,7 @@ torch::Tensor AutoEncoder::encode(const torch::Tensor& x) const
     return _encoder->forward(x);
 }
 
-torch::Tensor AutoEncoder::decode(const torch::Tensor& x) const
+torch::Tensor AutoEncoder::generate(const torch::Tensor& x) const
 {
     return _decoder->forward(x);
 }

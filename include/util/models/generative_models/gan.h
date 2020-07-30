@@ -8,10 +8,11 @@
 #include <util/maths/matrix.h>
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <util/statistics/distributions/distribution.h>
+#include <util/models/generative_models/generative_model.h>
 
 namespace NeuroEvo {
 
-class GAN
+class GAN : public GenerativeModel
 {
 
 public:
@@ -22,16 +23,15 @@ public:
         std::unique_ptr<Distribution<double>> init_net_weight_distr = 
             std::unique_ptr<Distribution<double>>(nullptr));
 
-    void train(const unsigned num_epochs, const unsigned batch_size, const bool trace = true);
+    void train(const unsigned num_epochs, const unsigned batch_size, 
+               const bool trace = true, const unsigned test_every = 1e6) override;
 
-    torch::Tensor test_discriminator(const torch::Tensor& x) const;
-    torch::Tensor test_generator(const torch::Tensor& x) const;
+    torch::Tensor discriminate(const torch::Tensor& x) const;
+    torch::Tensor generate(const torch::Tensor& x) const override;
 
     const std::unique_ptr<TorchNetwork>& get_generator() const;
 
 private:
-
-    const torch::Tensor _real_data;
 
     std::unique_ptr<TorchNetwork> _generator;
     std::unique_ptr<TorchNetwork> _discriminator;
