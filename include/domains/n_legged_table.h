@@ -14,7 +14,8 @@
 namespace NeuroEvo {
 
 template <typename G>
-class NLeggedTable : public Domain<G, double> {
+class NLeggedTable : public Domain<G, double> 
+{
 
 public:
 

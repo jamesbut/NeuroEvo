@@ -38,6 +38,18 @@ public:
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
     }
 
+    Domain(const Domain& domain) :
+        _completion_fitness(domain._completion_fitness),
+        _complete(domain._complete),
+        _domain_trace(domain._domain_trace),
+        _render(domain._render),
+        _screen_width(domain._screen_width),
+        _screen_height(domain._screen_height) 
+    {
+        if(_render)
+            _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
+    }
+
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials
@@ -98,7 +110,7 @@ public:
 
     }
 
-    virtual bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) = 0;
+    virtual bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const = 0;
 
     //Determines whether the current population
     //has 'completed' the domain, this normally

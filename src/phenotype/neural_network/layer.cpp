@@ -10,7 +10,9 @@ Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
     _params_per_neuron(layer_spec.get_params_per_neuron()),
     _num_neurons(layer_spec.get_num_neurons()),
     _neuron_type(layer_spec.get_neuron_type()),
-    _activation_function(layer_spec.get_activation_func_spec()->create_activation_function()) {}
+    _activation_function(layer_spec.get_activation_func_spec() ?
+                         layer_spec.get_activation_func_spec()->create_activation_function() :
+                         nullptr) {}
 
 Layer::Layer(const Layer& layer) :
     _trace(layer._trace),
@@ -18,7 +20,8 @@ Layer::Layer(const Layer& layer) :
     _params_per_neuron(layer._params_per_neuron),
     _num_neurons(layer._num_neurons),
     _neuron_type(layer._neuron_type),
-    _activation_function(layer._activation_function->clone()),
+    _activation_function(layer._activation_function ? 
+                         layer._activation_function->clone() : nullptr),
     _neurons(layer._num_neurons) 
 {
     for(std::size_t i = 0; i < _neurons.size(); i++)
