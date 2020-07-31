@@ -1,5 +1,5 @@
-#ifndef _UNIFORM_DISTRIBUTION_H_
-#define _UNIFORM_DISTRIBUTION_H_
+#ifndef _UNIFORM_REAL_DISTRIBUTION_H_
+#define _UNIFORM_REAL_DISTRIBUTION_H_
 
 /*
     A uniform distribution over reals

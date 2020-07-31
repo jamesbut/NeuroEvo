@@ -8,7 +8,8 @@ UniformRealDistribution::UniformRealDistribution(const double lower_bound,
     Distribution(seed),
     _distr(lower_bound, upper_bound) {}
 
-double UniformRealDistribution::next() {
+double UniformRealDistribution::next() 
+{
     return _distr(_rng);
 }
 

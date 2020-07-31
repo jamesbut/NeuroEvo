@@ -12,6 +12,7 @@
 #include <util/memory/shared_fitness_memory.h>
 #include <optional>
 #include <data/data_collection.h>
+#include <util/statistics/distributions/uniform_unsigned_distribution.h>
 
 //TODO: Only include if found
 #include <SFML/Graphics.hpp>
@@ -32,7 +33,8 @@ public:
         _domain_trace(domain_trace),
         _render(render),
         _screen_width(screen_width),
-        _screen_height(screen_height)
+        _screen_height(screen_height),
+        _seed(std::nullopt)
     {
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
@@ -44,7 +46,8 @@ public:
         _domain_trace(domain._domain_trace),
         _render(domain._render),
         _screen_width(domain._screen_width),
-        _screen_height(domain._screen_height) 
+        _screen_height(domain._screen_height),
+        _seed(domain._seed)
     {
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
@@ -98,8 +101,8 @@ public:
             //Need to reset the network
             org.genesis();
 
-            //Need to seed with random number
-            fitnesses.at(i) = single_run(org, lrand48());
+            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
+            fitnesses.at(i) = single_run(org, seed); 
 
             if(verbosity)
                 std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
@@ -139,6 +142,11 @@ public:
     void set_trace(const bool trace)
     {
         _domain_trace = trace;
+    }
+
+    void set_seed(const unsigned seed)
+    {
+        _seed = seed;
     }
 
 protected:
@@ -200,10 +208,8 @@ private:
 
         for(unsigned int i = 0; i < num_trials; i++) {
 
-            //Generate random number as the random seed
-            //However each individual of the population gets the same seed
-            //So they all generator the same random numbers for each run
-            auto seed = lrand48();
+            //Each individual in the population has the same seed for each trial
+            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
 
             for(std::size_t j = 0; j < pop.get_size(); j++) 
             {
@@ -236,10 +242,8 @@ private:
 
         for(unsigned i = 0; i < num_trials; i++) {
 
-            //Generate random number as the random seed
-            //However each individual of the population gets the same seed
-            //So they all generator the same random numbers for each run
-            auto seed = lrand48();
+            //Each individual in the population has the same seed for each trial
+            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
 
             unsigned num_organisms_tested = 0;
 
@@ -336,6 +340,8 @@ private:
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
+
+    std::optional<unsigned> _seed;
 
 };
 
