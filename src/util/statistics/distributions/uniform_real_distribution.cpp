@@ -13,4 +13,9 @@ double UniformRealDistribution::next()
     return _distr(_rng);
 }
 
+void UniformRealDistribution::reset()
+{
+    _distr.reset();
+}
+
 } // namespace NeuroEvo

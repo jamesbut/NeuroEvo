@@ -29,6 +29,8 @@ public:
 
 private:
 
+    void reset() override;
+
     std::uniform_int_distribution<unsigned long> _distr;
 
 };

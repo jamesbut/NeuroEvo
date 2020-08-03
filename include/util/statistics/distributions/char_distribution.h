@@ -24,6 +24,8 @@ public:
 
 private:
 
+    void reset() override;
+
     //Better to store this as a vector because we can index in O(1) time as oppose to O(n)
     const std::vector<char> _char_set;
     std::discrete_distribution<unsigned> _distr;

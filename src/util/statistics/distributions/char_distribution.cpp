@@ -21,8 +21,14 @@ CharDistribution::CharDistribution(const std::set<char>& char_set,
 
 }
 
-char CharDistribution::next() {
+char CharDistribution::next() 
+{
     return _char_set[_distr(_rng)];
+}
+
+void CharDistribution::reset() 
+{
+    _distr.reset();
 }
 
 } // namepace NeuroEvo

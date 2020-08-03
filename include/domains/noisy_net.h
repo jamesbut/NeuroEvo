@@ -62,8 +62,6 @@ private:
         _noise_distr.set_seed(rand_seed);
         _input_distr.set_seed(rand_seed);
 
-        std::cout << "Rand seed: " << rand_seed << std::endl;
-
         const double noise = _noise_distr.next();
         const double input = _input_distr.next();
 

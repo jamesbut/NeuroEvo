@@ -41,9 +41,15 @@ public:
     virtual T next() = 0;
 
     // Sets random seed of distribution
-    inline void set_seed(const unsigned seed) { _rng.seed(seed); }
+    void set_seed(const unsigned seed) 
+    { 
+        _rng.seed(seed); 
+        reset();
+    }
 
 protected:
+    
+    virtual void reset() = 0;
 
     std::mt19937 _rng;
 

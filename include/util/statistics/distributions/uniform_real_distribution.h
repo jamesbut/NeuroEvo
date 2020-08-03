@@ -21,6 +21,8 @@ public:
 
 private:
 
+    void reset() override;
+
     std::uniform_real_distribution<> _distr;
 
 };

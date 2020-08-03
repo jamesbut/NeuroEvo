@@ -20,4 +20,9 @@ unsigned long UniformUnsignedDistribution::get(const unsigned long lower_bound,
     return distr.next();
 }
 
+void UniformUnsignedDistribution::reset() 
+{
+    _distr.reset();
+}
+
 }

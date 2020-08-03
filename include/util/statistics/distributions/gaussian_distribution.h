@@ -16,6 +16,8 @@ public:
 
 private:
 
+    void reset() override;
+
     std::normal_distribution<double> _distr;
 
 };
