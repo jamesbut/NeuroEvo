@@ -11,11 +11,11 @@ HebbsNeuron::HebbsNeuron(const unsigned num_inputs,
                          const NeuronType& neuron_type, 
                          const std::shared_ptr<ActivationFunction> activation_function,
                          const bool trace) :
-    Neuron(neuron_type, neuron_type, activation_function, trace) {}
+    Neuron(num_inputs, neuron_type, activation_function, true, trace) {}
 
 void HebbsNeuron::set_weights(const std::vector<double>& weights) 
 {
-
+    check_num_weights(weights);
     _weights = weights;
 
     //Normalise weights
@@ -25,6 +25,7 @@ void HebbsNeuron::set_weights(const std::vector<double>& weights)
 
 void HebbsNeuron::set_learning_rates(const std::vector<double>& learning_rates) 
 {
+    check_num_weights(learning_rates);
     _learning_rates = learning_rates;
 }
 

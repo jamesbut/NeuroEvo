@@ -30,6 +30,7 @@ public:
                    const bool trace = false,
                    const std::shared_ptr<ActivationFunctionSpec> activation_func_spec = 
                        std::shared_ptr<ActivationFunctionSpec>(new SigmoidSpec()),
+                   const bool bias = true,
                    const NeuronType neuron_type = NeuronType::Standard);
 
     //Build with layer specs in which one can provde more fine grained detail
@@ -75,7 +76,8 @@ private:
         const unsigned num_hidden_layers,
         const unsigned neurons_per_layer,
         const NeuronType neuron_type,
-        const std::shared_ptr<ActivationFunctionSpec>& activation_func);
+        const std::shared_ptr<ActivationFunctionSpec>& activation_func,
+        const bool bias);
 
     const std::pair<std::vector<double>, std::vector<double>> 
         split_hebbs_traits(const std::vector<double>& traits) const;

@@ -5,8 +5,14 @@ namespace NeuroEvo {
 BernoulliDistribution::BernoulliDistribution(const double p) :
     _distr(p) {}
 
-bool BernoulliDistribution::next() {
+bool BernoulliDistribution::next() 
+{
     return _distr(_rng);
+}
+
+void BernoulliDistribution::reset()
+{
+    _distr.reset();
 }
 
 } // namespace NeuroEvo

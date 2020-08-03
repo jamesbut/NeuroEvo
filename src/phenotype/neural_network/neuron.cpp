@@ -7,16 +7,19 @@ namespace NeuroEvo {
 
 Neuron::Neuron(const unsigned num_inputs, const NeuronType& neuron_type, 
                const std::shared_ptr<ActivationFunction> activation_function,
+               const bool bias,
                const bool trace) :
     _num_inputs(num_inputs),
     _neuron_type(neuron_type),
     _activation_function(activation_function),
+    _bias(bias),
     _trace(trace),
     _previous_output(0.0) {}
 
 //Sets the weights of the Neuron
 void Neuron::set_weights(const std::vector<double>& weights) 
 {
+    check_num_weights(weights);
     _weights = weights;
 }
 
@@ -44,26 +47,34 @@ double Neuron::propogate(const std::vector<double>& inputs)
         if(_trace) std::cout << "\n" << inputs[i] << " x " << _weights[i];
         activation_val += inputs[i] * _weights[i];
     }
+    
+    if(_trace) std::cout << std::endl;
 
     //Recurrent input
-    if(_neuron_type == NeuronType::Recurrent) {
+    if(_neuron_type == NeuronType::Recurrent) 
+    {
 
         activation_val += _previous_output * _weights[inputs.size()];
-        activation_val += _weights[inputs.size()+1];
+        if(_bias)
+            activation_val += _weights[inputs.size()+1];
 
         if(_trace) 
         {
-            std::cout << "\n" << _previous_output << " x " << _weights[inputs.size()];
-            std::cout << "\n" << "1 x " << _weights[inputs.size()+1] << "\n\n";
+            std::cout << _previous_output << " x " << _weights[inputs.size()] << std::endl;
+            if(_bias)
+                std::cout << "1 x " << _weights[inputs.size()+1] << "\n\n";
         }
 
-    } else {
-
-        activation_val += 1 * _weights[inputs.size()];
-
-        if(_trace) std::cout << "\n" << "1 x " << _weights[inputs.size()] << "\n\n";
-
+    } else 
+    {
+        if(_bias)
+        {
+            activation_val += 1 * _weights[inputs.size()];
+            if(_trace) std::cout << "1 x " << _weights[inputs.size()] << "\n\n";
+        }
     }
+
+    if(_trace) std::cout << std::endl;
 
     double output = activation_val;
     //Apply activation function if there is one there
@@ -97,6 +108,18 @@ void Neuron::print_output_to_file(std::ofstream& file) const
 void Neuron::reset() 
 {
     _previous_output = 0.0;
+}
+
+void Neuron::check_num_weights(const std::vector<double>& weights) const
+{
+    unsigned num_required_weights = _num_inputs;
+    if(_bias)
+        num_required_weights += 1;
+    if(weights.size() != num_required_weights)
+    {
+        std::cerr << "Giving wrong number of weights to neuron" << std::endl;
+        exit(0);
+    }
 }
 
 } // namespace NeuroEvo

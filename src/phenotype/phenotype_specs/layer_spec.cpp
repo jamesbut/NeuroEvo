@@ -5,20 +5,30 @@ namespace NeuroEvo {
 LayerSpec::LayerSpec(const unsigned num_neurons,
                      const unsigned inputs_per_neuron, 
                      const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+                     const bool bias,
                      const NeuronType neuron_type) :
     _neuron_type(neuron_type),
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron),
-    _activation_func_spec(activation_func_spec)
+    _activation_func_spec(activation_func_spec),
+    _bias(bias)
 {
 
     //Normal
     if(_neuron_type == Standard)
-        _params_per_neuron = inputs_per_neuron + 1;
+    {
+        _params_per_neuron = inputs_per_neuron;
+        if(_bias)
+            _params_per_neuron += 1;
+    }
 
     //Recurrent
     if(_neuron_type == Recurrent)
-        _params_per_neuron = inputs_per_neuron + 2;
+    {
+        _params_per_neuron = inputs_per_neuron + 1;
+        if(_bias)
+            _params_per_neuron += 1;
+    }
 
     //GRU
     if(_neuron_type == GRU) 
@@ -31,7 +41,8 @@ LayerSpec::LayerSpec(const LayerSpec& layer_spec) :
     _num_neurons(layer_spec._num_neurons),
     _inputs_per_neuron(layer_spec._inputs_per_neuron),
     _params_per_neuron(layer_spec._params_per_neuron),
-    _activation_func_spec(layer_spec._activation_func_spec) {}
+    _activation_func_spec(layer_spec._activation_func_spec),
+    _bias(layer_spec._bias) {}
 
 LayerSpec& LayerSpec::operator=(const LayerSpec& layer_spec) 
 {
@@ -40,6 +51,7 @@ LayerSpec& LayerSpec::operator=(const LayerSpec& layer_spec)
     _inputs_per_neuron = layer_spec._inputs_per_neuron;
     _params_per_neuron = layer_spec._params_per_neuron;
     _activation_func_spec = layer_spec._activation_func_spec;
+    _bias = layer_spec._bias;
 
     return *this;
 }
@@ -50,26 +62,27 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
         const unsigned num_hidden_layers,
         const unsigned neurons_per_layer,
         const NeuronType neuron_type,
-        const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec) 
+        const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
+        const bool bias) 
 {
 
     std::vector<LayerSpec> layer_specs;
 
     if(num_hidden_layers == 0)
         layer_specs.push_back(LayerSpec(num_outputs, num_inputs, 
-                                        activation_func_spec, neuron_type));
+                                        activation_func_spec, bias, neuron_type));
     else 
     {
 
         layer_specs.push_back(LayerSpec(neurons_per_layer, num_inputs, 
-                                        activation_func_spec, neuron_type));
+                                        activation_func_spec, bias, neuron_type));
 
         for(unsigned i = 1; i < num_hidden_layers; i++)
             layer_specs.push_back(LayerSpec(neurons_per_layer, neurons_per_layer, 
-                                            activation_func_spec, neuron_type));
+                                            activation_func_spec, bias, neuron_type));
 
         layer_specs.push_back(LayerSpec(num_outputs, neurons_per_layer, 
-                                        activation_func_spec, neuron_type));
+                                        activation_func_spec, bias, neuron_type));
 
     }
 
@@ -107,6 +120,11 @@ const std::shared_ptr<ActivationFunctionSpec>& LayerSpec::get_activation_func_sp
     return _activation_func_spec;
 }
 
+bool LayerSpec::get_bias() const
+{
+    return _bias;
+}
+
 void LayerSpec::print_spec() const 
 {
     std::cout << "Layer Spec:" << std::endl;
@@ -114,6 +132,7 @@ void LayerSpec::print_spec() const
     std::cout << "Num neurons: " << _num_neurons << std::endl;
     std::cout << "Inputs per neuron: " << _inputs_per_neuron << std::endl;
     std::cout << "Params per neuron: " << _params_per_neuron << std::endl;
+    std::cout << "Bias: " << _bias << std::endl;
 }
 
 } // namespace NeuroEvo

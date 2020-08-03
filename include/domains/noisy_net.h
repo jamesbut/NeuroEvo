@@ -10,6 +10,7 @@
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/statistics/distributions/uniform_real_distribution.h>
+#include <util/statistics/distributions/bernoulli_distribution.h>
 
 namespace NeuroEvo {
 
@@ -59,22 +60,30 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
-        _noise_distr.set_seed(rand_seed);
-        _input_distr.set_seed(rand_seed);
+        //_noise_distr.set_seed(rand_seed);
+        //_input_distr.set_seed(rand_seed);
 
-        const double noise = _noise_distr.next();
+        //const double noise = _noise_distr.next();
         const double input = _input_distr.next();
+        const bool flag = _flag_distr.next();
 
         //The target is _a multiplied by the input
         //The aim is for the target to ascertain this linear relationship
-        const double target = _a * input;
+        //const double target = _a * input;
+        double target;
+            if(flag)
+                target = _a * input;
+            else
+                target = -_a * input;
 
-        std::vector<double> net_input = {noise, input}; 
+        //std::vector<double> net_input = {noise, input}; 
+        std::vector<double> net_input = {input, (double)flag};
         std::vector<double> net_output = org.get_phenotype().activate(net_input);
 
         if(this->_domain_trace)
         {
-            std::cout << "Noise: " << noise << std::endl;
+            //std::cout << "Noise: " << noise << std::endl;
+            std::cout << "Flag: " << flag << std::endl;
             std::cout << "Input: " << input << std::endl;
             std::cout << "Net output: " << net_output << std::endl;
             std::cout << "Target: " << target << std::endl;
@@ -98,6 +107,7 @@ private:
 
     GaussianDistribution _noise_distr;
     UniformRealDistribution _input_distr;
+    BernoulliDistribution _flag_distr;
 
 };
 

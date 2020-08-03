@@ -55,6 +55,7 @@ protected:
     const unsigned _num_neurons;
     const NeuronType _neuron_type;
     const std::shared_ptr<ActivationFunction> _activation_function;
+    const bool _bias;
 
     std::vector<std::unique_ptr<Neuron> > _neurons;
 

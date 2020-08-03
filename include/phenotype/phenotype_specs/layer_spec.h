@@ -35,6 +35,7 @@ public:
     LayerSpec(const unsigned num_neurons,
               const unsigned inputs_per_neuron, 
               const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+              const bool bias = true,
               const NeuronType neuron_type = NeuronType::Standard);
 
     LayerSpec(const LayerSpec& layer_spec);
@@ -51,7 +52,8 @@ public:
             const unsigned num_hidden_layers,
             const unsigned neurons_per_layer,
             const NeuronType neuron_type,
-            const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec);
+            const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
+            const bool bias = true);
 
     NeuronType get_neuron_type() const;
     unsigned get_num_neurons() const;
@@ -59,6 +61,7 @@ public:
     unsigned get_params_per_neuron() const;
     unsigned get_num_weights() const;
     const std::shared_ptr<ActivationFunctionSpec>& get_activation_func_spec() const;
+    bool get_bias() const;
 
     void print_spec() const;
 
@@ -70,6 +73,8 @@ private:
     unsigned _params_per_neuron;
 
     std::shared_ptr<ActivationFunctionSpec> _activation_func_spec;
+
+    bool _bias;
 
 };
 

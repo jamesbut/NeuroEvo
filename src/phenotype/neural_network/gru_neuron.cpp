@@ -5,7 +5,7 @@ namespace NeuroEvo {
 GRUNeuron::GRUNeuron(const unsigned num_inputs, 
                      const std::shared_ptr<ActivationFunction> activation_function,
                      const bool trace) :
-    Neuron(num_inputs, NeuronType::GRU, activation_function, trace) 
+    Neuron(num_inputs, NeuronType::GRU, activation_function, true, trace) 
 {
 
     //Set weight indices

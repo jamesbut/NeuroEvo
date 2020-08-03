@@ -6,16 +6,17 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_out
                                const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                                const bool trace,
                                const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+                               const bool bias,
                                const NeuronType neuron_type) :
     PhenotypeSpec(required_num_genes(num_inputs, num_outputs, 
                                      num_hidden_layers, neurons_per_layer, 
-                                     neuron_type, activation_func_spec),
+                                     neuron_type, activation_func_spec, bias),
                   trace),
     _num_inputs(num_inputs),
     _num_outputs(num_outputs),
     _layer_specs(LayerSpec::build_layer_specs(num_inputs, num_outputs, num_hidden_layers,
                                               neurons_per_layer, neuron_type, 
-                                              activation_func_spec)) {}
+                                              activation_func_spec, bias)) {}
 
 NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                                const bool trace) :
@@ -199,16 +200,18 @@ unsigned NetworkBuilder::required_num_genes(
     const unsigned num_hidden_layers,
     const unsigned neurons_per_layer,
     const NeuronType neuron_type,
-    const std::shared_ptr<ActivationFunctionSpec>& activation_func) 
+    const std::shared_ptr<ActivationFunctionSpec>& activation_func,
+    const bool bias) 
 {
 
     //Build LayerSpecs from the specification
     std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs, 
-                                                                        num_outputs,
-                                                                        num_hidden_layers, 
-                                                                        neurons_per_layer,
-                                                                        neuron_type, 
-                                                                        activation_func);
+                                                                      num_outputs,
+                                                                      num_hidden_layers, 
+                                                                      neurons_per_layer,
+                                                                      neuron_type, 
+                                                                      activation_func,
+                                                                      bias);
     return required_num_genes(layer_specs);
 
 } 

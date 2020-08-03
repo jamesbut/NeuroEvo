@@ -18,6 +18,7 @@ public:
     Neuron(const unsigned num_inputs, 
            const NeuronType& neuron_type, 
            const std::shared_ptr<ActivationFunction> activation_function,
+           const bool bias,
            const bool trace);
 
     virtual ~Neuron() = default;
@@ -48,10 +49,12 @@ protected:
     };
 
     double propogate(const std::vector<double>& inputs);
+    void check_num_weights(const std::vector<double>& weights) const;
 
     const unsigned _num_inputs;
     const NeuronType _neuron_type;
     const std::shared_ptr<ActivationFunction> _activation_function;
+    const bool _bias;
 
     bool _trace;
 
