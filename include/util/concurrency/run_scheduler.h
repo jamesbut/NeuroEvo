@@ -27,17 +27,18 @@ public:
 
     //Dispatches jobs - blocks until finished
     void dispatch(void (&run)(const unsigned, 
-                                const unsigned, 
-                                Selection<G, T>*,
-                                Domain<G, T>*,
-                                GenotypeSpec<G>*,
-                                GPMap<G, T>*,
-                                const std::optional<const std::string>&,
-                                unsigned&,
-                                bool&,
-                                const bool,
-                                const unsigned,
-                                const bool))
+                              const unsigned, 
+                              Selection<G, T>*,
+                              Domain<G, T>*,
+                              GenotypeSpec<G>*,
+                              GPMap<G, T>*,
+                              const std::optional<const std::string>&,
+                              const bool,
+                              unsigned&,
+                              bool&,
+                              const bool,
+                              const unsigned,
+                              const bool))
 
     {
 
@@ -88,7 +89,8 @@ public:
                         threads[thread_index] = std::thread(
                                 run, _run_args.pop_size, _run_args.max_gens, _run_args.selector,
                                 _run_args.domain, _run_args.geno_spec, _run_args.gp_map,
-                                _run_args.exp_dir_path, std::ref(_run_args.num_winners),
+                                _run_args.exp_dir_path, _run_args.dump_winners_only, 
+                                std::ref(_run_args.num_winners),
                                 std::ref(finished_flags[thread_index]),
                                 _run_args.trace, _run_args.num_trials, _run_args.domain_parallel);
                         

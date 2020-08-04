@@ -33,10 +33,12 @@ class DataCollector
 public:
 
     //If one does not want to dump the data then just provide a nullopt to the constructor
-    DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens) :
+    DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens,
+                  const bool dump_winners_only) :
         _uuid_folders(true),
         _exp_dir_path(exp_dir_path),
-        _max_gens(max_gens)
+        _max_gens(max_gens),
+        _dump_winners_only(dump_winners_only)
     {
         //We can reserve up to max gens for member vectors so that they never have to resize
         _mean_gen_fitnesses.reserve(max_gens);
@@ -78,8 +80,15 @@ public:
         //Save entire population to file
         if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
 
+        //If _dump_winners_only is true delete the entire run directory if the 
+        //best winner fitness is not a domain winner
+        if(_dump_winners_only && final_gen)
+            if(!_best_winner_so_far.value().is_domain_winner())
+                std::filesystem::remove_all(_run_dir_path.value());            
+
         if(trace) 
-            print_info_to_screen(population, gen_winner.get_fitness(), _mean_gen_fitnesses.back());
+            print_info_to_screen(population, gen_winner.get_fitness().value(), 
+                                 _mean_gen_fitnesses.back());
 
     }
 
@@ -141,13 +150,13 @@ private:
 
         //Find highest scoring organism in the population
         std::size_t gen_winner_index = 0;
-        double gen_winner_fitness = orgs.at(gen_winner_index).get_fitness();
+        double gen_winner_fitness = orgs.at(gen_winner_index).get_fitness().value();
 
         for(std::size_t i = 1; i < population.get_size(); i++)
             if(orgs[i].get_fitness() > gen_winner_fitness) 
             {
                 gen_winner_index = i;
-                gen_winner_fitness = orgs[i].get_fitness();
+                gen_winner_fitness = orgs[i].get_fitness().value();
             }
 
         return orgs[gen_winner_index];
@@ -161,7 +170,7 @@ private:
             _best_winner_so_far = gen_winner;
 
         //Save best winner so far fitness
-        _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness());
+        _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness().value());
     }
 
     void save_generational_winner_to_file(const Organism<G, T>& gen_winner) const
@@ -305,7 +314,7 @@ private:
 
         //Print population data
         const std::vector<double> row_data{(double)population.get_gen_num(),
-                                           _best_winner_so_far->get_fitness(),
+                                           _best_winner_so_far->get_fitness().value(),
                                            gen_winner_fitness,
                                            pop_average_fitness};
         print_table_row(row_data, column_width);
@@ -415,6 +424,8 @@ private:
     std::optional<Organism<G, T>> _best_winner_so_far;
 
     const unsigned _max_gens;
+
+    const bool _dump_winners_only;
 
     //Data structures to store data over the generations
     std::vector<double> _mean_gen_fitnesses;

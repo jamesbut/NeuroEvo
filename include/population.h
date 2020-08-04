@@ -53,13 +53,14 @@ public:
     {
         std::vector<double> fitnesses(_organisms.size());
         for(std::size_t i = 0; i < _organisms.size(); i++)
-            fitnesses[i] = _organisms[i].get_fitness();
+            fitnesses[i] = _organisms[i].get_fitness().value();
         return fitnesses;
     }
 
-    void set_organism_fitness(const std::size_t org, const double fitness) 
+    void set_organism_fitness(const std::size_t org, const double fitness,
+                              const double domain_completion_fitness) 
     {
-        _organisms.at(org).set_fitness(fitness);
+        _organisms.at(org).set_fitness(fitness, domain_completion_fitness);
     }
 
     void organism_genesis(const std::size_t org)

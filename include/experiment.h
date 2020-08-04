@@ -24,12 +24,13 @@ public:
     static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GenotypeSpec<G>& geno_spec,
                                                GPMap<G, T>& gp_map,
-                                               const bool dump_data = true) 
+                                               const bool dump_data = true,
+                                               const bool dump_winners_only = false) 
     {
         
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(*gp_map.get_pheno_spec()))
-            return Experiment(domain, geno_spec, gp_map, dump_data);
+            return Experiment(domain, geno_spec, gp_map, dump_data, dump_winners_only);
         return std::nullopt;
         
     }
@@ -94,8 +95,8 @@ public:
             //Trace is off in parallel runs
             const bool trace = false;
             const RunArguments<G, T> run_args{pop_size, max_gens, selector, &_domain, &_geno_spec, 
-                                              &_gp_map, _exp_dir_path, num_winners, trace, 
-                                              num_trials, domain_parallel};
+                                              &_gp_map, _exp_dir_path, _dump_winners_only, 
+                                              num_winners, trace, num_trials, domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
@@ -107,7 +108,8 @@ public:
             {
                 std::cout << "Starting run: " << i << std::endl;
                 run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, _exp_dir_path,
-                    num_winners, completed_flag, trace, num_trials, domain_parallel);
+                    _dump_winners_only, num_winners, completed_flag, trace, num_trials, 
+                    domain_parallel);
             }
         }
 
@@ -144,12 +146,14 @@ private:
     Experiment(Domain<G, T>& domain,
                GenotypeSpec<G>& geno_spec,
                GPMap<G, T>& gp_map,
-               const bool dump_data) :
+               const bool dump_data,
+               const bool dump_winners_only) :
         _domain(domain), 
         _geno_spec(geno_spec),
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
-        _dump_data(dump_data) {}
+        _dump_data(dump_data),
+        _dump_winners_only(dump_winners_only) {}
 
     static int ga_finished(Population<G, T>& population, Domain<G, T>& domain, 
                            const unsigned max_gens) 
@@ -172,6 +176,7 @@ private:
                     GenotypeSpec<G>* m_geno_spec,
                     GPMap<G, T>* m_gp_map,
                     const std::optional<const std::string>& exp_dir_path,
+                    const bool dump_winners_only,
                     unsigned& num_winners,
                     bool& completed_flag,
                     const bool trace = true,
@@ -183,7 +188,7 @@ private:
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
 
         //Create new data collector
-        DataCollector<G, T> data_collector(exp_dir_path, max_gens);
+        DataCollector<G, T> data_collector(exp_dir_path, max_gens, dump_winners_only);
 
         unsigned gen = 1;
         int ga_completed = 0;
@@ -240,6 +245,7 @@ private:
 
     std::optional<std::string> _exp_dir_path;
     const bool _dump_data;
+    const bool _dump_winners_only;
 
 };
 

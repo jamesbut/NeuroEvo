@@ -17,6 +17,7 @@ struct RunArguments
     GenotypeSpec<G>* geno_spec;
     GPMap<G, T>* gp_map;
     std::optional<const std::string> exp_dir_path;
+    bool dump_winners_only;
     unsigned& num_winners;
     bool trace = true;
     unsigned num_trials = 1;

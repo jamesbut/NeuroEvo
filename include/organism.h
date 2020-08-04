@@ -26,13 +26,15 @@ public:
         _genotype(genotype_spec.generate_genotype()),
         _gp_map(gp_map.clone()),
         _phenotype(gp_map.map(*_genotype)),
-        _fitness(0.0) {}
+        _fitness(std::nullopt),
+        _domain_winner(false) {}
 
     Organism(Genotype<G>& genotype, GPMap<G, T>& gp_map) :
         _genotype(genotype.clone()),
         _gp_map(gp_map.clone()),
         _phenotype(gp_map.map(*_genotype)),
-        _fitness(0.0) {}
+        _fitness(std::nullopt),
+        _domain_winner(false) {}
         
     Organism(GenotypeSpec<G>& genotype_spec,
              GPMap<G, T>& gp_map, 
@@ -40,13 +42,15 @@ public:
         _genotype(genotype_spec.generate_genotype(file_name)),
         _gp_map(gp_map.clone()),
         _phenotype(gp_map.map(*_genotype)),
-        _fitness(0.0) {}
+        _fitness(std::nullopt),
+        _domain_winner(false) {}
 
     Organism(const Organism& organism) :
         _genotype(organism.get_genotype().clone()),
         _gp_map(organism._gp_map->clone()),
         _phenotype(organism.get_phenotype().clone_phenotype()),
-        _fitness(organism.get_fitness()) {}
+        _fitness(organism.get_fitness()),
+        _domain_winner(organism._domain_winner) {}
 
     Organism& operator=(const Organism& organism) 
     {
@@ -55,6 +59,7 @@ public:
         _gp_map = organism._gp_map->clone();
         _phenotype = organism.get_phenotype().clone_phenotype();
         _fitness = organism.get_fitness();
+        _domain_winner = organism._domain_winner;
 
         return *this;
 
@@ -65,12 +70,16 @@ public:
     Organism& operator=(Organism&& organism) = default;
 
 
-    void set_fitness(const double fitness) 
+    //Pass in domain completion fitness too in order to determine whether the
+    //organism is a domain winner
+    void set_fitness(const double fitness, const double domain_completion_fitness) 
     {
+        if(fitness > domain_completion_fitness)
+            _domain_winner = true;
         _fitness = fitness;
     }
 
-    double get_fitness() const 
+    const std::optional<const double> get_fitness() const 
     {
         return _fitness;
     }
@@ -90,6 +99,11 @@ public:
         return *_phenotype;
     }
 
+    bool is_domain_winner() const
+    {
+        return _domain_winner;
+    }
+
     //Creates new phenotype out of modified genotype
     void genesis() 
     {
@@ -103,7 +117,7 @@ public:
         std::ofstream org_file;
         org_file.open(file_name);
 
-        org_file << _fitness;
+        org_file << _fitness.value();
 
         org_file << std::setprecision(std::numeric_limits<double>::max_digits10);
 
@@ -129,7 +143,8 @@ private:
     std::unique_ptr<GPMap<G, T>> _gp_map;
     std::unique_ptr<Phenotype<T>> _phenotype;
 
-    double _fitness;
+    std::optional<double> _fitness;
+    bool _domain_winner;
 
 };
 

@@ -81,7 +81,7 @@ public:
                                                      fitnesses.at(i).end(), 0.0) /
                                      fitnesses.at(i).size();
 
-            pop.set_organism_fitness(i, average_fitness);
+            pop.set_organism_fitness(i, average_fitness, _completion_fitness);
 
         }
 
