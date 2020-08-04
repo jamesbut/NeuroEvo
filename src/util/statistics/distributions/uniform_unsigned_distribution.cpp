@@ -2,6 +2,11 @@
 
 namespace NeuroEvo {
 
+UniformUnsignedDistribution::UniformUnsignedDistribution(const std::optional<unsigned> seed) :
+    Distribution<unsigned long>(seed),
+    _distr(std::numeric_limits<unsigned long>::lowest(), 
+           std::numeric_limits<unsigned long>::max()) {}
+
 UniformUnsignedDistribution::UniformUnsignedDistribution(const unsigned long lower_bound,
                                                          const unsigned long upper_bound,
                                                          const std::optional<unsigned> seed) :

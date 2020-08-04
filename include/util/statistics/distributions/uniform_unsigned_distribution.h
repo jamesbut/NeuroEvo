@@ -14,6 +14,8 @@ class UniformUnsignedDistribution : public Distribution<unsigned long>
    
 public:
 
+    UniformUnsignedDistribution(const std::optional<unsigned> seed = std::nullopt);
+
     UniformUnsignedDistribution(const unsigned long lower_bound,
                                 const unsigned long upper_bound,
                                 const std::optional<unsigned> seed = std::nullopt);

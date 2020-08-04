@@ -34,7 +34,9 @@ public:
         
     }
     
-    void individual_run(const std::string& organism_folder_name, const bool pheno_trace = false) 
+    void individual_run(const std::string& organism_folder_name, 
+                        const unsigned num_trials = 1,
+                        const bool pheno_trace = false) 
     {
 
         // View the run of the saved best_winner_so_far
@@ -46,24 +48,22 @@ public:
 
         Organism organism(_geno_spec, _gp_map, best_winner_path.str());
 
-        // Run
-        // TODO: Move number of trials as function argument
-        const unsigned num_trials = 1;
         double fitness = _domain.evaluate_org(organism, num_trials);
 
         std::cout << "Individual run fitness: " << fitness << std::endl;
 
     }
 
-    //Tests and individual given a set of genes and GPMap
-    void individual_run(const std::vector<G> genes, GPMap<G, T>& gp_map)
+    //Tests and individual given a set of genes
+    void individual_run(const std::vector<G>& genes,
+                        const unsigned num_trials)
     {
-        gp_map.set_pheno_spec_trace(true);
+        //_gp_map.set_pheno_spec_trace(true);
         Genotype<G> genotype(genes);
-        Organism<G, T> organism(genotype, gp_map);
+        Organism<G, T> organism(genotype, _gp_map);
 
-        _domain.set_trace(true);
-        double fitness = _domain.evaluate_org(organism);
+        //_domain.set_trace(true);
+        double fitness = _domain.evaluate_org(organism, num_trials);
 
         std::cout << "Individual run fitness: " << fitness << std::endl;
 

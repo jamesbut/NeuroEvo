@@ -26,15 +26,17 @@ class Domain
 public:
 
     Domain(const bool domain_trace, const double completion_fitness = 0.0, 
+           const std::optional<unsigned> seed = std::nullopt,
            const bool render = false, const unsigned int screen_width = 1280, 
            const unsigned int screen_height = 960) :
         _completion_fitness(completion_fitness),
         _complete(false),
         _domain_trace(domain_trace),
+        _seed(seed),
+        _seed_sequence(seed),
         _render(render),
         _screen_width(screen_width),
-        _screen_height(screen_height),
-        _seed(std::nullopt)
+        _screen_height(screen_height)
     {
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
@@ -44,10 +46,11 @@ public:
         _completion_fitness(domain._completion_fitness),
         _complete(domain._complete),
         _domain_trace(domain._domain_trace),
+        _seed(domain._seed),
+        _seed_sequence(domain._seed_sequence),
         _render(domain._render),
         _screen_width(domain._screen_width),
-        _screen_height(domain._screen_height),
-        _seed(domain._seed)
+        _screen_height(domain._screen_height)
     {
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
@@ -101,7 +104,8 @@ public:
             //Need to reset the network
             org.genesis();
 
-            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
+            const auto seed = _seed_sequence.next();
+
             fitnesses.at(i) = single_run(org, seed); 
 
             if(verbosity)
@@ -144,9 +148,11 @@ public:
         _domain_trace = trace;
     }
 
-    void set_seed(const unsigned seed)
+    void set_seed(const std::optional<const unsigned>& seed)
     {
         _seed = seed;
+        if(_seed.has_value())
+            _seed_sequence.set_seed(_seed.value());
     }
 
 protected:
@@ -188,6 +194,11 @@ protected:
 
     bool _domain_trace;
 
+    std::optional<unsigned> _seed;
+    //We need a sequence of seeds to hand to each single run
+    //This sequence of seeds is seeded with _seed... sorry :/
+    UniformUnsignedDistribution _seed_sequence;
+
     //Rendering variables
     const bool _render;
 
@@ -200,16 +211,17 @@ protected:
 private:
 
     std::vector<std::vector<double> > evaluate_pop_serial(Population<G, T>& pop,
-                                                          const unsigned num_trials) {
+                                                          const unsigned num_trials) 
+    {
 
         //Store fitnesses from runs
         std::vector<std::vector<double> > fitnesses(pop.get_size(), 
                                                     std::vector<double>(num_trials));
 
-        for(unsigned int i = 0; i < num_trials; i++) {
-
+        for(unsigned i = 0; i < num_trials; i++) 
+        {
             //Each individual in the population has the same seed for each trial
-            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
+            const auto seed = _seed_sequence.next();
 
             for(std::size_t j = 0; j < pop.get_size(); j++) 
             {
@@ -242,8 +254,7 @@ private:
 
         for(unsigned i = 0; i < num_trials; i++) {
 
-            //Each individual in the population has the same seed for each trial
-            auto seed = _seed.has_value() ? _seed.value() : UniformUnsignedDistribution::get();
+            const auto seed = _seed_sequence.next();
 
             unsigned num_organisms_tested = 0;
 
@@ -340,8 +351,6 @@ private:
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
-
-    std::optional<unsigned> _seed;
 
 };
 

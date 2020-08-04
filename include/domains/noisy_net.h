@@ -21,8 +21,9 @@ class NoisyNet : public Domain<G, double>
 public:
 
     NoisyNet(const double a, const bool domain_trace = false,
-             const double completion_fitness = -1e-3) :
-        Domain<G, double>(domain_trace, completion_fitness),
+             const double completion_fitness = -1e-3,
+             const std::optional<unsigned> seed = std::nullopt) :
+        Domain<G, double>(domain_trace, completion_fitness, seed),
         _a(a),
         _noise_distr(0., 5.),
         _input_distr(0., 1.) {}
@@ -60,8 +61,9 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override 
     {
-        //_noise_distr.set_seed(rand_seed);
-        //_input_distr.set_seed(rand_seed);
+        _noise_distr.set_seed(rand_seed);
+        _input_distr.set_seed(rand_seed);
+        _flag_distr.set_seed(rand_seed);
 
         //const double noise = _noise_distr.next();
         const double input = _input_distr.next();
