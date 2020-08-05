@@ -3,9 +3,11 @@
 namespace NeuroEvo {
 
 NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
-                               const unsigned num_hidden_layers, const unsigned neurons_per_layer,
+                               const unsigned num_hidden_layers, 
+                               const unsigned neurons_per_layer,
                                const bool trace,
-                               const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+                               const std::shared_ptr<ActivationFunctionSpec> 
+                                   activation_func_spec,
                                const bool bias,
                                const NeuronType neuron_type) :
     PhenotypeSpec(required_num_genes(num_inputs, num_outputs, 
@@ -43,8 +45,9 @@ Phenotype<double>* NetworkBuilder::build_network(
 
         return network;
 
-    //If it is a torch network
-    } else if (_default_torch_net_init)
+    } 
+#if TORCH_FOUND
+    else if (_default_torch_net_init)
     {
 
         TorchNetwork* torch_network;
@@ -67,7 +70,9 @@ Phenotype<double>* NetworkBuilder::build_network(
                                              _trace);
         return torch_network;
 
-    } else
+    } 
+#endif
+    else
     {
         Network* network = new Network(_trace);
         network->create_net(_layer_specs);

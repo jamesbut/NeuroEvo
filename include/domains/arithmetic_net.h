@@ -31,7 +31,8 @@ public:
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
     {
 
-        const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
+        const NetworkBuilder* network_builder = 
+            dynamic_cast<const NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
         if(network_builder == nullptr) 
@@ -87,7 +88,7 @@ private:
             //std::cout << "Noise: " << noise << std::endl;
             std::cout << "Flag: " << flag << std::endl;
             std::cout << "Input: " << input << std::endl;
-            std::cout << "Net output: " << net_output << std::endl;
+            std::cout << "Net output: " << net_output[0] << std::endl;
             std::cout << "Target: " << target << std::endl;
         }
 

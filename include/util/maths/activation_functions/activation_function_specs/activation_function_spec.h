@@ -2,7 +2,9 @@
 #define _ACTIVATION_FUNCTION_SPEC_
 
 #include <util/maths/activation_functions/activation_function.h>
+#if TORCH_FOUND
 #include <torch/nn/modules/container/any.h>
+#endif
 
 /*
  * Abstrace interface for defining an activation function specification.
@@ -18,8 +20,10 @@ public:
 
     virtual ~ActivationFunctionSpec() = default;
 
+#if TORCH_FOUND
     //Define how to create torch module from activation function spec
     virtual torch::nn::AnyModule create_torch_module() const = 0;
+#endif
 
     //Define how to create a NeuroEvo activation function
     virtual ActivationFunction* create_activation_function() const = 0;

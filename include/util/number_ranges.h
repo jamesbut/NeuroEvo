@@ -6,7 +6,9 @@
  */
 
 #include <vector>
+#if TORCH_FOUND
 #include <torch/types.h>
+#endif
 
 namespace NeuroEvo {
 
@@ -23,11 +25,13 @@ std::vector<std::pair<double, double>> create_range_2d(const double lower_bound,
 std::vector<double> create_range_w_size(const double lower_bound, const double upper_bound,
                                         const unsigned num_values);
 
+#if TORCH_FOUND
 torch::Tensor create_range_torch(const double lower_bound, const double upper_bound,
                                  const double increment);
 
 torch::Tensor create_range_torch_2d(const double lower_bound, const double upper_bound,
                                     const double increment);
+#endif
 
 } // namespace NeuroEvo
 

@@ -15,7 +15,9 @@
 #include <phenotype/neural_network/network.h>
 #include <phenotype/neural_network/hebbs_network.h>
 #include <phenotype/phenotype_specs/hebbs_spec.h>
+#if TORCH_FOUND
 #include <phenotype/neural_network/torch_network.h>
+#endif
 
 namespace NeuroEvo {
 
@@ -40,8 +42,8 @@ public:
     //This function builds the network but it is the GPMaps responsibility to set
     //the weights from the genotype
     //One can provide initial weights to the network though
-    Phenotype<double>* build_network(const std::optional<const std::vector<double>>& init_weights
-                                     = std::nullopt) const;
+    Phenotype<double>* build_network(const std::optional<const std::vector<double>>& 
+                                         init_weights = std::nullopt) const;
 
     /* Builder functions */
     void make_recurrent();

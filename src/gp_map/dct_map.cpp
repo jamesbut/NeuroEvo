@@ -1,4 +1,3 @@
-#include "gp_map/gp_map.h"
 #include <gp_map/dct_map.h>
 #include <util/maths/fourier.h>
 #include <phenotype/phenotype_specs/network_builder.h>

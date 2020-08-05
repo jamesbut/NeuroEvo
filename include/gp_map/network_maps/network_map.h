@@ -4,6 +4,7 @@
 #include <gp_map/gp_map.h>
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <phenotype/neural_network/network.h>
+#include <sstream>
 
 /*
  * A network map passes the genotype through a network

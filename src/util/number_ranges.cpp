@@ -51,6 +51,7 @@ std::vector<double> create_range_w_size(const double lower_bound, const double u
     return create_range(lower_bound, upper_bound, increment);
 }
 
+#if TORCH_FOUND
 torch::Tensor create_range_torch(const double lower_bound, const double upper_bound,
                                  const double increment)
 {
@@ -74,5 +75,6 @@ torch::Tensor create_range_torch_2d(const double lower_bound, const double upper
 
     return torch_range;
 }
+#endif
 
 } // namespace NeuroEvo
