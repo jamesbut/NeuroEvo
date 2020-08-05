@@ -1,8 +1,8 @@
-#ifndef _NOISY_NET_H_
-#define _NOISY_NET_H_
+#ifndef _ARITHMETIC_NET_H_
+#define _ARITHMETIC_NET_H_
 
 /*
- * Noisy net is a simple domain that requires a network to solve a simple arithmetic problem
+ * Arithmetic net is a simple domain that requires a network to solve a simple arithmetic problem
  * with additional noise signals attached that it needs to discern
  */
 
@@ -15,14 +15,14 @@
 namespace NeuroEvo {
 
 template <typename G>
-class NoisyNet : public Domain<G, double>
+class ArithmeticNet : public Domain<G, double>
 {
 
 public:
 
-    NoisyNet(const double a, const bool domain_trace = false,
-             const double completion_fitness = -1e-3,
-             const std::optional<unsigned> seed = std::nullopt) :
+    ArithmeticNet(const double a, const bool domain_trace = false,
+                  const double completion_fitness = -1e-3,
+                  const std::optional<unsigned> seed = std::nullopt) :
         Domain<G, double>(domain_trace, completion_fitness, seed),
         _a(a),
         _noise_distr(0., 5.),
@@ -38,7 +38,7 @@ public:
         {
 
             std::cout << "Only network builders are allowed with" <<
-                        " the noisy net domain" << std::endl;
+                        " the arithmetic net domain" << std::endl;
             return false;
 
         }
@@ -48,7 +48,7 @@ public:
         {
 
                 std::cout << "Number of inputs must be 2 and number of outputs" <<
-                            " must be 1 for the noisy net domain" << std::endl;
+                            " must be 1 for the arithmetic net domain" << std::endl;
                 return false;
 
         }
@@ -99,9 +99,9 @@ private:
     void render() override {}
     void reset_domain() override {}
 
-    NoisyNet<G>* clone_impl() const override
+    ArithmeticNet<G>* clone_impl() const override
     {
-        return new NoisyNet<G>(*this);
+        return new ArithmeticNet<G>(*this);
     }
 
     //To determine the target of the network, the input is multiplied by _a
