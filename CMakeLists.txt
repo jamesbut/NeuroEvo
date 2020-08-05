@@ -14,10 +14,8 @@ project(neuro_evo)
 set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-#The below packages should be optional
-
 # SFML used for rendering
-find_package(SFML COMPONENTS graphics REQUIRED)
+find_package(SFML COMPONENTS graphics)
 
 #Torch
 #Add torch path to cmake path
@@ -34,11 +32,21 @@ get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
     set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
     set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+    if(${SFML_FOUND})
+        set(SFML_FOUND 1 PARENT_SCOPE)
+    else()
+        set(SFML_FOUND 0 PARENT_SCOPE)
+    endif()
 endif()
 
 # Make variable available to the C++ source code
 add_compile_definitions(DATA_PATH="${DATA_PATH}")
 add_compile_definitions(NEURO_EVO_CMAKE_SRC_DIR="${NEURO_EVO_CMAKE_SRC_DIR}")
+if(${SFML_FOUND})
+    add_compile_definitions(SFML_FOUND=1)
+else()
+    add_compile_definitions(SFML_FOUND=0)
+endif()
 
 # Build all files in src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -50,8 +58,13 @@ add_library(neuroEvo SHARED
 target_link_libraries(neuroEvo
     ${TORCH_LIBRARIES}
     ${Boost_LIBRARIES}
-    sfml-graphics
 )
+
+if(${SFML_FOUND})
+    target_link_libraries(neuroEvo
+        sfml-graphics
+    )
+endif()
 
 target_include_directories(neuroEvo PUBLIC
     include

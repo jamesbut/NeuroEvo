@@ -14,8 +14,9 @@
 #include <data/data_collection.h>
 #include <util/statistics/distributions/uniform_unsigned_distribution.h>
 
-//TODO: Only include if found
+#if SFML_FOUND
 #include <SFML/Graphics.hpp>
+#endif
 
 namespace NeuroEvo {
 
@@ -34,12 +35,18 @@ public:
         _domain_trace(domain_trace),
         _seed(seed),
         _seed_sequence(seed),
+#if SFML_FOUND
         _render(render),
+#else
+        _render(false),
+#endif
         _screen_width(screen_width),
         _screen_height(screen_height)
     {
+#if SFML_FOUND
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
+#endif
     }
 
     Domain(const Domain& domain) :
@@ -52,8 +59,10 @@ public:
         _screen_width(domain._screen_width),
         _screen_height(domain._screen_height)
     {
+#if SFML_FOUND
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
+#endif
     }
 
     virtual ~Domain() = default;
@@ -205,8 +214,9 @@ protected:
     const int _screen_width;
     const int _screen_height;
 
-    //SFML
+#if SFML_FOUND
     sf::RenderWindow _window;
+#endif
 
 private:
 
@@ -340,11 +350,6 @@ private:
 
     }
 #endif
-
-    //TODO: Should only be defined if SFML was found
-    sf::RenderWindow initialise_sfml() {
-        return sf::RenderWindow(sf::VideoMode(_screen_width, _screen_height), "Domain");
-    }
 
     //Shared memory for parallel execution
     std::optional<SharedFitnessMemory> _shared_fitness_mem;

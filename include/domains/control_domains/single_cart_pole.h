@@ -165,7 +165,8 @@ private:
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
     {
 
-        const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
+        const NetworkBuilder* network_builder = 
+            dynamic_cast<const NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
         if(network_builder == nullptr) 
@@ -179,7 +180,8 @@ private:
         if(_markovian) 
         {
 
-            if(network_builder->get_num_inputs() != 4 || network_builder->get_num_outputs() != 2) 
+            if(network_builder->get_num_inputs() != 4 || 
+               network_builder->get_num_outputs() != 2) 
             {
                 std::cout << "Number of inputs must be 4 and number of outputs" <<
                             " must be 2 for the markovian single part cole domain" << std::endl;
@@ -188,7 +190,8 @@ private:
 
         } else 
         {
-            if(network_builder->get_num_inputs() != 2 || network_builder->get_num_outputs() != 2) 
+            if(network_builder->get_num_inputs() != 2 || 
+               network_builder->get_num_outputs() != 2) 
             {
                 std::cout << "Number of inputs must be 2 and number of outputs" <<
                             " must be 2 for the non-markovian single part cole domain" << 
