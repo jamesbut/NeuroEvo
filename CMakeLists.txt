@@ -17,10 +17,15 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 # SFML used for rendering
 find_package(SFML COMPONENTS graphics)
 
-#Torch
+#Torch is on by default
+if(NOT DEFINED WITH_TORCH)
+    set(WITH_TORCH ON)
+endif()
 #Add torch path to cmake path
-set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.7/site-packages")
-#find_package(Torch)
+if(${WITH_TORCH})
+    set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.7/site-packages")
+    find_package(Torch)
+endif()
 if(${Torch_FOUND})
     set(Torch_FOUND 1)
 else()
@@ -38,6 +43,7 @@ if(hasParent)
     set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
     set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
     set(TORCH_FOUND ${Torch_FOUND} PARENT_SCOPE)
+    set(WITH_TORCH ${WITH_TORCH} PARENT_SCOPE)
     if(${SFML_FOUND})
         set(SFML_FOUND 1 PARENT_SCOPE)
     else()
