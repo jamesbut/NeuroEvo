@@ -75,11 +75,11 @@ public:
         std::vector<std::vector<double> > fitnesses;
 
         if(parallel)
-            #ifdef __linux__
-                fitnesses = evaluate_pop_parallel(pop, num_trials);
-            #else
+            //#ifdef __linux__
+            //    fitnesses = evaluate_pop_parallel(pop, num_trials);
+            //#else
                 fitnesses = evaluate_pop_serial(pop, num_trials);
-            #endif
+            //#endif
         else
             fitnesses = evaluate_pop_serial(pop, num_trials);
 
@@ -246,15 +246,16 @@ private:
 
     }
 
+/*
     //Only compile parallel execution if on linux
     //The implementation of this uses linux OS calls
 #ifdef __linux__
-    std::vector<std::vector<double> > evaluate_pop_parallel(Population<G>& pop,
+    std::vector<std::vector<double> > evaluate_pop_parallel(Population<G, T>& pop,
                                                             const unsigned num_trials) {
 
         std::vector<std::vector<double> > fitnesses(pop.get_size(), 
                                                     std::vector<double>(num_trials));
-        std::vector<Organism>& orgs = pop.get_organisms();
+        std::vector<Organism<G, T>>& orgs = pop.get_organisms();
 
         //Check shared memory is available for parallel execution
         if(!_shared_fitness_mem.has_value())
@@ -350,6 +351,7 @@ private:
 
     }
 #endif
+*/
 
     //Shared memory for parallel execution
     std::optional<SharedFitnessMemory> _shared_fitness_mem;

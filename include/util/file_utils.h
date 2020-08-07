@@ -12,7 +12,7 @@
 namespace NeuroEvo {
 
 //Collects the paths to all the subdirectories in a directory
-std::vector<const std::string> collect_dirs_in(const std::string& parent_dir_path);
+std::vector<std::string> collect_dirs_in(const std::string& parent_dir_path);
 
 } // namespace NeuroEvo
 

@@ -1,5 +1,7 @@
 #include <util/statistics/statistic.h>
 #include <numeric>
+#include <algorithm>
+#include <math.h>
 
 namespace NeuroEvo {
 

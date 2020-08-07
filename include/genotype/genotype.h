@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <genetic_operators/mutation/mutator.h>
+#include <memory>
 
 namespace NeuroEvo {
 

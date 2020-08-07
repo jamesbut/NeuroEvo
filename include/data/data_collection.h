@@ -23,6 +23,7 @@
 #include <vector>
 #include <util/formatting.h>
 #include <util/statistics/statistic.h>
+#include <filesystem>
 
 namespace NeuroEvo {
 
@@ -92,7 +93,7 @@ public:
 
     }
 
-    const std::vector<const std::string>& get_run_dir_paths() const
+    const std::vector<std::string>& get_run_dir_paths() const
     {
         return _run_dir_paths;
     }
@@ -419,7 +420,7 @@ private:
     const std::optional<const std::string> _exp_dir_path;
     std::optional<std::string> _run_dir_path;
     //Store run direcory paths for later use
-    std::vector<const std::string> _run_dir_paths;
+    std::vector<std::string> _run_dir_paths;
 
     std::optional<Organism<G, T>> _best_winner_so_far;
 

@@ -122,7 +122,7 @@ public:
         return _exp_dir_path;
     }
 
-    std::vector<const std::string> get_run_dir_paths() const
+    std::vector<std::string> get_run_dir_paths() const
     {
         if(_exp_dir_path.has_value())
             return collect_dirs_in(_exp_dir_path.value());

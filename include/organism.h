@@ -12,6 +12,7 @@
 #include <genotype/genotype_spec.h>
 #include <memory>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <gp_map/gp_map.h>
 

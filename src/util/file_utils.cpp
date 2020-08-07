@@ -1,8 +1,9 @@
 #include <util/file_utils.h>
+#include <filesystem>
 
 namespace NeuroEvo {
 
-std::vector<const std::string> collect_dirs_in(const std::string& parent_dir_path)
+std::vector<std::string> collect_dirs_in(const std::string& parent_dir_path)
 {
    //First check whether the parent directory exists 
     if(!boost::filesystem::exists(parent_dir_path))
@@ -12,7 +13,7 @@ std::vector<const std::string> collect_dirs_in(const std::string& parent_dir_pat
         exit(0);
     }
 
-    std::vector<const std::string> directories; 
+    std::vector<std::string> directories; 
 
     for(const auto& dir : std::filesystem::directory_iterator(parent_dir_path))
         directories.push_back(dir.path());
