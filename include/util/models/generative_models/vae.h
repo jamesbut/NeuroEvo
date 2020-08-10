@@ -7,6 +7,7 @@
 
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <util/models/generative_models/generative_model.h>
+#include <phenotype/neural_network/torch_network.h>
 
 namespace NeuroEvo {
 

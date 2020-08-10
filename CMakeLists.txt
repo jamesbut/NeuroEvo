@@ -36,13 +36,16 @@ endif()
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
 set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
+message(STATUS "With torch: ${WITH_TORCH}")
+message(STATUS "Torch found: ${Torch_FOUND}")
+
 # Also set the variable in the parent scope so it
 # can be used in other cmake files
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
     set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
     set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
-    set(TORCH_FOUND ${Torch_FOUND} PARENT_SCOPE)
+    set(Torch_FOUND ${Torch_FOUND} PARENT_SCOPE)
     set(WITH_TORCH ${WITH_TORCH} PARENT_SCOPE)
     if(${SFML_FOUND})
         set(SFML_FOUND 1 PARENT_SCOPE)
