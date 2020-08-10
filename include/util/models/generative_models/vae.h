@@ -28,6 +28,8 @@ public:
 
     //Returns a mean and log var
     std::pair<torch::Tensor, torch::Tensor> encode(const torch::Tensor& x);
+    torch::Tensor sample(const torch::Tensor& mu, const torch::Tensor& log_var,
+                         const bool trace) const;
     torch::Tensor generate(const torch::Tensor& z) const override;
 
     //Returns output of VAE, mu and log_var from sampling
@@ -37,9 +39,6 @@ public:
     const std::unique_ptr<TorchNetwork>& get_decoder() const; 
 
 private:
-
-    torch::Tensor sample(const torch::Tensor& mu, const torch::Tensor& log_var,
-                         const bool trace) const;
 
     torch::Tensor loss_function(const torch::Tensor& output, const torch::Tensor& input,
                                 const torch::Tensor& mu, const torch::Tensor& log_var);
