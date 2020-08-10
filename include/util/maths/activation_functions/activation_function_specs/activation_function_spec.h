@@ -2,7 +2,7 @@
 #define _ACTIVATION_FUNCTION_SPEC_
 
 #include <util/maths/activation_functions/activation_function.h>
-#if TORCH_FOUND
+#if USE_TORCH
 #include <torch/nn/modules/container/any.h>
 #endif
 
@@ -20,7 +20,7 @@ public:
 
     virtual ~ActivationFunctionSpec() = default;
 
-#if TORCH_FOUND
+#if USE_TORCH
     //Define how to create torch module from activation function spec
     virtual torch::nn::AnyModule create_torch_module() const = 0;
 #endif

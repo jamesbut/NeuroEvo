@@ -16,6 +16,11 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 
 # SFML used for rendering
 find_package(SFML COMPONENTS graphics)
+if(${SFML_FOUND})
+    set(SFML_FOUND 1)
+else()
+    set(SFML_FOUND 0)
+endif()
 
 #Torch is on by default
 if(NOT DEFINED WITH_TORCH)
@@ -31,13 +36,15 @@ if(${Torch_FOUND})
 else()
     set(Torch_FOUND 0)
 endif()
+if(${WITH_TORCH} AND ${Torch_FOUND})
+    set(USE_TORCH 1)
+else()
+    set(USE_TORCH 0)
+endif()
 
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
 set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-
-message(STATUS "With torch: ${WITH_TORCH}")
-message(STATUS "Torch found: ${Torch_FOUND}")
 
 # Also set the variable in the parent scope so it
 # can be used in other cmake files
@@ -45,30 +52,21 @@ get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
     set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data" PARENT_SCOPE)
     set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
-    set(Torch_FOUND ${Torch_FOUND} PARENT_SCOPE)
-    set(WITH_TORCH ${WITH_TORCH} PARENT_SCOPE)
-    if(${SFML_FOUND})
-        set(SFML_FOUND 1 PARENT_SCOPE)
-    else()
-        set(SFML_FOUND 0 PARENT_SCOPE)
-    endif()
+    set(USE_TORCH ${USE_TORCH} PARENT_SCOPE)
+    set(SFML_FOUND ${SFML_FOUND} PARENT_SCOPE)
 endif()
 
 # Make variable available to the C++ source code
 add_compile_definitions(DATA_PATH="${DATA_PATH}")
 add_compile_definitions(NEURO_EVO_CMAKE_SRC_DIR="${NEURO_EVO_CMAKE_SRC_DIR}")
-if(${SFML_FOUND})
-    add_compile_definitions(SFML_FOUND=1)
-else()
-    add_compile_definitions(SFML_FOUND=0)
-endif()
-add_compile_definitions(TORCH_FOUND=${Torch_FOUND})
+add_compile_definitions(SFML_FOUND=${SFML_FOUND})
+add_compile_definitions(USE_TORCH=${USE_TORCH})
 
 # Build all files in src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Remove torch related files from compilation
-if(NOT ${Torch_FOUND})
+if(NOT ${USE_TORCH})
     list(REMOVE_ITEM SOURCES 
          "${NEURO_EVO_CMAKE_SRC_DIR}/src/phenotype/neural_network/torch_network.cpp"
          "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch_utils.cpp"
@@ -85,7 +83,7 @@ target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
 )
 
-if(${Torch_FOUND})
+if(${USE_TORCH})
     target_link_libraries(neuroEvo
         ${TORCH_LIBRARIES}
     )

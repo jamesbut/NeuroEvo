@@ -15,7 +15,7 @@
 #include <phenotype/neural_network/network.h>
 #include <phenotype/neural_network/hebbs_network.h>
 #include <phenotype/phenotype_specs/hebbs_spec.h>
-#if TORCH_FOUND
+#if USE_TORCH
 #include <phenotype/neural_network/torch_network.h>
 #endif
 

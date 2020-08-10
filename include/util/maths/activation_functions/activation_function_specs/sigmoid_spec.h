@@ -1,7 +1,7 @@
 #ifndef _SIGMOID_SPEC_
 #define _SIGMOID_SPEC_
 
-#if TORCH_FOUND
+#if USE_TORCH
 #include <torch/nn/modules/activation.h>
 #endif
 #include <util/maths/activation_functions/activation_function_specs/activation_function_spec.h>
@@ -14,7 +14,7 @@ class SigmoidSpec : public ActivationFunctionSpec
 
 public:
 
-#if TORCH_FOUND
+#if USE_TORCH
     torch::nn::AnyModule create_torch_module() const override
     {
         torch::nn::AnyModule sigmoid_module((torch::nn::Sigmoid()));

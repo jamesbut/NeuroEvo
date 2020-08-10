@@ -46,7 +46,7 @@ Phenotype<double>* NetworkBuilder::build_network(
         return network;
 
     } 
-#if TORCH_FOUND
+#if USE_TORCH
     else if (_default_torch_net_init)
     {
 
