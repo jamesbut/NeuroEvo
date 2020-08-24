@@ -4,3 +4,4 @@ data/
 *.swp
 __pycache__
 .DS_Store
+config/decoders/*

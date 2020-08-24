@@ -161,7 +161,8 @@ if __name__ == '__main__':
         sys.exit()
 
     exp_plot_colours = ['b', 'r', 'g', 'm', 'y']
-    legend_labels = ['Direct map', 'Baseline map', 'AE', 'VAE', 'GAN']
+    #legend_labels = ['Direct map', 'Baseline map', 'AE', 'VAE', 'GAN']
+    legend_labels = ['Direct map', 'AE', 'VAE', 'GAN']
     legend_items = []
 
     # Import data
