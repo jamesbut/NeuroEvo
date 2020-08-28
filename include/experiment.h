@@ -49,6 +49,9 @@ public:
 
         Organism organism(_geno_spec, _gp_map, best_winner_path.str());
 
+        _domain.set_render(true);
+        _domain.set_trace(true);
+
         double fitness = _domain.evaluate_org(organism, num_trials);
 
         std::cout << "Individual run fitness: " << fitness << std::endl;

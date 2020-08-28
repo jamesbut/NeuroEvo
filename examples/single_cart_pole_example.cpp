@@ -78,8 +78,8 @@ int main(int argc, const char* argv[])
 
     std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
         new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start,
-                                                print_state, domain_trace,
-                                                render)
+                                                render, domain_trace,
+                                                print_state)
     );
 
     // Construct experiment

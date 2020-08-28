@@ -24,9 +24,9 @@ class SingleCartPole : public Domain<G, double>
 public:
 
     SingleCartPole(const bool markovian, const bool random_start,
-                   const bool print_state, const bool domain_trace,
-                   const bool render = false, const int max_steps = 100000) :
-        Domain<G, double>(domain_trace, max_steps+1, render) ,
+                   const bool render = false, const bool domain_trace = false,
+                   const bool print_state = false, const int max_steps = 100000) :
+        Domain<G, double>(domain_trace, max_steps+1, std::nullopt, render) ,
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
@@ -37,11 +37,16 @@ public:
         //Remove previous state file
         remove(_state_file_name.c_str());
 
+        _x_max = 1.2*_boundary;
+
+        _cart_pole.render_scale = this->_screen_width / (_x_max * 2);
+
         //Set up some variables for cart pole
         _cart_pole.cart_width = _boundary * 2 / 10;
         _cart_pole.cart_height = _cart_pole.cart_width / 2;
 
-        _cart_pole.render_scale = this->_screen_width / (_boundary * 2);
+        _cart_pole.cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
+        _cart_pole.cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
 
     }
 
@@ -162,7 +167,7 @@ private:
 
     }
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
     {
 
         const NetworkBuilder* network_builder = 
@@ -221,6 +226,9 @@ private:
         //Rendering properties
         double cart_width;
         double cart_height;
+        double cart_render_width;
+        double cart_render_height;
+        //This is like pixels per unit x
         double render_scale;
 
         const double twelve_degrees = 0.2094384;
@@ -261,29 +269,25 @@ private:
         this->_window.clear(sf::Color::Black);
 
         //Render cart
-        const float cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
-        const float cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
-        sf::Vector2f cart_size(cart_render_width, cart_render_height);
+        sf::Vector2f cart_size(_cart_pole.cart_render_width, _cart_pole.cart_render_height);
         sf::RectangleShape cart(cart_size);
 
-        float cart_pos_x = (_cart_pole.x + _boundary) * 
-                           (_cart_pole.render_scale) - 
-                            _cart_pole.cart_width/2;
-        float cart_pos_y = this->_screen_height/2;
+        const float cart_pos_x = x_to_pixel_x(_cart_pole.x) - _cart_pole.cart_render_width / 2;
+        const float cart_pos_y = this->_screen_height/2;
         cart.setPosition(cart_pos_x, cart_pos_y);
 
         this->_window.draw(cart);
 
         //Render pole
-        const float pole_render_width = cart_render_width / 10;
+        const float pole_render_width = _cart_pole.cart_render_width / 10;
         const float pole_render_height = _cart_pole.pole_half_length * 2 * _cart_pole.render_scale;
         sf::Vector2f pole_size(pole_render_width, pole_render_height);
         sf::RectangleShape pole(pole_size);
 
         pole.setOrigin(pole_render_width/2, pole_render_height);
 
-        float pole_pos_x = cart_pos_x + cart_render_width / 2;
-        float pole_pos_y = cart_pos_y;
+        const float pole_pos_x = cart_pos_x + _cart_pole.cart_render_width / 2;
+        const float pole_pos_y = cart_pos_y;
         pole.setPosition(pole_pos_x, pole_pos_y);
 
         //Rotate pole
@@ -294,18 +298,48 @@ private:
         //Render floor
         sf::Vector2f floor_size(this->_screen_width, 10.);
         sf::RectangleShape floor(floor_size);
-        floor.setPosition(0., this->_screen_height/2 + cart_render_height);
+        const float floor_height = this->_screen_height/2 + _cart_pole.cart_render_height;
+        floor.setPosition(0., floor_height);
 
         this->_window.draw(floor);
+
+        //Render boundaries
+        sf::Vector2f boundary_marker_size(2, 50);
+        const float boundary_marker_y = floor_height - boundary_marker_size.y;
+
+        sf::RectangleShape boundary_marker_r(boundary_marker_size);
+        const float boundary_marker_r_x = x_to_pixel_x(_boundary) +
+                                          _cart_pole.cart_render_width / 2;
+        boundary_marker_r.setPosition(boundary_marker_r_x, boundary_marker_y);
+        boundary_marker_r.setFillColor(sf::Color::Red);
+        this->_window.draw(boundary_marker_r);
+
+        sf::RectangleShape boundary_marker_l(boundary_marker_size);
+        const float boundary_marker_l_x = x_to_pixel_x(-_boundary) - 
+                                          _cart_pole.cart_render_width / 2;
+        boundary_marker_l.setPosition(boundary_marker_l_x, boundary_marker_y);
+        boundary_marker_l.setFillColor(sf::Color::Red);
+        this->_window.draw(boundary_marker_l);
 
         //Render all
         this->_window.display();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     }
 
+    float x_to_pixel_x(const float x) const
+    {
+        return (this->_screen_width / (2 * _x_max)) * x + (this->_screen_width / 2);
+    }
+
     void reset_domain() override {}
+
+    SingleCartPole<G>* clone_impl() const override
+    {
+        return new SingleCartPole<G>(*this);
+    }
 
     const int _max_steps;
     const bool _markovian;
@@ -317,6 +351,7 @@ private:
     CartPole _cart_pole;
 
     const double _boundary = 2.4;
+    double _x_max;
 
 };
 

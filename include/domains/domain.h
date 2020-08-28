@@ -152,6 +152,15 @@ public:
         return std::unique_ptr<Domain>(clone_impl());
     }
 
+    void set_render(const bool render)
+    {
+        _render = render;
+#if SFML_FOUND
+        if(_render)
+            _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
+#endif
+    }
+
     void set_trace(const bool trace)
     {
         _domain_trace = trace;
@@ -209,7 +218,7 @@ protected:
     UniformUnsignedDistribution _seed_sequence;
 
     //Rendering variables
-    const bool _render;
+    bool _render;
 
     const int _screen_width;
     const int _screen_height;
