@@ -58,13 +58,22 @@ private:
         //Seed random number generator with same seed as other members of the population
         srand48(rand_seed);
 
-        //Because of the modulus, the numbers will never be bigger than this
-        double x_rand = (lrand48()%4800)/1000.0 - 2.4;
-        double x_dot_rand = (lrand48()%2000)/1000.0 - 1.0;
-        double theta_rand = (lrand48()%400)/1000.0 - 0.2;
-        double theta_dot_rand = (lrand48()%3000)/1000.0 - 1.5;
-
         if(_random_start) {
+
+            //Because of the modulus, the numbers will never be bigger than this
+            //const double x_rand = (lrand48()%4800)/1000.0 - 2.4;
+            const double x_rand = UniformRealDistribution::get(-2.0, 2.0, rand_seed);
+            const double x_dot_rand = (lrand48()%2000)/1000.0 - 1.0;
+            //const double theta_rand = (lrand48()%400)/1000.0 - 0.2
+            const double theta_rand = UniformRealDistribution::get(-0.16, 0.16, rand_seed);
+            const double theta_dot_rand = (lrand48()%3000)/1000.0 - 1.5;
+
+            /*
+            std::cout << "x rand: " << x_rand << std::endl;
+            std::cout << "x_dot rand: " << x_dot_rand << std::endl;
+            std::cout << "theta rand: " << theta_rand << std::endl;
+            std::cout << "theta_dot rand: " << theta_dot_rand << std::endl;
+            */
 
             _cart_pole.x = x_rand;
             _cart_pole.x_dot = x_dot_rand;

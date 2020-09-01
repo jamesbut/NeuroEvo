@@ -37,7 +37,9 @@ public:
     
     void individual_run(const std::string& organism_folder_name, 
                         const unsigned num_trials = 1,
-                        const bool pheno_trace = false) 
+                        const bool pheno_trace = false,
+                        const bool domain_trace = false,
+                        const bool render = false) 
     {
 
         // View the run of the saved best_winner_so_far
@@ -49,8 +51,8 @@ public:
 
         Organism organism(_geno_spec, _gp_map, best_winner_path.str());
 
-        _domain.set_render(true);
-        _domain.set_trace(true);
+        _domain.set_render(render);
+        _domain.set_trace(domain_trace);
 
         double fitness = _domain.evaluate_org(organism, num_trials);
 

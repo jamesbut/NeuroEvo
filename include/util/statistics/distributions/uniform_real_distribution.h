@@ -19,6 +19,10 @@ public:
 
     double next() override;
 
+    //Functional call
+    static double get(const double lower_bound, const double upper_bound,
+                      const std::optional<unsigned> seed = std::nullopt);
+
 private:
 
     void reset() override;
