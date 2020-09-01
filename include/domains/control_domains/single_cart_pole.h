@@ -270,6 +270,7 @@ private:
 
     void render() override 
     {
+#if SFML_FOUND
         sf::Event event;
         while (this->_window.pollEvent(event))
             if (event.type == sf::Event::Closed)
@@ -335,7 +336,7 @@ private:
 
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
         //std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
+#endif
     }
 
     float x_to_pixel_x(const float x) const

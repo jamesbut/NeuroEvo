@@ -131,13 +131,13 @@ void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
 
     if(evolve_init_weights)
         _hebbs_spec.emplace(HebbsSpec(true, std::nullopt, print_weights_to_file,
-                                        weights_file_name, outputs_file_name));
+                                      weights_file_name, outputs_file_name));
     else
         _hebbs_spec.emplace(HebbsSpec(false, default_init_weight, print_weights_to_file,
-                                        weights_file_name, outputs_file_name));
+                                      weights_file_name, outputs_file_name));
     
     //Alter number of params
-    this->_num_params = required_num_genes(_layer_specs);
+    this->_num_params = required_num_genes(_layer_specs, _hebbs_spec);
 
 }
 
@@ -181,7 +181,8 @@ NetworkBuilder* NetworkBuilder::clone_impl() const
     return new NetworkBuilder(*this);
 } 
 
-unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_specs)
+unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_specs,
+                                            const std::optional<HebbsSpec>& hebbs_spec)
 {
 
     unsigned num_genes = 0;
@@ -191,8 +192,8 @@ unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_
 
     //If the specification is Hebbs, double the number of genes if the initial weights
     //are being evolved
-    if(_hebbs_spec)
-        if(_hebbs_spec->get_evolve_init_weights())
+    if(hebbs_spec)
+        if(hebbs_spec->get_evolve_init_weights())
             num_genes *= 2;
 
     return num_genes;

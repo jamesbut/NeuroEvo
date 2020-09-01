@@ -7,7 +7,7 @@ PhenotypeSpec::PhenotypeSpec(const unsigned num_params, const bool trace) :
     _trace(trace),
     _print_weights(false) {}
 
-const unsigned& PhenotypeSpec::get_num_params() const
+unsigned PhenotypeSpec::get_num_params() const
 { 
     return _num_params; 
 }

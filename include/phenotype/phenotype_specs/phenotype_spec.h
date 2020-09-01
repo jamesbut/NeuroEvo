@@ -19,7 +19,7 @@ public:
 
     virtual ~PhenotypeSpec() = default;
 
-    const unsigned& get_num_params() const;
+    unsigned get_num_params() const;
     bool get_trace() const; 
     bool get_print_weights() const;
 

@@ -71,7 +71,8 @@ protected:
 
 private:
 
-    unsigned required_num_genes(const std::vector<LayerSpec>& layer_specs);
+    unsigned required_num_genes(const std::vector<LayerSpec>& layer_specs,
+                                const std::optional<HebbsSpec>& hebbs_spec = std::nullopt);
     unsigned required_num_genes(
         const unsigned num_inputs,
         const unsigned num_outputs,
