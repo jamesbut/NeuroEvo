@@ -21,6 +21,11 @@ private:
 
     void reset() override;
 
+    BernoulliDistribution* clone_impl() const override
+    {
+        return new BernoulliDistribution(*this);
+    }
+
    std::bernoulli_distribution _distr; 
 
 };

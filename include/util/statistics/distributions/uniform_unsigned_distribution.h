@@ -33,6 +33,11 @@ private:
 
     void reset() override;
 
+    UniformUnsignedDistribution* clone_impl() const override
+    {
+        return new UniformUnsignedDistribution(*this);
+    }
+
     std::uniform_int_distribution<unsigned long> _distr;
 
 };

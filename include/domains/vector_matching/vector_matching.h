@@ -34,7 +34,14 @@ public:
         print_matching_vector();
     }
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override
+    VectorMatching(const VectorMatching<G, T>& vector_matching) :
+        Domain<G, T>(vector_matching._domain_trace, vector_matching._completion_fitness),
+        _matching_vector_distr(vector_matching._matching_vector_distr->clone()),
+        _symmetric_match_vector(vector_matching._symmetric_match_vector),
+        _matching_vector(vector_matching._matching_vector) {}
+
+
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
     {
          auto vec_pheno_spec = dynamic_cast<const VectorPhenotypeSpec*>(&pheno_spec);
 

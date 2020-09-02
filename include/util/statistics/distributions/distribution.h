@@ -47,9 +47,16 @@ public:
         reset();
     }
 
+    auto clone() const
+    {
+        return std::unique_ptr<Distribution>(clone_impl());
+    }
+
 protected:
     
     virtual void reset() = 0;
+
+    virtual Distribution* clone_impl() const = 0;
 
     std::mt19937 _rng;
 

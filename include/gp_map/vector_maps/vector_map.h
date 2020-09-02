@@ -16,7 +16,7 @@ class VectorMap : public GPMap<G, G>
 
 public:
 
-    VectorMap(const VectorPhenotypeSpec* pheno_spec) :
+    VectorMap(VectorPhenotypeSpec* pheno_spec) :
         GPMap<G, G>(pheno_spec) {}
 
     Phenotype<G>* map(Genotype<G>& genotype) override

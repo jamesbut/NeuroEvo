@@ -44,6 +44,13 @@ protected:
         
     }
 
+private:
+
+    DoubleVectorMatching<G>* clone_impl() const override
+    {
+        return new DoubleVectorMatching<G>(*this);
+    }
+
 };
 
 } // namespace NeuroEvo

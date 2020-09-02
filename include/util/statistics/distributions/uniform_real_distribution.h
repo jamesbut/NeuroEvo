@@ -27,6 +27,11 @@ private:
 
     void reset() override;
 
+    UniformRealDistribution* clone_impl() const override 
+    {
+        return new UniformRealDistribution(*this);
+    }
+
     std::uniform_real_distribution<> _distr;
 
 };

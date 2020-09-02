@@ -1,7 +1,7 @@
 #ifndef _CHAR_DISTRIBUTION_H_
 #define _CHAR_DISTRIBUTION_H_
 
-#include "distribution.h"
+#include <util/statistics/distributions/distribution.h>
 #include <set>
 
 /*
@@ -25,6 +25,11 @@ public:
 private:
 
     void reset() override;
+
+    CharDistribution* clone_impl() const override
+    {
+        return new CharDistribution(*this);
+    }
 
     //Better to store this as a vector because we can index in O(1) time as oppose to O(n)
     const std::vector<char> _char_set;

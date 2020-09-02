@@ -18,6 +18,11 @@ private:
 
     void reset() override;
 
+    GaussianDistribution* clone_impl() const override
+    {
+        return new GaussianDistribution(*this);
+    }
+
     std::normal_distribution<double> _distr;
 
 };
