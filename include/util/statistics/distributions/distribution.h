@@ -10,6 +10,7 @@
 
 #include <random>
 #include <optional>
+#include <memory>
 
 namespace NeuroEvo {
 
