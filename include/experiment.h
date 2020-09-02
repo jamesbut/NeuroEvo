@@ -191,6 +191,7 @@ private:
 
         //Copy domain
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
+        domain->reset();
 
         //Create new data collector
         DataCollector<G, T> data_collector(exp_dir_path, max_gens, dump_winners_only);

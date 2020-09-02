@@ -38,7 +38,10 @@ public:
         Domain<G, T>(vector_matching._domain_trace, vector_matching._completion_fitness),
         _matching_vector_distr(vector_matching._matching_vector_distr->clone()),
         _symmetric_match_vector(vector_matching._symmetric_match_vector),
-        _matching_vector(vector_matching._matching_vector) {}
+        _matching_vector(vector_matching._matching_vector) 
+    {
+        _matching_vector_distr->randomly_seed();
+    }
 
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
@@ -84,7 +87,7 @@ private:
     const std::vector<T> randomly_generate_matching_vector(
         const std::size_t matching_vector_size) const
     {
-        
+
         std::vector<T> matching_vector;
         matching_vector.reserve(matching_vector_size);
 

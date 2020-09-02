@@ -47,6 +47,13 @@ public:
         reset();
     }
 
+    void randomly_seed()
+    {
+        std::random_device rand_dev;
+        _rng.seed(rand_dev());
+        reset();
+    }
+
     auto clone() const
     {
         return std::unique_ptr<Distribution>(clone_impl());
