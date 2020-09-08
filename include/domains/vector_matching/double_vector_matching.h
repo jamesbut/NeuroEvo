@@ -17,7 +17,7 @@ public:
         VectorMatching<G, double>(matching_vector, domain_trace, completion_fitness) {}
 
     DoubleVectorMatching(const unsigned matching_vector_size,
-                         Distribution<double>* matching_vector_distr,
+                         const std::shared_ptr<Distribution<double>> matching_vector_distr,
                          const bool symmetric_match_vector = false,
                          const bool domain_trace = false,
                          const double completion_fitness = -1e-3) :
@@ -34,7 +34,7 @@ protected:
         for(std::size_t i = 0; i < phenotype_vector.size(); i++)
         {
             if(this->_domain_trace)
-                std::cout << this->_matching_vector[i] << " " << phenotype_vector[i] << " ";
+                std::cout << this->_matching_vector[i] << " " << phenotype_vector[i] << std::endl;
 
             total_distance += std::abs(this->_matching_vector[i] - phenotype_vector[i]);
 

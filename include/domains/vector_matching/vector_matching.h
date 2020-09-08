@@ -22,7 +22,8 @@ public:
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
     VectorMatching(const unsigned matching_vector_size,
-                   Distribution<T>* matching_vector_distr,
+                   //Distribution<T>* matching_vector_distr,
+                   const std::shared_ptr<Distribution<T>> matching_vector_distr,
                    const bool symmetric_match_vector,
                    const bool domain_trace, 
                    const double completion_fitness) :
@@ -36,12 +37,9 @@ public:
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :
         Domain<G, T>(vector_matching._domain_trace, vector_matching._completion_fitness),
-        _matching_vector_distr(vector_matching._matching_vector_distr->clone()),
+        _matching_vector_distr(vector_matching._matching_vector_distr),
         _symmetric_match_vector(vector_matching._symmetric_match_vector),
-        _matching_vector(vector_matching._matching_vector) 
-    {
-        _matching_vector_distr->randomly_seed();
-    }
+        _matching_vector(vector_matching._matching_vector) {}
 
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
@@ -143,7 +141,7 @@ private:
         std::cout << std::endl;
     }
 
-    const std::unique_ptr<Distribution<T>> _matching_vector_distr;
+    const std::shared_ptr<Distribution<T>> _matching_vector_distr;
     const bool _symmetric_match_vector;
 
 protected:
