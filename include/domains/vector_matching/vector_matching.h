@@ -5,7 +5,11 @@
 #include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 #include <util/statistics/distributions/distribution.h>
 
+#include <mutex>
+
 namespace NeuroEvo {
+
+std::mutex mtx;
 
 template <typename G, typename T>
 class VectorMatching : public Domain<G, T>
@@ -127,10 +131,16 @@ private:
 
     void reset_domain() override 
     {
+        //Locks this reset when running in parallel
+        //There were problems with the distribution without this lock
+        mtx.lock();
+
         //Reset matching vector if it was generated from a distribution
         if(_matching_vector_distr)
             _matching_vector = randomly_generate_matching_vector(_matching_vector.size());
         print_matching_vector();
+
+        mtx.unlock();
     }
 
     void print_matching_vector() const
