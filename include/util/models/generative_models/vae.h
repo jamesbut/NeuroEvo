@@ -29,7 +29,7 @@ public:
     //Returns a mean and log var
     std::pair<torch::Tensor, torch::Tensor> encode(const torch::Tensor& x);
     torch::Tensor sample(const torch::Tensor& mu, const torch::Tensor& log_var,
-                         const bool trace) const;
+                         const bool trace = false) const;
     torch::Tensor generate(const torch::Tensor& z) const override;
 
     //Returns output of VAE, mu and log_var from sampling
