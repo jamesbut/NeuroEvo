@@ -350,7 +350,13 @@ private:
         {
             std::vector<std::string> split_string;
             boost::split(split_string, name, boost::is_any_of("_"));
-            exp_numbers.push_back(std::stoi(split_string.back()));
+            
+            //Just captures the exception where string is not integer 
+            try 
+            {
+                exp_numbers.push_back(std::stoi(split_string.back()));
+            }
+            catch (...) {}
         }
 
         //Find highest experiment number so far

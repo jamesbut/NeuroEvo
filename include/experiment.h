@@ -92,16 +92,15 @@ public:
         if(selector == nullptr)
             std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
 
-        unsigned num_winners = 0;
-
         //Run runs in parallel
         if(parallel_runs)
         {
             //Trace is off in parallel runs
             const bool trace = false;
-            const RunArguments<G, T> run_args{pop_size, max_gens, selector, &_domain, &_geno_spec, 
-                                              &_gp_map, _exp_dir_path, _dump_winners_only, 
-                                              num_winners, trace, num_trials, domain_parallel};
+            const RunArguments<G, T> run_args{pop_size, max_gens, selector, &_domain, 
+                                              &_geno_spec, &_gp_map, _exp_dir_path, 
+                                              _dump_winners_only, _num_winners, trace, 
+                                              num_trials, domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
@@ -112,13 +111,13 @@ public:
             for(unsigned i = 0; i < num_runs; i++) 
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, _exp_dir_path,
-                    _dump_winners_only, num_winners, completed_flag, trace, num_trials, 
-                    domain_parallel);
+                run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, 
+                    _exp_dir_path, _dump_winners_only, _num_winners, completed_flag, trace, 
+                    num_trials, domain_parallel);
             }
         }
 
-        std::cout << "Num winners: " << num_winners << "/" << num_runs << std::endl;
+        std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
 
     }
 
@@ -144,6 +143,14 @@ public:
         _domain.set_trace(domain_trace);
     }
 
+    void dump_num_winners(const std::string& file_name)
+    {
+        std::ofstream file; 
+        file.open(file_name, std::ios::app);
+        file << _num_winners;
+        file.close();
+    }
+
 
 private:
 
@@ -158,7 +165,8 @@ private:
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
         _dump_data(dump_data),
-        _dump_winners_only(dump_winners_only) {}
+        _dump_winners_only(dump_winners_only),
+        _num_winners(0) {}
 
     static int ga_finished(Population<G, T>& population, Domain<G, T>& domain, 
                            const unsigned max_gens) 
@@ -252,6 +260,8 @@ private:
     std::optional<std::string> _exp_dir_path;
     const bool _dump_data;
     const bool _dump_winners_only;
+
+    unsigned _num_winners;
 
 };
 

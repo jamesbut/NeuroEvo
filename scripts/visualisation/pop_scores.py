@@ -174,7 +174,8 @@ if __name__ == '__main__':
         mean_fitnesses, best_fitnesses = read_experiment_data(exp_folder)
 
         #Calculate statistics
-        mean_best_so_far_fitnesses = np.mean(best_fitnesses, axis=0)
+        #mean_best_so_far_fitnesses = np.mean(best_fitnesses, axis=0)
+        median_best_so_far_fitnesses = np.median(best_fitnesses, axis=0)
         median_mean_fitnesses = np.median(mean_fitnesses, axis=0)  
         lq_mean_fitnesses = np.quantile(mean_fitnesses, 0.25, axis=0)
         uq_mean_fitnesses = np.quantile(mean_fitnesses, 0.75, axis=0)
@@ -182,7 +183,7 @@ if __name__ == '__main__':
         #NOTE: If best fitnesses are lower on the graph than mean fitnesses remember we are
         #comparing a median and a mean
 
-        plot_experiment(mean_best_so_far_fitnesses, median_mean_fitnesses,
+        plot_experiment(median_best_so_far_fitnesses, median_mean_fitnesses,
                         uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])
 
         legend_items.append(mpatches.Patch(color=exp_plot_colours[i], label=legend_labels[i]))
