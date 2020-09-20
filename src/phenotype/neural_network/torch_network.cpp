@@ -1,5 +1,6 @@
 #include <phenotype/neural_network/torch_network.h>
 #include <torch/nn/options/linear.h>
+#include <filesystem>
 
 namespace NeuroEvo {
 
