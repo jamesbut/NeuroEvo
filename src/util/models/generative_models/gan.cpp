@@ -19,7 +19,8 @@ GAN::GAN(NetworkBuilder& generator_builder,
     _discriminator(build_torch_network(discriminator_builder, std::move(init_net_weight_distr))) {}
 
 void GAN::train(const unsigned num_epochs, const unsigned batch_size, 
-                const bool trace, const unsigned test_every)
+                const double weight_decay, const bool trace, 
+                const unsigned test_every)
 {
     
     //This was part of the tutorial but stop loss reducing to zero - maybe it is important

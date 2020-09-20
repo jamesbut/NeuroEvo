@@ -24,7 +24,8 @@ public:
                     std::unique_ptr<Distribution<double>>(nullptr));
 
     void train(const unsigned num_epochs, const unsigned batch_size, 
-               const bool trace = false, const unsigned test_every = 1e6) override;
+               const double weight_decay = 0., const bool trace = false, 
+               const unsigned test_every = 1e6) override;
 
     torch::Tensor encode(const torch::Tensor& x) const;
     //Better known in this context as decode

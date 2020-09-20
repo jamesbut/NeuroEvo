@@ -25,13 +25,13 @@ VAE::VAE(NetworkBuilder& encoder_builder,
 }
 
 void VAE::train(const unsigned num_epochs, const unsigned batch_size,
-                const bool trace, const unsigned test_every)
+                const double weight_decay, const bool trace, 
+                const unsigned test_every)
 {
 
     const double learning_rate = 1e-3;
-    //const double weight_decay = 1e-1;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
-    //adam_options.weight_decay(weight_decay);
+    adam_options.weight_decay(weight_decay);
     torch::optim::Adam optimizer(
         {_encoder->parameters(),
          _encoder_mean_linear_layer->parameters(),

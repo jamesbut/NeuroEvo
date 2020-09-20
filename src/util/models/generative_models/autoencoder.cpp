@@ -14,12 +14,16 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
     _autoencoder(*_encoder, *_decoder) {}
 
 void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
-                        const bool trace, const unsigned test_every) 
+                        const double weight_decay, const bool trace, 
+                        const unsigned test_every) 
 {
 
     const double learning_rate = 1e-3;
+    auto adam_options = torch::optim::AdamOptions(learning_rate);
+    adam_options.weight_decay(weight_decay);
     torch::optim::Adam optimizer(
-        _autoencoder->parameters(), torch::optim::AdamOptions(learning_rate)
+        _autoencoder->parameters(), 
+        adam_options
     );
 
     torch::Tensor avg_test_loss = torch::zeros({1});

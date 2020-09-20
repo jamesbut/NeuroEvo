@@ -20,7 +20,8 @@ public:
         _test_data(test_data) {}
 
     virtual void train(const unsigned num_epochs, const unsigned batch_size,
-                       const bool trace = false, const unsigned test_every = 1e6) = 0;
+                       const double weight_decay = 0., const bool trace = false, 
+                       const unsigned test_every = 1e6) = 0;
 
     virtual torch::Tensor generate(const torch::Tensor& code) const = 0;
 
