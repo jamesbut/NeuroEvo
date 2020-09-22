@@ -17,6 +17,15 @@ public:
     // modifications can be applied.
     virtual Organism<G, T> select(const std::vector<Organism<G, T>>& orgs) = 0;
 
+    auto clone() const 
+    {
+        return std::unique_ptr<Selection>(clone_impl());
+    }
+
+protected:
+
+    virtual Selection* clone_impl() const = 0;
+
 };
 
 } // namespace NeuroEvo

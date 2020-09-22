@@ -16,6 +16,11 @@ public:
 
 private:
 
+    RealGaussianMutator* clone_impl() const override
+    {
+        return new RealGaussianMutator(*this);
+    }
+
     GaussianDistribution _mut_power_distr;
 
 };

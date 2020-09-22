@@ -9,7 +9,6 @@
 
 #include <genotype/genotype.h>
 #include <phenotype/phenotype_specs/phenotype_spec.h>
-#include <genotype/genotype_spec.h>
 #include <memory>
 #include <iostream>
 #include <iomanip>
@@ -23,24 +22,16 @@ class Organism {
 
 public:
 
-    Organism(GenotypeSpec<G>& genotype_spec, GPMap<G, T>& gp_map) :
-        _genotype(genotype_spec.generate_genotype()),
-        _gp_map(gp_map.clone()),
-        _phenotype(gp_map.map(*_genotype)),
-        _fitness(std::nullopt),
-        _domain_winner(false) {}
-
-    Organism(Genotype<G>& genotype, GPMap<G, T>& gp_map) :
+    Organism(const Genotype<G>& genotype, GPMap<G, T>& gp_map) :
         _genotype(genotype.clone()),
         _gp_map(gp_map.clone()),
         _phenotype(gp_map.map(*_genotype)),
         _fitness(std::nullopt),
         _domain_winner(false) {}
         
-    Organism(GenotypeSpec<G>& genotype_spec,
-             GPMap<G, T>& gp_map, 
+    Organism(GPMap<G, T>& gp_map, 
              const std::string file_name) :
-        _genotype(genotype_spec.generate_genotype(file_name)),
+        _genotype(new Genotype<G>(file_name)),
         _gp_map(gp_map.clone()),
         _phenotype(gp_map.map(*_genotype)),
         _fitness(std::nullopt),

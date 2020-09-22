@@ -14,39 +14,46 @@ namespace NeuroEvo {
 template <typename G>
 class Mutator {
 
-    public:
+public:
 
-        Mutator(const double mutation_rate) :
-            _mutation_rate(mutation_rate),
-            _mutation_distr(0., 1.) {}
+    Mutator(const double mutation_rate) :
+        _mutation_rate(mutation_rate),
+        _mutation_distr(0., 1.) {}
 
-        virtual ~Mutator() = default;
+    virtual ~Mutator() = default;
 
-        void mutate(std::vector<G>& genes) {
+    void mutate(std::vector<G>& genes) {
 
-            for(std::size_t i = 0; i < genes.size(); i++)
-                if(should_mutate())
-                    genes[i] = mutate_gene(genes[i]);
+        for(std::size_t i = 0; i < genes.size(); i++)
+            if(should_mutate())
+                genes[i] = mutate_gene(genes[i]);
 
-        }
+    }
 
-    protected:
+    auto clone() const 
+    {
+        return std::unique_ptr<Mutator>(clone_impl());
+    }
+
+protected:
+
+    virtual G mutate_gene(G gene) = 0;
     
-        virtual G mutate_gene(G gene) = 0;
+    virtual Mutator* clone_impl() const = 0;
 
-        //The probability that a single gene is mutated
-        const double _mutation_rate;
+    //The probability that a single gene is mutated
+    const double _mutation_rate;
 
-        //Distribution used to sample from to determine
-        //whether a gene should mutate or not
-        UniformRealDistribution _mutation_distr;
+    //Distribution used to sample from to determine
+    //whether a gene should mutate or not
+    UniformRealDistribution _mutation_distr;
 
-    private:
+private:
 
-        //Determines whether gene should mutate
-        bool should_mutate() {
-            return _mutation_distr.next() < _mutation_rate;
-        }
+    //Determines whether gene should mutate
+    bool should_mutate() {
+        return _mutation_distr.next() < _mutation_rate;
+    }
 
 };
 

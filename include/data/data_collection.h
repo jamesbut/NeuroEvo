@@ -35,11 +35,12 @@ public:
 
     //If one does not want to dump the data then just provide a nullopt to the constructor
     DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens,
-                  const bool dump_winners_only) :
+                  const bool dump_winners_only, const bool trace) :
         _uuid_folders(true),
         _exp_dir_path(exp_dir_path),
         _max_gens(max_gens),
-        _dump_winners_only(dump_winners_only)
+        _dump_winners_only(dump_winners_only),
+        _trace(trace)
     {
         //We can reserve up to max gens for member vectors so that they never have to resize
         _mean_gen_fitnesses.reserve(max_gens);
@@ -56,8 +57,8 @@ public:
     }
 
     void collect_generational_data(const Population<G, T>& population, 
-                                   const bool final_gen, 
-                                   const bool trace = true)
+                                   const unsigned current_gen,
+                                   const bool final_gen)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path && _exp_dir_path.has_value())
@@ -87,8 +88,8 @@ public:
             if(!_best_winner_so_far.value().is_domain_winner())
                 std::filesystem::remove_all(_run_dir_path.value());            
 
-        if(trace) 
-            print_info_to_screen(population, gen_winner.get_fitness().value(), 
+        if(_trace) 
+            print_info_to_screen(population, current_gen, gen_winner.get_fitness().value(), 
                                  _mean_gen_fitnesses.back());
 
     }
@@ -253,7 +254,8 @@ private:
     void save_population_statistics_to_file() const 
     {
         //Fitness means
-        const std::string mean_fitnesses_file_name = _run_dir_path.value() + "/mean_fitnesses"; 
+        const std::string mean_fitnesses_file_name = _run_dir_path.value() 
+            + "/mean_fitnesses"; 
         std::ofstream mean_fitnesses_file(mean_fitnesses_file_name);
 
         for(const auto& fitness : _mean_gen_fitnesses)
@@ -262,7 +264,8 @@ private:
         mean_fitnesses_file.close();
 
         //Fitness medians
-        const std::string median_fitnesses_file_name = _run_dir_path.value() + "/median_fitnesses";
+        const std::string median_fitnesses_file_name = _run_dir_path.value() 
+            + "/median_fitnesses";
         std::ofstream median_fitnesses_file(median_fitnesses_file_name);
 
         for(const auto& fitness : _median_gen_fitnesses)
@@ -289,7 +292,8 @@ private:
         uq_fitnesses_file.close();
 
         //Best fitnesses so far
-        const std::string best_fitnesses_file_name = _run_dir_path.value() + "/best_fitnesses"; 
+        const std::string best_fitnesses_file_name = _run_dir_path.value() 
+            + "/best_fitnesses"; 
         std::ofstream best_fitnesses_file(best_fitnesses_file_name);
 
         for(const auto& fitness : _best_so_far_fitnesses)
@@ -299,6 +303,7 @@ private:
     }
 
     void print_info_to_screen(const Population<G, T>& population, 
+                              const unsigned current_gen,
                               const double gen_winner_fitness,
                               const double pop_average_fitness,
                               const unsigned print_header_every = 1e6)
@@ -306,7 +311,7 @@ private:
         const unsigned column_width = 16;
 
         //Print header titles every set amount of generations
-        if((population.get_gen_num()-1) % print_header_every == 0)
+        if((current_gen-1) % print_header_every == 0)
         {
             const std::vector<std::string> header_titles{"Gen", "Best Winner", 
                                                          "Gen Winner", "Gen Average"};
@@ -314,7 +319,7 @@ private:
         }
 
         //Print population data
-        const std::vector<double> row_data{(double)population.get_gen_num(),
+        const std::vector<double> row_data{(double)current_gen,
                                            _best_winner_so_far->get_fitness().value(),
                                            gen_winner_fitness,
                                            pop_average_fitness};
@@ -433,6 +438,8 @@ private:
     const unsigned _max_gens;
 
     const bool _dump_winners_only;
+
+    const bool _trace;
 
     //Data structures to store data over the generations
     std::vector<double> _mean_gen_fitnesses;

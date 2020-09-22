@@ -20,13 +20,25 @@ class Population {
 
 public:
 
-    Population(const unsigned pop_size, unsigned& gen_ref,
-               GenotypeSpec<G>& geno_spec, GPMap<G, T>& gp_map) :
-        _pop_size(pop_size),
-        _gen(gen_ref) 
+    Population() = default;
+
+    Population(const std::vector<Genotype<G>>& genotypes, 
+               GPMap<G, T>& gp_map)
     {
-        for(std::size_t i = 0; i < _pop_size; i++)
-            _organisms.push_back(Organism(geno_spec, gp_map));
+        for(const auto& genotype : genotypes)
+            _organisms.push_back(Organism(genotype, gp_map));
+    }
+
+    Population(const std::vector<Organism<G, T>>& organisms) :
+        _organisms(organisms) 
+    {
+        genesis();
+    }
+
+    void genesis()
+    {
+        for(auto& org : _organisms)
+            org.genesis();
     }
 
     const std::vector<Organism<G, T>>& get_organisms() const
@@ -41,12 +53,7 @@ public:
 
     unsigned get_size() const
     {
-        return _pop_size;
-    }
-
-    const unsigned& get_gen_num() const 
-    {
-        return _gen;
+        return _organisms.size();
     }
 
     const std::vector<double> get_fitnesses() const
@@ -68,41 +75,6 @@ public:
         _organisms.at(org).genesis();
     }
 
-    //Generates new population with the provided genetic operators
-    void generate_new_population(Selection<G, T>* selector,
-                                 Mutator<G>* gp_map_mutator = nullptr) 
-    {
-
-        std::vector<Organism<G, T>> new_pop;
-
-        for(std::size_t i = 0; i < _pop_size; i++) {
-
-            //Select a genome using given selection operator
-            Organism<G, T> child_organism = _organisms[i];
-            if(selector)
-                child_organism = selector->select(_organisms);
-
-            //Mutate new genome
-            child_organism.get_genotype().mutate();
-
-            //Only mutate GPMap if a GPMap mutator has been specified
-            //and if the GPMap is vectorisable
-            //TODO: Removing GPMap mutation for now - might bring back later
-            //if(gp_map_mutator && child_organism.get_gp_map()->get_map().has_value())
-            //    gp_map_mutator->mutate(child_organism.get_gp_map()->get_map()->get_vector());
-
-            //Create new phenotype out of newly modified genotype
-            child_organism.genesis();
-
-            //Add to new population
-            new_pop.push_back(child_organism);
-
-        }
-
-        _organisms = new_pop;
-
-    }
-
     friend std::ostream& operator<<(std::ostream& os, const Population& population)
     {
         for(std::size_t i = 0; i < population._organisms.size(); i++)
@@ -112,11 +84,7 @@ public:
 
 private:
 
-    const unsigned _pop_size;
-
     std::vector<Organism<G, T>> _organisms;
-
-    unsigned& _gen;
 
 };
 

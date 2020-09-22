@@ -29,7 +29,7 @@ public:
 
     void print_params() override 
     {
-        for(const auto& trait : _traits)
+        for(const auto trait : _traits)
             std::cout << trait << std::endl;
     }
 

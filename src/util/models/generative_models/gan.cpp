@@ -4,7 +4,6 @@
 #include <torch/nn/functional/loss.h>
 #include <torch/nn/options/loss.h>
 #include <util/models/generative_models/gan.h>
-#include <genotype/genotype_spec.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
 

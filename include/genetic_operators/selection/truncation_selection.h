@@ -59,11 +59,19 @@ private:
         // Sort indices by population fitness
         std::sort(
             begin(sorted_indices), end(sorted_indices),
-            [&](int i1, int i2) { return orgs.at(i1).get_fitness() > orgs.at(i2).get_fitness(); }
+            [&](int i1, int i2) 
+            { 
+                return orgs.at(i1).get_fitness() > orgs.at(i2).get_fitness(); 
+            }
         );
 
         return sorted_indices;
 
+    }
+
+    TruncationSelection* clone_impl() const override 
+    {
+        return new TruncationSelection(*this);
     }
 
     // The amount of the population that is selected to

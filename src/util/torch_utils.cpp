@@ -1,5 +1,4 @@
 #include <util/torch_utils.h>
-#include <genotype/genotype_spec.h>
 
 namespace NeuroEvo {
 

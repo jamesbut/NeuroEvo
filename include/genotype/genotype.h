@@ -9,6 +9,8 @@
 #include <iostream>
 #include <genetic_operators/mutation/mutator.h>
 #include <memory>
+#include <fstream>
+#include <sstream>
 
 namespace NeuroEvo {
 
@@ -19,14 +21,14 @@ public:
 
     Genotype() = default;
 
-    Genotype(const std::vector<G>& genes, std::shared_ptr<Mutator<G>> mutator = nullptr) :
-        _genes(genes),
-        _mutator(mutator) {}
+    Genotype(const std::vector<G>& genes) :
+        _genes(genes) {}
 
-    Genotype(const std::vector<G>& genes, const double fitness, 
-             std::shared_ptr<Mutator<G>> mutator = nullptr) :
+    Genotype(const std::string& genotype_file_name) :
+        _genes(read_genes_from_file(genotype_file_name)) {}
+
+    Genotype(const std::vector<G>& genes, const double fitness) :
         _genes(genes),
-        _mutator(mutator),
         _fitness(fitness) {}
 
     auto clone() const
@@ -34,15 +36,9 @@ public:
         return std::unique_ptr<Genotype<G>>(new Genotype<G>(*this));
     }
 
-    const std::vector<G>& genes() const 
+    std::vector<G>& genes() 
     {
         return _genes;
-    }
-
-    void mutate() 
-    {
-        if(_mutator)
-            _mutator->mutate(_genes);
     }
 
     const std::optional<double>& get_fitness() const
@@ -63,8 +59,49 @@ public:
 
 private:
 
+    std::vector<G> read_genes_from_file(const std::string& file_name)
+    {
+
+        std::ifstream file(file_name);
+
+        if(file.is_open())
+        {
+            std::string line;
+
+            //Read whole line from file
+            std::getline(file, line);
+
+            std::stringstream ss(line);
+
+            //Get fitness
+            std::string fitness_str;
+            getline(ss, fitness_str, ',');
+
+            std::vector<G> genes;
+
+            while(ss.good()) {
+
+                std::string substr;
+                getline(ss, substr, ',');
+
+                //This cast will not always work
+                //But it can stay for now
+                genes.push_back(std::stod(substr));
+
+            }
+
+            _fitness = std::stod(fitness_str);
+            return genes;
+            
+        } else
+        {
+            std::cerr << "Could not open genotype file: " << file_name << std::endl;
+            exit(0);
+        }
+
+    }
+
     std::vector<G> _genes;
-    std::shared_ptr<Mutator<G>> _mutator;
 
     //This is only here for ease - it is mainly used when reading a genotype from file
     //and one wants quick access to the fitness that this genotype had when it was tested

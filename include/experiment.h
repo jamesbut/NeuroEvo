@@ -11,6 +11,7 @@
 #include <util/file_utils.h>
 #include <thread>
 #include <util/concurrency/run_scheduler.h>
+#include <optimiser/optimiser.h>
 
 namespace NeuroEvo {
 
@@ -22,7 +23,6 @@ public:
     //Constructs an experiment conditional on whether the phenotype specification is appropriate
     //for the domain
     static std::optional<Experiment> construct(Domain<G, T>& domain,
-                                               GenotypeSpec<G>& geno_spec,
                                                GPMap<G, T>& gp_map,
                                                const bool dump_data = true,
                                                const bool dump_winners_only = false) 
@@ -30,7 +30,7 @@ public:
         
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(*gp_map.get_pheno_spec()))
-            return Experiment(domain, geno_spec, gp_map, dump_data, dump_winners_only);
+            return Experiment(domain, gp_map, dump_data, dump_winners_only);
         return std::nullopt;
         
     }
@@ -49,7 +49,7 @@ public:
         if(pheno_trace)
             _gp_map.set_pheno_spec_trace(pheno_trace);
 
-        Organism organism(_geno_spec, _gp_map, best_winner_path.str());
+        Organism organism(_gp_map, best_winner_path.str());
 
         _domain.set_render(render);
         _domain.set_trace(domain_trace);
@@ -75,13 +75,10 @@ public:
 
     }
 
-    void evolutionary_run(const unsigned pop_size,
-                          const unsigned max_gens,
-                          Selection<G, T>* selector,
+    void evolutionary_run(Optimiser<G, T>& optimiser,
                           const unsigned num_runs = 1,
                           const bool parallel_runs = false,
                           const bool trace = true,
-                          const unsigned num_trials = 1,
                           const bool domain_parallel = false)
     {
 
@@ -89,18 +86,14 @@ public:
         if(_dump_data)
             _exp_dir_path = std::make_optional(DataCollector<G, T>::create_exp_dir());
 
-        if(selector == nullptr)
-            std::cout << "NOTE: No selector provided to evolutionary run!" << std::endl;
-
         //Run runs in parallel
         if(parallel_runs)
         {
             //Trace is off in parallel runs
             const bool trace = false;
-            const RunArguments<G, T> run_args{pop_size, max_gens, selector, &_domain, 
-                                              &_geno_spec, &_gp_map, _exp_dir_path, 
+            const RunArguments<G, T> run_args{&_domain, optimiser, &_gp_map, _exp_dir_path, 
                                               _dump_winners_only, _num_winners, trace, 
-                                              num_trials, domain_parallel};
+                                              domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
@@ -111,9 +104,8 @@ public:
             for(unsigned i = 0; i < num_runs; i++) 
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(pop_size, max_gens, selector, &_domain, &_geno_spec, &_gp_map, 
-                    _exp_dir_path, _dump_winners_only, _num_winners, completed_flag, trace, 
-                    num_trials, domain_parallel);
+                run(&_domain, optimiser, &_gp_map, _exp_dir_path, _dump_winners_only, 
+                    _num_winners, completed_flag, trace, domain_parallel);
             }
         }
 
@@ -156,105 +148,60 @@ private:
 
     //Cannot construct experiment because it is dependent on valid specifications
     Experiment(Domain<G, T>& domain,
-               GenotypeSpec<G>& geno_spec,
                GPMap<G, T>& gp_map,
                const bool dump_data,
                const bool dump_winners_only) :
         _domain(domain), 
-        _geno_spec(geno_spec),
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
         _dump_data(dump_data),
         _dump_winners_only(dump_winners_only),
         _num_winners(0) {}
 
-    static int ga_finished(Population<G, T>& population, Domain<G, T>& domain, 
-                           const unsigned max_gens) 
-    {
-
-        if(population.get_gen_num() >= max_gens)
-            return 2;
-
-        if(domain.complete())
-            return 1;
-
-        return 0;
-
-    }
-
-    static void run(const unsigned pop_size,
-                    const unsigned max_gens,
-                    Selection<G, T>* selector,
-                    Domain<G, T>* m_domain,
-                    GenotypeSpec<G>* m_geno_spec,
+    static void run(Domain<G, T>* m_domain,
+                    Optimiser<G, T>& a_optimiser,
                     GPMap<G, T>* m_gp_map,
-                    const std::optional<const std::string>& exp_dir_path,
+                    const std::optional<const std::string> exp_dir_path,
                     const bool dump_winners_only,
                     unsigned& num_winners,
                     bool& completed_flag,
                     const bool trace = true,
-                    const unsigned num_trials = 1,
                     const bool domain_parallel = false)
     {
 
-        //Copy domain
+        //Copy and reset domain
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
         domain->reset();
 
+        //Copy and reset optimiser
+        std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser.clone();
+        optimiser->reset();
+
         //Create new data collector
-        DataCollector<G, T> data_collector(exp_dir_path, max_gens, dump_winners_only);
+        DataCollector<G, T> data_collector(exp_dir_path, optimiser->get_max_gens(), 
+                                           dump_winners_only, trace);
 
-        unsigned gen = 1;
-        int ga_completed = 0;
-
-        // Build population
-        Population population(pop_size, gen, *m_geno_spec, *m_gp_map);
-
-        do {
-
-            // Evaluate population
-            domain->evaluate_population(population, num_trials, domain_parallel);
-
-            // Check for completion
-            ga_completed = ga_finished(population, *domain, max_gens);
-            bool final_gen = ga_completed == 0 ? false : true;
-
-            // Print population data after fitness evaluation
-            data_collector.collect_generational_data(population, final_gen, trace);
-
-            // Break if completed
-            if(final_gen) break;
-
-            // Generate new population using genetic operators
-            population.generate_new_population(selector, nullptr);
-
-            gen++;
-
-        } while (ga_completed == 0);
+        //Call optimiser
+        const bool optimiser_status = optimiser->optimise(*domain, data_collector);
         
         // Check whether the domain was solved or not
-        if(ga_completed == 1) {
-
-            //if(trace)
+        if(optimiser_status) 
+        {
             std::cout << "FOUND WINNER!" << std::endl;
-            std::cout << "Gen: " << gen << std::endl;
+            std::cout << "Gen: " << optimiser->get_finished_gen() << std::endl;
             num_winners++;
-
-        } else if (ga_completed == 2) {
-
-            std::cout << "GA finished at gen: " << gen << " with no winner :(" << std::endl;
-
-        }
+        } else
+            std::cout << "GA finished at gen: " << optimiser->get_finished_gen() 
+                << " with no winner :(" << std::endl;
 
         completed_flag = true;
 
     }
 
     //In most cases the domain and genotype spec will be the same for an 
-    //evolutionary run and an individual run so they are saved as member variables and taken as 
-    //constructor arguments
+    //evolutionary run and an individual run so they are saved as member variables 
+    //and taken as constructor arguments
     Domain<G, T>& _domain;
-    GenotypeSpec<G>& _geno_spec;
     GPMap<G, T>& _gp_map;
 
     std::optional<std::string> _exp_dir_path;
