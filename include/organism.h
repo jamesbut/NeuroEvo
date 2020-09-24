@@ -125,7 +125,11 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Organism organism)
     {
         //Just print genotype for now
-        os << "[" << *organism._genotype << "]" << " Fitness: " << organism._fitness;
+        os << "[" << *organism._genotype << "]" << " Fitness: ";
+        if(organism._fitness.has_value())
+            os << organism._fitness.value();
+        else
+            os << "N/A";
         return os;
     }
 

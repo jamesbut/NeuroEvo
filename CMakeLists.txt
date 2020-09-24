@@ -103,6 +103,7 @@ target_include_directories(neuroEvo PUBLIC
     include
     ${Boost_INCLUDE_DIRS}
     #${TORCH_INCLUDE_DIRS}
+    lib/eigen
 )
 
 # Library used for parallelisation
