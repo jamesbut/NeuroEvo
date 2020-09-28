@@ -26,7 +26,6 @@ public:
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
     VectorMatching(const unsigned matching_vector_size,
-                   //Distribution<T>* matching_vector_distr,
                    const std::shared_ptr<Distribution<T>> matching_vector_distr,
                    const bool symmetric_match_vector,
                    const bool domain_trace, 
@@ -114,7 +113,8 @@ private:
 
             //Create symmetric second half
             std::vector<T> second_half_matching_vector(first_half_matching_vector);
-            std::reverse(second_half_matching_vector.begin(), second_half_matching_vector.end());
+            std::reverse(second_half_matching_vector.begin(), 
+                         second_half_matching_vector.end());
 
             //Concatenate
             first_half_matching_vector.insert(first_half_matching_vector.begin(),
@@ -151,8 +151,8 @@ private:
         std::cout << std::endl;
     }
 
-    const std::shared_ptr<Distribution<T>> _matching_vector_distr;
-    const bool _symmetric_match_vector;
+    std::shared_ptr<Distribution<T>> _matching_vector_distr;
+    bool _symmetric_match_vector;
 
 protected:
 
