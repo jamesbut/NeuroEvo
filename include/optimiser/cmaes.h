@@ -21,7 +21,8 @@ public:
           const unsigned num_genes,
           const unsigned max_gens,
           const unsigned pop_size,
-          const unsigned num_trials = 1) :
+          const unsigned num_trials = 1,
+          const bool adapt_C = true) :
         Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size, num_trials),
         _mean(Eigen::VectorXd::Zero(this->_num_genes)),
         _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
@@ -36,7 +37,8 @@ public:
         _p_sigma(Eigen::VectorXd::Zero(this->_num_genes)),
         _count_eval(0),
         _eigen_eval(0),
-        _gauss_distr(0, 1) 
+        _gauss_distr(0, 1),
+        _adapt_C(adapt_C)
     {
 
         if(init_mean.size() != this->_num_genes)
@@ -108,35 +110,42 @@ public:
         for(unsigned i = 1; i < _mu; i++)
             _mean += elites[i] * _weights(i);
         
-        //Update evolutionary paths
+        //Update sigma evolutionary path
         _p_sigma = (1. - _c_sig) * _p_sigma + std::sqrt(_c_sig * (2. - _c_sig) * _mu_eff) *
                    _invsqrtC * (_mean - _mean_old) / _sigma;
-        double h_sig = 0.;
-        h_sig = (_p_sigma.squaredNorm() / _N / 
-                (1. - std::pow((1. - _c_sig), (2. * (double)_count_eval / _lambda))))
-                < (2. + 4. / (_N + 1.));
-        _p_c = (1. - _c_c) * _p_c + h_sig * std::sqrt(_c_c * (2. - _c_c) * _mu_eff) 
-               * (_mean - _mean_old) / _sigma;
 
-        //Compute new C
-        _C_old = _C;
-        _C = (elites[0] - _mean_old) * (elites[0] - _mean_old).transpose() * _weights(0);
-        for(unsigned i = 1; i < _mu; i++)
-            _C += (elites[i] - _mean_old) * (elites[i] - _mean_old).transpose() * _weights(i);
-        _C /= _sigma * _sigma;
-        _C = (1. - _c_1 - _c_mu) * _C_old + _c_mu * _C + 
-             _c_1 * ((_p_c * _p_c.transpose()) + (1. - h_sig) * _c_c * (2. - _c_c) * _C_old);
+        if(_adapt_C)
+        {
+            //Update C evolutionary path
+            double h_sig = 0.;
+            h_sig = (_p_sigma.squaredNorm() / _N / 
+                    (1. - std::pow((1. - _c_sig), (2. * (double)_count_eval / _lambda))))
+                    < (2. + 4. / (_N + 1.));
+            _p_c = (1. - _c_c) * _p_c + h_sig * std::sqrt(_c_c * (2. - _c_c) * _mu_eff) 
+                    * (_mean - _mean_old) / _sigma;
+            
+            //Compute new C
+            _C_old = _C;
+            _C = (elites[0] - _mean_old) * (elites[0] - _mean_old).transpose() * _weights(0);
+            for(unsigned i = 1; i < _mu; i++)
+                _C += (elites[i] - _mean_old) * (elites[i] - _mean_old).transpose() * _weights(i);
+            _C /= _sigma * _sigma;
+            _C = (1. - _c_1 - _c_mu) * _C_old + _c_mu * _C + 
+                _c_1 * ((_p_c * _p_c.transpose()) + (1. - h_sig) * _c_c * (2. - _c_c) * _C_old);
+
+        }
         
         //Compute new sigma
         _sigma *= std::exp(std::min(0.6, (_c_sig / _d_sig) * (_p_sigma.norm() / _chiN - 1.)));
 
-        /*
-        std::cout << "Mean: " << std::endl << _mean << std::endl;
-        std::cout << "C: " << std::endl << _C << std::endl;
-        std::cout << "sigma: " << std::endl << _sigma << std::endl;
-        */
+        //std::cout << "Mean: " << std::endl << _mean << std::endl;
+        //std::cout << "C: " << std::endl << _C << std::endl;
+        //std::cout << "invsqrtC: " << std::endl << _invsqrtC << std::endl;
+        //std::cout << "sigma: " << std::endl << _sigma << std::endl;
 
-        perform_eigendecompostion();
+        if(_adapt_C)
+            perform_eigendecompostion();
+
         return sample_population();
 
     }
@@ -154,6 +163,7 @@ private:
 
         std::vector<Genotype<double>> genotypes;
         genotypes.reserve(this->_pop_size);
+
         for(unsigned i = 0; i < this->_pop_size; i++)
         {
             Eigen::VectorXd norm_rands = Eigen::VectorXd::Zero(this->_num_genes);
@@ -161,7 +171,11 @@ private:
                 norm_rands(j) = _gauss_distr.next();
 
             //Sample from multivariate normal
-            Eigen::VectorXd genes = _mean + (_sigma * _B * _D * norm_rands);
+            Eigen::VectorXd genes;
+            if(_adapt_C)
+                genes = _mean + (_sigma * _B * _D * norm_rands);
+            else
+                genes = _mean + (_sigma * norm_rands);
 
             std::vector<double> genes_vec(genes.data(), 
                                           genes.data() + genes.rows() * genes.cols());
@@ -266,6 +280,8 @@ private:
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> _es;
 
     GaussianDistribution _gauss_distr;
+
+    const bool _adapt_C;
 
 };
 

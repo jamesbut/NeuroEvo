@@ -82,6 +82,8 @@ public:
                           const bool domain_parallel = false)
     {
 
+        std::clock_t start = std::clock();
+
         //Create experiment directory
         if(_dump_data)
             _exp_dir_path = std::make_optional(DataCollector<G, T>::create_exp_dir());
@@ -109,7 +111,10 @@ public:
             }
         }
 
+        const double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+
         std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
+        std::cout << "Duration: " << duration << " seconds" << std::endl;
 
     }
 
