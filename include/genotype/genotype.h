@@ -28,8 +28,8 @@ public:
         _genes(read_genes_from_file(genotype_file_name)) {}
 
     Genotype(const std::vector<G>& genes, const double fitness) :
-        _genes(genes),
-        _fitness(fitness) {}
+        _fitness(fitness),
+        _genes(genes) {}
 
     auto clone() const
     {
@@ -101,14 +101,15 @@ private:
 
     }
 
-    std::vector<G> _genes;
-
     //This is only here for ease - it is mainly used when reading a genotype from file
     //and one wants quick access to the fitness that this genotype had when it was tested
     //in a previous phenotype.
     //This is not necessarily reliable though, do not use unless you know what you are
     //doing.
     std::optional<double> _fitness;
+
+    std::vector<G> _genes;
+
 
 };
 
