@@ -319,7 +319,7 @@ private:
         }
 
         //Print population data
-        const std::vector<double> row_data{(double)current_gen,
+        const std::vector<double> row_data{static_cast<double>(current_gen),
                                            _best_winner_so_far->get_fitness().value(),
                                            gen_winner_fitness,
                                            pop_average_fitness};
