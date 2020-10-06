@@ -33,6 +33,7 @@ public:
                               const bool,
                               unsigned&,
                               bool&,
+                              unsigned&,
                               const bool,
                               const bool))
 
@@ -88,6 +89,7 @@ public:
                                 _run_args.dump_winners_only, 
                                 std::ref(_run_args.num_winners),
                                 std::ref(finished_flags[thread_index]),
+                                std::ref(_run_args.total_winners_gens),
                                 _run_args.trace, _run_args.domain_parallel);
                         
                         num_runs_started++;

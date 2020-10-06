@@ -94,8 +94,8 @@ public:
             //Trace is off in parallel runs
             const bool trace = false;
             const RunArguments<G, T> run_args{&_domain, optimiser, &_gp_map, _exp_dir_path, 
-                                              _dump_winners_only, _num_winners, trace, 
-                                              domain_parallel};
+                                              _dump_winners_only, _num_winners, 
+                                              _total_winners_gens, trace, domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
@@ -107,13 +107,15 @@ public:
             {
                 std::cout << "Starting run: " << i << std::endl;
                 run(&_domain, optimiser, &_gp_map, _exp_dir_path, _dump_winners_only, 
-                    _num_winners, completed_flag, trace, domain_parallel);
+                    _num_winners, completed_flag, _total_winners_gens, trace, domain_parallel);
             }
         }
 
         const double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        const double avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
 
         std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
+        std::cout << "Average winner generation: " << avg_winners_gens << std::endl;
         std::cout << "Duration: " << duration << " seconds" << std::endl;
 
     }
@@ -161,7 +163,8 @@ private:
         _exp_dir_path(std::nullopt),
         _dump_data(dump_data),
         _dump_winners_only(dump_winners_only),
-        _num_winners(0) {}
+        _num_winners(0),
+        _total_winners_gens(0) {}
 
     static void run(Domain<G, T>* m_domain,
                     Optimiser<G, T>& a_optimiser,
@@ -170,6 +173,7 @@ private:
                     const bool dump_winners_only,
                     unsigned& num_winners,
                     bool& completed_flag,
+                    unsigned& total_winners_gens,
                     const bool trace = true,
                     const bool domain_parallel = false)
     {
@@ -199,6 +203,7 @@ private:
             std::cout << "GA finished at gen: " << optimiser->get_finished_gen() 
                 << " with no winner :(" << std::endl;
 
+        total_winners_gens += optimiser->get_finished_gen();
         completed_flag = true;
 
     }
@@ -214,6 +219,7 @@ private:
     const bool _dump_winners_only;
 
     unsigned _num_winners;
+    unsigned _total_winners_gens;
 
 };
 
