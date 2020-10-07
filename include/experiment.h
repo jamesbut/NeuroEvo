@@ -112,10 +112,10 @@ public:
         }
 
         const double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-        const double avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
+        _avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
 
         std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
-        std::cout << "Average winner generation: " << avg_winners_gens << std::endl;
+        std::cout << "Average winner generation: " << _avg_winners_gens << std::endl;
         std::cout << "Duration: " << duration << " seconds" << std::endl;
 
     }
@@ -146,10 +146,17 @@ public:
     {
         std::ofstream file; 
         file.open(file_name, std::ios::app);
-        file << _num_winners;
+        file << _num_winners << std::endl;
         file.close();
     }
 
+    void dump_avg_winners_gens(const std::string& file_name)
+    {
+        std::ofstream file; 
+        file.open(file_name, std::ios::app);
+        file << _avg_winners_gens << std::endl;
+        file.close();
+    }
 
 private:
 
@@ -164,7 +171,8 @@ private:
         _dump_data(dump_data),
         _dump_winners_only(dump_winners_only),
         _num_winners(0),
-        _total_winners_gens(0) {}
+        _total_winners_gens(0),
+        _avg_winners_gens(0) {}
 
     static void run(Domain<G, T>* m_domain,
                     Optimiser<G, T>& a_optimiser,
@@ -220,6 +228,7 @@ private:
 
     unsigned _num_winners;
     unsigned _total_winners_gens;
+    unsigned _avg_winners_gens;
 
 };
 
