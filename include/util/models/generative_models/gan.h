@@ -21,8 +21,7 @@ public:
     GAN(NetworkBuilder& generator_builder,
         NetworkBuilder& discriminator_builder, 
         const torch::Tensor& real_data,
-        std::unique_ptr<Distribution<double>> init_net_weight_distr = 
-            std::unique_ptr<Distribution<double>>(nullptr));
+        Distribution<double>* init_net_weight_distr = nullptr);
 
     void train(const unsigned num_epochs, const unsigned batch_size, 
                const double weight_decay = 0., const bool trace = true, 

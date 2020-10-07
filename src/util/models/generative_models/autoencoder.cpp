@@ -7,10 +7,10 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          NetworkBuilder& decoder_builder,
                          const torch::Tensor& training_data,  
                          const std::optional<const torch::Tensor>& test_data,
-                         std::unique_ptr<Distribution<double>> init_net_weight_distr) :
+                         Distribution<double>* init_net_weight_distr) :
     GenerativeModel(training_data, test_data),
-    _encoder(build_torch_network(encoder_builder, std::move(init_net_weight_distr))),
-    _decoder(build_torch_network(decoder_builder, std::move(init_net_weight_distr))),
+    _encoder(build_torch_network(encoder_builder, init_net_weight_distr)),
+    _decoder(build_torch_network(decoder_builder, init_net_weight_distr)),
     _autoencoder(*_encoder, *_decoder) {}
 
 void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,

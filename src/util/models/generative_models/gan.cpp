@@ -12,10 +12,10 @@ namespace NeuroEvo {
 GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          const torch::Tensor& real_data,
-         std::unique_ptr<Distribution<double>> init_net_weight_distr) :
+         Distribution<double>* init_net_weight_distr) :
     GenerativeModel(real_data, std::nullopt),
-    _generator(build_torch_network(generator_builder, std::move(init_net_weight_distr))),
-    _discriminator(build_torch_network(discriminator_builder, std::move(init_net_weight_distr))) {}
+    _generator(build_torch_network(generator_builder, init_net_weight_distr)),
+    _discriminator(build_torch_network(discriminator_builder, init_net_weight_distr)) {}
 
 void GAN::train(const unsigned num_epochs, const unsigned batch_size, 
                 const double weight_decay, const bool trace, 

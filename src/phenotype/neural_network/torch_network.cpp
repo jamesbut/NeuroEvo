@@ -89,6 +89,7 @@ torch::nn::Sequential TorchNetwork::build_network(
     //Build network from layer specs
     for(const auto& layer_spec : layer_specs)
     {
+
         //Add linear layer
         auto linear_layer = torch::nn::Linear(
                 torch::nn::LinearOptions(layer_spec.get_inputs_per_neuron(),

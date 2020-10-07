@@ -4,7 +4,7 @@ namespace NeuroEvo {
 
 TorchNetwork* build_torch_network(
     NetworkBuilder& net_builder, 
-    std::unique_ptr<Distribution<double>> init_net_weight_distr)
+    Distribution<double>* init_net_weight_distr)
 {
     
     if(!net_builder.is_torch_net())
@@ -36,7 +36,6 @@ TorchNetwork* build_torch_network(
         std::cerr << "Only TorchNetworks can be used to build a TorchNetwork!" << std::endl;
         exit(0);
     }
-
 
     return torch_net_cast; 
 

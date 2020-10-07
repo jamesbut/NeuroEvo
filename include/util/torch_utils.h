@@ -9,8 +9,7 @@ namespace NeuroEvo {
 //Build torch network depending on whether an initial weight distribution has been defined
 TorchNetwork* build_torch_network(
     NetworkBuilder& net_builder, 
-    std::unique_ptr<Distribution<double>> init_net_weight_distr =
-        std::unique_ptr<Distribution<double>>(nullptr));
+    Distribution<double>* init_net_weight_distr = nullptr);
 
 //Generates batches from data and its respective labels
 const std::vector<std::pair<torch::Tensor, torch::Tensor>> 

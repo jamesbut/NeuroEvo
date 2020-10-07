@@ -7,22 +7,24 @@ namespace NeuroEvo {
 
 //When handing encoder builder on does not have to define the separate fully connected
 //layers that go separately to create mean and stddev - the constructor will do this
-VAE::VAE(NetworkBuilder& encoder_builder,
+VAE::VAE(NetworkBuilder* encoder_builder,
          NetworkBuilder& decoder_builder,
          const torch::Tensor& training_data, 
          const std::optional<const torch::Tensor>& test_data,
-         std::unique_ptr<Distribution<double>> init_net_weight_distr) :
+         Distribution<double>* init_net_weight_distr) :
     GenerativeModel(training_data, test_data),
-    _encoder(build_torch_network(encoder_builder, std::move(init_net_weight_distr))),
-    _decoder(build_torch_network(decoder_builder, std::move(init_net_weight_distr))),
-    _encoder_mean_linear_layer(torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                        _decoder->get_num_inputs())),
-    _encoder_logvar_linear_layer(torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                          _decoder->get_num_inputs())) {
-
-    //TODO: Check networks are appropriate
-
-}
+    _encoder(encoder_builder ? 
+                build_torch_network(*encoder_builder, init_net_weight_distr) : nullptr),
+    _decoder(build_torch_network(decoder_builder, init_net_weight_distr)),
+    _encoder_mean_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                                                   _decoder->get_num_inputs()) :
+                                          torch::nn::LinearOptions(training_data.size(1),
+                                                                   _decoder->get_num_inputs())),
+    _encoder_logvar_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                                                     _decoder->get_num_inputs()) :
+                                            torch::nn::LinearOptions(training_data.size(1),
+                                                                     _decoder->get_num_inputs())) 
+    {}
 
 void VAE::train(const unsigned num_epochs, const unsigned batch_size,
                 const double weight_decay, const bool trace, 
@@ -32,31 +34,18 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
     const double learning_rate = 1e-3;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
+
+    std::vector<torch::optim::OptimizerParamGroup> opt_params;
+    if(_encoder)
+        opt_params.push_back(_encoder->parameters());
+    opt_params.push_back(_encoder_mean_linear_layer->parameters());
+    opt_params.push_back(_encoder_logvar_linear_layer->parameters());
+    opt_params.push_back(_decoder->parameters());
+
     torch::optim::Adam optimizer(
-        {_encoder->parameters(),
-         _encoder_mean_linear_layer->parameters(),
-         _encoder_logvar_linear_layer->parameters(),
-         _decoder->parameters()},
+         opt_params,
          adam_options
     ); 
-
-    /*
-    //optimizer.add_parameters(_decoder->parameters());
-    std::cout << "Optimize size: " << optimizer.size() << std::endl;
-
-    std::cout << "Optimizer params: " << std::endl;
-    std::cout << optimizer.parameters() << std::endl;
-    //for(const auto& param : optimizer.parameters())
-    //    std::cout << param << std::endl;
-    std::cout << "----------------" << std::endl;
-
-    std::cout << "Encoder params:" << std::endl;
-    std::cout << _encoder->parameters() << std::endl;
-    std::cout << _encoder_mean_linear_layer->parameters() << std::endl;
-    std::cout << _encoder_logvar_linear_layer->parameters() << std::endl;
-    std::cout << "Decoder params: " << std::endl;
-    std::cout << _decoder->parameters() << std::endl;
-    */
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
@@ -92,7 +81,9 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
 
 std::pair<torch::Tensor, torch::Tensor> VAE::encode(const torch::Tensor& x) 
 {
-    const torch::Tensor hidden_layer_out = _encoder->forward(x);
+    torch::Tensor hidden_layer_out = x;
+    if(_encoder)
+        hidden_layer_out = _encoder->forward(x);
     const torch::Tensor mu = _encoder_mean_linear_layer->forward(hidden_layer_out);
     const torch::Tensor log_var = _encoder_logvar_linear_layer->forward(hidden_layer_out);
     return {mu, log_var};

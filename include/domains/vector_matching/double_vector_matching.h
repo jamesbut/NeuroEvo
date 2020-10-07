@@ -40,7 +40,11 @@ protected:
 
         }
 
-        return -total_distance;
+        //return -total_distance;
+        
+        //Normalised by dimension size
+        //So this is average distance per trait
+        return -total_distance / (double)this->_matching_vector.size();
         
     }
 

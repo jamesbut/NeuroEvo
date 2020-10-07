@@ -16,12 +16,11 @@ class VAE : public GenerativeModel
 
 public:
 
-    VAE(NetworkBuilder& encoder_builder,
+    VAE(NetworkBuilder* encoder_builder,
         NetworkBuilder& decoder_builder,
         const torch::Tensor& training_data,
         const std::optional<const torch::Tensor>& test_data = std::nullopt,
-        std::unique_ptr<Distribution<double>> init_net_weight_distr =
-            std::unique_ptr<Distribution<double>>(nullptr));
+        Distribution<double>* init_net_weight_distr = nullptr);
 
     virtual void train(const unsigned num_epochs, const unsigned batch_size,
                        const double weight_decay = 0., const bool trace = false, 
