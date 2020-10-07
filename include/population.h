@@ -75,6 +75,19 @@ public:
         _organisms.at(org).genesis();
     }
 
+    const Organism<G, T>& get_fittest_org() const
+    {
+        double best_fitness = _organisms[0].get_fitness().value();
+        std::size_t best_org_index = 0;
+        for(unsigned i = 1; i < _organisms.size(); i++)
+            if(_organisms[i].get_fitness().value() > best_fitness)
+            {
+                best_fitness = _organisms[i].get_fitness().value();
+                best_org_index = i;
+            }
+        return _organisms[best_org_index];
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Population& population)
     {
         for(std::size_t i = 0; i < population._organisms.size(); i++)

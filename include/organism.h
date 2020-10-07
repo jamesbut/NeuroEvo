@@ -61,7 +61,6 @@ public:
     Organism(Organism&& organism) = default;
     Organism& operator=(Organism&& organism) = default;
 
-
     //Pass in domain completion fitness too in order to determine whether the
     //organism is a domain winner
     void set_fitness(const double fitness, const double domain_completion_fitness) 
@@ -125,7 +124,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Organism organism)
     {
         //Just print genotype for now
-        os << "[" << *organism._genotype << "]" << " Fitness: ";
+        os << "Genotype: [" << *organism._genotype << "]" << std::endl
+           << "Fitness: ";
         if(organism._fitness.has_value())
             os << organism._fitness.value();
         else
