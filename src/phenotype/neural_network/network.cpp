@@ -70,10 +70,10 @@ void Network::set_trace(const bool trace)
         layer->set_trace(trace);
 }
 
-void Network::print_params()
+void Network::print(std::ostream& os) const
 {
     for(auto& layer : _layers)
-        layer->print_params();
+        layer->print(os);
 }
 
 std::vector<double> Network::get_weights() const

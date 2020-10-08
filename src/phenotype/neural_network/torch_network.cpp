@@ -141,9 +141,9 @@ torch::nn::Sequential TorchNetwork::build_network(
 
 void TorchNetwork::reset() {}
 
-void TorchNetwork::print_params() 
+void TorchNetwork::print(std::ostream& os) const
 {
-    std::cout << _net->parameters() << std::endl;
+    os << _net->parameters() << std::endl;
 }
 
 void TorchNetwork::write(const std::string& file_path) const 

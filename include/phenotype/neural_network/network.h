@@ -38,11 +38,13 @@ protected:
         return new Network(*this); 
     };
 
-    void print_params() override;
-
     std::vector<double> propogate(const std::vector<double>& inputs);
 
     std::vector<std::unique_ptr<Layer>> _layers;
+
+private:
+
+    void print(std::ostream& os) const override;
 
 };
 

@@ -34,7 +34,6 @@ public:
     std::vector<torch::Tensor> parameters(bool recurse = true) const;
 
     void reset() override;
-    void print_params() override;
 
     //Write network parameters to file
     void write(const std::string& file_path) const;
@@ -51,6 +50,8 @@ private:
             const std::optional<const std::vector<double>>& init_weights);
 
     unsigned calculate_num_net_params(const torch::nn::Sequential& net) const;
+
+    void print(std::ostream& os) const override;
 
     TorchNetwork* clone_impl() const override
     {

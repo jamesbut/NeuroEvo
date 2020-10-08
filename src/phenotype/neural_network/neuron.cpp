@@ -87,11 +87,11 @@ double Neuron::propogate(const std::vector<double>& inputs)
 
 }
 
-void Neuron::print_weights() const
+void Neuron::print(std::ostream& os) const
 {
     for(const auto& weight : _weights)
-        std::cout << weight << " ";
-    std::cout << std::endl;
+        os << weight << " ";
+    os << std::endl;
 }
 
 void Neuron::print_weights_to_file(std::ofstream& file) const

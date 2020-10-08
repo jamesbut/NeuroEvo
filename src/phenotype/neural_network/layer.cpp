@@ -129,15 +129,10 @@ void Layer::reset()
         neuron->reset();
 }
 
-void Layer::print_weights() const
+void Layer::print(std::ostream& os) const
 {
     for(const auto& neuron : _neurons)
-        neuron->print_weights();
-}
-
-void Layer::print_params() const
-{
-    print_weights();
+        neuron->print(os);
 }
 
 void Layer::print_weights_to_file(std::ofstream& file) const

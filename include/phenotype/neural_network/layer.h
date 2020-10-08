@@ -37,8 +37,7 @@ public:
 
     void reset();
 
-    void print_weights() const;
-    void print_params() const;
+    void print(std::ostream& os) const;
     void print_weights_to_file(std::ofstream& file) const;
     void print_outputs_to_file(std::ofstream& file) const;
 

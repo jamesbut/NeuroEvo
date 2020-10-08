@@ -27,10 +27,16 @@ public:
 
     void reset() override {}
 
-    void print_params() override 
+    void print(std::ostream& os) const override 
     {
-        for(const auto trait : _traits)
-            std::cout << trait << std::endl;
+        os << "[";
+        for(std::size_t i = 0; i < _traits.size(); i++)
+        {
+            os << _traits[i];
+            if(i != _traits.size()-1)
+                os << ",";
+        }
+        os << "]";
     }
 
 protected:

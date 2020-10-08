@@ -37,7 +37,7 @@ public:
         return std::unique_ptr<Neuron>(clone_impl()); 
     };
 
-    void print_weights() const;
+    void print(std::ostream& os) const;
     void print_weights_to_file(std::ofstream& file) const;
     void print_output_to_file(std::ofstream& file) const;
 

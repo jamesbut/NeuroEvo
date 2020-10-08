@@ -35,8 +35,6 @@ public:
 
     auto clone_phenotype() const { return std::unique_ptr<Phenotype>(clone_impl()); }
 
-    virtual void print_params() = 0;
-
     const std::optional<unsigned>& get_num_params() const
     {
         return _num_params;
@@ -47,6 +45,12 @@ public:
         _trace = trace;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const Phenotype& phenotype)
+    {
+        phenotype.print(os);
+        return os;
+    }
+
 protected:
 
     virtual Phenotype* clone_impl() const = 0;
@@ -54,6 +58,10 @@ protected:
     std::optional<unsigned> _num_params;
 
     bool _trace;
+
+private: 
+
+    virtual void print(std::ostream& os) const  = 0;
 
 };
 
