@@ -62,9 +62,11 @@ public:
 
         _finished_gen = gen;
 
+        /*
         std::cout << "Best org:" << std::endl;
         const auto best_org = _population.get_fittest_org();
         std::cout << best_org << std::endl;
+        */
 
         if(domain.complete())
             return true;

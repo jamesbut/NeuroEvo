@@ -35,7 +35,7 @@ public:
         _symmetric_match_vector(symmetric_match_vector),
         _matching_vector(randomly_generate_matching_vector(matching_vector_size)) 
     {
-        print_matching_vector();
+        //print_matching_vector();
     }
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :
@@ -138,7 +138,7 @@ private:
         //Reset matching vector if it was generated from a distribution
         if(_matching_vector_distr)
             _matching_vector = randomly_generate_matching_vector(_matching_vector.size());
-        print_matching_vector();
+        //print_matching_vector();
 
         mtx.unlock();
     }
