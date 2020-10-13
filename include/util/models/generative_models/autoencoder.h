@@ -29,11 +29,13 @@ public:
     torch::Tensor encode(const torch::Tensor& x) const;
     //Better known in this context as decode
     torch::Tensor generate(const torch::Tensor& x) const override;
-    torch::Tensor forward(const torch::Tensor& x) const;
+    std::tuple<torch::Tensor, torch::Tensor> forward(const torch::Tensor& x);
 
     const std::unique_ptr<TorchNetwork>& get_decoder() const;
 
 private:
+
+    torch::Tensor loss_function(const torch::Tensor& output, const torch::Tensor& input) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
     std::unique_ptr<TorchNetwork> _decoder;

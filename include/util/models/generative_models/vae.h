@@ -41,7 +41,7 @@ public:
 private:
 
     torch::Tensor loss_function(const torch::Tensor& output, const torch::Tensor& input,
-                                const torch::Tensor& mu, const torch::Tensor& log_var);
+                                const torch::Tensor& mu, const torch::Tensor& log_var) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
     std::unique_ptr<TorchNetwork> _decoder;

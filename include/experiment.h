@@ -142,6 +142,11 @@ public:
         _domain.set_trace(domain_trace);
     }
 
+    void set_domain_seed(const unsigned seed)
+    {
+        _domain.set_seed(seed);
+    }
+
     void dump_num_winners(const std::string& file_name)
     {
         std::ofstream file; 

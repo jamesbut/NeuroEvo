@@ -39,13 +39,9 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         for(const auto& batch : batches)
         {
             _autoencoder->zero_grad();
-            auto ae_output = _autoencoder->forward(batch.first);
+            const auto [output, code] = forward(batch.first);
 
-            torch::Tensor loss = torch::nn::functional::mse_loss(
-                ae_output, 
-                batch.second,
-                torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
-            );
+            torch::Tensor loss = loss_function(output, batch.second);
 
             loss.backward();
             total_loss += loss;
@@ -59,14 +55,11 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         /* Test on test set */
         if(((i+1) % test_every == 0) && _test_data.has_value())
         {
-            auto test_output = forward(_test_data.value());
-            torch::Tensor test_loss = torch::nn::functional::mse_loss(
-                test_output, 
-                _test_data.value(),
-                torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
-            );
 
+            const auto [test_output, test_code] = forward(_test_data.value());
+            const auto test_loss = loss_function(test_output, _test_data.value());
             avg_test_loss = test_loss / _test_data->size(0);
+
         }
 
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() 
@@ -86,9 +79,24 @@ torch::Tensor AutoEncoder::generate(const torch::Tensor& x) const
     return _decoder->forward(x);
 }
 
-torch::Tensor AutoEncoder::forward(const torch::Tensor &x) const
+std::tuple<torch::Tensor, torch::Tensor> AutoEncoder::forward(const torch::Tensor &x)
 {
-    return _decoder->forward(_encoder->forward(x));
+    const auto code = _encoder->forward(x);
+    return std::make_tuple(_decoder->forward(code), code);
+}
+
+torch::Tensor AutoEncoder::loss_function(const torch::Tensor& output, 
+                                         const torch::Tensor& input) const
+{
+
+    torch::Tensor loss = torch::nn::functional::mse_loss(
+        output, 
+        input,
+        torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
+    );
+
+    return loss;
+
 }
 
 const std::unique_ptr<TorchNetwork>& AutoEncoder::get_decoder() const

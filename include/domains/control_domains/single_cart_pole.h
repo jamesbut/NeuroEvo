@@ -23,7 +23,22 @@ class SingleCartPole : public Domain<G, double>
 
 public:
 
+    struct CartPoleSpecs 
+    {
+
+        double gravity = 9.8;
+        double cart_mass = 1.0;
+        double pole_mass = 0.1;
+        double total_mass = cart_mass + pole_mass;
+        double pole_half_length = 0.5;
+        double polemass_length = (pole_mass * pole_half_length);
+        double force_mag = 10.0;
+        double tau = 0.02;    //seconds between state updates
+
+    };
+
     SingleCartPole(const bool markovian, const bool random_start,
+                   const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
                    const bool print_state = false, const int max_steps = 100000) :
         Domain<G, double>(domain_trace, max_steps+1, std::nullopt, render) ,
@@ -47,6 +62,8 @@ public:
 
         _cart_pole.cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
         _cart_pole.cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
+
+        _cart_pole.specs = cart_pole_specs;
 
     }
 
@@ -139,26 +156,28 @@ private:
             if(this->_domain_trace) std::cout << "action: " << action << std::endl;
 
             //Apply action to cart pole
-            double force = (action) ? _cart_pole.force_mag : -_cart_pole.force_mag;
-            double cos_theta = cos(_cart_pole.theta);
-            double sin_theta = sin(_cart_pole.theta);
+            const double force = (action) ? _cart_pole.specs.force_mag : 
+                                            -_cart_pole.specs.force_mag;
+            const double cos_theta = cos(_cart_pole.theta);
+            const double sin_theta = sin(_cart_pole.theta);
 
-            double temp = (force + _cart_pole.polemass_length * _cart_pole.theta_dot * 
-                           _cart_pole.theta_dot * sin_theta) / _cart_pole.total_mass;
+            const double temp = (force + _cart_pole.specs.polemass_length * 
+                                 _cart_pole.theta_dot * _cart_pole.theta_dot * sin_theta) / 
+                                _cart_pole.specs.total_mass;
 
-            double thetaacc = (_cart_pole.gravity * sin_theta - cos_theta * temp) /
-                              (_cart_pole.pole_half_length * 
-                                    (_cart_pole.four_thirds - _cart_pole.pole_mass *
-                                     cos_theta * cos_theta / _cart_pole.total_mass));
+            const double thetaacc = (_cart_pole.specs.gravity * sin_theta - cos_theta * temp) /
+                                    (_cart_pole.specs.pole_half_length * 
+                                    (_cart_pole.four_thirds - _cart_pole.specs.pole_mass *
+                                     cos_theta * cos_theta / _cart_pole.specs.total_mass));
 
-            double xacc = temp - _cart_pole.polemass_length * thetaacc * cos_theta / 
-                          _cart_pole.total_mass;
+            const double xacc = temp - _cart_pole.specs.polemass_length * thetaacc * cos_theta /
+                                _cart_pole.specs.total_mass;
 
             //Update the four state variables using Euler's method
-            _cart_pole.x += _cart_pole.tau * _cart_pole.x_dot;
-            _cart_pole.x_dot += _cart_pole.tau * xacc;
-            _cart_pole.theta += _cart_pole.tau * _cart_pole.theta_dot;
-            _cart_pole.theta_dot += _cart_pole.tau * thetaacc;
+            _cart_pole.x += _cart_pole.specs.tau * _cart_pole.x_dot;
+            _cart_pole.x_dot += _cart_pole.specs.tau * xacc;
+            _cart_pole.theta += _cart_pole.specs.tau * _cart_pole.theta_dot;
+            _cart_pole.theta_dot += _cart_pole.specs.tau * thetaacc;
 
             //Render
             if(this->_render)
@@ -223,14 +242,7 @@ private:
     struct CartPole 
     {
     
-        const double gravity = 9.8;
-        const double cart_mass = 1.0;
-        const double pole_mass = 0.1;
-        const double total_mass = cart_mass + pole_mass;
-        const double pole_half_length = 0.5;
-        const double polemass_length = (pole_mass * pole_half_length);
-        const double force_mag = 10.0;
-        const double tau = 0.02;    //seconds between state updates
+        CartPoleSpecs specs;
 
         //Rendering properties
         double cart_width;
@@ -290,7 +302,8 @@ private:
 
         //Render pole
         const float pole_render_width = _cart_pole.cart_render_width / 10;
-        const float pole_render_height = _cart_pole.pole_half_length * 2 * _cart_pole.render_scale;
+        const float pole_render_height = _cart_pole.specs.pole_half_length * 2 * 
+                                         _cart_pole.render_scale;
         sf::Vector2f pole_size(pole_render_width, pole_render_height);
         sf::RectangleShape pole(pole_size);
 

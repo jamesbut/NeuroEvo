@@ -127,7 +127,7 @@ torch::Tensor VAE::sample(const torch::Tensor& mu, const torch::Tensor& log_var,
 }
 
 torch::Tensor VAE::loss_function(const torch::Tensor& output, const torch::Tensor& input,
-                                 const torch::Tensor& mu, const torch::Tensor& log_var)
+                                 const torch::Tensor& mu, const torch::Tensor& log_var) const
 {
 
     //The difference between the input and the output (reconstruction loss)
