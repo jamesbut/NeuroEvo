@@ -20,8 +20,8 @@ class Experiment {
 
 public:
 
-    //Constructs an experiment conditional on whether the phenotype specification is appropriate
-    //for the domain
+    //Constructs an experiment conditional on whether the phenotype specification is 
+    //appropriate for the domain
     static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GPMap<G, T>& gp_map,
                                                const bool dump_data = true,

@@ -245,7 +245,10 @@ private:
         return new CMAES(*this);
     }
 
-    void reset() override {}
+    void reset() override 
+    {
+        _gauss_distr.randomly_seed();
+    }
 
     Eigen::VectorXd _mean;
     Eigen::VectorXd _mean_old;

@@ -40,8 +40,8 @@ public:
     SingleCartPole(const bool markovian, const bool random_start,
                    const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
-                   const bool print_state = false, const int max_steps = 100000) :
-        Domain<G, double>(domain_trace, max_steps+1, std::nullopt, render) ,
+                   const bool print_state = false, const unsigned max_steps = 100000) :
+        Domain<G, double>(domain_trace, max_steps, std::nullopt, render) ,
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
@@ -106,7 +106,7 @@ private:
 
         }
 
-        int steps = 0;
+        unsigned steps = 0;
 
         //Number of inputs for the markovian version is 4
         //Number of inputs for non-markovian (no velocity provided) is 2
@@ -151,9 +151,11 @@ private:
             outputs = org.get_phenotype().activate(inputs);
 
             //Decide which way to push based on which output unit it greater
-            bool action = (outputs.at(0) > outputs.at(1)) ? true : false;
+            //bool action = (outputs.at(0) > outputs.at(1)) ? true : false;
+            bool action = (outputs.at(0) > 0.5) ? true : false;
 
-            if(this->_domain_trace) std::cout << "action: " << action << std::endl;
+            if(this->_domain_trace) 
+                std::cout << "action: " << action << std::endl;
 
             //Apply action to cart pole
             const double force = (action) ? _cart_pole.specs.force_mag : 
@@ -213,6 +215,7 @@ private:
         if(_markovian) 
         {
 
+            /*
             if(network_builder->get_num_inputs() != 4 || 
                network_builder->get_num_outputs() != 2) 
             {
@@ -220,6 +223,7 @@ private:
                             " must be 2 for the markovian single part cole domain" << std::endl;
                 return false;
             }
+            */
 
         } else 
         {
@@ -364,7 +368,7 @@ private:
         return new SingleCartPole<G>(*this);
     }
 
-    const int _max_steps;
+    const unsigned _max_steps;
     const bool _markovian;
     const bool _random_start;
 

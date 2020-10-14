@@ -139,6 +139,12 @@ public:
     void reset()
     {
         _complete = false;
+
+        if(_seed.has_value())
+            _seed_sequence.set_seed(_seed.value());
+        else
+            _seed_sequence.randomly_seed();
+
        reset_domain();
     }
 
