@@ -66,10 +66,10 @@ private:
         for(size_t i = 0; i < orgs.size(); i++) {
 
             if(i==0)
-                smallest_fitness = orgs.at(i).get_fitness();
+                smallest_fitness = orgs.at(i).get_fitness().value();
             else
-                if(orgs.at(i).get_fitness() < smallest_fitness)
-                    smallest_fitness = orgs.at(i).get_fitness();
+                if(orgs.at(i).get_fitness().value() < smallest_fitness)
+                    smallest_fitness = orgs.at(i).get_fitness().value();
 
         }
 
@@ -78,7 +78,8 @@ private:
         std::vector<double> scaled_fitnesses(orgs.size());
 
         for(size_t i = 0; i < orgs.size(); i++)
-            scaled_fitnesses.at(i) = -smallest_fitness + orgs.at(i).get_fitness() + _bias;
+            scaled_fitnesses.at(i) = -smallest_fitness + orgs.at(i).get_fitness().value() 
+                                     + _bias;
 
         return scaled_fitnesses;
 
@@ -94,6 +95,19 @@ private:
 
         return total_fitness;
 
+    }
+
+    RouletteWheelSelection* clone_impl() const override
+    {
+        return new RouletteWheelSelection(*this);
+    }
+
+    void reset(const std::optional<unsigned>& seed) override
+    {
+        if(seed.has_value())
+            _uniform_distr.set_seed(seed.value());
+        else
+            _uniform_distr.randomly_seed();
     }
 
     //Bias for scaling fitness

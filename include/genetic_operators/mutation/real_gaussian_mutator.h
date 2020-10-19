@@ -16,6 +16,8 @@ public:
 
 private:
 
+    void reset_mutator(const std::optional<unsigned>& seed) override;
+
     RealGaussianMutator* clone_impl() const override
     {
         return new RealGaussianMutator(*this);

@@ -22,6 +22,8 @@ public:
         return std::unique_ptr<Selection>(clone_impl());
     }
 
+    virtual void reset(const std::optional<unsigned>& seed) = 0;
+
 protected:
 
     virtual Selection* clone_impl() const = 0;

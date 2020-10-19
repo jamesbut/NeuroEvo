@@ -35,8 +35,8 @@ public:
     LayerSpec(const unsigned num_neurons,
               const unsigned inputs_per_neuron, 
               const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
-              const bool bias = true,
-              const NeuronType neuron_type = NeuronType::Standard);
+              const NeuronType neuron_type = NeuronType::Standard,
+              const bool bias = true);
 
     LayerSpec(const LayerSpec& layer_spec);
     LayerSpec& operator=(const LayerSpec& layer_spec);

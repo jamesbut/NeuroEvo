@@ -113,13 +113,19 @@ void Neuron::reset()
 void Neuron::check_num_weights(const std::vector<double>& weights) const
 {
     unsigned num_required_weights = _num_inputs;
+
     if(_bias)
         num_required_weights += 1;
+
+    if(_neuron_type == NeuronType::Recurrent)
+        num_required_weights += 1;
+
     if(weights.size() != num_required_weights)
     {
         std::cerr << "Giving wrong number of weights to neuron" << std::endl;
         exit(0);
     }
+
 }
 
 } // namespace NeuroEvo

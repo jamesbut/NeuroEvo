@@ -5,8 +5,8 @@ namespace NeuroEvo {
 LayerSpec::LayerSpec(const unsigned num_neurons,
                      const unsigned inputs_per_neuron, 
                      const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
-                     const bool bias,
-                     const NeuronType neuron_type) :
+                     const NeuronType neuron_type,
+                     const bool bias) :
     _neuron_type(neuron_type),
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron),
@@ -70,19 +70,19 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
 
     if(num_hidden_layers == 0)
         layer_specs.push_back(LayerSpec(num_outputs, num_inputs, 
-                                        activation_func_spec, bias, neuron_type));
+                                        activation_func_spec, neuron_type, bias));
     else 
     {
 
         layer_specs.push_back(LayerSpec(neurons_per_layer, num_inputs, 
-                                        activation_func_spec, bias, neuron_type));
+                                        activation_func_spec, neuron_type, bias));
 
         for(unsigned i = 1; i < num_hidden_layers; i++)
             layer_specs.push_back(LayerSpec(neurons_per_layer, neurons_per_layer, 
-                                            activation_func_spec, bias, neuron_type));
+                                            activation_func_spec, neuron_type, bias));
 
         layer_specs.push_back(LayerSpec(num_outputs, neurons_per_layer, 
-                                        activation_func_spec, bias, neuron_type));
+                                        activation_func_spec, neuron_type, bias));
 
     }
 

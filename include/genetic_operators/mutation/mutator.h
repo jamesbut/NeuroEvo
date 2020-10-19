@@ -35,11 +35,22 @@ public:
         return std::unique_ptr<Mutator>(clone_impl());
     }
 
+    virtual void reset(const std::optional<unsigned>& seed)
+    {
+        if(seed.has_value())
+            _mutation_distr.set_seed(seed.value());
+        else
+            _mutation_distr.randomly_seed();
+        reset_mutator(seed);
+    }
+
 protected:
 
     virtual G mutate_gene(G gene) = 0;
     
     virtual Mutator* clone_impl() const = 0;
+
+    virtual void reset_mutator(const std::optional<unsigned>& seed) = 0;
 
     //The probability that a single gene is mutated
     const double _mutation_rate;

@@ -8,8 +8,9 @@
 #include <domains/control_domains/single_cart_pole.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
-#include <util/random/uniform_real_distribution.h>
+#include <util/statistics/distributions/uniform_real_distribution.h>
 #include <gp_map/vector_to_network_map.h>
+#include <optimiser/genetic_algorithm.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -39,6 +40,44 @@ int main(int argc, const char* argv[])
     const double default_init_weight = 1.;
     network_builder->make_hebbian(evolve_init_weights, default_init_weight);
 
+    const unsigned num_genes = network_builder->get_num_params();
+
+    std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
+        new NeuroEvo::VectorToNetworkMap(network_builder)
+    );
+
+    // Build single cart pole domain
+    const bool markovian = false;
+    const bool random_start = false;
+
+    bool domain_trace = false;
+    //One can turn rendering on here
+    bool render = false;
+    if(argc == 2) 
+    {
+        domain_trace = false;
+        render = true;
+    }
+
+    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
+        new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start)
+    );
+
+    // Construct experiment
+    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
+        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
+            *domain, 
+            *gp_map
+        );
+
+    //Do not continue if experiment construction was not successful
+    if(!experiment) exit(0);
+    
+    //Define genetic operators and parameters
+    const unsigned pop_size = 150;
+    const unsigned max_gens = 1000;
+    const unsigned num_trials = 1;
+    
     // Specify the distribution used for the initial gene values
     const double init_gene_lower_bound = 0;
     const double init_gene_upper_bound = 1;
@@ -53,56 +92,24 @@ int main(int argc, const char* argv[])
         new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
     );
 
-    std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
-        new NeuroEvo::GenotypeSpec<gene_type>(network_builder->get_num_params(), *genotype_distr,
-                                              mutator)
-    );
-
-    std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
-        new NeuroEvo::VectorToNetworkMap(network_builder)
-    );
-
-    // Build single cart pole domain
-    const bool markovian = false;
-    const bool random_start = false;
-    const bool print_state = false;
-
-    bool domain_trace = false;
-    //One can turn rendering on here
-    bool render = false;
-    if(argc == 2) 
-    {
-        domain_trace = false;
-        render = true;
-    }
-
-    std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
-        new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start,
-                                                render, domain_trace,
-                                                print_state)
-    );
-
-    // Construct experiment
-    std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
-        NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
-            *domain, 
-            *geno_spec, 
-            *gp_map
-        );
-
-    //Do not continue if experiment construction was not successful
-    if(!experiment) exit(0);
-    
-    //Define genetic operators and parameters
-    const unsigned pop_size = 150;
-    const unsigned max_gens = 1000;
-
     std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
         new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
+    std::unique_ptr<NeuroEvo::Optimiser<gene_type, phenotype_output>> optimiser = 
+        std::make_unique<NeuroEvo::GeneticAlgorithm<gene_type, phenotype_output>>(
+       *selector,
+       *mutator,
+       *genotype_distr,
+       *gp_map,
+       num_genes,
+       max_gens,
+       pop_size,
+       num_trials
+    );
+
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, selector.get());
+    if(argc == 1) experiment->evolutionary_run(*optimiser);
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

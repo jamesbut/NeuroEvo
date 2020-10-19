@@ -20,12 +20,22 @@ public:
               const unsigned num_genes,
               const unsigned max_gens,
               const unsigned pop_size,
-              const unsigned num_trials = 1) :
+              const unsigned num_trials = 1,
+              const std::optional<unsigned> seed = std::nullopt) :
         _gp_map(gp_map),
         _num_genes(num_genes),
         _max_gens(max_gens),
         _pop_size(pop_size), 
-        _num_trials(num_trials) {}
+        _num_trials(num_trials),
+        _seed(seed) {}
+
+    Optimiser(const Optimiser& optimiser) :
+        _gp_map(optimiser._gp_map),
+        _num_genes(optimiser._num_genes),
+        _max_gens(optimiser._max_gens),
+        _pop_size(optimiser._pop_size),
+        _num_trials(optimiser._num_trials),
+        _seed(optimiser._seed) {}
 
     virtual ~Optimiser() = default;
 
@@ -84,6 +94,11 @@ public:
         return _finished_gen.value();
     }
 
+    void seed_optimiser(const unsigned seed)
+    {
+        _seed = seed;
+    }
+
     auto clone() const
     {
         return std::unique_ptr<Optimiser>(clone_impl());
@@ -113,6 +128,8 @@ protected:
     std::optional<unsigned> _finished_gen;
 
     Population<G, T> _population;
+
+    std::optional<unsigned> _seed;
 
 private: 
 

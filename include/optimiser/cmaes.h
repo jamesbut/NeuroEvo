@@ -22,8 +22,9 @@ public:
           const unsigned max_gens,
           const unsigned pop_size,
           const unsigned num_trials = 1,
-          const bool adapt_C = true) :
-        Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size, num_trials),
+          const bool adapt_C = true,
+          const std::optional<unsigned>& seed = std::nullopt) :
+        Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size, num_trials, seed),
         _mean(Eigen::VectorXd::Zero(this->_num_genes)),
         _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
         _sigma(init_sigma),
@@ -128,7 +129,8 @@ public:
             _C_old = _C;
             _C = (elites[0] - _mean_old) * (elites[0] - _mean_old).transpose() * _weights(0);
             for(unsigned i = 1; i < _mu; i++)
-                _C += (elites[i] - _mean_old) * (elites[i] - _mean_old).transpose() * _weights(i);
+                _C += (elites[i] - _mean_old) * 
+                      (elites[i] - _mean_old).transpose() * _weights(i);
             _C /= _sigma * _sigma;
             _C = (1. - _c_1 - _c_mu) * _C_old + _c_mu * _C + 
                 _c_1 * ((_p_c * _p_c.transpose()) + (1. - h_sig) * _c_c * (2. - _c_c) * _C_old);
@@ -188,7 +190,8 @@ private:
     void perform_eigendecompostion() {
 
         //Enforce O(N^2)
-        if(static_cast<double>(_count_eval - _eigen_eval) > (_lambda / (_c_1 + _c_mu) / _N / 10.))
+        if(static_cast<double>(_count_eval - _eigen_eval) > 
+                               (_lambda / (_c_1 + _c_mu) / _N / 10.))
         {
             _eigen_eval = _count_eval;
 
@@ -247,7 +250,10 @@ private:
 
     void reset() override 
     {
-        _gauss_distr.randomly_seed();
+        if(this->_seed.has_value())
+            _gauss_distr.set_seed(this->_seed.value());
+        else
+            _gauss_distr.randomly_seed();
     }
 
     Eigen::VectorXd _mean;

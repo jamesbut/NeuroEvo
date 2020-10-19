@@ -40,13 +40,19 @@ public:
     SingleCartPole(const bool markovian, const bool random_start,
                    const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
-                   const bool print_state = false, const unsigned max_steps = 100000) :
+                   const bool print_state = false, const unsigned max_steps = 100000,
+                   const double starting_x = 0., const double starting_x_dot = 0.,
+                   const double starting_theta = 0., const double starting_theta_dot = 0.) :
         Domain<G, double>(domain_trace, max_steps, std::nullopt, render) ,
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
         _print_state_to_file(print_state),
-        _state_file_name(std::string(DATA_PATH) + "/single_cp_state")
+        _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
+        _starting_x(starting_x),
+        _starting_x_dot(starting_x_dot),
+        _starting_theta(starting_theta),
+        _starting_theta_dot(starting_theta_dot)
     {
 
         //Remove previous state file
@@ -77,13 +83,46 @@ private:
 
         if(_random_start) {
 
-            //Because of the modulus, the numbers will never be bigger than this
+            double x_lb, x_ub, x_dot_lb, x_dot_ub, 
+                   theta_lb, theta_ub, theta_dot_lb, theta_dot_ub;
+            if(_markovian)
+            {
+               x_lb = -2.; 
+               x_ub = 2.;
+               x_dot_lb = -1.;
+               x_dot_ub = 1.;
+               theta_lb = -0.16;
+               theta_ub = 0.16;
+               theta_dot_lb = -1.;
+               theta_dot_ub = 1.;
+            } else
+            {
+               x_lb = -1.; 
+               x_ub = 1.;
+               x_dot_lb = -1.;
+               x_dot_ub = 1.;
+               theta_lb = -0.2;
+               theta_ub = 0.2;
+               theta_dot_lb = -1.;
+               theta_dot_ub = 1.;
+            }
+
+            //[-2.4, 2.4]
             //const double x_rand = (lrand48()%4800)/1000.0 - 2.4;
-            const double x_rand = UniformRealDistribution::get(-2.0, 2.0, rand_seed);
-            const double x_dot_rand = (lrand48()%2000)/1000.0 - 1.0;
+            const double x_rand = UniformRealDistribution::get(x_lb, x_ub, rand_seed);
+            //[-1., 1.]
+            //const double x_dot_rand = (lrand48()%2000)/1000.0 - 1.0;
+            const double x_dot_rand = UniformRealDistribution::get(x_dot_lb, x_dot_ub, 
+                                                                   rand_seed);
+            //[-0.2, 0.2]
             //const double theta_rand = (lrand48()%400)/1000.0 - 0.2
-            const double theta_rand = UniformRealDistribution::get(-0.16, 0.16, rand_seed);
-            const double theta_dot_rand = (lrand48()%3000)/1000.0 - 1.5;
+            const double theta_rand = UniformRealDistribution::get(theta_lb, theta_ub, 
+                                                                   rand_seed);
+            //[-1.5, 1.5]
+            //const double theta_dot_rand = (lrand48()%3000)/1000.0 - 1.5;
+            const double theta_dot_rand = UniformRealDistribution::get(theta_dot_lb, 
+                                                                       theta_dot_ub,
+                                                                       rand_seed);
 
             /*
             std::cout << "x rand: " << x_rand << std::endl;
@@ -99,10 +138,10 @@ private:
 
         } else {
 
-            _cart_pole.x = 0.0;
-            _cart_pole.x_dot = 0.0;
-            _cart_pole.theta = 0.0;
-            _cart_pole.theta_dot = 0.0;
+            _cart_pole.x = _starting_x;
+            _cart_pole.x_dot = _starting_x_dot;
+            _cart_pole.theta = _starting_theta;
+            _cart_pole.theta_dot = _starting_theta_dot;
 
         }
 
@@ -150,16 +189,10 @@ private:
 
             outputs = org.get_phenotype().activate(inputs);
 
-            //Decide which way to push based on which output unit it greater
-            //bool action = (outputs.at(0) > outputs.at(1)) ? true : false;
-            bool action = (outputs.at(0) > 0.5) ? true : false;
+            //const double force = calculate_discrete_force(outputs);
+            const double force = calculate_continuous_force(outputs);
+            //std::cout << "Force: " << force << std::endl;
 
-            if(this->_domain_trace) 
-                std::cout << "action: " << action << std::endl;
-
-            //Apply action to cart pole
-            const double force = (action) ? _cart_pole.specs.force_mag : 
-                                            -_cart_pole.specs.force_mag;
             const double cos_theta = cos(_cart_pole.theta);
             const double sin_theta = sin(_cart_pole.theta);
 
@@ -187,14 +220,41 @@ private:
 
             //Check for failure
             if (_cart_pole.x < -_boundary || _cart_pole.x > _boundary ||
-                _cart_pole.theta < -_cart_pole.twelve_degrees || 
-                _cart_pole.theta > _cart_pole.twelve_degrees)
+                //_cart_pole.theta < -_cart_pole.twelve_degrees || 
+                //_cart_pole.theta > _cart_pole.twelve_degrees)
+                _cart_pole.theta < -_cart_pole.fortyfive_degrees || 
+                _cart_pole.theta > _cart_pole.fortyfive_degrees)
                 return (double)steps;
 
         }
 
         return (double)steps;
 
+    }
+
+    double calculate_discrete_force(const std::vector<double>& net_outputs) const
+    {
+        //Decide which way to push based on which output unit it greater
+        bool action = true;
+        if(net_outputs.size() == 2)
+            action = (net_outputs.at(0) > net_outputs.at(1)) ? true : false;
+        //Or whether the value is below or above 0.5
+        else if(net_outputs.size() == 1)
+            action = (net_outputs.at(0) > 0.5) ? true : false;
+
+        if(this->_domain_trace) 
+            std::cout << "action: " << action << std::endl;
+
+        //Apply action to cart pole
+        const double force = (action) ? _cart_pole.specs.force_mag : 
+                                        -_cart_pole.specs.force_mag;
+        return force;
+
+    }
+
+    double calculate_continuous_force(const std::vector<double>& net_outputs) const
+    {
+        return net_outputs[0] * 2 * _cart_pole.specs.force_mag - _cart_pole.specs.force_mag;
     }
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
@@ -215,27 +275,28 @@ private:
         if(_markovian) 
         {
 
-            /*
-            if(network_builder->get_num_inputs() != 4 || 
-               network_builder->get_num_outputs() != 2) 
+            if(network_builder->get_num_inputs() != 4)
             {
-                std::cout << "Number of inputs must be 4 and number of outputs" <<
-                            " must be 2 for the markovian single part cole domain" << std::endl;
+                std::cout << "Number of inputs must be 4 " <<
+                            "for the markovian single part cole domain" << std::endl;
                 return false;
             }
-            */
 
         } else 
         {
-            if(network_builder->get_num_inputs() != 2 || 
-               network_builder->get_num_outputs() != 2) 
+            if(network_builder->get_num_inputs() != 2)
             {
-                std::cout << "Number of inputs must be 2 and number of outputs" <<
-                            " must be 2 for the non-markovian single part cole domain" << 
+                std::cout << "Number of inputs must be 2 " <<
+                            "for the non-markovian single part cole domain" << 
                             std::endl;
                 return false;
             }
+        }
 
+        if((network_builder->get_num_outputs() != 1) && (network_builder->get_num_outputs() != 2))
+        {
+            std::cerr << "Number of outputs must be 1 or 2 for SCP domain" << std::endl;
+            return false;
         }
 
         return true;
@@ -258,12 +319,14 @@ private:
 
         const double twelve_degrees = 0.2094384;
         const double ninety_degrees = M_PI/4;
+        const double fortyfive_degrees = 0.785398;
         const double four_thirds = 1.333333333333;
 
         double x;
         double x_dot;
         double theta;
         double theta_dot;
+
 
     };
 
@@ -379,6 +442,11 @@ private:
 
     const double _boundary = 2.4;
     double _x_max;
+
+    const double _starting_x;
+    const double _starting_x_dot;
+    const double _starting_theta;
+    const double _starting_theta_dot;
 
 };
 

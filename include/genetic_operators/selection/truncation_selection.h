@@ -61,7 +61,7 @@ private:
             begin(sorted_indices), end(sorted_indices),
             [&](int i1, int i2) 
             { 
-                return orgs.at(i1).get_fitness() > orgs.at(i2).get_fitness(); 
+                return orgs.at(i1).get_fitness().value() > orgs.at(i2).get_fitness().value();
             }
         );
 

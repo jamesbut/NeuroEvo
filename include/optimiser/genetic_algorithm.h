@@ -19,16 +19,15 @@ public:
                      const unsigned num_genes,
                      const unsigned max_gens,
                      const unsigned pop_size,
-                     const unsigned num_trials = 1) :
-        Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size, num_trials),
+                     const unsigned num_trials = 1,
+                     const std::optional<unsigned>& seed = std::nullopt) :
+        Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size, num_trials, seed),
         _selector(selector.clone()),
         _mutator(mutator.clone()),
         _init_distr(init_distr.clone()) {}
 
     GeneticAlgorithm(const GeneticAlgorithm& genetic_algorithm) :
-        Optimiser<G, T>(genetic_algorithm._gp_map, genetic_algorithm._num_genes,
-                        genetic_algorithm._max_gens, genetic_algorithm._pop_size,
-                        genetic_algorithm._num_trials),
+        Optimiser<G, T>(genetic_algorithm),
         _selector(genetic_algorithm._selector->clone()),
         _mutator(genetic_algorithm._mutator->clone()),
         _init_distr(genetic_algorithm._init_distr->clone()) {}
@@ -82,7 +81,17 @@ private:
     }
 
     //Nothing to reset in the GA
-    void reset() override {}
+    void reset() override 
+    {
+        _selector->reset(this->_seed);
+        _mutator->reset(this->_seed);
+
+        if(this->_seed.has_value())
+            _init_distr->set_seed(this->_seed.value());
+        else
+            _init_distr->randomly_seed();
+
+    }
 
     std::unique_ptr<Selection<G, T>> _selector;
     std::unique_ptr<Mutator<G>> _mutator;
