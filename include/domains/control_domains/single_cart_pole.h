@@ -41,12 +41,14 @@ public:
                    const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
                    const bool print_state = false, const unsigned max_steps = 100000,
+                   const bool continuous_actuator = true,
                    const double starting_x = 0., const double starting_x_dot = 0.,
                    const double starting_theta = 0., const double starting_theta_dot = 0.) :
         Domain<G, double>(domain_trace, max_steps, std::nullopt, render) ,
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
+        _continuous_actuator(continuous_actuator),
         _print_state_to_file(print_state),
         _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
         _starting_x(starting_x),
@@ -155,10 +157,12 @@ private:
         else inputs.resize(2);
 
         std::vector<double> outputs(2);
+        std::cout << "Gravity: " << _cart_pole.specs.gravity << std::endl;
 
         //Start interaction loop
         while(steps++ < _max_steps) 
         {
+            std::cout << "Step: " << steps << std::endl;
 
             if(_print_state_to_file) print_state_to_file(_cart_pole);
 
@@ -189,9 +193,11 @@ private:
 
             outputs = org.get_phenotype().activate(inputs);
 
-            //const double force = calculate_discrete_force(outputs);
-            const double force = calculate_continuous_force(outputs);
-            //std::cout << "Force: " << force << std::endl;
+            double force = 0.;
+            if(_continuous_actuator)
+                force = calculate_continuous_force(outputs);
+            else
+                force = calculate_discrete_force(outputs);
 
             const double cos_theta = cos(_cart_pole.theta);
             const double sin_theta = sin(_cart_pole.theta);
@@ -424,7 +430,31 @@ private:
         return (this->_screen_width / (2 * _x_max)) * x + (this->_screen_width / 2);
     }
 
-    void reset_domain() override {}
+    void exp_run_reset_impl() override {}
+
+    void trial_reset(const unsigned trial_num) override
+    {
+        /*
+        switch(trial_num)
+        {
+            case 0:
+                _cart_pole.specs.gravity = 1.;
+                break;
+            case 1:
+                _cart_pole.specs.gravity = 5.;
+                break;
+            case 2:
+                _cart_pole.specs.gravity = 10.;
+                break;
+            case 3:
+                _cart_pole.specs.gravity = 15.;
+                break;
+            case 4:
+                _cart_pole.specs.gravity = 20.;
+                break;
+        }
+        */
+    }
 
     SingleCartPole<G>* clone_impl() const override
     {
@@ -434,6 +464,7 @@ private:
     const unsigned _max_steps;
     const bool _markovian;
     const bool _random_start;
+    const bool _continuous_actuator;
 
     const bool _print_state_to_file;
     const std::string _state_file_name;

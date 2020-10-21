@@ -193,7 +193,7 @@ private:
 
         //Copy and reset domain
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
-        domain->reset();
+        domain->exp_run_reset();
 
         //Copy and reset optimiser
         std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser.clone();

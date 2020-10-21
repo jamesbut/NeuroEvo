@@ -114,6 +114,7 @@ public:
             org.genesis();
 
             const auto seed = _seed_sequence.next();
+            trial_reset(i);
 
             fitnesses.at(i) = single_run(org, seed); 
 
@@ -136,7 +137,7 @@ public:
         return _complete; 
     };
 
-    void reset()
+    void exp_run_reset()
     {
         _complete = false;
 
@@ -145,7 +146,7 @@ public:
         else
             _seed_sequence.randomly_seed();
 
-       reset_domain();
+       exp_run_reset_impl();
     }
 
     double get_completion_fitness() const
@@ -205,7 +206,8 @@ protected:
     virtual void render() = 0;
 
     //All domains should implement how they are reset
-    virtual void reset_domain() = 0;
+    virtual void exp_run_reset_impl() = 0;
+    virtual void trial_reset(const unsigned trial_num) = 0;
 
     //The fitness at which the domain is considered
     //solved
@@ -247,6 +249,7 @@ private:
         {
             //Each individual in the population has the same seed for each trial
             const auto seed = _seed_sequence.next();
+            trial_reset(i);
 
             for(std::size_t j = 0; j < pop.get_size(); j++) 
             {
