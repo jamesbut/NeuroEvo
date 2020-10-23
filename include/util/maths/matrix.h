@@ -23,16 +23,16 @@ public:
         _width(width),
         _matrix(height * width, 0) {}
 
-    Matrix(const std::vector<T>& vector) :
-        _height(vector.size()),
+    Matrix(const std::vector<T>& v) :
+        _height(v.size()),
         _width(1),
-        _matrix(vector) {}
+        _matrix(v) {}
 
     Matrix(const unsigned height, const unsigned width,
-           const std::vector<T>& vector) :
+           const std::vector<T>& v) :
         _height(height),
         _width(width),
-        _matrix(vector) {}
+        _matrix(v) {}
 
     Matrix(const std::vector<std::vector<T>>& matrix) :
         _height(matrix.size()),
@@ -72,9 +72,9 @@ public:
     inline unsigned get_height() const { return _height; };
     inline unsigned get_width() const { return _width; };
 
-    inline std::vector<T>& get_vector() { return _matrix; };
+    inline const std::vector<T>& get_vector() const { return _matrix; };
 
-    const T& at(const unsigned row, const unsigned column) const 
+    const T at(const unsigned row, const unsigned column) const
     {
         return _matrix.at(row * _width + column);
     };
@@ -83,6 +83,14 @@ public:
     {
         _matrix.at(row * _width + column) = value;
     };
+
+    //Fill matrix with value
+    void fill(const T& value)
+    {
+        for(std::size_t i = 0; i < _matrix.size(); i++)
+            _matrix[i] = value;
+    }
+
 
 private:
 

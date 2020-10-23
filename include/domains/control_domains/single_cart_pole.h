@@ -44,7 +44,7 @@ public:
                    const bool continuous_actuator = true,
                    const double starting_x = 0., const double starting_x_dot = 0.,
                    const double starting_theta = 0., const double starting_theta_dot = 0.) :
-        Domain<G, double>(domain_trace, max_steps, std::nullopt, render) ,
+        Domain<G, double>(domain_trace, max_steps, std::nullopt, render),
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
