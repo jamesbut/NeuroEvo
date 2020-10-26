@@ -69,6 +69,15 @@ private:
 
     }
 
+    void reset(const std::optional<unsigned>& seed) override
+    {
+        if(seed.has_value())
+            _uniform_distr.set_seed(seed.value());
+        else
+            _uniform_distr.randomly_seed();
+    }
+
+
     TruncationSelection* clone_impl() const override 
     {
         return new TruncationSelection(*this);

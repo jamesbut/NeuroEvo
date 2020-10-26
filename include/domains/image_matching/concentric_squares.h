@@ -20,12 +20,11 @@ class ConcentricSquares : public Domain<G, bool>
 public: 
 
     ConcentricSquares(const unsigned image_width,
-                      const bool render = true, const bool domain_trace = false) :
+                      const bool render = false, const bool domain_trace = false) :
         Domain<G, bool>(domain_trace, calculate_completion_fitness(image_width), 
                         std::nullopt, render),
         _image_width(image_width),
         _target_image(create_target_image()) {}
-
 
 private:
 
@@ -35,9 +34,26 @@ private:
         const std::vector<bool> pheno_out = org.get_phenotype().activate();
         _org_image.emplace(_image_width, _image_width, pheno_out);
 
+        const double fitness = calculate_fitness();
+
         if(this->_render)
             render();
-        return 0.;
+
+        return fitness;
+    }
+
+    double calculate_fitness() const
+    {
+        double fitness = 0.;
+
+        //Compare organism guess to target image
+        for(unsigned i = 0; i < _org_image->get_height(); i++)
+            for(unsigned j = 0; j < _org_image->get_width(); j++)
+                if(_org_image->at(i, j) == _target_image.at(i, j))
+                    fitness += 1.;
+
+        return fitness;
+
     }
 
     const Matrix<bool> create_target_image() const
@@ -97,14 +113,14 @@ private:
 
         }
 
-        std::cout << target_image << std::endl;
+        //std::cout << target_image << std::endl;
 
         return target_image;
     }
 
     double calculate_completion_fitness(const unsigned image_width) const
     {
-        return static_cast<double>(_image_width * _image_width);
+        return static_cast<double>(image_width * image_width);
     }
 
     void render() override 

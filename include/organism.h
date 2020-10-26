@@ -65,7 +65,7 @@ public:
     //organism is a domain winner
     void set_fitness(const double fitness, const double domain_completion_fitness) 
     {
-        if(fitness > domain_completion_fitness)
+        if(fitness >= domain_completion_fitness)
             _domain_winner = true;
         _fitness = fitness;
     }
