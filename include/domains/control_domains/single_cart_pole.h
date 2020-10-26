@@ -357,8 +357,8 @@ private:
     {
 #if SFML_FOUND
         sf::Event event;
-        while (this->_window.pollEvent(event))
-            if (event.type == sf::Event::Closed)
+        while(this->_window.pollEvent(event))
+            if(event.type == sf::Event::Closed)
                 this->_window.close();
 
         this->_window.clear(sf::Color::Black);

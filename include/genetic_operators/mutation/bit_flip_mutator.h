@@ -14,6 +14,15 @@ public:
 
     bool mutate_gene(bool gene) override;
 
+private:
+
+    void reset_mutator(const std::optional<unsigned>& seed) override {};
+
+    BitFlipMutator* clone_impl() const override
+    {
+        return new BitFlipMutator(*this);
+    }
+
 };
 
 } // namespace NeuroEvo

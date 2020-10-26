@@ -30,7 +30,7 @@ public:
     //Putting virtual here seems to make a big difference to the memory leak
     virtual ~Phenotype() = default;
 
-    virtual std::vector<T> activate(const std::vector<double>& inputs) = 0;
+    virtual std::vector<T> activate(const std::vector<double>& inputs = std::vector<double>()) = 0;
     virtual void reset() = 0;
 
     auto clone_phenotype() const { return std::unique_ptr<Phenotype>(clone_impl()); }
