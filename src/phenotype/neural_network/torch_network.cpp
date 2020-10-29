@@ -95,7 +95,7 @@ torch::nn::Sequential TorchNetwork::build_network(
                 torch::nn::LinearOptions(layer_spec.get_inputs_per_neuron(),
                                          layer_spec.get_num_neurons())
                 );
-        net->push_back(torch::nn::AnyModule(linear_layer));
+        net->push_back(linear_layer);
 
         //Add activation function if one is given
         if(layer_spec.get_activation_func_spec())
