@@ -31,6 +31,7 @@ public:
     torch::Tensor generate(const torch::Tensor& x) const override;
 
     const std::unique_ptr<TorchNetwork>& get_generator() const;
+    const std::unique_ptr<TorchNetwork>& get_decoder() const override;
 
 private:
 

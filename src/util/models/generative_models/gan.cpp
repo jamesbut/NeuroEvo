@@ -137,6 +137,11 @@ torch::Tensor GAN::generate(const torch::Tensor& x) const
 
 const std::unique_ptr<TorchNetwork>& GAN::get_generator() const
 {
+    return get_decoder();
+}
+
+const std::unique_ptr<TorchNetwork>& GAN::get_decoder() const
+{
     return _generator;
 }
 
