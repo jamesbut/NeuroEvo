@@ -137,7 +137,7 @@ public:
         return _complete; 
     };
 
-    void exp_run_reset()
+    void exp_run_reset(const unsigned run_num)
     {
         _complete = false;
 
@@ -146,7 +146,7 @@ public:
         else
             _seed_sequence.randomly_seed();
 
-       exp_run_reset_impl();
+       exp_run_reset_impl(run_num);
     }
 
     double get_completion_fitness() const
@@ -206,7 +206,7 @@ protected:
     virtual void render() = 0;
 
     //All domains should implement how they are reset
-    virtual void exp_run_reset_impl() = 0;
+    virtual void exp_run_reset_impl(const unsigned run_num) = 0;
     virtual void trial_reset(const unsigned trial_num) = 0;
 
     //The fitness at which the domain is considered

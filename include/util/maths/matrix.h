@@ -91,11 +91,10 @@ public:
             _matrix[i] = value;
     }
 
-
 private:
 
-    const unsigned _height;
-    const unsigned _width;
+    unsigned _height;
+    unsigned _width;
 
     std::vector<T> _matrix;
 

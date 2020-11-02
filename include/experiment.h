@@ -106,7 +106,7 @@ public:
             for(unsigned i = 0; i < num_runs; i++) 
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(&_domain, optimiser, &_gp_map, _exp_dir_path, _dump_winners_only, 
+                run(&_domain, optimiser, &_gp_map, i, _exp_dir_path, _dump_winners_only, 
                     _num_winners, completed_flag, _total_winners_gens, trace, domain_parallel);
             }
         }
@@ -182,6 +182,7 @@ private:
     static void run(Domain<G, T>* m_domain,
                     Optimiser<G, T>& a_optimiser,
                     GPMap<G, T>* m_gp_map,
+                    const unsigned run_num,
                     const std::optional<const std::string> exp_dir_path,
                     const bool dump_winners_only,
                     unsigned& num_winners,
@@ -193,7 +194,7 @@ private:
 
         //Copy and reset domain
         std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
-        domain->exp_run_reset();
+        domain->exp_run_reset(run_num);
 
         //Copy and reset optimiser
         std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser.clone();

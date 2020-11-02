@@ -29,6 +29,7 @@ public:
     void dispatch(void (&run)(Domain<G, T>*,
                               Optimiser<G, T>& optimiser,
                               GPMap<G, T>*,
+                              const unsigned,
                               const std::optional<const std::string>,
                               const bool,
                               unsigned&,
@@ -84,8 +85,12 @@ public:
                         std::cout << "Starting run: " << num_runs_started << std::endl;
 
                         threads[thread_index] = std::thread(
-                                run, _run_args.domain, std::ref(_run_args.optimiser), 
-                                _run_args.gp_map, _run_args.exp_dir_path, 
+                                run, 
+                                _run_args.domain, 
+                                std::ref(_run_args.optimiser), 
+                                _run_args.gp_map, 
+                                num_runs_started,
+                                _run_args.exp_dir_path, 
                                 _run_args.dump_winners_only, 
                                 std::ref(_run_args.num_winners),
                                 std::ref(finished_flags[thread_index]),
