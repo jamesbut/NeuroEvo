@@ -247,6 +247,8 @@ private:
         {
             std::cerr << "The number of phenotype parameters does not match the size of the" <<
                 " target image" << std::endl;
+            std::cerr << "Num pheno params: " << vec_pheno_spec->get_num_params() << std::endl;
+            std::cerr << "Image size: " << (_image_width * _image_width) << std::endl;
             return false;
         }
 
