@@ -81,6 +81,19 @@ public:
 
     void set(const unsigned row, const unsigned column, const T value) 
     {
+        if(row >= _height)
+        {
+            std::cerr << "Trying to set for row greater than matrix height!" << std::endl;
+            std::cerr << "Row: " << row << " Matrix height: " << _height << std::endl; 
+            exit(0);
+        }
+        if(column >= _width)
+        {
+            std::cerr << "Trying to set for column greater than matrix width!" << std::endl;
+            std::cerr << "Column: " << column << " Matrix width: " << _width << std::endl; 
+            exit(0);
+        }
+
         _matrix.at(row * _width + column) = value;
     };
 

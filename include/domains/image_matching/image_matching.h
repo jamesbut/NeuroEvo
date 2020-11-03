@@ -28,38 +28,6 @@ protected:
 
     virtual const Matrix<bool> create_target_image() const = 0;
 
-    const unsigned _image_width;
-    std::optional<Matrix<bool>> _target_image;
-
-private:
-
-    double single_run(Organism<G, bool>& org, unsigned rand_seed) override 
-    {
-        const std::vector<bool> pheno_out = org.get_phenotype().activate();
-        _org_image.emplace(_image_width, _image_width, pheno_out);
-
-        const double fitness = calculate_fitness();
-
-        if(this->_render)
-            render();
-
-        return fitness;
-    }
-
-    double calculate_fitness() const
-    {
-        double fitness = 0.;
-
-        //Compare organism guess to target image
-        for(unsigned i = 0; i < _org_image->get_height(); i++)
-            for(unsigned j = 0; j < _org_image->get_width(); j++)
-                if(_org_image->at(i, j) == _target_image->at(i, j))
-                    fitness += 1.;
-
-        return (fitness / (_image_width * _image_width));
-
-    }
-
     void render() override 
     {
 #if SFML_FOUND
@@ -109,13 +77,52 @@ private:
 
             //Render text
             this->_window.draw(target_text);
-            this->_window.draw(org_text);
+            if(_org_image.has_value())
+                this->_window.draw(org_text);
 
             this->_window.display();
             
         }
 
 #endif
+    }
+
+    const unsigned _image_width;
+    std::optional<Matrix<bool>> _target_image;
+
+private:
+
+    double single_run(Organism<G, bool>& org, unsigned rand_seed) override 
+    {
+        const std::vector<bool> pheno_out = org.get_phenotype().activate();
+        _org_image.emplace(_image_width, _image_width, pheno_out);
+
+        if(!_target_image.has_value())
+        {
+            std::cerr << "Target image has not yet been set!" << std::endl;
+            exit(0);
+        }
+
+        const double fitness = calculate_fitness();
+
+        if(this->_render)
+            render();
+
+        return fitness;
+    }
+
+    double calculate_fitness() const
+    {
+        double fitness = 0.;
+
+        //Compare organism guess to target image
+        for(unsigned i = 0; i < _org_image->get_height(); i++)
+            for(unsigned j = 0; j < _org_image->get_width(); j++)
+                if(_org_image->at(i, j) == _target_image->at(i, j))
+                    fitness += 1.;
+
+        return (fitness / (_image_width * _image_width));
+
     }
 
 #if SFML_FOUND
@@ -144,6 +151,8 @@ private:
             }
         }
 
+    if(_org_image.has_value())
+    {
         const float org_x_pos_offset = this->_window.getSize().x * 3. / 4. -
                                        _image_width * square_width / 2.; 
         for(std::size_t i = 0; i < _image_width; i++)
@@ -160,6 +169,7 @@ private:
                 squares[square_index].setPosition(sf::Vector2f(pos_x, pos_y));
             }
         }
+    }
 
         return squares;
 
@@ -190,6 +200,7 @@ private:
     }
 
     void trial_reset(const unsigned trial_num) override {}
+    void exp_run_reset_impl(const unsigned run_num) override {}
 
     std::optional<Matrix<bool>> _org_image;
 };
