@@ -50,6 +50,20 @@ protected:
 
 private:
 
+    void exp_run_reset_impl(const unsigned run_num) override 
+    {
+        //Locks this reset when running in parallel
+        //There were problems with the distribution without this lock
+        mtx.lock();
+
+        //Reset matching vector if it was generated from a distribution
+        if(this->_matching_vector_distr)
+            this->_matching_vector = randomly_generate_matching_vector(
+                    this->_matching_vector.size());
+
+        mtx.unlock();
+    }
+
     DoubleVectorMatching<G>* clone_impl() const override
     {
         return new DoubleVectorMatching<G>(*this);

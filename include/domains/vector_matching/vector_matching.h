@@ -73,18 +73,6 @@ protected:
     virtual double calculate_match_value(const std::vector<T>& phenotype_vector) const = 0;
     void render() override {}
 
-private: 
-
-    double single_run(Organism<G, T>& org, unsigned rand_seed) override
-    {
-        const std::vector<T> phenotype_vector = 
-            org.get_phenotype().activate(std::vector<double>());
-
-        const double fitness = calculate_match_value(phenotype_vector);
-
-        return fitness;
-    }
-
     const std::vector<T> randomly_generate_matching_vector(
         const std::size_t matching_vector_size) const
     {
@@ -129,18 +117,20 @@ private:
         return matching_vector;
     }
 
-    void reset_domain() override 
+    std::shared_ptr<Distribution<T>> _matching_vector_distr;
+    bool _symmetric_match_vector;
+    std::vector<T> _matching_vector;
+
+private: 
+
+    double single_run(Organism<G, T>& org, unsigned rand_seed) override
     {
-        //Locks this reset when running in parallel
-        //There were problems with the distribution without this lock
-        mtx.lock();
+        const std::vector<T> phenotype_vector = 
+            org.get_phenotype().activate(std::vector<double>());
 
-        //Reset matching vector if it was generated from a distribution
-        if(_matching_vector_distr)
-            _matching_vector = randomly_generate_matching_vector(_matching_vector.size());
-        //print_matching_vector();
+        const double fitness = calculate_match_value(phenotype_vector);
 
-        mtx.unlock();
+        return fitness;
     }
 
     void print_matching_vector() const
@@ -151,12 +141,7 @@ private:
         std::cout << std::endl;
     }
 
-    std::shared_ptr<Distribution<T>> _matching_vector_distr;
-    bool _symmetric_match_vector;
-
-protected:
-
-    std::vector<T> _matching_vector;
+    void trial_reset(const unsigned trial_num) override {}
 
 };
 

@@ -38,6 +38,11 @@ public:
 
     void print_gp_map(std::ofstream& file) const override {}
 
+    const std::unique_ptr<Phenotype<double>>& get_decoder() const 
+    {
+        return _decoder;
+    }
+
 protected:
 
     NetworkMap* clone_impl() const override = 0;
