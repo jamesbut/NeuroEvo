@@ -16,13 +16,11 @@ public:
                          const double completion_fitness = -1e-3) :
         VectorMatching<G, double>(matching_vector, domain_trace, completion_fitness) {}
 
-    DoubleVectorMatching(const unsigned matching_vector_size,
-                         const std::shared_ptr<Distribution<double>> matching_vector_distr,
-                         const bool symmetric_match_vector = false,
+    DoubleVectorMatching(const std::shared_ptr<VectorCreationPolicy<double>> 
+                             vector_creation_policy,
                          const bool domain_trace = false,
                          const double completion_fitness = -1e-3) :
-        VectorMatching<G, double>(matching_vector_size, matching_vector_distr, 
-                                  symmetric_match_vector, domain_trace, completion_fitness) {}
+        VectorMatching<G, double>(vector_creation_policy, domain_trace, completion_fitness) {}
 
 protected:
 
@@ -34,7 +32,8 @@ protected:
         for(std::size_t i = 0; i < phenotype_vector.size(); i++)
         {
             if(this->_domain_trace)
-                std::cout << this->_matching_vector[i] << " " << phenotype_vector[i] << std::endl;
+                std::cout << this->_matching_vector[i] << " " << phenotype_vector[i] 
+                    << std::endl;
 
             total_distance += std::abs(this->_matching_vector[i] - phenotype_vector[i]);
 
@@ -49,20 +48,6 @@ protected:
     }
 
 private:
-
-    void exp_run_reset_impl(const unsigned run_num) override 
-    {
-        //Locks this reset when running in parallel
-        //There were problems with the distribution without this lock
-        mtx.lock();
-
-        //Reset matching vector if it was generated from a distribution
-        if(this->_matching_vector_distr)
-            this->_matching_vector = randomly_generate_matching_vector(
-                    this->_matching_vector.size());
-
-        mtx.unlock();
-    }
 
     DoubleVectorMatching<G>* clone_impl() const override
     {

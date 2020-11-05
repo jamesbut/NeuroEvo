@@ -18,13 +18,10 @@ public:
 
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
-    BoolVectorMatching(const unsigned matching_vector_size,
-                       const std::shared_ptr<Distribution<bool>> matching_vector_distr,
-                       const bool symmetric_match_vector = false,
+    BoolVectorMatching(const std::shared_ptr<VectorCreationPolicy<bool>> vector_creation_policy,
                        const bool domain_trace = false,
                        const double completion_fitness = 1.) :
-        VectorMatching<G, bool>(matching_vector_size, matching_vector_distr, 
-                                symmetric_match_vector, domain_trace, completion_fitness) {}
+        VectorMatching<G, bool>(vector_creation_policy, domain_trace, completion_fitness) {}
 
 private:
 
@@ -57,26 +54,6 @@ private:
         }
 
         return match_value;
-    }
-
-    void exp_run_reset_impl(const unsigned run_num) override 
-    {
-        /*
-        std::vector<bool> matching_vector(this->_matching_vector.size(), false);
-        matching_vector.at(run_num) = true;
-        this->_matching_vector = matching_vector;
-        */
-        
-        //Locks this reset when running in parallel
-        //There were problems with the distribution without this lock
-        mtx.lock();
-
-        //Reset matching vector if it was generated from a distribution
-        if(this->_matching_vector_distr)
-            this->_matching_vector = this->randomly_generate_matching_vector(
-                    this->_matching_vector.size());
-
-        mtx.unlock();
     }
 
     BoolVectorMatching* clone_impl() const override
