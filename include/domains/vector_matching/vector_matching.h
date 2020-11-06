@@ -4,7 +4,7 @@
 #include <domains/domain.h>
 #include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 #include <util/statistics/distributions/distribution.h>
-#include <domains/vector_matching/vector_creation_policies.h>
+#include <util/vector_creation/vector_creation_policy.h>
 
 #include <mutex>
 
