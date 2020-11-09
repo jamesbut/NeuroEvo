@@ -1,35 +1,38 @@
-#ifndef _CONCENTRIC_SQUARES_H_
-#define _CONCENTRIC_SQUARES_H_
+#ifndef _VECTOR_CREATION_POLICIES_H_
+#define _VECTOR_CREATION_POLICIES_H_
 
 /*
-    Concentric squares is a domain where the aim is to match
-    a target image of different coloured squares. The domain
-    is described in Koutnis, Clune et al 2016.
+    I was creating vectors in a number of different ways for both vector matching
+    and image matching so I decided to abstract this out 
 */
 
-#include <domains/image_matching/image_matching.h>
+#include <vector>
+#include <util/statistics/distributions/distribution.h>
+#include <iostream>
 
 namespace NeuroEvo {
 
-template <typename G>
-class ConcentricSquares : public ImageMatching<G>
+
+/* Image generators masked as vector generators */
+
+//This generator creates a vector such that in a matrix of n x n, the image has concentric
+//squares
+class ConcentricSquaresGenerator : public VectorCreationPolicy<bool>
 {
 
-public: 
+public:
 
-    ConcentricSquares(const unsigned image_width,
-                      const bool render = false, const bool domain_trace = false) :
-        ImageMatching<G>(image_width, render, domain_trace), 
-        _leading_square(true)
-    {
-        this->_target_image = create_target_image();
-    }
+    //The leading square is the value of the sqaure in the top left corner
+    ConcentricSquaresGenerator(const unsigned image_width,
+                               const unsigned leading_square) :
+        VectorCreationPolicy<bool>(image_width * image_width),
+        _image_width(image_width),
+        _leading_square(leading_square) {}
 
 private:
 
-    const Matrix<bool> create_target_image() const override
+    std::vector<bool> generate_vector(const unsigned run_num) override
     {
-
         //The algorithm to create the target image is somewhat complicated to index - I do 
         //apologise. Maybe there is an easier way to do it but this is what I figured out
         //for now
@@ -83,28 +86,10 @@ private:
 
         }
 
-        //std::cout << target_image << std::endl;
-
-        return target_image;
     }
 
-    void exp_run_reset_impl(const unsigned run_num) override 
-    {
-        if(run_num == 0)
-            _leading_square = true;
-        else 
-            _leading_square = false;
-        //One must regenerate the target image if the leading square is changed
-        this->_target_image = create_target_image();
-    }
-
-    ConcentricSquares<G>* clone_impl() const override
-    {
-        return new ConcentricSquares<G>(*this);
-    }
-
-    //Sets whether the leading outer square is 1 or 0
-    bool _leading_square;
+    const unsigned _image_width;
+    unsigned _leading_square;
 
 };
 

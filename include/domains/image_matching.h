@@ -9,6 +9,7 @@
 
 #include <domains/domain.h>
 #include <phenotype/phenotype_specs/vector_phenotype_spec.h>
+#include <util/vector_creation/vector_creation_policy.h>
 
 namespace NeuroEvo {
 
@@ -18,15 +19,21 @@ class ImageMatching : public Domain<G, bool>
 
 public:
 
-    ImageMatching(const unsigned image_width,
+    ImageMatching(const std::shared_ptr<VectorCreationPolicy<bool>> vector_creation_policy,
                   const bool render = false, 
                   const bool domain_trace = false) :
         Domain<G, bool>(domain_trace, 1., std::nullopt, render),
-        _image_width(image_width) {}
+        _vector_creation_policy(vector_creation_policy),
+        _image_width(sqrt(vector_creation_policy->get_vector_size())),
+        _target_image(create_target_image(0)) {}
 
-protected:
+private:
 
-    virtual const Matrix<bool> create_target_image() const = 0;
+    const Matrix<bool> create_target_image(const unsigned run_num) const
+    {
+        const std::vector<bool> image_vec = _vector_creation_policy->generate_vector(run_num);
+        return Matrix<bool>(_image_width, _image_width, image_vec);
+    }
 
     void render() override 
     {
@@ -86,11 +93,6 @@ protected:
 
 #endif
     }
-
-    const unsigned _image_width;
-    std::optional<Matrix<bool>> _target_image;
-
-private:
 
     double single_run(Organism<G, bool>& org, unsigned rand_seed) override 
     {
@@ -200,8 +202,29 @@ private:
     }
 
     void trial_reset(const unsigned trial_num) override {}
-    void exp_run_reset_impl(const unsigned run_num) override {}
+    void exp_run_reset_impl(const unsigned run_num) override 
+    {
+        mtx.lock();
 
+        _target_image = create_target_image(run_num);
+
+        /*
+        this->set_render(true);
+        this->render();
+        this->set_render(false);
+        */
+
+        mtx.unlock();
+    }
+
+    ImageMatching* clone_impl() const override
+    {
+        return new ImageMatching(*this);
+    }
+
+    std::shared_ptr<VectorCreationPolicy<bool>> _vector_creation_policy;
+    const unsigned _image_width;
+    std::optional<Matrix<bool>> _target_image;
     std::optional<Matrix<bool>> _org_image;
 };
 

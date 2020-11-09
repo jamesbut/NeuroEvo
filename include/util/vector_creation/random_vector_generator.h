@@ -16,7 +16,7 @@ class RandomVectorGenerator : public VectorCreationPolicy<T> {
 public: 
 
     RandomVectorGenerator(const unsigned vector_size, 
-                    std::shared_ptr<Distribution<T>> vector_distr) :
+                          std::shared_ptr<Distribution<T>> vector_distr) :
         VectorCreationPolicy<T>(vector_size),
         _vector_distr(vector_distr) {}
 

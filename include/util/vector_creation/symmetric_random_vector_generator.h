@@ -17,7 +17,7 @@ class SymmetricRandomVectorGenerator : public RandomVectorGenerator<T>
 public:
 
     SymmetricRandomVectorGenerator(const unsigned vector_size,
-                             std::shared_ptr<Distribution<T>> vector_distr) :
+                                   std::shared_ptr<Distribution<T>> vector_distr) :
         RandomVectorGenerator<T>(vector_size, vector_distr) 
     {
         if(this->_vector_size % 2 != 0)

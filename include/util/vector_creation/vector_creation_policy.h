@@ -23,6 +23,11 @@ public:
     //The vector generated could be based upon the run number
     virtual std::vector<T> generate_vector(const unsigned run_num) = 0;
 
+    unsigned get_vector_size() const
+    {
+        return _vector_size;
+    }
+
 protected: 
 
     const unsigned _vector_size;

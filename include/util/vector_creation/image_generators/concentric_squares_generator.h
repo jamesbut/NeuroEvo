@@ -17,7 +17,7 @@ public:
 
     //The leading square is the value of the sqaure in the top left corner
     ConcentricSquaresGenerator(const unsigned image_width,
-                               const unsigned leading_square);
+                               const unsigned leading_square = true);
 
 private:
 

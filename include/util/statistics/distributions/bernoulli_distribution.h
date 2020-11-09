@@ -16,10 +16,9 @@ public:
     BernoulliDistribution(const double p = 0.5);
 
     bool next() override;
+    void reset() override;
 
 private:
-
-    void reset() override;
 
     BernoulliDistribution* clone_impl() const override
     {
