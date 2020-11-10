@@ -18,7 +18,8 @@ public:
 
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
-    BoolVectorMatching(const std::shared_ptr<VectorCreationPolicy<bool>> vector_creation_policy,
+    BoolVectorMatching(const std::shared_ptr<VectorCreationPolicy<bool>> 
+                           vector_creation_policy,
                        const bool domain_trace = false,
                        const double completion_fitness = 1.) :
         VectorMatching<G, bool>(vector_creation_policy, domain_trace, completion_fitness) {}
@@ -26,8 +27,11 @@ public:
 private:
 
     //Returns a value between 0 and 1 with 1 being a perfect match
-    double calculate_match_value(const std::vector<bool>& phenotype_vector) const override
+    double calculate_match_value(Organism<G, bool>& org) const override
     {
+        const std::vector<bool> phenotype_vector = 
+            org.get_phenotype().activate(std::vector<double>());
+
         unsigned num_matches = 0;
 
         for(std::size_t i = 0; i < phenotype_vector.size(); i++)

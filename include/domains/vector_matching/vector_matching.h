@@ -67,22 +67,8 @@ protected:
 
     //Calculates how closely the phenotype vector matches the matching vector
     //This is calculated differently depending on the trait type
-    virtual double calculate_match_value(const std::vector<T>& phenotype_vector) const = 0;
+    virtual double calculate_match_value(Organism<G, T>& org) const = 0;
     void render() override {}
-
-    std::vector<T> _matching_vector;
-
-private: 
-
-    double single_run(Organism<G, T>& org, unsigned rand_seed) override
-    {
-        const std::vector<T> phenotype_vector = 
-            org.get_phenotype().activate(std::vector<double>());
-
-        const double fitness = calculate_match_value(phenotype_vector);
-
-        return fitness;
-    }
 
     void print_matching_vector() const
     {
@@ -92,7 +78,22 @@ private:
         std::cout << std::endl;
     }
 
-    void exp_run_reset_impl(const unsigned run_num) override 
+    std::vector<T> _matching_vector;
+    std::shared_ptr<VectorCreationPolicy<T>> _vector_creation_policy;
+
+private: 
+
+    double single_run(Organism<G, T>& org, unsigned rand_seed) override
+    {
+        const std::vector<T> phenotype_vector = 
+            org.get_phenotype().activate(std::vector<double>());
+
+        const double fitness = calculate_match_value(org);
+
+        return fitness;
+    }
+
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override 
     {
         //Locks this reset when running in parallel
         //There were problems with the distribution without this lock
@@ -106,8 +107,6 @@ private:
         mtx.unlock();
     }
     void trial_reset(const unsigned trial_num) override {}
-
-    std::shared_ptr<VectorCreationPolicy<T>> _vector_creation_policy;
 
 };
 

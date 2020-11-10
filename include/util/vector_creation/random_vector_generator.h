@@ -32,6 +32,14 @@ protected:
 
     std::shared_ptr<Distribution<T>> _vector_distr;
 
+private:
+
+    void seeded() override
+    {
+        _vector_distr->set_seed(this->_seed.value());
+    }
+
+
 };
 
 } // namespace NeuroEvo

@@ -22,6 +22,7 @@ public:
 private:
 
     std::vector<bool> generate_vector(const unsigned run_num) override;
+    void seeded() override {}
 
     const unsigned _image_width;
     unsigned _leading_square;

@@ -95,6 +95,11 @@ public:
         return _domain_winner;
     }
 
+    void set_domain_winner(const bool winner) 
+    {
+        _domain_winner = winner;
+    }
+
     //Creates new phenotype out of modified genotype
     void genesis() 
     {

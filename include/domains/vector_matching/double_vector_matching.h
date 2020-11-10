@@ -25,8 +25,11 @@ public:
 protected:
 
     //Returns the negative of the distance between the phenotype vector and the match vector
-    double calculate_match_value(const std::vector<double>& phenotype_vector) const override
+    double calculate_match_value(Organism<G, double>& org) const override
     {
+        const std::vector<double> phenotype_vector = 
+            org.get_phenotype().activate(std::vector<double>());
+
         double total_distance = 0.;
 
         for(std::size_t i = 0; i < phenotype_vector.size(); i++)
@@ -38,8 +41,6 @@ protected:
             total_distance += std::abs(this->_matching_vector[i] - phenotype_vector[i]);
 
         }
-
-        //return -total_distance;
         
         //Normalised by dimension size
         //So this is average distance per trait

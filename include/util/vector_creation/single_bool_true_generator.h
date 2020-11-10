@@ -19,6 +19,7 @@ public:
 private:
 
     std::vector<bool> generate_vector(const unsigned run_num) override;
+    void seeded() override {}
 };
 
 } // namespace NeuroEvo

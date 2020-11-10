@@ -26,7 +26,7 @@ private:
         return new BernoulliDoubleDistribution(*this);
     }
 
-    BernoulliDistribution _bern_distr;
+    std::bernoulli_distribution _distr;
 
 };
 

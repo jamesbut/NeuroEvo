@@ -7,6 +7,7 @@
 */
 
 #include <vector>
+#include <optional>
 
 namespace NeuroEvo {
 
@@ -28,9 +29,20 @@ public:
         return _vector_size;
     }
 
+    void seed(const std::optional<unsigned>& seed)
+    {
+        _seed = seed;
+        seeded();
+    }
+
+    //Called when a new seed has been set
+    virtual void seeded() = 0;
+
 protected: 
 
     const unsigned _vector_size;
+
+    std::optional<unsigned> _seed;
 
 };
 

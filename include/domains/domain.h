@@ -34,7 +34,8 @@ public:
         _complete(false),
         _domain_trace(domain_trace),
         _seed(seed),
-        _seed_sequence(seed),
+        _trial_seed_sequence(seed),
+        _run_seed_sequence(seed),
 #if SFML_FOUND
         _render(render),
 #else
@@ -54,7 +55,8 @@ public:
         _complete(domain._complete),
         _domain_trace(domain._domain_trace),
         _seed(domain._seed),
-        _seed_sequence(domain._seed_sequence),
+        _trial_seed_sequence(domain._trial_seed_sequence),
+        _run_seed_sequence(domain._run_seed_sequence),
         _render(domain._render),
         _screen_width(domain._screen_width),
         _screen_height(domain._screen_height)
@@ -113,10 +115,10 @@ public:
             //Need to reset the network
             org.genesis();
 
-            const auto seed = _seed_sequence.next();
+            const auto trial_seed = _trial_seed_sequence.next();
             trial_reset(i);
 
-            fitnesses.at(i) = single_run(org, seed); 
+            fitnesses.at(i) = single_run(org, trial_seed); 
 
             if(verbosity)
                 std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
@@ -142,11 +144,11 @@ public:
         _complete = false;
 
         if(_seed.has_value())
-            _seed_sequence.set_seed(_seed.value());
+            _trial_seed_sequence.set_seed(_seed.value());
         else
-            _seed_sequence.randomly_seed();
+            _trial_seed_sequence.randomly_seed();
 
-       exp_run_reset_impl(run_num);
+       exp_run_reset_impl(run_num, _run_seed_sequence.next());
     }
 
     double get_completion_fitness() const
@@ -177,7 +179,10 @@ public:
     {
         _seed = seed;
         if(_seed.has_value())
-            _seed_sequence.set_seed(_seed.value());
+        {
+            _trial_seed_sequence.set_seed(_seed.value());
+            _run_seed_sequence.set_seed(_seed.value());
+        }
     }
 
 protected:
@@ -194,7 +199,7 @@ protected:
     virtual bool check_for_completion(Population<G, T>& population) 
     {
         for(const auto& org : population.get_organisms())
-            if(org.get_fitness() >= _completion_fitness)
+            if(org.is_domain_winner())
                 return true;
 
         return false;
@@ -206,7 +211,7 @@ protected:
     virtual void render() = 0;
 
     //All domains should implement how they are reset
-    virtual void exp_run_reset_impl(const unsigned run_num) = 0;
+    virtual void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) = 0;
     virtual void trial_reset(const unsigned trial_num) = 0;
 
     //The fitness at which the domain is considered
@@ -223,7 +228,8 @@ protected:
     std::optional<unsigned> _seed;
     //We need a sequence of seeds to hand to each single run
     //This sequence of seeds is seeded with _seed... sorry :/
-    UniformUnsignedDistribution _seed_sequence;
+    UniformUnsignedDistribution _trial_seed_sequence;
+    UniformUnsignedDistribution _run_seed_sequence;
 
     //Rendering variables
     bool _render;
@@ -248,7 +254,7 @@ private:
         for(unsigned i = 0; i < num_trials; i++) 
         {
             //Each individual in the population has the same seed for each trial
-            const auto seed = _seed_sequence.next();
+            const auto seed = _trial_seed_sequence.next();
             trial_reset(i);
 
             for(std::size_t j = 0; j < pop.get_size(); j++) 
