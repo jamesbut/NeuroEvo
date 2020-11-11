@@ -73,23 +73,9 @@ private:
             org.get_phenotype().activate(std::vector<double>());
         const std::vector<bool> org_bool_vec(cast_vec_to_bool(phenotype_vector));
 
-        std::cout << "Org vec: " << std::endl;
-        for(const auto org_vec : org_bool_vec)
-            std::cout << org_vec << " ";
-        std::cout << std::endl;
-
-        std::cout << "Matching vector: " << std::endl;
-        for(const auto bm : _bool_matching_vector)
-            std::cout << bm << " ";
-        std::cout << std::endl;
-
-        std::cout << "Double matching vector: " << std::endl;
-        for(const auto m : this->_matching_vector)
-            std::cout << m << " ";
-        std::cout << std::endl;
-
         const bool vectors_equal = std::equal(org_bool_vec.begin(), org_bool_vec.end(),
                                               _bool_matching_vector.begin());
+
         if(vectors_equal)
             org.set_domain_winner(true);
     }

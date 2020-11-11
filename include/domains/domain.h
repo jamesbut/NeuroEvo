@@ -35,7 +35,6 @@ public:
         _domain_trace(domain_trace),
         _seed(seed),
         _trial_seed_sequence(seed),
-        _run_seed_sequence(seed),
 #if SFML_FOUND
         _render(render),
 #else
@@ -48,6 +47,8 @@ public:
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
 #endif
+        if(_seed.has_value())
+            _run_seed_sequence.set_seed(_seed.value());
     }
 
     Domain(const Domain& domain) :
@@ -56,7 +57,6 @@ public:
         _domain_trace(domain._domain_trace),
         _seed(domain._seed),
         _trial_seed_sequence(domain._trial_seed_sequence),
-        _run_seed_sequence(domain._run_seed_sequence),
         _render(domain._render),
         _screen_width(domain._screen_width),
         _screen_height(domain._screen_height)
@@ -229,7 +229,7 @@ protected:
     //We need a sequence of seeds to hand to each single run
     //This sequence of seeds is seeded with _seed... sorry :/
     UniformUnsignedDistribution _trial_seed_sequence;
-    UniformUnsignedDistribution _run_seed_sequence;
+    inline static UniformUnsignedDistribution _run_seed_sequence;
 
     //Rendering variables
     bool _render;

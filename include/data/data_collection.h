@@ -150,6 +150,13 @@ private:
     {
         const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
+        //If one of the organisms is a domain winner, this is immediately returned 
+        //regardless of fitness. Sometimes an organism can be a domain winner and not
+        //have the highest fitness. The domain winners take precedent.
+        for(const auto& org : orgs)
+            if(org.is_domain_winner())
+                return org;
+
         //Find highest scoring organism in the population
         std::size_t gen_winner_index = 0;
         double gen_winner_fitness = orgs.at(gen_winner_index).get_fitness().value();
@@ -166,10 +173,15 @@ private:
 
     void calculate_best_winner_so_far(const Organism<G, T>& gen_winner) 
     {
-        //Check whether gen winner beats the highest score so far
-        if(!_best_winner_so_far || gen_winner.get_fitness() > 
-                _best_winner_so_far->get_fitness())
+        if(gen_winner.is_domain_winner())
             _best_winner_so_far = gen_winner;
+        else
+        {
+            //Check whether gen winner beats the highest score so far
+            if(!_best_winner_so_far || gen_winner.get_fitness() > 
+                    _best_winner_so_far->get_fitness())
+                _best_winner_so_far = gen_winner;
+        }
 
         //Save best winner so far fitness
         _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness().value());

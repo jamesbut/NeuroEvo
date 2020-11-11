@@ -38,7 +38,7 @@ public:
     }
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :
-        Domain<G, T>(vector_matching._domain_trace, vector_matching._completion_fitness),
+        Domain<G, T>(vector_matching),
         _matching_vector(vector_matching._matching_vector),
         _vector_creation_policy(vector_matching._vector_creation_policy) {}
 
