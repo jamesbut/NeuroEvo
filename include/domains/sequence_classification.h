@@ -31,7 +31,7 @@ public:
         _rng((std::random_device())()),
         _zeros_dist(zeros_lower, zeros_upper) {}
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
     {
 
         const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
@@ -195,7 +195,13 @@ private:
     }
 
     void render() override {}
-    void reset_domain() override {}
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+    void trial_reset(const unsigned trial_num) override {}
+
+    SequenceClassification* clone_impl() const override
+    {
+        return new SequenceClassification(*this);
+    }
 
     const unsigned _depth;
     const unsigned _zeros_lower;

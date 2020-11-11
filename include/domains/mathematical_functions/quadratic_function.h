@@ -19,7 +19,7 @@ public:
         _b(b),
         _c(c) {}
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
     {
 
         const VectorPhenotypeSpec* real_vec_pheno_spec = 
@@ -61,7 +61,13 @@ private:
     }
 
     void render() override {}
-    void reset_domain() override {}
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+    void trial_reset(const unsigned trial_num) override {}
+
+    QuadraticFunction* clone_impl() const override
+    {
+        return new QuadraticFunction(*this);
+    }
 
     const double _a;
     const double _b;

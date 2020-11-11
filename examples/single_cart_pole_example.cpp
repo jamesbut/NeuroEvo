@@ -49,6 +49,7 @@ int main(int argc, const char* argv[])
     // Build single cart pole domain
     const bool markovian = false;
     const bool random_start = false;
+    const bool continuous_actuator = false;
 
     bool domain_trace = false;
     //One can turn rendering on here
@@ -60,7 +61,7 @@ int main(int argc, const char* argv[])
     }
 
     std::unique_ptr<NeuroEvo::Domain<gene_type, phenotype_output>> domain(
-        new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start)
+        new NeuroEvo::SingleCartPole<gene_type>(markovian, random_start, continuous_actuator)
     );
 
     // Construct experiment

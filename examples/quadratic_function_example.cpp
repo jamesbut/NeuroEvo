@@ -3,17 +3,18 @@
     This example maximises a quadratic function.
     The aim here is to illustrate that NeuroEvo can be
     used for mathematical optimisation not just domains
-    that use neural networks
+    that use neural networks.
+    Futhermore, this example illustrates the used of the CMAES optimiser
+    as oppose to the standard genetic algorithm.
 */
 
 #include <experiment.h>
 #include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 #include <domains/mathematical_functions/quadratic_function.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
-#include <genetic_operators/selection/truncation_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
-#include <util/random/uniform_real_distribution.h>
 #include <gp_map/vector_maps/vector_map.h>
+#include <optimiser/cmaes.h>
 
 int main(int argc, const char* argv[]) 
 {
@@ -23,7 +24,7 @@ int main(int argc, const char* argv[])
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run: ./quadratic_function_example" << std::endl;
         std::cout 
-            << "Individual run:   ./quadratic_function_example *exp dir*/*population directory*" 
+            << "Individual run: ./quadratic_function_example *exp dir*/*population directory*" 
             << std::endl;
         return -1;
     }
@@ -31,25 +32,9 @@ int main(int argc, const char* argv[])
     typedef double gene_type;
     typedef double phenotype_output;
 
-    // Specify the distribution used for the initial gene values
-    const double init_gene_lower_bound = 0;
-    const double init_gene_upper_bound = 1;
-    std::unique_ptr<NeuroEvo::Distribution<gene_type>> genotype_distr(
-        new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
-    );
-
-    //Specify mutator and genotype
-    const double mutation_rate = 0.4;
-    const double mutation_power = 1.0;
-    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
-        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
-    );
-
     const unsigned num_genes = 1;
-    std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
-        new NeuroEvo::GenotypeSpec<gene_type>(num_genes, *genotype_distr, mutator)
-    );
 
+    // This is the identity map, the genotype is the same as the phenotype
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
         new NeuroEvo::VectorMap<gene_type>(new NeuroEvo::VectorPhenotypeSpec(num_genes))
     );
@@ -72,7 +57,6 @@ int main(int argc, const char* argv[])
     std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
-            *geno_spec, 
             *gp_map
         );
 
@@ -82,13 +66,42 @@ int main(int argc, const char* argv[])
     //Define genetic operators and parameters
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
+    
+    // Specify the distribution used for the initial gene values
+    const double init_gene_lower_bound = 0;
+    const double init_gene_upper_bound = 1;
+    std::unique_ptr<NeuroEvo::Distribution<gene_type>> genotype_distr(
+        new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
+    );
 
+    //Specify mutator
+    const double mutation_rate = 0.4;
+    const double mutation_power = 1.0;
+    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
+        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
+    );
+
+    // Selector
     std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
         new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
+    // CMAES as optimiser
+    const std::vector<double> init_mean(num_genes, 0.);
+    const double init_sigma = 1.;
+
+    std::unique_ptr<NeuroEvo::Optimiser<gene_type, phenotype_output>> optimiser =
+        std::make_unique<NeuroEvo::CMAES<phenotype_output>>(
+       init_mean,
+       init_sigma,
+       *gp_map,
+       num_genes,
+       max_gens,
+       pop_size
+    );
+
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, selector.get());
+    if(argc == 1) experiment->evolutionary_run(*optimiser);
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

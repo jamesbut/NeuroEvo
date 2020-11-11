@@ -13,7 +13,7 @@
 #include <domains/sequence_classification.h>
 #include <genetic_operators/selection/roulette_wheel_selection.h>
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
-#include <util/random/uniform_real_distribution.h>
+#include <optimiser/genetic_algorithm.h>
 #include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
 #include <gp_map/vector_to_network_map.h>
 
@@ -26,7 +26,7 @@ int main(int argc, const char* argv[])
         std::cout << "Usage:" << std::endl;
         std::cout << "Evolutionary run: ./sequence_classification_example" << std::endl;
         std::cout << 
-            "Individual run:   ./sequence_classification_example *exp dir*/*population directory*"
+            "Individual run: ./sequence_classification_example *exp dir*/*population directory*"
             << std::endl;
 
         return -1;
@@ -61,24 +61,9 @@ int main(int argc, const char* argv[])
 
     auto pheno_spec = new NeuroEvo::NetworkBuilder(layer_specs);
 
-    // Specify the distribution used for the initial gene values
-    const double init_gene_lower_bound = 0;
-    const double init_gene_upper_bound = 1;
-    std::unique_ptr<NeuroEvo::Distribution<gene_type>> genotype_distr(
-        new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
-    );
+    const unsigned num_genes = pheno_spec->get_num_params();
 
-    // Specify genotype and mutator
-    const double mutation_rate = 0.4;
-    const double mutation_power = 1.0;
-    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
-        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
-    );
-
-    std::unique_ptr<NeuroEvo::GenotypeSpec<gene_type>> geno_spec(
-        new NeuroEvo::GenotypeSpec(pheno_spec->get_num_params(), *genotype_distr, mutator)
-    );
-
+    // We have to define how the genotype vector is mapped to the network phenotype
     std::unique_ptr<NeuroEvo::GPMap<gene_type, phenotype_output>> gp_map(
         new NeuroEvo::VectorToNetworkMap(pheno_spec)
     );
@@ -100,7 +85,6 @@ int main(int argc, const char* argv[])
     std::optional<NeuroEvo::Experiment<gene_type, phenotype_output>> experiment = 
         NeuroEvo::Experiment<gene_type, phenotype_output>::construct(
             *domain, 
-            *geno_spec, 
             *gp_map
         );
 
@@ -110,13 +94,40 @@ int main(int argc, const char* argv[])
     //Define genetic operators and parameters
     const unsigned pop_size = 150;
     const unsigned max_gens = 1000;
+    
+    // Specify the distribution used for the initial gene values
+    const double init_gene_lower_bound = 0;
+    const double init_gene_upper_bound = 1;
+    std::unique_ptr<NeuroEvo::Distribution<gene_type>> genotype_distr(
+        new NeuroEvo::UniformRealDistribution(init_gene_lower_bound, init_gene_upper_bound)
+    );
 
+    // Specify mutator
+    const double mutation_rate = 0.4;
+    const double mutation_power = 1.0;
+    std::shared_ptr<NeuroEvo::Mutator<gene_type>> mutator(
+        new NeuroEvo::RealGaussianMutator(mutation_rate, mutation_power)
+    );
+
+    // Selection mechanism
     std::unique_ptr<NeuroEvo::Selection<gene_type, phenotype_output>> selector(
         new NeuroEvo::RouletteWheelSelection<gene_type, phenotype_output>()
     );
 
+    // Specify optimiser
+    std::unique_ptr<NeuroEvo::Optimiser<gene_type, phenotype_output>> optimiser = 
+        std::make_unique<NeuroEvo::GeneticAlgorithm<gene_type, phenotype_output>>(
+       *selector,
+       *mutator,
+       *genotype_distr,
+       *gp_map,
+       num_genes,
+       max_gens,
+       pop_size
+    );
+
     // Run either an evolutionary run or an individual run
-    if(argc == 1) experiment->evolutionary_run(pop_size, max_gens, selector.get());
+    if(argc == 1) experiment->evolutionary_run(*optimiser);
     if(argc == 2) experiment->individual_run(argv[1]);
 
 }

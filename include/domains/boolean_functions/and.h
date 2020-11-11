@@ -16,7 +16,7 @@ public:
     AND(const AND& and_domain) :
         Domain<G, double>(and_domain._domain_trace, and_domain._completion_fitness) {}
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
     {
 
         const NetworkBuilder* network_builder = dynamic_cast<const NetworkBuilder*>(&pheno_spec);
@@ -85,7 +85,9 @@ private:
     }
 
     void render() override {}
-    void reset_domain() override {}
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+    void trial_reset(const unsigned trial_num) override {}
+
 
     AND<G>* clone_impl() const override
     {

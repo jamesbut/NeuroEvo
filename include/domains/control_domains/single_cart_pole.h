@@ -38,10 +38,10 @@ public:
     };
 
     SingleCartPole(const bool markovian, const bool random_start,
+                   const bool continuous_actuator = true,
                    const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
                    const bool print_state = false, const unsigned max_steps = 100000,
-                   const bool continuous_actuator = true,
                    const double starting_x = 0., const double starting_x_dot = 0.,
                    const double starting_theta = 0., const double starting_theta_dot = 0.) :
         Domain<G, double>(domain_trace, max_steps, std::nullopt, render),
@@ -157,12 +157,10 @@ private:
         else inputs.resize(2);
 
         std::vector<double> outputs(2);
-        std::cout << "Gravity: " << _cart_pole.specs.gravity << std::endl;
 
         //Start interaction loop
         while(steps++ < _max_steps) 
         {
-            std::cout << "Step: " << steps << std::endl;
 
             if(_print_state_to_file) print_state_to_file(_cart_pole);
 
@@ -299,7 +297,8 @@ private:
             }
         }
 
-        if((network_builder->get_num_outputs() != 1) && (network_builder->get_num_outputs() != 2))
+        if((network_builder->get_num_outputs() != 1) && 
+           (network_builder->get_num_outputs() != 2))
         {
             std::cerr << "Number of outputs must be 1 or 2 for SCP domain" << std::endl;
             return false;
@@ -430,7 +429,7 @@ private:
         return (this->_screen_width / (2 * _x_max)) * x + (this->_screen_width / 2);
     }
 
-    void exp_run_reset_impl() override {}
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
 
     void trial_reset(const unsigned trial_num) override
     {
