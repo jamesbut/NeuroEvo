@@ -10,8 +10,6 @@
 
 namespace NeuroEvo {
 
-std::mutex mtx;
-
 template <typename G, typename T>
 class VectorMatching : public Domain<G, T>
 {
@@ -95,16 +93,12 @@ private:
 
     void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override 
     {
-        //Locks this reset when running in parallel
-        //There were problems with the distribution without this lock
-        mtx.lock();
 
         //Reset matching vector if it was generated from a distribution
         if(_vector_creation_policy)
             _matching_vector = _vector_creation_policy->generate_vector(run_num);
         print_matching_vector();
 
-        mtx.unlock();
     }
     void trial_reset(const unsigned trial_num) override {}
 

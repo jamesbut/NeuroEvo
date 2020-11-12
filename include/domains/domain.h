@@ -20,6 +20,8 @@
 
 namespace NeuroEvo {
 
+inline std::mutex mtx;
+
 template <typename G, typename T>
 class Domain 
 {
@@ -148,7 +150,9 @@ public:
         else
             _trial_seed_sequence.randomly_seed();
 
-       exp_run_reset_impl(run_num, _run_seed_sequence.next());
+        mtx.lock();
+        exp_run_reset_impl(run_num, _run_seed_sequence.next());
+        mtx.unlock();
     }
 
     double get_completion_fitness() const

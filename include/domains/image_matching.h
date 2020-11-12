@@ -204,7 +204,6 @@ private:
     void trial_reset(const unsigned trial_num) override {}
     void exp_run_reset_impl(const unsigned run_num) override 
     {
-        mtx.lock();
 
         _target_image = create_target_image(run_num);
 
@@ -213,8 +212,6 @@ private:
         this->render();
         this->set_render(false);
         */
-
-        mtx.unlock();
     }
 
     ImageMatching* clone_impl() const override

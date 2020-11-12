@@ -32,6 +32,7 @@ private:
 
     std::vector<T> generate_vector(const unsigned run_num) override
     {
+
         std::vector<T> sub_vector(_sub_vector_size);
         for(unsigned i = 0; i < sub_vector.size(); i++)
         {

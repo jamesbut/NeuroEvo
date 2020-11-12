@@ -82,9 +82,6 @@ private:
 
     void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override 
     {
-        //Locks this reset when running in parallel
-        //There were problems with the distribution without this lock
-        mtx.lock();
 
         //Reset matching vector if it was generated from a distribution
         if(this->_vector_creation_policy)
@@ -97,7 +94,6 @@ private:
 
         this->print_matching_vector();
 
-        mtx.unlock();
     }
 
     std::vector<bool> cast_vec_to_bool(const std::vector<double> vec) const
