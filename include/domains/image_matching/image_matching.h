@@ -3,8 +3,7 @@
 
 /*
     The image matching domain constructs a target image for an evolutionary procedure 
-    to match. These target images are only binary matrices right now, this can be
-    extended in the future.
+    to match. 
 */
 
 #include <domains/domain.h>
@@ -13,19 +12,30 @@
 
 namespace NeuroEvo {
 
-template <typename G>
-class ImageMatching : public Domain<G, bool>
+template <typename G, typename T>
+class ImageMatching : public Domain<G, T>
 {
 
 public:
 
     ImageMatching(const std::shared_ptr<VectorCreationPolicy<bool>> vector_creation_policy,
+                  const double completion_fitess,
                   const bool render = false, 
                   const bool domain_trace = false) :
-        Domain<G, bool>(domain_trace, 1., std::nullopt, render),
+        Domain<G, T>(domain_trace, completion_fitess, std::nullopt, render),
         _vector_creation_policy(vector_creation_policy),
         _image_width(sqrt(vector_creation_policy->get_vector_size())),
         _target_image(create_target_image(0)) {}
+
+private: 
+
+    std::shared_ptr<VectorCreationPolicy<bool>> _vector_creation_policy;
+
+protected:
+
+    const unsigned _image_width;
+    std::optional<Matrix<bool>> _target_image;
+    std::optional<Matrix<bool>> _org_image;
 
 private:
 
@@ -94,10 +104,9 @@ private:
 #endif
     }
 
-    double single_run(Organism<G, bool>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, T>& org, unsigned rand_seed) override 
     {
-        const std::vector<bool> pheno_out = org.get_phenotype().activate();
-        _org_image.emplace(_image_width, _image_width, pheno_out);
+        extract_org_images(org);
 
         if(!_target_image.has_value())
         {
@@ -105,7 +114,10 @@ private:
             exit(0);
         }
 
-        const double fitness = calculate_fitness();
+        const double fitness = calculate_image_fitness();
+
+        //Check whether the target and org images are matching
+        determine_winner(org);
 
         if(this->_render)
             render();
@@ -113,18 +125,18 @@ private:
         return fitness;
     }
 
-    double calculate_fitness() const
-    {
-        double fitness = 0.;
+    //Extracts image or images from organism
+    virtual void extract_org_images(Organism<G, T>& org) = 0;
+    virtual double calculate_image_fitness() const = 0;
 
-        //Compare organism guess to target image
+    void determine_winner(Organism<G, T>& org) const
+    {
         for(unsigned i = 0; i < _org_image->get_height(); i++)
             for(unsigned j = 0; j < _org_image->get_width(); j++)
-                if(_org_image->at(i, j) == _target_image->at(i, j))
-                    fitness += 1.;
+                if(_org_image->at(i, j) != _target_image->at(i,j))
+                    return;
 
-        return (fitness / (_image_width * _image_width));
-
+        org.set_domain_winner(true);
     }
 
 #if SFML_FOUND
@@ -202,8 +214,11 @@ private:
     }
 
     void trial_reset(const unsigned trial_num) override {}
-    void exp_run_reset_impl(const unsigned run_num) override 
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override 
     {
+
+        if(this->_seed.has_value())
+            _vector_creation_policy->seed(run_seed);
 
         _target_image = create_target_image(run_num);
 
@@ -214,15 +229,6 @@ private:
         */
     }
 
-    ImageMatching* clone_impl() const override
-    {
-        return new ImageMatching(*this);
-    }
-
-    std::shared_ptr<VectorCreationPolicy<bool>> _vector_creation_policy;
-    const unsigned _image_width;
-    std::optional<Matrix<bool>> _target_image;
-    std::optional<Matrix<bool>> _org_image;
 };
 
 } // namespace NeuroEvo
