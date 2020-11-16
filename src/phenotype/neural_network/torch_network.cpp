@@ -20,7 +20,8 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
     register_module("net", _net);
 }
 
-TorchNetwork::TorchNetwork(const std::string& file_path, const std::vector<LayerSpec>& layer_specs,
+TorchNetwork::TorchNetwork(const std::string& file_path, 
+                           const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
     Phenotype<double>(trace),
     _net(read(file_path, layer_specs))
@@ -117,8 +118,8 @@ torch::nn::Sequential TorchNetwork::build_network(
         //Check init weights are same size as parameters
         if(_num_params != init_weights->size())
         {
-            std::cerr << "Initial weights given to TorchNet does not match the parameter size" <<
-                std::endl;
+            std::cerr << "Initial weights given to TorchNet does not match the parameter size"
+                << std::endl;
             exit(0);
         }
 
@@ -143,7 +144,7 @@ void TorchNetwork::reset() {}
 
 void TorchNetwork::print(std::ostream& os) const
 {
-    os << _net->parameters() << std::endl;
+    std::cout << _net->parameters() << std::endl;
 }
 
 void TorchNetwork::write(const std::string& file_path) const 

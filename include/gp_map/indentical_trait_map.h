@@ -30,7 +30,7 @@ public:
 
     } 
 
-    void print_gp_map(std::ofstream& file) const override {}
+    void print(std::ostream& os) const override {}
 
 private:
 

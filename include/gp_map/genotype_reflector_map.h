@@ -46,7 +46,7 @@ public:
         return std::nullopt;
     }
 
-    void print_gp_map(std::ofstream& file) override {}
+    void print(std::ostream& os) override {}
 
 private:
 

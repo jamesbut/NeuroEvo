@@ -36,7 +36,10 @@ public:
 
     Phenotype<T>* map(Genotype<G>& genotype) override = 0;
 
-    void print_gp_map(std::ofstream& file) const override {}
+    void print(std::ostream& os) const override 
+    {
+        std::cout << *_decoder << std::endl;
+    }
 
     const std::unique_ptr<Phenotype<double>>& get_decoder() const 
     {

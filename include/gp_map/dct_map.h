@@ -27,7 +27,7 @@ public:
     // Perform DCTIII (inverse DCTII) on genotype
     Phenotype<double>* map(Genotype<double>& genotype) override;
 
-    void print_gp_map(std::ofstream& file) const override {};
+    void print(std::ostream& os) const override {};
 
 protected:
 

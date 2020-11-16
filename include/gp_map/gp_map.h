@@ -41,7 +41,7 @@ public:
         _pheno_spec->set_trace(trace);
     }
 
-    virtual void print_gp_map(std::ofstream& file) const = 0;
+    virtual void print(std::ostream& os) const = 0;
 
     auto clone() const 
     { 

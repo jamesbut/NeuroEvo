@@ -25,7 +25,7 @@ public:
         return new VectorPhenotype<G>(traits);
     }
 
-    void print_gp_map(std::ofstream& file) const override {}
+    void print(std::ostream& os) const override {}
 
 protected:
 

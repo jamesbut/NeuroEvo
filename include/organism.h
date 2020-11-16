@@ -120,7 +120,7 @@ public:
         org_file << "," << *_genotype;
 
         if(_gp_map)
-            _gp_map.get()->print_gp_map(org_file);
+            _gp_map.get()->print(org_file);
 
         org_file.close();
 

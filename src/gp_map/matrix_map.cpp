@@ -52,25 +52,27 @@ Phenotype<double>* MatrixMap::map(Genotype<double>& genotype)
         return new VectorPhenotype<double>(traits_vector);
 }
 
-void MatrixMap::print_gp_map(std::ofstream& file) const {
+void MatrixMap::print(std::ostream& os) const 
+{
 
-    file << "\n\n";
+    os << "\n\n";
 
-    file << std::setprecision(std::numeric_limits<double>::max_digits10);
+    os << std::setprecision(std::numeric_limits<double>::max_digits10);
 
     for(unsigned i = 0; i < _interaction_matrix.get_height(); i++) {
         for(unsigned j = 0; j < _interaction_matrix.get_width(); j++) {
             if(i == 0 && j== 0)
-                file << _interaction_matrix.at(i, j);
+                os << _interaction_matrix.at(i, j);
             else
-                file << " " << _interaction_matrix.at(i, j);
+                os << " " << _interaction_matrix.at(i, j);
         }
-        file << "\n";
+        os << "\n";
     }
 
 }
 
-Matrix<double> MatrixMap::read_matrix(const std::string& file_name) {
+Matrix<double> MatrixMap::read_matrix(const std::string& file_name) 
+{
 
     std::vector<std::vector<double>> vector_matrix;
 
