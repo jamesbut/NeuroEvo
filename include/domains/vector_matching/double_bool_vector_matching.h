@@ -4,7 +4,7 @@
 /*
     For this vector matching, the phenotype output is double and the vector creation
     policy should be one in which only ones or zeros are generated - but this is not 
-    enforced because they are booleans. With this vector matching, the pheno output
+    enforced because they are doubles. With this vector matching, the pheno output
     is cast to a boolean vector and then compared with the matching vector.
     This is so the fitness is calculated with relation to the double difference between
     the guess and the matching vector but a winner is counted just if the casting is
