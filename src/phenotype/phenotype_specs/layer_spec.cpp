@@ -65,24 +65,38 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
         const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
         const bool bias) 
 {
+    return build_layer_specs(num_inputs, num_outputs, num_hidden_layers, neurons_per_layer,
+                             neuron_type, activation_func_spec, activation_func_spec, bias);
+}
+
+std::vector<LayerSpec> LayerSpec::build_layer_specs(
+        const unsigned num_inputs,
+        const unsigned num_outputs,
+        const unsigned num_hidden_layers,
+        const unsigned neurons_per_layer,
+        const NeuronType neuron_type,
+        const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func_spec,
+        const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func_spec,
+        const bool bias) 
+{
 
     std::vector<LayerSpec> layer_specs;
 
     if(num_hidden_layers == 0)
         layer_specs.push_back(LayerSpec(num_outputs, num_inputs, 
-                                        activation_func_spec, neuron_type, bias));
+                                        ol_activation_func_spec, neuron_type, bias));
     else 
     {
 
         layer_specs.push_back(LayerSpec(neurons_per_layer, num_inputs, 
-                                        activation_func_spec, neuron_type, bias));
+                                        hl_activation_func_spec, neuron_type, bias));
 
         for(unsigned i = 1; i < num_hidden_layers; i++)
             layer_specs.push_back(LayerSpec(neurons_per_layer, neurons_per_layer, 
-                                            activation_func_spec, neuron_type, bias));
+                                            hl_activation_func_spec, neuron_type, bias));
 
         layer_specs.push_back(LayerSpec(num_outputs, neurons_per_layer, 
-                                        activation_func_spec, neuron_type, bias));
+                                        ol_activation_func_spec, neuron_type, bias));
 
     }
 

@@ -55,6 +55,16 @@ public:
             const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
             const bool bias = true);
 
+    static std::vector<LayerSpec> build_layer_specs(
+            const unsigned num_inputs,
+            const unsigned num_outputs,
+            const unsigned num_hidden_layers,
+            const unsigned neurons_per_layer,
+            const NeuronType neuron_type,
+            const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func_spec,
+            const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func_spec,
+            const bool bias = true);
+
     NeuronType get_neuron_type() const;
     unsigned get_num_neurons() const;
     unsigned get_inputs_per_neuron() const;
