@@ -52,14 +52,12 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
         torch::Tensor avg_loss = total_loss / _training_data.size(0);
 
-        /* Test on test set */
+        // Test on test set
         if(((i+1) % test_every == 0) && _test_data.has_value())
         {
-
             const auto [test_output, test_code] = forward(_test_data.value());
             const auto test_loss = loss_function(test_output, _test_data.value());
             avg_test_loss = test_loss / _test_data->size(0);
-
         }
 
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() 
