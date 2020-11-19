@@ -38,7 +38,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     torch::optim::Adam discriminator_optimizer(
         _discriminator->parameters(), torch::optim::AdamOptions(discriminator_learning_rate)
     );
-    
+
     for(unsigned i = 0; i < num_epochs; i++)
     {
 
@@ -65,9 +65,9 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             /* Train discriminator on fake data */
             //Generate fake data using generator
             //Draw noise from unit normal distribution
-            //auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()});
+            auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()});
             //Draw noise from a uniform distribution [0,1]
-            auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()});
+            //auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()});
             
             torch::Tensor fake_data = _generator->forward(noise);
 
@@ -116,10 +116,9 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         //Divide by size of fake data
         torch::Tensor avg_g_loss = total_g_loss / _training_data.size(0);
         
-        if(trace)
-            std::cout << "Epoch: " << i << " | Discriminator loss: " 
-                << avg_d_loss.item<float>() << " | Generator loss: "
-                << avg_g_loss.item<float>() <<  std::endl;
+        std::cout << "Epoch: " << i << " | Discriminator loss: " 
+            << avg_d_loss.item<float>() << " | Generator loss: "
+            << avg_g_loss.item<float>() <<  std::endl;
  
     }
 

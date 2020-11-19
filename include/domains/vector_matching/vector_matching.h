@@ -96,8 +96,13 @@ private:
 
         //Reset matching vector if it was generated from a distribution
         if(_vector_creation_policy)
+        {
+            if(this->_seed.has_value())
+                this->_vector_creation_policy->seed(run_seed);
             _matching_vector = _vector_creation_policy->generate_vector(run_num);
-        print_matching_vector();
+
+            //print_matching_vector();
+        }
 
     }
     void trial_reset(const unsigned trial_num) override {}

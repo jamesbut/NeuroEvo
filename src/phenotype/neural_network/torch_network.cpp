@@ -144,7 +144,7 @@ void TorchNetwork::reset() {}
 
 void TorchNetwork::print(std::ostream& os) const
 {
-    std::cout << _net->parameters() << std::endl;
+    os << _net->parameters() << std::endl;
 }
 
 void TorchNetwork::write(const std::string& file_path) const 
