@@ -96,9 +96,9 @@ def get_default_exp_and_run():
     split_folder_str = folder.split("/")
     return [["exp_1/" + split_folder_str[-2]]]
 
-def get_run_folder_names(exp_num):
+def get_run_folder_names(exp_dir_name):
 
-    folders = glob.glob(os.path.join(parent_dir + '/../data/exp_' + exp_num + '/', '*/'))
+    folders = glob.glob(os.path.join(parent_dir + '/../data/' + exp_dir_name + '/', '*/'))
     split_folders = []
     for folder in folders:
         split_folder = folder.split("/")
@@ -147,10 +147,10 @@ if __name__ == '__main__':
         data_folder_names = get_default_exp_and_run();
     # If just experiment number is given, all the runs are collected
     elif len(sys.argv) == 2:
-        exp_nums = sys.argv[1].split(",")
+        exp_dir_names = sys.argv[1].split(",")
         data_folder_names = []
-        for exp_num in exp_nums:
-            data_folder_names.append(get_run_folder_names(exp_num))
+        for exp_dir_name in exp_dir_names:
+            data_folder_names.append(get_run_folder_names(exp_dir_name))
     elif len(sys.argv) == 3:
         exp_num = sys.argv[1]
         run_folder_name = sys.argv[2]
@@ -161,14 +161,14 @@ if __name__ == '__main__':
         sys.exit()
 
     exp_plot_colours = ['b', 'r', 'g', 'm', 'y']
-    #legend_labels = ['Direct map', 'Baseline map', 'AE', 'VAE', 'GAN']
     legend_labels = ['Direct map', 'AE', 'VAE', 'GAN']
+    #legend_labels = ['\u03C3=1.', '\u03C3=0.25', '\u03c3=0.1', '\u03c3=0.01']
     legend_items = []
 
     # Import data
     for i, exp_folder in enumerate(data_folder_names):
 
-        print("Exp num: " + exp_nums[i] + " Colour: " + exp_plot_colours[i])
+        print("Exp: " + exp_dir_names[i] + " Colour: " + exp_plot_colours[i])
 
         #Read data
         mean_fitnesses, best_fitnesses = read_experiment_data(exp_folder)

@@ -115,11 +115,21 @@ public:
             }
         }
 
+        //Calculate a few statistics
         const double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
         _avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
+        
+        const unsigned non_winners = num_runs - _num_winners;
+        const unsigned total_winners_gens_winners_only = _total_winners_gens - 
+                                                         (non_winners * 
+                                                          optimiser.get_max_gens());
+        _avg_winners_gens_winners_only = (double)total_winners_gens_winners_only / 
+                                         (double)_num_winners;
 
         std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
         std::cout << "Average winner generation: " << _avg_winners_gens << std::endl;
+        std::cout << "Average winner generation (only winners): " << 
+            _avg_winners_gens_winners_only << std::endl;
         std::cout << "Duration: " << duration << " seconds" << std::endl;
 
     }
@@ -151,19 +161,20 @@ public:
         _domain.set_seed(seed);
     }
 
-    void dump_num_winners(const std::string& file_name)
+    void dump_statistics(const std::string& file_name)
     {
-        std::ofstream file; 
-        file.open(file_name, std::ios::app);
-        file << _num_winners << std::endl;
-        file.close();
-    }
+        //First check to see whether data directory
+        //exists and if not, create it
+        const std::string exp_data_path = "../data";
+        if(!boost::filesystem::exists(exp_data_path))
+            boost::filesystem::create_directory(exp_data_path);
 
-    void dump_avg_winners_gens(const std::string& file_name)
-    {
-        std::ofstream file; 
+        std::ofstream file;
         file.open(file_name, std::ios::app);
+        file << "-------" << std::endl;
         file << _avg_winners_gens << std::endl;
+        file << _avg_winners_gens_winners_only << std::endl;
+        file << _num_winners << std::endl;
         file.close();
     }
 
@@ -239,6 +250,7 @@ private:
     unsigned _num_winners;
     unsigned _total_winners_gens;
     double _avg_winners_gens;
+    double _avg_winners_gens_winners_only;
 
 };
 
