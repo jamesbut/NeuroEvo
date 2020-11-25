@@ -71,18 +71,6 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             
             torch::Tensor fake_data = _generator->forward(noise);
 
-            /*
-            const double fake_data_mean = 20.;
-            const double fake_data_stddev = 1.;
-            auto fake_data_distribution = GaussianDistribution(fake_data_mean, fake_data_stddev);
-
-            torch::Tensor fake_data = torch::zeros({real_batch.first.size(0), 
-                                                    real_batch.first.size(1)}); 
-            for(unsigned i = 0; i < fake_data.size(0); i++)
-                for(unsigned j = 0; j < fake_data.size(1); j++)
-                    fake_data[i][j] = fake_data_distribution.next();
-            */
-
             torch::Tensor d_fake_output = _discriminator->forward(fake_data.detach());
             torch::Tensor fake_labels = torch::zeros({fake_data.size(0), 1});
             torch::Tensor d_fake_loss = torch::nn::functional::binary_cross_entropy(
@@ -94,6 +82,20 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
             total_d_loss += d_real_loss + d_fake_loss;
             discriminator_optimizer.step();
+
+            /*
+            if(i == 999)
+            {
+                std::cout << "Real data:" << std::endl;
+                std::cout << real_batch.first << std::endl;
+                std::cout << "Real data D outputs:" << std::endl;
+                std::cout << d_real_output << std::endl;
+                std::cout << "Fake data D outputs:" << std::endl;
+                std::cout << d_fake_output << std::endl;
+                std::cout << "G output:" << std::endl;
+                std::cout << fake_data << std::endl;
+            }
+            */
 
             /* Train generator */
             _generator->zero_grad();
