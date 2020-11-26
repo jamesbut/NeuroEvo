@@ -67,8 +67,10 @@ const std::vector<std::pair<torch::Tensor, torch::Tensor>>
             remaining_data_size > (int)batch_size ? batch_size : remaining_data_size;
 
         //Allocate tensor space
-        torch::Tensor data_batch = torch::zeros({this_batch_size, data.size(1)});
-        torch::Tensor target_batch = torch::zeros({this_batch_size, targets.size(1)});
+        torch::Tensor data_batch = torch::zeros({this_batch_size, data.size(1)},
+                                                {torch::kFloat64});
+        torch::Tensor target_batch = torch::zeros({this_batch_size, targets.size(1)},
+                                                  {torch::kFloat64});
 
         //Move data into the tensors
         for(int64_t i = 0; i < this_batch_size; i++)

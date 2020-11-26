@@ -33,7 +33,8 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
 {
 
     //Convert input to torch tensor
-    torch::Tensor input_tensor = torch::zeros({1, (int64_t)inputs.size()});
+    torch::Tensor input_tensor = torch::zeros({1, (int64_t)inputs.size()},
+                                              {torch::kFloat64});
     for(unsigned i = 0; i < inputs.size(); i++)
         input_tensor.index_put_({0, (int64_t)i}, inputs[i]);
     
@@ -54,7 +55,7 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
     std::vector<double> outputs;
     outputs.reserve(output_tensor.size(1));
     for(unsigned i = 0; i < output_tensor.size(1); i++)
-        outputs.push_back(*output_tensor[0][i].data_ptr<float>());
+        outputs.push_back(*output_tensor[0][i].data_ptr<double>());
 
     return outputs;
 
@@ -135,6 +136,8 @@ torch::nn::Sequential TorchNetwork::build_network(
             }
         }
     }
+
+    net->to(torch::kFloat64);
 
     return net;
 

@@ -34,7 +34,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_data);
 
-        torch::Tensor total_loss = torch::zeros(1);
+        torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
         for(const auto& batch : batches)
         {
@@ -60,8 +60,8 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
             avg_test_loss = test_loss / _test_data->size(0);
         }
 
-        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() 
-            << " | Test Loss: " << avg_test_loss.item<float>() << std::endl;
+        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>() 
+            << " | Test Loss: " << avg_test_loss.item<double>() << std::endl;
 
     }
 

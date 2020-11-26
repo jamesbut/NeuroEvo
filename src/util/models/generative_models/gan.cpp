@@ -26,7 +26,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     //for a GAN
     //torch::Tensor real_labels = torch::empty(_real_data.size(0)).uniform_(0.8, 1.0);
     //torch::Tensor real_labels = torch::ones(_real_data.size(0));
-    torch::Tensor real_labels = torch::ones({_training_data.size(0), 1});
+    torch::Tensor real_labels = torch::ones({_training_data.size(0), 1}, 
+                                            {torch::kFloat64});
 
     const double generator_learning_rate = 2e-4;
     const double discriminator_learning_rate = 5e-4;
@@ -45,8 +46,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> real_batches =
             generate_batches(batch_size, _training_data, real_labels);
 
-        torch::Tensor total_d_loss = torch::zeros(1);
-        torch::Tensor total_g_loss = torch::zeros(1);
+        torch::Tensor total_d_loss = torch::zeros(1, {torch::kFloat64});
+        torch::Tensor total_g_loss = torch::zeros(1, {torch::kFloat64});
 
         for(const auto& real_batch : real_batches)
         {
@@ -65,14 +66,17 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             /* Train discriminator on fake data */
             //Generate fake data using generator
             //Draw noise from unit normal distribution
-            auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()});
+            auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()},
+                                      {torch::kFloat64});
             //Draw noise from a uniform distribution [0,1]
-            //auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()});
+            //auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()},
+            //                         {torch::kFloat64});
             
             torch::Tensor fake_data = _generator->forward(noise);
 
             torch::Tensor d_fake_output = _discriminator->forward(fake_data.detach());
-            torch::Tensor fake_labels = torch::zeros({fake_data.size(0), 1});
+            torch::Tensor fake_labels = torch::zeros({fake_data.size(0), 1},
+                                                     {torch::kFloat64});
             torch::Tensor d_fake_loss = torch::nn::functional::binary_cross_entropy(
                 d_fake_output, 
                 fake_labels,
@@ -119,8 +123,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         torch::Tensor avg_g_loss = total_g_loss / _training_data.size(0);
         
         std::cout << "Epoch: " << i << " | Discriminator loss: " 
-            << avg_d_loss.item<float>() << " | Generator loss: "
-            << avg_g_loss.item<float>() <<  std::endl;
+            << avg_d_loss.item<double>() << " | Generator loss: "
+            << avg_g_loss.item<double>() <<  std::endl;
  
     }
 

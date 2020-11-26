@@ -24,7 +24,10 @@ VAE::VAE(NetworkBuilder* encoder_builder,
                                                                      _decoder->get_num_inputs()) :
                                             torch::nn::LinearOptions(training_data.size(1),
                                                                      _decoder->get_num_inputs())) 
-    {}
+    {
+        _encoder_mean_linear_layer->to(torch::kFloat64);
+        _encoder_logvar_linear_layer->to(torch::kFloat64);
+    }
 
 void VAE::train(const unsigned num_epochs, const unsigned batch_size,
                 const double weight_decay, const bool trace, 
@@ -53,7 +56,7 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_data);
 
-        torch::Tensor total_loss = torch::zeros(1);
+        torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
         for(const auto& batch : batches)
         {
@@ -73,7 +76,8 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
 
         auto avg_loss = total_loss / _training_data.size(0);
 
-        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<float>() << std::endl;
+        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>() 
+            << std::endl;
 
     }
     
@@ -120,7 +124,7 @@ torch::Tensor VAE::sample(const torch::Tensor& mu, const torch::Tensor& log_var,
         std::cout << "Stddev: " << std::endl << stddev << std::endl;
 
     //Randomly generate epsilons from unit normal distribution
-    const torch::Tensor eps = torch::randn({mu.size(0), mu.size(1)});
+    const torch::Tensor eps = torch::randn({mu.size(0), mu.size(1)}, {torch::kFloat64});
 
     //Sample from the distribution
     return eps * stddev + mu;
