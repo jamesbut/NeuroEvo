@@ -57,9 +57,10 @@ torch::Tensor create_range_torch(const double lower_bound, const double upper_bo
 {
     std::vector<double> num_range = create_range(lower_bound, upper_bound, increment);
 
-    torch::Tensor torch_range = torch::zeros({(int64_t)num_range.size()});
-    for(std::size_t i = 0; i < num_range.size(); i++)
-        torch_range.index_put_({(int64_t)i}, num_range[i]);
+    torch::Tensor torch_range = torch::zeros({(int64_t)num_range.size(), 1},
+                                             {torch::kFloat64});
+    for(int64_t i = 0; i < static_cast<int64_t>(num_range.size()); i++)
+        torch_range.index_put_({i, 0}, num_range[i]);
 
     return torch_range;
 }

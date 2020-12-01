@@ -7,6 +7,8 @@
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
 #include <util/formatting.h>
+#include <util/tensor_metrics.h>
+#include <util/number_ranges.h>
 
 namespace NeuroEvo {
 
@@ -44,8 +46,11 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     const unsigned column_width = 20;
     const std::vector<std::string> header_data{"Epoch",
                                                "Discriminator loss",
-                                               "Generator loss"};
+                                               "Generator loss",
+                                               "Generator symmetry"};
     print_table_row(header_data, column_width, true, true);
+
+    double generator_symmetry = 0.;
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
@@ -76,7 +81,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()},
                                       {torch::kFloat64});
             //Draw noise from a uniform distribution [0,1]
-            //auto noise = torch::rand({real_batch.first.size(0), _generator->get_num_inputs()},
+            //auto noise = torch::rand({real_batch.first.size(0), 
+            //                          _generator->get_num_inputs()},
             //                         {torch::kFloat64});
             
             torch::Tensor fake_data = _generator->forward(noise);
@@ -124,6 +130,13 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
         }
 
+        //Test generator
+        if((i+1) % test_every == 0)
+        {
+            const bool random_noise = false;
+            generator_symmetry = test_generator_symmetry(random_noise);
+        }
+
         //Divide by total number of data points seen
         torch::Tensor avg_d_loss = total_d_loss / (_training_data.size(0) * 2);
         //Divide by size of fake data
@@ -131,7 +144,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         
         const std::vector<double> row_data{static_cast<double>(i),
                                            avg_d_loss.item<double>(),
-                                           avg_g_loss.item<double>()};
+                                           avg_g_loss.item<double>(),
+                                           generator_symmetry};
         print_table_row(row_data, column_width);
  
     }
@@ -146,6 +160,24 @@ torch::Tensor GAN::discriminate(const torch::Tensor& x) const
 torch::Tensor GAN::generate(const torch::Tensor& x) const 
 {
     return _generator->forward(x);
+}
+
+double GAN::test_generator_symmetry(const bool random_noise) const
+{
+    //Generate latent space data 
+    //Draw noise from unit normal distribution
+    const unsigned noise_size = 1000;
+    torch::Tensor noise;
+    if(random_noise)
+        noise = torch::randn({noise_size, _generator->get_num_inputs()},
+                             {torch::kFloat64});
+    else
+        noise = create_range_torch(-2., 2., 0.01);
+
+    //Create noise range
+    torch::Tensor generator_out = _generator->forward(noise);
+    const double symmetry = measure_symmetry(generator_out);
+    return symmetry;
 }
 
 const std::unique_ptr<TorchNetwork>& GAN::get_generator() const

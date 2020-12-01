@@ -171,7 +171,7 @@ public:
 
         std::ofstream file;
         file.open(file_name, std::ios::app);
-        file << "-------" << std::endl;
+        //file << "-------" << std::endl;
         file << _avg_winners_gens << std::endl;
         file << _avg_winners_gens_winners_only << std::endl;
         file << _num_winners << std::endl;

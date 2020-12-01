@@ -35,6 +35,8 @@ public:
 
 private:
 
+    double test_generator_symmetry(const bool random_noise) const;
+
     std::unique_ptr<TorchNetwork> _generator;
     std::unique_ptr<TorchNetwork> _discriminator;
 
