@@ -26,7 +26,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         adam_options
     );
 
-    torch::Tensor avg_test_loss = torch::zeros({1});
+    torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
     for(unsigned i = 0; i < num_epochs; i++)
     {

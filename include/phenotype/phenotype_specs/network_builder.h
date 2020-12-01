@@ -12,6 +12,7 @@
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
 #include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
+#include <util/maths/activation_functions/activation_function_specs/relu_spec.h>
 #include <phenotype/neural_network/network.h>
 #include <phenotype/neural_network/hebbs_network.h>
 #include <phenotype/phenotype_specs/hebbs_spec.h>
@@ -29,11 +30,23 @@ public:
     //Build with hidden layers all of the same size and type
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
-                   const bool trace = false,
                    const std::shared_ptr<ActivationFunctionSpec> activation_func_spec = 
-                       std::shared_ptr<ActivationFunctionSpec>(new SigmoidSpec()),
+                       std::make_shared<SigmoidSpec>(),
                    const bool bias = true,
-                   const NeuronType neuron_type = NeuronType::Standard);
+                   const NeuronType neuron_type = NeuronType::Standard,
+                   const bool trace = false);
+    
+    //Build with hidden layers all of the same size and type but different activation functions
+    //for the hidden layers and output layer
+    NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
+                   const unsigned num_hidden_layers, const unsigned neurons_per_layer,
+                   const std::shared_ptr<ActivationFunctionSpec> hl_activation_func_spec = 
+                       std::make_shared<ReLUSpec>(),
+                   const std::shared_ptr<ActivationFunctionSpec> ol_activation_func_spec = 
+                       std::make_shared<SigmoidSpec>(),
+                   const bool bias = true,
+                   const NeuronType neuron_type = NeuronType::Standard,
+                   const bool trace = false);
 
     //Build with layer specs in which one can provde more fine grained detail
     NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
@@ -80,6 +93,15 @@ private:
         const unsigned neurons_per_layer,
         const NeuronType neuron_type,
         const std::shared_ptr<ActivationFunctionSpec>& activation_func,
+        const bool bias);
+    unsigned required_num_genes(
+        const unsigned num_inputs,
+        const unsigned num_outputs,
+        const unsigned num_hidden_layers,
+        const unsigned neurons_per_layer,
+        const NeuronType neuron_type,
+        const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func,
+        const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func,
         const bool bias);
 
     const std::pair<std::vector<double>, std::vector<double>> 

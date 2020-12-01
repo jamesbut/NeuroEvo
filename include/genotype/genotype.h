@@ -24,6 +24,9 @@ public:
     Genotype(const std::vector<G>& genes) :
         _genes(genes) {}
 
+    Genotype(const unsigned num_genes, std::unique_ptr<Distribution<G>>& gene_distr) :
+        _genes(generate_genes_from_distr(num_genes, gene_distr)) {}
+
     Genotype(const std::string& genotype_file_name) :
         _genes(read_genes_from_file(genotype_file_name)) {}
 
@@ -99,6 +102,15 @@ private:
             exit(0);
         }
 
+    }
+
+    std::vector<G> generate_genes_from_distr(const unsigned num_genes,
+                                             std::unique_ptr<Distribution<G>>& gene_distr) const
+    {
+        std::vector<G> genes(num_genes);
+        for(unsigned i = 0; i < num_genes; i++)
+            genes[i] = gene_distr->next();
+        return genes;
     }
 
     //This is only here for ease - it is mainly used when reading a genotype from file

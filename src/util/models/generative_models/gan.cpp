@@ -6,6 +6,7 @@
 #include <util/models/generative_models/gan.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
+#include <util/formatting.h>
 
 namespace NeuroEvo {
 
@@ -39,6 +40,12 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     torch::optim::Adam discriminator_optimizer(
         _discriminator->parameters(), torch::optim::AdamOptions(discriminator_learning_rate)
     );
+
+    const unsigned column_width = 20;
+    const std::vector<std::string> header_data{"Epoch",
+                                               "Discriminator loss",
+                                               "Generator loss"};
+    print_table_row(header_data, column_width, true, true);
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
@@ -122,9 +129,10 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         //Divide by size of fake data
         torch::Tensor avg_g_loss = total_g_loss / _training_data.size(0);
         
-        std::cout << "Epoch: " << i << " | Discriminator loss: " 
-            << avg_d_loss.item<double>() << " | Generator loss: "
-            << avg_g_loss.item<double>() <<  std::endl;
+        const std::vector<double> row_data{static_cast<double>(i),
+                                           avg_d_loss.item<double>(),
+                                           avg_g_loss.item<double>()};
+        print_table_row(row_data, column_width);
  
     }
 
