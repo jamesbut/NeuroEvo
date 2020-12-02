@@ -16,11 +16,13 @@ class SupervisedFeedForward : public TrainableModel
 
 public:
 
-    SupervisedFeedForward(NetworkBuilder& net_builder,
-                          const torch::Tensor& training_data,
-                          const torch::Tensor& training_labels,
-                          const std::optional<const torch::Tensor>& test_data = std::nullopt,
-                          const std::optional<const torch::Tensor>& test_labels = std::nullopt);
+    SupervisedFeedForward(
+        NetworkBuilder& net_builder,
+        const torch::Tensor& training_data,
+        const torch::Tensor& training_labels,
+        const std::optional<const torch::Tensor>& test_data = std::nullopt,
+        const std::optional<const torch::Tensor>& test_labels = std::nullopt
+    );
 
     void train(const unsigned num_epochs, const unsigned batch_size,
                const double weight_decay = 0., const bool trace = false, 

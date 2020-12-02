@@ -24,10 +24,10 @@ public:
 
     ActivationFunction* create_activation_function() const override
     {
-        return new Relu(); 
+        return new ReLU(); 
     }
 
-protected:
+private:
 
     ReLUSpec* clone_impl() const override
     {

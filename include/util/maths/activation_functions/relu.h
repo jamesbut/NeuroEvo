@@ -5,12 +5,10 @@
 
 namespace NeuroEvo {
 
-class Relu : public ActivationFunction 
+class ReLU : public ActivationFunction 
 {
 
 public:
-
-    //TODO: Add a constructor with ReLU paramters
 
     double activate(const double x) override 
     {
@@ -19,9 +17,9 @@ public:
 
 protected:
 
-    Relu* clone_impl() const override 
+    ReLU* clone_impl() const override 
     { 
-        return new Relu(*this); 
+        return new ReLU(*this); 
     };
 
 };
