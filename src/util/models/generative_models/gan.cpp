@@ -37,8 +37,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     //const double discriminator_learning_rate = 5e-4;
     //const double generator_learning_rate = 1e-5;
     //const double discriminator_learning_rate = 1e-5;
-    const double generator_learning_rate = 5e-5;
-    const double discriminator_learning_rate = 5e-5;
+    const double generator_learning_rate = 3e-5;
+    const double discriminator_learning_rate = 3e-5;
 
     //const double beta_1 = 0.9;
     //const double beta_2 = 0.999;
@@ -56,7 +56,6 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     );
     */
 
-    /*
     torch::optim::SGD generator_optimizer(
         _generator->parameters(),
         torch::optim::SGDOptions(generator_learning_rate)
@@ -65,8 +64,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         _discriminator->parameters(),
         torch::optim::SGDOptions(discriminator_learning_rate)
     );
-    */
 
+    /*
     torch::optim::RMSprop generator_optimizer(
         _generator->parameters(),
         torch::optim::RMSpropOptions(generator_learning_rate)
@@ -75,6 +74,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         _discriminator->parameters(),
         torch::optim::RMSpropOptions(discriminator_learning_rate)
     );
+    */
 
     const unsigned column_width = 20;
     const std::vector<std::string> header_data{"Epoch",
@@ -199,9 +199,9 @@ double GAN::test_generator_symmetry(const bool random_noise) const
 {
     //Generate latent space data 
     //Draw noise from unit normal distribution
-    const unsigned noise_size = 1000;
+    const unsigned noise_size = 100;
     torch::Tensor noise;
-    if(random_noise)
+    if(random_noise || (_generator->get_num_inputs() > 1))
         noise = torch::randn({noise_size, _generator->get_num_inputs()},
                              {torch::kFloat64});
     else
