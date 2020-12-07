@@ -3,6 +3,7 @@
 #include <torch/data/dataloader.h>
 #include <torch/nn/functional/loss.h>
 #include <torch/nn/options/loss.h>
+#include <torch/optim/sgd.h>
 #include <util/models/generative_models/gan.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
@@ -32,15 +33,47 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     torch::Tensor real_labels = torch::ones({_training_data.size(0), 1}, 
                                             {torch::kFloat64});
 
-    const double generator_learning_rate = 2e-4;
-    const double discriminator_learning_rate = 5e-4;
+    //const double generator_learning_rate = 2e-4;
+    //const double discriminator_learning_rate = 5e-4;
+    //const double generator_learning_rate = 1e-5;
+    //const double discriminator_learning_rate = 1e-5;
+    const double generator_learning_rate = 5e-5;
+    const double discriminator_learning_rate = 5e-5;
 
-    //The tutorial uses betas on the following AdamOptions
+    //const double beta_1 = 0.9;
+    //const double beta_2 = 0.999;
+
+    /*
     torch::optim::Adam generator_optimizer(
-        _generator->parameters(), torch::optim::AdamOptions(generator_learning_rate)
+        _generator->parameters(), 
+        torch::optim::AdamOptions(generator_learning_rate)
+            //.betas(std::make_tuple(beta_1, beta_2))
     );
     torch::optim::Adam discriminator_optimizer(
-        _discriminator->parameters(), torch::optim::AdamOptions(discriminator_learning_rate)
+        _discriminator->parameters(), 
+        torch::optim::AdamOptions(discriminator_learning_rate)
+            //.betas(std::make_tuple(beta_1, beta_2))
+    );
+    */
+
+    /*
+    torch::optim::SGD generator_optimizer(
+        _generator->parameters(),
+        torch::optim::SGDOptions(generator_learning_rate)
+    );
+    torch::optim::SGD discriminator_optimizer(
+        _discriminator->parameters(),
+        torch::optim::SGDOptions(discriminator_learning_rate)
+    );
+    */
+
+    torch::optim::RMSprop generator_optimizer(
+        _generator->parameters(),
+        torch::optim::RMSpropOptions(generator_learning_rate)
+    );
+    torch::optim::RMSprop discriminator_optimizer(
+        _discriminator->parameters(),
+        torch::optim::RMSpropOptions(discriminator_learning_rate)
     );
 
     const unsigned column_width = 20;
