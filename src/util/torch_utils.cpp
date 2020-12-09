@@ -15,7 +15,7 @@ TorchNetwork* build_torch_network(
     }
 
     //Build and cast torch network
-    Phenotype<double>* torch_net = net_builder.build_network();
+    Phenotype<double>* torch_net;
 
     //If initial weights are given set them
     if(init_net_weight_distr)

@@ -89,20 +89,30 @@ torch::nn::Sequential TorchNetwork::build_network(
     _num_outputs = layer_specs.back().get_num_neurons();
 
     //Build network from layer specs
-    for(const auto& layer_spec : layer_specs)
+    for(std::size_t i = 0; i < layer_specs.size(); i++)
     {
 
         //Add linear layer
         auto linear_layer = torch::nn::Linear(
-                torch::nn::LinearOptions(layer_spec.get_inputs_per_neuron(),
-                                         layer_spec.get_num_neurons())
-                );
+            torch::nn::LinearOptions(layer_specs[i].get_inputs_per_neuron(),
+                                     layer_specs[i].get_num_neurons())
+            );
         net->push_back(linear_layer);
 
-        //Add activation function if one is given
-        if(layer_spec.get_activation_func_spec())
+        //Add batch norm if set
+        //Don't add batch norm to last layer
+        if(layer_specs[i].get_batch_norm() && (i < layer_specs.size()-1))
         {
-            auto activation_function = layer_spec.get_activation_func_spec()
+            auto batch_norm = torch::nn::BatchNorm1d(
+                torch::nn::BatchNorm1dOptions(layer_specs[i].get_num_neurons())
+            );
+            net->push_back(batch_norm); 
+        }
+
+        //Add activation function if one is given
+        if(layer_specs[i].get_activation_func_spec())
+        {
+            auto activation_function = layer_specs[i].get_activation_func_spec()
                                                  ->create_torch_module(); 
             net->push_back(activation_function);
         }

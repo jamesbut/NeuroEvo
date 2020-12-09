@@ -32,6 +32,7 @@ public:
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
                    const std::shared_ptr<ActivationFunctionSpec> activation_func_spec = 
                        std::make_shared<SigmoidSpec>(),
+                   const bool batch_norm = false,
                    const bool bias = true,
                    const NeuronType neuron_type = NeuronType::Standard,
                    const bool trace = false);
@@ -44,6 +45,7 @@ public:
                        std::make_shared<ReLUSpec>(),
                    const std::shared_ptr<ActivationFunctionSpec> ol_activation_func_spec = 
                        std::make_shared<SigmoidSpec>(),
+                   const bool batch_norm = false,
                    const bool bias = true,
                    const NeuronType neuron_type = NeuronType::Standard,
                    const bool trace = false);

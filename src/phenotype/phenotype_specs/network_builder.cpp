@@ -10,6 +10,7 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
                                    hl_activation_func_spec,
                                const std::shared_ptr<ActivationFunctionSpec> 
                                    ol_activation_func_spec,
+                               const bool batch_norm,
                                const bool bias,
                                const NeuronType neuron_type,
                                const bool trace) :
@@ -24,6 +25,7 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
                                               neurons_per_layer, neuron_type, 
                                               hl_activation_func_spec, 
                                               ol_activation_func_spec, 
+                                              batch_norm,
                                               bias)) {}
 
 NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
@@ -31,11 +33,13 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_out
                                const unsigned neurons_per_layer,
                                const std::shared_ptr<ActivationFunctionSpec> 
                                    activation_func_spec,
+                               const bool batch_norm,
                                const bool bias,
                                const NeuronType neuron_type,
                                const bool trace) :
     NetworkBuilder(num_inputs, num_outputs, num_hidden_layers, neurons_per_layer,
-                   activation_func_spec, activation_func_spec, bias, neuron_type, trace) {}
+                   activation_func_spec, activation_func_spec, batch_norm, bias, 
+                   neuron_type, trace) {}
 
 NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                                const bool trace) :

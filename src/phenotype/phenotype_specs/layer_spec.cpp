@@ -1,3 +1,4 @@
+#include "phenotype/neural_network/hebbs_layer.h"
 #include <phenotype/phenotype_specs/layer_spec.h>
 
 namespace NeuroEvo {
@@ -5,12 +6,14 @@ namespace NeuroEvo {
 LayerSpec::LayerSpec(const unsigned num_neurons,
                      const unsigned inputs_per_neuron, 
                      const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+                     const bool batch_norm,
                      const NeuronType neuron_type,
                      const bool bias) :
     _neuron_type(neuron_type),
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron),
     _activation_func_spec(activation_func_spec),
+    _batch_norm(batch_norm),
     _bias(bias)
 {
 
@@ -42,6 +45,7 @@ LayerSpec::LayerSpec(const LayerSpec& layer_spec) :
     _inputs_per_neuron(layer_spec._inputs_per_neuron),
     _params_per_neuron(layer_spec._params_per_neuron),
     _activation_func_spec(layer_spec._activation_func_spec),
+    _batch_norm(layer_spec._batch_norm),
     _bias(layer_spec._bias) {}
 
 LayerSpec& LayerSpec::operator=(const LayerSpec& layer_spec) 
@@ -51,6 +55,7 @@ LayerSpec& LayerSpec::operator=(const LayerSpec& layer_spec)
     _inputs_per_neuron = layer_spec._inputs_per_neuron;
     _params_per_neuron = layer_spec._params_per_neuron;
     _activation_func_spec = layer_spec._activation_func_spec;
+    _batch_norm = layer_spec._batch_norm;
     _bias = layer_spec._bias;
 
     return *this;
@@ -63,10 +68,12 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
         const unsigned neurons_per_layer,
         const NeuronType neuron_type,
         const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
+        const bool batch_norm,
         const bool bias) 
 {
     return build_layer_specs(num_inputs, num_outputs, num_hidden_layers, neurons_per_layer,
-                             neuron_type, activation_func_spec, activation_func_spec, bias);
+                             neuron_type, activation_func_spec, activation_func_spec,
+                             batch_norm, bias);
 }
 
 std::vector<LayerSpec> LayerSpec::build_layer_specs(
@@ -77,6 +84,7 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
         const NeuronType neuron_type,
         const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func_spec,
         const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func_spec,
+        const bool batch_norm,
         const bool bias) 
 {
 
@@ -84,19 +92,20 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
 
     if(num_hidden_layers == 0)
         layer_specs.push_back(LayerSpec(num_outputs, num_inputs, 
-                                        ol_activation_func_spec, neuron_type, bias));
+                                        ol_activation_func_spec, batch_norm, neuron_type, bias));
     else 
     {
 
         layer_specs.push_back(LayerSpec(neurons_per_layer, num_inputs, 
-                                        hl_activation_func_spec, neuron_type, bias));
+                                        hl_activation_func_spec, batch_norm, neuron_type, bias));
 
         for(unsigned i = 1; i < num_hidden_layers; i++)
             layer_specs.push_back(LayerSpec(neurons_per_layer, neurons_per_layer, 
-                                            hl_activation_func_spec, neuron_type, bias));
+                                            hl_activation_func_spec, batch_norm, neuron_type, 
+                                            bias));
 
         layer_specs.push_back(LayerSpec(num_outputs, neurons_per_layer, 
-                                        ol_activation_func_spec, neuron_type, bias));
+                                        ol_activation_func_spec, batch_norm, neuron_type, bias));
 
     }
 
@@ -132,6 +141,11 @@ unsigned LayerSpec::get_num_weights() const
 const std::shared_ptr<ActivationFunctionSpec>& LayerSpec::get_activation_func_spec() const
 {
     return _activation_func_spec;
+}
+
+bool LayerSpec::get_batch_norm() const
+{
+    return _batch_norm;
 }
 
 bool LayerSpec::get_bias() const

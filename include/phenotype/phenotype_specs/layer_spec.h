@@ -35,6 +35,7 @@ public:
     LayerSpec(const unsigned num_neurons,
               const unsigned inputs_per_neuron, 
               const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
+              const bool batch_norm = false,
               const NeuronType neuron_type = NeuronType::Standard,
               const bool bias = true);
 
@@ -53,6 +54,7 @@ public:
             const unsigned neurons_per_layer,
             const NeuronType neuron_type,
             const std::shared_ptr<ActivationFunctionSpec>& activation_func_spec,
+            const bool batch_norm = false,
             const bool bias = true);
 
     static std::vector<LayerSpec> build_layer_specs(
@@ -63,6 +65,7 @@ public:
             const NeuronType neuron_type,
             const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func_spec,
             const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func_spec,
+            const bool batch_norm = false,
             const bool bias = true);
 
     NeuronType get_neuron_type() const;
@@ -71,6 +74,7 @@ public:
     unsigned get_params_per_neuron() const;
     unsigned get_num_weights() const;
     const std::shared_ptr<ActivationFunctionSpec>& get_activation_func_spec() const;
+    bool get_batch_norm() const;
     bool get_bias() const;
 
     void print_spec() const;
@@ -83,6 +87,8 @@ private:
     unsigned _params_per_neuron;
 
     std::shared_ptr<ActivationFunctionSpec> _activation_func_spec;
+
+    bool _batch_norm;
 
     bool _bias;
 
