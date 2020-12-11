@@ -47,7 +47,9 @@ public:
 
     }
 
-    static std::string generate_decoder_file_path(const unsigned ie_type)
+    static std::string generate_decoder_file_path(
+        const unsigned ie_type,
+        const std::optional<const std::string>& prefix = std::nullopt)
     {
         std::string ie_file_name;
         switch(ie_type)
@@ -62,6 +64,9 @@ public:
                 ie_file_name = "ie_gan.pt";
                 break;
         }
+
+        if(prefix.has_value())
+            ie_file_name = prefix.value() + ie_file_name;
 
         return _ie_folder_path + ie_file_name;
     }
