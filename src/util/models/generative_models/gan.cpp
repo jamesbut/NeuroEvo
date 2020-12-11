@@ -17,7 +17,7 @@ GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          const torch::Tensor& real_data,
          Distribution<double>* init_net_weight_distr) :
-    GenerativeModel(real_data, std::nullopt),
+    GenerativeModel(real_data, std::nullopt, "ie_gan.pt"),
     _generator(build_torch_network(generator_builder, init_net_weight_distr)),
     _discriminator(build_torch_network(discriminator_builder, init_net_weight_distr)) {}
 

@@ -32,7 +32,7 @@ public:
         _matching_vector(vector_creation_policy->generate_vector(0)),
         _vector_creation_policy(vector_creation_policy)
     {
-        //print_matching_vector();
+        print_matching_vector();
     }
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :

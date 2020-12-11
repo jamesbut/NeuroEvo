@@ -12,7 +12,7 @@ VAE::VAE(NetworkBuilder* encoder_builder,
          const torch::Tensor& training_data, 
          const std::optional<const torch::Tensor>& test_data,
          Distribution<double>* init_net_weight_distr) :
-    GenerativeModel(training_data, test_data),
+    GenerativeModel(training_data, test_data, "ie_vae.pt"),
     _encoder(encoder_builder ? 
                 build_torch_network(*encoder_builder, init_net_weight_distr) : nullptr),
     _decoder(build_torch_network(decoder_builder, init_net_weight_distr)),
@@ -20,10 +20,12 @@ VAE::VAE(NetworkBuilder* encoder_builder,
                                                                    _decoder->get_num_inputs()) :
                                           torch::nn::LinearOptions(training_data.size(1),
                                                                    _decoder->get_num_inputs())),
-    _encoder_logvar_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                                     _decoder->get_num_inputs()) :
-                                            torch::nn::LinearOptions(training_data.size(1),
-                                                                     _decoder->get_num_inputs())) 
+    _encoder_logvar_linear_layer(_encoder ? torch::nn::LinearOptions(
+                                                _encoder->get_num_outputs(),
+                                                _decoder->get_num_inputs()) :
+                                            torch::nn::LinearOptions(
+                                                training_data.size(1),
+                                                _decoder->get_num_inputs())) 
     {
         _encoder_mean_linear_layer->to(torch::kFloat64);
         _encoder_logvar_linear_layer->to(torch::kFloat64);

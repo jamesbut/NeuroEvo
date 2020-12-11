@@ -96,7 +96,7 @@ torch::nn::Sequential TorchNetwork::build_network(
         auto linear_layer = torch::nn::Linear(
             torch::nn::LinearOptions(layer_specs[i].get_inputs_per_neuron(),
                                      layer_specs[i].get_num_neurons())
-            );
+        );
         net->push_back(linear_layer);
 
         //Add batch norm if set
@@ -113,7 +113,7 @@ torch::nn::Sequential TorchNetwork::build_network(
         if(layer_specs[i].get_activation_func_spec())
         {
             auto activation_function = layer_specs[i].get_activation_func_spec()
-                                                 ->create_torch_module(); 
+                                       ->create_torch_module(); 
             net->push_back(activation_function);
         }
 

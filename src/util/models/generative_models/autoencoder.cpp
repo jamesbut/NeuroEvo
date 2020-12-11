@@ -8,7 +8,7 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          const torch::Tensor& training_data,  
                          const std::optional<const torch::Tensor>& test_data,
                          Distribution<double>* init_net_weight_distr) :
-    GenerativeModel(training_data, test_data),
+    GenerativeModel(training_data, test_data, "ie_ae.pt"),
     _encoder(build_torch_network(encoder_builder, init_net_weight_distr)),
     _decoder(build_torch_network(decoder_builder, init_net_weight_distr)),
     _autoencoder(*_encoder, *_decoder) {}
@@ -59,6 +59,10 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
             const auto test_loss = loss_function(test_output, _test_data.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
+
+        //Dump decoder 
+        if((i+1) % test_every == 0)
+            write_decoder(i+1);
 
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>() 
             << " | Test Loss: " << avg_test_loss.item<double>() << std::endl;
