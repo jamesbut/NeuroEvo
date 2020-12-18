@@ -101,7 +101,7 @@ private:
                 this->_vector_creation_policy->seed(run_seed);
             _matching_vector = _vector_creation_policy->generate_vector(run_num);
 
-            //print_matching_vector();
+            print_matching_vector();
         }
 
     }

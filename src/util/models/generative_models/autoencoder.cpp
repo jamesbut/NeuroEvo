@@ -18,7 +18,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const unsigned test_every) 
 {
 
-    const double learning_rate = 1e-3;
+    const double learning_rate = 1e-4;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
     torch::optim::Adam optimizer(
@@ -61,8 +61,8 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         }
 
         //Dump decoder 
-        if((i+1) % test_every == 0)
-            write_decoder(i+1);
+        if(i % test_every == 0)
+            write_decoder(i);
 
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>() 
             << " | Test Loss: " << avg_test_loss.item<double>() << std::endl;
