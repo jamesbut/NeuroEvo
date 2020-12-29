@@ -161,21 +161,19 @@ public:
         _domain.set_seed(seed);
     }
 
-    void dump_statistics(const std::string& file_name)
+    double get_avg_winners_gens() const
     {
-        //First check to see whether data directory
-        //exists and if not, create it
-        const std::string exp_data_path = "../data";
-        if(!boost::filesystem::exists(exp_data_path))
-            boost::filesystem::create_directory(exp_data_path);
+        return _avg_winners_gens;
+    }
 
-        std::ofstream file;
-        file.open(file_name, std::ios::app);
-        //file << "-------" << std::endl;
-        file << _avg_winners_gens << std::endl;
-        file << _avg_winners_gens_winners_only << std::endl;
-        file << _num_winners << std::endl;
-        file.close();
+    double get_avg_winners_gens_winners_only() const
+    {
+        return _avg_winners_gens_winners_only;
+    }
+
+    unsigned get_num_winners() const
+    {
+        return _num_winners;
     }
 
 private:

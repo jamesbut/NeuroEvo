@@ -25,10 +25,16 @@ public:
                        const double weight_decay = 0., const bool trace = false, 
                        const unsigned test_every = 1e6) = 0;
 
+    double get_loss() const
+    {
+        return _loss;
+    }
+
 protected:
 
     const torch::Tensor _training_data;
     const std::optional<const torch::Tensor> _test_data;
+    double _loss;
 
 };
 
