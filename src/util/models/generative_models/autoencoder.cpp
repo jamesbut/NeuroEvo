@@ -67,6 +67,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>() 
             << " | Test Loss: " << avg_test_loss.item<double>() << std::endl;
 
+        _loss = avg_loss.item<double>();
     }
 
 }
