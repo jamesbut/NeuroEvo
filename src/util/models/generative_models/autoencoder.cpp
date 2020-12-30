@@ -19,12 +19,23 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 {
 
     const double learning_rate = 1e-4;
-    auto adam_options = torch::optim::AdamOptions(learning_rate);
-    adam_options.weight_decay(weight_decay);
+
     torch::optim::Adam optimizer(
         _autoencoder->parameters(), 
-        adam_options
+        torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
     );
+
+    /*
+    torch::optim::SGD optimizer(
+        _autoencoder->parameters(),
+        torch::optim::SGDOptions(learning_rate)
+    );
+
+    torch::optim::RMSprop optimizer(
+        _autoencoder->parameters(),
+        torch::optim::RMSpropOptions(learning_rate)
+    );
+    */
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
