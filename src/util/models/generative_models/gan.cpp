@@ -37,8 +37,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     //const double discriminator_learning_rate = 5e-4;
     //const double generator_learning_rate = 1e-5;
     //const double discriminator_learning_rate = 1e-5;
-    const double generator_learning_rate = 3e-5;
-    const double discriminator_learning_rate = 3e-5;
+    const double generator_learning_rate = 1e-4;
+    const double discriminator_learning_rate = 1e-4;
 
     //const double beta_1 = 0.9;
     //const double beta_2 = 0.999;
@@ -56,6 +56,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     );
     */
 
+    /*
     torch::optim::SGD generator_optimizer(
         _generator->parameters(),
         torch::optim::SGDOptions(generator_learning_rate)
@@ -64,8 +65,8 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         _discriminator->parameters(),
         torch::optim::SGDOptions(discriminator_learning_rate)
     );
+    */
 
-    /*
     torch::optim::RMSprop generator_optimizer(
         _generator->parameters(),
         torch::optim::RMSpropOptions(generator_learning_rate)
@@ -74,7 +75,6 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         _discriminator->parameters(),
         torch::optim::RMSpropOptions(discriminator_learning_rate)
     );
-    */
 
     const unsigned column_width = 20;
     const std::vector<std::string> header_data{"Epoch",
@@ -166,7 +166,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
         //Test generator
         if((i+1) % test_every == 0)
         {
-            const bool random_noise = false;
+            const bool random_noise = true;
             generator_symmetry = test_generator_symmetry(random_noise);
         }
 
@@ -209,7 +209,8 @@ double GAN::test_generator_symmetry(const bool random_noise) const
 
     //Create noise range
     torch::Tensor generator_out = _generator->forward(noise);
-    const double symmetry = measure_symmetry(generator_out);
+    //const double symmetry = measure_symmetry(generator_out);
+    const double symmetry = measure_square_symmetry(generator_out);
     return symmetry;
 }
 
