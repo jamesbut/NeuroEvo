@@ -3,11 +3,9 @@
 
 /*
     This model is a feedforward network trained in a supervised way.
-    For now this model is a binary classifier - I might make it general in the future.
 */
 
 #include <util/models/trainable_model.h>
-#include <phenotype/phenotype_specs/network_builder.h>
 
 namespace NeuroEvo {
 
@@ -28,16 +26,10 @@ public:
                const double weight_decay = 0., const bool trace = false, 
                const unsigned test_every = 1e6) override;
 
-    void test(const torch::Tensor& test_data) const;
-
-    void print_params() const;
-
 private:
     
     torch::Tensor loss_function(const torch::Tensor& output,
                                 const torch::Tensor& labels) const;
-
-    std::unique_ptr<TorchNetwork> _net;
 
     const torch::Tensor _training_labels;
     const std::optional<const torch::Tensor> _test_labels;

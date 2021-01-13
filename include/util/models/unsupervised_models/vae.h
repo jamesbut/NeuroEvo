@@ -6,12 +6,12 @@
  */
 
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <util/models/generative_models/generative_model.h>
+#include <util/models/trainable_model.h>
 #include <phenotype/neural_network/torch_network.h>
 
 namespace NeuroEvo {
 
-class VAE : public GenerativeModel
+class VAE : public TrainableModel
 {
 
 public:
@@ -30,13 +30,11 @@ public:
     std::pair<torch::Tensor, torch::Tensor> encode(const torch::Tensor& x);
     torch::Tensor sample(const torch::Tensor& mu, const torch::Tensor& log_var,
                          const bool trace = false) const;
-    torch::Tensor generate(const torch::Tensor& z) const override;
 
     //Returns output of VAE, mu and log_var from sampling
-    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> forward(const torch::Tensor& x,
-                                                                    const bool trace = false);
+    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> 
+        vae_forward(const torch::Tensor& x, const bool trace = false);
 
-    const std::unique_ptr<TorchNetwork>& get_decoder() const override; 
 
 private:
 
@@ -44,7 +42,6 @@ private:
                                 const torch::Tensor& mu, const torch::Tensor& log_var) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
-    std::unique_ptr<TorchNetwork> _decoder;
 
     torch::nn::Linear _encoder_mean_linear_layer;
     torch::nn::Linear _encoder_logvar_linear_layer;

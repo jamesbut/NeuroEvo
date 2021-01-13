@@ -1,6 +1,6 @@
 #include <ATen/Functions.h>
 #include <torch/nn/functional/loss.h>
-#include <util/models/generative_models/vae.h>
+#include <util/models/unsupervised_models/vae.h>
 #include <util/torch_utils.h>
 
 namespace NeuroEvo {
@@ -12,20 +12,19 @@ VAE::VAE(NetworkBuilder* encoder_builder,
          const torch::Tensor& training_data, 
          const std::optional<const torch::Tensor>& test_data,
          Distribution<double>* init_net_weight_distr) :
-    GenerativeModel(training_data, test_data, "ie_vae.pt"),
+    TrainableModel(training_data, test_data, decoder_builder, "ie_vae.pt"),
     _encoder(encoder_builder ? 
                 build_torch_network(*encoder_builder, init_net_weight_distr) : nullptr),
-    _decoder(build_torch_network(decoder_builder, init_net_weight_distr)),
     _encoder_mean_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                                   _decoder->get_num_inputs()) :
+                                                                   _model->get_num_inputs()) :
                                           torch::nn::LinearOptions(training_data.size(1),
-                                                                   _decoder->get_num_inputs())),
+                                                                   _model->get_num_inputs())),
     _encoder_logvar_linear_layer(_encoder ? torch::nn::LinearOptions(
                                                 _encoder->get_num_outputs(),
-                                                _decoder->get_num_inputs()) :
+                                                _model->get_num_inputs()) :
                                             torch::nn::LinearOptions(
                                                 training_data.size(1),
-                                                _decoder->get_num_inputs())) 
+                                                _model->get_num_inputs())) 
     {
         _encoder_mean_linear_layer->to(torch::kFloat64);
         _encoder_logvar_linear_layer->to(torch::kFloat64);
@@ -45,7 +44,7 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
         opt_params.push_back(_encoder->parameters());
     opt_params.push_back(_encoder_mean_linear_layer->parameters());
     opt_params.push_back(_encoder_logvar_linear_layer->parameters());
-    opt_params.push_back(_decoder->parameters());
+    opt_params.push_back(_model->parameters());
 
     torch::optim::Adam optimizer(
          opt_params,
@@ -65,7 +64,7 @@ void VAE::train(const unsigned num_epochs, const unsigned batch_size,
 
             optimizer.zero_grad();
 
-            const auto [output, mu, log_var] = forward(batch.first);
+            const auto [output, mu, log_var] = vae_forward(batch.first);
 
             torch::Tensor loss = loss_function(output, batch.second, mu, log_var);
 
@@ -96,13 +95,9 @@ std::pair<torch::Tensor, torch::Tensor> VAE::encode(const torch::Tensor& x)
     return {mu, log_var};
 }
 
-torch::Tensor VAE::generate(const torch::Tensor& z) const
-{
-    return _decoder->forward(z);
-}
-
-std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> VAE::forward(const torch::Tensor& x,
-                                                                     const bool trace)
+std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> 
+    VAE::vae_forward(const torch::Tensor& x,
+                     const bool trace)
 {
     const auto [mu, log_var] = encode(x);
     if(trace)
@@ -113,7 +108,7 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> VAE::forward(const torch
     if(trace)
         std::cout << "Sampled z: " << std::endl << z << std::endl;
 
-    return std::make_tuple(generate(z), mu, log_var);
+    return std::make_tuple(_model->forward(z), mu, log_var);
 }
 
 //Sample from the distribution with mu and logvar params
@@ -160,11 +155,6 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output, const torch::Tenso
 
     return reconstruction_loss + KLD_loss;
 
-}
-
-const std::unique_ptr<TorchNetwork>& VAE::get_decoder() const
-{
-    return _decoder;
 }
 
 } // namespace NeuroEvo

@@ -8,12 +8,12 @@
 #include <util/maths/matrix.h>
 #include <phenotype/phenotype_specs/network_builder.h>
 #include <util/statistics/distributions/distribution.h>
-#include <util/models/generative_models/generative_model.h>
+#include <util/models/trainable_model.h>
 #include <phenotype/neural_network/torch_network.h>
 
 namespace NeuroEvo {
 
-class GAN : public GenerativeModel
+class GAN : public TrainableModel
 {
 
 public:
@@ -28,16 +28,11 @@ public:
                const unsigned test_every = 1e6) override;
 
     torch::Tensor discriminate(const torch::Tensor& x) const;
-    torch::Tensor generate(const torch::Tensor& x) const override;
-
-    const std::unique_ptr<TorchNetwork>& get_generator() const;
-    const std::unique_ptr<TorchNetwork>& get_decoder() const override;
 
 private:
 
     double test_generator_symmetry(const bool random_noise) const;
 
-    std::unique_ptr<TorchNetwork> _generator;
     std::unique_ptr<TorchNetwork> _discriminator;
 
 };

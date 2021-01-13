@@ -4,7 +4,7 @@
 #include <torch/nn/functional/loss.h>
 #include <torch/nn/options/loss.h>
 #include <torch/optim/sgd.h>
-#include <util/models/generative_models/gan.h>
+#include <util/models/unsupervised_models/gan.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/torch_utils.h>
 #include <util/formatting.h>
@@ -17,8 +17,7 @@ GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder, 
          const torch::Tensor& real_data,
          Distribution<double>* init_net_weight_distr) :
-    GenerativeModel(real_data, std::nullopt, "ie_gan.pt"),
-    _generator(build_torch_network(generator_builder, init_net_weight_distr)),
+    TrainableModel(real_data, std::nullopt, generator_builder, "ie_gan.pt"),
     _discriminator(build_torch_network(discriminator_builder, init_net_weight_distr)) {}
 
 void GAN::train(const unsigned num_epochs, const unsigned batch_size, 
@@ -68,7 +67,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
     */
 
     torch::optim::RMSprop generator_optimizer(
-        _generator->parameters(),
+        _model->parameters(),
         torch::optim::RMSpropOptions(generator_learning_rate)
     );
     torch::optim::RMSprop discriminator_optimizer(
@@ -111,14 +110,14 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             /* Train discriminator on fake data */
             //Generate fake data using generator
             //Draw noise from unit normal distribution
-            auto noise = torch::randn({real_batch.first.size(0), _generator->get_num_inputs()},
+            auto noise = torch::randn({real_batch.first.size(0), _model->get_num_inputs()},
                                       {torch::kFloat64});
             //Draw noise from a uniform distribution [0,1]
             //auto noise = torch::rand({real_batch.first.size(0), 
             //                          _generator->get_num_inputs()},
             //                         {torch::kFloat64});
             
-            torch::Tensor fake_data = _generator->forward(noise);
+            torch::Tensor fake_data = _model->forward(noise);
 
             torch::Tensor d_fake_output = _discriminator->forward(fake_data.detach());
             torch::Tensor fake_labels = torch::zeros({fake_data.size(0), 1},
@@ -148,7 +147,7 @@ void GAN::train(const unsigned num_epochs, const unsigned batch_size,
             */
 
             /* Train generator */
-            _generator->zero_grad();
+            _model->zero_grad();
             fake_labels.fill_(1);
             torch::Tensor d_output = _discriminator->forward(fake_data);
             torch::Tensor g_loss = torch::nn::functional::binary_cross_entropy(
@@ -190,38 +189,23 @@ torch::Tensor GAN::discriminate(const torch::Tensor& x) const
     return _discriminator->forward(x);
 }
 
-torch::Tensor GAN::generate(const torch::Tensor& x) const 
-{
-    return _generator->forward(x);
-}
-
 double GAN::test_generator_symmetry(const bool random_noise) const
 {
     //Generate latent space data 
     //Draw noise from unit normal distribution
     const unsigned noise_size = 100;
     torch::Tensor noise;
-    if(random_noise || (_generator->get_num_inputs() > 1))
-        noise = torch::randn({noise_size, _generator->get_num_inputs()},
+    if(random_noise || (_model->get_num_inputs() > 1))
+        noise = torch::randn({noise_size, _model->get_num_inputs()},
                              {torch::kFloat64});
     else
         noise = create_range_torch(-2., 2., 0.01);
 
     //Create noise range
-    torch::Tensor generator_out = _generator->forward(noise);
+    torch::Tensor generator_out = _model->forward(noise);
     //const double symmetry = measure_symmetry(generator_out);
     const double symmetry = measure_square_symmetry(generator_out);
     return symmetry;
-}
-
-const std::unique_ptr<TorchNetwork>& GAN::get_generator() const
-{
-    return get_decoder();
-}
-
-const std::unique_ptr<TorchNetwork>& GAN::get_decoder() const
-{
-    return _generator;
 }
 
 } // namespace NeuroEvo

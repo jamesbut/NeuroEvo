@@ -6,12 +6,11 @@
  */
 
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <util/models/generative_models/generative_model.h>
+#include <util/models/trainable_model.h>
 
 namespace NeuroEvo {
 
-//Even though an AE is not technically a generative model, I am using it like that for the moment
-class AutoEncoder : public GenerativeModel
+class AutoEncoder : public TrainableModel
 {
 
 public:
@@ -27,18 +26,13 @@ public:
                const unsigned test_every = 1e6) override;
 
     torch::Tensor encode(const torch::Tensor& x) const;
-    //Better known in this context as decode
-    torch::Tensor generate(const torch::Tensor& x) const override;
-    std::tuple<torch::Tensor, torch::Tensor> forward(const torch::Tensor& x);
-
-    const std::unique_ptr<TorchNetwork>& get_decoder() const override;
+    std::tuple<torch::Tensor, torch::Tensor> ae_forward(const torch::Tensor& x);
 
 private:
 
     torch::Tensor loss_function(const torch::Tensor& output, const torch::Tensor& input) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
-    std::unique_ptr<TorchNetwork> _decoder;
 
     torch::nn::Sequential _autoencoder;
 

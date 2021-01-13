@@ -1,4 +1,4 @@
-#include <util/models/supervised_feedforward.h>
+#include <util/models/supervised_model.h>
 #include <util/torch_utils.h>
 #include <util/formatting.h>
 
@@ -11,8 +11,7 @@ SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder& net_builder,
                                                  test_data,
                                              const std::optional<const torch::Tensor>& 
                                                  test_labels) :
-    TrainableModel(training_data, test_data),
-    _net(build_torch_network(net_builder, nullptr)),
+    TrainableModel(training_data, test_data, net_builder, "ie_supervised.pt"),
     _training_labels(training_labels),
     _test_labels(test_labels) {}
 
@@ -25,7 +24,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
     torch::optim::Adam optimizer(
-        _net->parameters(), 
+        _model->parameters(), 
         adam_options
     );
 
@@ -47,8 +46,8 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 
         for(const auto& batch : batches)
         {
-            _net->zero_grad();
-            const torch::Tensor output = _net->forward(batch.first);
+            _model->zero_grad();
+            const torch::Tensor output = _model->forward(batch.first);
 
             torch::Tensor loss = loss_function(output, batch.second);
 
@@ -64,7 +63,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         // Test on test set
         if(((i+1) % test_every == 0) && _test_data.has_value())
         {
-            const torch::Tensor test_output = _net->forward(_test_data.value());
+            const torch::Tensor test_output = _model->forward(_test_data.value());
             const torch::Tensor test_loss = loss_function(test_output, _test_labels.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
@@ -76,15 +75,6 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 
     }
 
-}
-
-void SupervisedFeedForward::test(const torch::Tensor& test_data) const
-{
-    std::cout << "Test input: " << std::endl;
-    std::cout << test_data << std::endl;
-    const torch::Tensor test_output = _net->forward(test_data);
-    std::cout << "Test output: " << std::endl;
-    std::cout << test_output << std::endl;
 }
 
 torch::Tensor SupervisedFeedForward::loss_function(const torch::Tensor& output,
@@ -106,11 +96,6 @@ torch::Tensor SupervisedFeedForward::loss_function(const torch::Tensor& output,
 
     return loss;
 
-}
-
-void SupervisedFeedForward::print_params() const
-{
-    std::cout << _net->parameters() << std::endl;
 }
 
 } // namspace NeuroEvo
