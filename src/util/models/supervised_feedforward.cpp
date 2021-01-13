@@ -91,10 +91,17 @@ torch::Tensor SupervisedFeedForward::loss_function(const torch::Tensor& output,
                                                    const torch::Tensor& labels) const
 {
 
+    /*
     torch::Tensor loss = torch::nn::functional::binary_cross_entropy(
         output, 
         labels,
         torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
+    );
+    */
+    torch::Tensor loss = torch::nn::functional::mse_loss(
+        output, 
+        labels,
+        torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
     );
 
     return loss;
