@@ -1,7 +1,5 @@
-#include <ATen/Functions.h>
 #include <torch/nn/functional/loss.h>
 #include <util/models/unsupervised_models/vae.h>
-#include <util/torch_utils.h>
 
 namespace NeuroEvo {
 

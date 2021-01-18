@@ -1,4 +1,4 @@
-#include <util/tensor_metrics.h>
+#include <util/torch/tensor_metrics.h>
 
 namespace NeuroEvo {
 

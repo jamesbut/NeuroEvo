@@ -1,4 +1,4 @@
-#include <util/torch_utils.h>
+#include <util/torch/torch_utils.h>
 
 namespace NeuroEvo {
 

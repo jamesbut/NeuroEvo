@@ -1,6 +1,7 @@
 #include <util/models/supervised_model.h>
-#include <util/torch_utils.h>
 #include <util/formatting.h>
+#include <util/torch/schedulers/step_lr.h>
+#include <util/torch/schedulers/reduce_lr_on_plateau.h>
 
 namespace NeuroEvo {
 
@@ -20,6 +21,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
                                   const unsigned test_every)
 {
     
+    //const double learning_rate = 5e-5;
     const double learning_rate = 1e-3;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
@@ -27,6 +29,17 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         _model->parameters(), 
         adam_options
     );
+
+    //Learning rate scheduler 
+    const unsigned step_size = 200;
+    const double gamma = 0.1;
+    unsigned epoch_num;
+    //StepLR lr_scheduler = StepLR(optimizer, epoch_num, step_size, gamma);
+    double avg_loss_dbl = 0;
+    const double factor = 0.5;
+    const unsigned patience = 25;
+    ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl, 
+                                                       factor, patience);
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
@@ -36,7 +49,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
                                                "Test loss"};
     print_table_row(header_data, column_width, true, true);
 
-    for(unsigned i = 0; i < num_epochs; i++)
+    for(epoch_num = 0; epoch_num < num_epochs; epoch_num++)
     {
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
@@ -58,20 +71,24 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 
         }
 
+
         torch::Tensor avg_loss = total_loss / _training_data.size(0);
+        avg_loss_dbl = avg_loss.item<double>();
 
         // Test on test set
-        if(((i+1) % test_every == 0) && _test_data.has_value())
+        if(((epoch_num+1) % test_every == 0) && _test_data.has_value())
         {
             const torch::Tensor test_output = _model->forward(_test_data.value());
             const torch::Tensor test_loss = loss_function(test_output, _test_labels.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
 
-        const std::vector<double> row_data{static_cast<double>(i),
+        const std::vector<double> row_data{static_cast<double>(epoch_num),
                                            avg_loss.item<double>(),
                                            avg_test_loss.item<double>()};
         print_table_row(row_data, column_width);
+
+        lr_scheduler.step();
 
     }
 

@@ -1,14 +1,11 @@
-#include <ATen/Functions.h>
-#include <ATen/core/TensorBody.h>
 #include <torch/data/dataloader.h>
 #include <torch/nn/functional/loss.h>
 #include <torch/nn/options/loss.h>
 #include <torch/optim/sgd.h>
 #include <util/models/unsupervised_models/gan.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
-#include <util/torch_utils.h>
 #include <util/formatting.h>
-#include <util/tensor_metrics.h>
+#include <util/torch/tensor_metrics.h>
 #include <util/number_ranges.h>
 
 namespace NeuroEvo {

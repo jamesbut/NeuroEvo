@@ -1,4 +1,3 @@
-#include <util/torch_utils.h>
 #include <util/models/unsupervised_models/autoencoder.h>
 
 namespace NeuroEvo {

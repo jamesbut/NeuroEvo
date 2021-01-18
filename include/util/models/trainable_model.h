@@ -8,7 +8,7 @@
 #include <phenotype/neural_network/torch_network.h>
 #include <boost/filesystem.hpp>
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <util/torch_utils.h>
+#include <util/torch/torch_utils.h>
 
 namespace NeuroEvo {
 
