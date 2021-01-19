@@ -22,6 +22,8 @@ std::vector<double*> LearningRateScheduler::ascertain_param_group_lr_refs(
             lr_refs.push_back(
                 &static_cast<torch::optim::AdamOptions&>(param_group.options()).lr());
 
+    //TODO: Check for failure cast
+
     return lr_refs;
 
 }

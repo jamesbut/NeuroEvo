@@ -22,24 +22,39 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 {
     
     //const double learning_rate = 5e-5;
-    const double learning_rate = 1e-3;
-    auto adam_options = torch::optim::AdamOptions(learning_rate);
-    adam_options.weight_decay(weight_decay);
+    const double learning_rate = 1e-4;
     torch::optim::Adam optimizer(
-        _model->parameters(), 
-        adam_options
+        _model->parameters(),
+        torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
     );
+
+    /*
+    const double momentum = 0.99;
+    const bool nesterov = true;
+    torch::optim::SGD optimizer(
+        _model->parameters(), 
+        torch::optim::SGDOptions(learning_rate).momentum(momentum).nesterov(nesterov)
+    );
+
+    torch::optim::RMSprop optimizer(
+        _model->parameters(), 
+        torch::optim::RMSpropOptions(learning_rate)
+    );
+    */
 
     //Learning rate scheduler 
     const unsigned step_size = 200;
     const double gamma = 0.1;
     unsigned epoch_num;
     //StepLR lr_scheduler = StepLR(optimizer, epoch_num, step_size, gamma);
+    
     double avg_loss_dbl = 0;
+
     const double factor = 0.5;
-    const unsigned patience = 25;
+    const unsigned patience = 150;
+    const double min_lr = 1e-6;
     ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl, 
-                                                       factor, patience);
+                                                       factor, patience, min_lr);
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
@@ -82,6 +97,10 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
             const torch::Tensor test_loss = loss_function(test_output, _test_labels.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
+
+        //Dump decoder
+        if(epoch_num % test_every == 0)
+            write_model(epoch_num);
 
         const std::vector<double> row_data{static_cast<double>(epoch_num),
                                            avg_loss.item<double>(),

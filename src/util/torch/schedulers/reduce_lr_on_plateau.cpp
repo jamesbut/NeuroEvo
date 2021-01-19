@@ -5,11 +5,13 @@ namespace NeuroEvo {
 ReduceLROnPlateau::ReduceLROnPlateau(torch::optim::Optimizer& optimiser,
                                      const double& metric,
                                      const double factor,
-                                     const unsigned patience) :
+                                     const unsigned patience,
+                                     const std::optional<double>& min_learning_rate) :
     LearningRateScheduler(optimiser),
     _metric(metric),
     _factor(factor),
     _patience(patience),
+    _min_learning_rate(min_learning_rate),
     _num_epochs_no_improvement(0),
     _lowest_metric_value(std::nullopt) {}
 
@@ -34,8 +36,19 @@ void ReduceLROnPlateau::step()
     //Check for plateau
     if(_num_epochs_no_improvement >= _patience)
     {
-        set_learning_rate(get_learning_rate() * _factor); 
+        //Calculate new learning rate
+        double new_lr = get_learning_rate() * _factor;
+
+        //Check it is not below minimum learning rate
+        if(_min_learning_rate.has_value())
+            if(new_lr < _min_learning_rate.value())
+                new_lr = _min_learning_rate.value();
+
+        set_learning_rate(new_lr); 
+
         _num_epochs_no_improvement = 0;
+        _lowest_metric_value = _metric;
+
         std::cout << "ReduceLROnPlateau scheduler: Changing learning rate to: " 
             << get_learning_rate() << std::endl;
     }

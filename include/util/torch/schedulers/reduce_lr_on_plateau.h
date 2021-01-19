@@ -13,7 +13,8 @@ public:
     ReduceLROnPlateau(torch::optim::Optimizer& optimser,
                       const double& metric,
                       const double factor = 0.1,
-                      const unsigned patience = 10);
+                      const unsigned patience = 10,
+                      const std::optional<double>& min_learning_rate = std::nullopt);
 
     void step() override;
 
@@ -27,6 +28,9 @@ private:
 
     //Number of epochs with no impriovement after which learning rate will be reduced
     const unsigned _patience;
+
+    //Minimum learning rate
+    const std::optional<double> _min_learning_rate;
 
     unsigned _num_epochs_no_improvement;
     std::optional<double> _lowest_metric_value;
