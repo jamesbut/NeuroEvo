@@ -14,8 +14,8 @@ StepLR::StepLR(torch::optim::Optimizer& optimiser,
 void StepLR::step() 
 {
 
-    if(_epoch_num == 0)
-        std::cout << "StepLR scheduler: Learning rate: " << get_learning_rate() << std::endl;
+    //if(_epoch_num == 0)
+    //    std::cout << "StepLR scheduler: Learning rate: " << get_learning_rate() << std::endl;
 
     if(((_epoch_num+1) % _step_size) == 0)
     {

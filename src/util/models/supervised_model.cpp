@@ -44,25 +44,33 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 
     //Learning rate scheduler 
     unsigned epoch_num;
-    /*
-    const unsigned step_size = 200;
-    const double gamma = 0.1;
+    const unsigned step_size = 250;
+    const double gamma = 0.5;
     StepLR lr_scheduler = StepLR(optimizer, epoch_num, step_size, gamma);
-    */
     
     double avg_loss_dbl = 0;
 
     /*
     const double factor = 0.5;
     const unsigned patience = 150;
-    const double min_lr = 1e-6;
+    //const std::optional<double> min_lr = 1e-6;
+    const std::optional<double> min_lr = std::nullopt;
     ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl, 
                                                        factor, patience, min_lr);
     */
 
+    /*
     std::map<unsigned, double> epoch_lr_map;
-    epoch_lr_map[10] = 1e-6;
+    //1024 nodes
+    //epoch_lr_map[200] = 3e-5;
+    //epoch_lr_map[400] = 1e-5;
+    //4096 nodes
+    epoch_lr_map[100] = 2e-5;
+    epoch_lr_map[200] = 5e-6;
+    epoch_lr_map[300] = 2e-6;
+    epoch_lr_map[400] = 1e-6;
     PerEpochLR lr_scheduler = PerEpochLR(optimizer, epoch_num, epoch_lr_map);
+    */
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
@@ -74,6 +82,11 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     
     for(epoch_num = 0; epoch_num < num_epochs; epoch_num++)
     {
+
+        //Dump decoder
+        if(epoch_num % test_every == 0)
+            write_model(epoch_num);
+        //exit(0);
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_labels);
@@ -105,10 +118,6 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
             const torch::Tensor test_loss = loss_function(test_output, _test_labels.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
-
-        //Dump decoder
-        if(epoch_num % test_every == 0)
-            write_model(epoch_num);
 
         const std::vector<double> row_data{static_cast<double>(epoch_num),
                                            avg_loss.item<double>(),

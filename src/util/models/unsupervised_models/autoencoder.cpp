@@ -16,17 +16,21 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const unsigned test_every) 
 {
 
-    const double learning_rate = 1e-4;
+    const double learning_rate = 1e-3;
 
     torch::optim::Adam optimizer(
         _autoencoder->parameters(), 
         torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
     );
 
+    //std::cout << _autoencoder->parameters() << std::endl;
+    //exit(0);
+
     /*
+    const double momentum = 0.5;
     torch::optim::SGD optimizer(
         _autoencoder->parameters(),
-        torch::optim::SGDOptions(learning_rate)
+        torch::optim::SGDOptions(learning_rate).momentum(momentum).nesterov(true)
     );
 
     torch::optim::RMSprop optimizer(
@@ -43,7 +47,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         //Dump decoder 
         if(i % test_every == 0)
             write_model(i);
-
+        //exit(0);
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_data);
