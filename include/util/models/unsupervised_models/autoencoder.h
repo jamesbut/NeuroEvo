@@ -18,8 +18,7 @@ public:
     AutoEncoder(NetworkBuilder& encoder_builder,
                 NetworkBuilder& decoder_builder, 
                 const torch::Tensor& training_data, 
-                const std::optional<const torch::Tensor>& test_data = std::nullopt, 
-                Distribution<double>* init_net_weight_distr = nullptr);
+                const std::optional<const torch::Tensor>& test_data = std::nullopt);
 
     void train(const unsigned num_epochs, const unsigned batch_size, 
                const double weight_decay = 0., const bool trace = false, 

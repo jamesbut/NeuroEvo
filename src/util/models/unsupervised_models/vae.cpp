@@ -3,16 +3,15 @@
 
 namespace NeuroEvo {
 
-//When handing encoder builder on does not have to define the separate fully connected
+//When handing encoder builder one does not have to define the separate fully connected
 //layers that go separately to create mean and stddev - the constructor will do this
 VAE::VAE(NetworkBuilder* encoder_builder,
          NetworkBuilder& decoder_builder,
          const torch::Tensor& training_data, 
-         const std::optional<const torch::Tensor>& test_data,
-         Distribution<double>* init_net_weight_distr) :
+         const std::optional<const torch::Tensor>& test_data) :
     TrainableModel(training_data, test_data, decoder_builder, "ie_vae.pt"),
     _encoder(encoder_builder ? 
-                build_torch_network(*encoder_builder, init_net_weight_distr) : nullptr),
+             dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
     _encoder_mean_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
                                                                    _model->get_num_inputs()) :
                                           torch::nn::LinearOptions(training_data.size(1),

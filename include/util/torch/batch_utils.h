@@ -1,15 +1,10 @@
-#ifndef _TORCH_UTILS_H_
-#define _TORCH_UTILS_H_
+#ifndef _BATCH_UTILS_H_
+#define _BATCH_UTILS_H_
 
-#include <phenotype/neural_network/torch_network.h>
-#include <phenotype/phenotype_specs/network_builder.h>
+#include <vector>
+#include <torch/types.h>
 
 namespace NeuroEvo {
-
-//Build torch network depending on whether an initial weight distribution has been defined
-TorchNetwork* build_torch_network(
-    NetworkBuilder& net_builder, 
-    Distribution<double>* init_net_weight_distr = nullptr);
 
 //Generates batches from data and its respective labels
 const std::vector<std::pair<torch::Tensor, torch::Tensor>> 

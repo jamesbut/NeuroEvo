@@ -1,45 +1,7 @@
-#include <util/torch/torch_utils.h>
+#include <util/torch/batch_utils.h>
+#include <random>
 
 namespace NeuroEvo {
-
-TorchNetwork* build_torch_network(
-    NetworkBuilder& net_builder, 
-    Distribution<double>* init_net_weight_distr)
-{
-    
-    if(!net_builder.is_torch_net())
-    {
-        std::cerr << "Cannot build a torch network from a builder that does not " << 
-            "define a torch network!" << std::endl;
-        exit(0);
-    }
-
-    //Build and cast torch network
-    Phenotype<double>* torch_net;
-
-    //If initial weights are given set them
-    if(init_net_weight_distr)
-    {
-        //Create init weights
-        std::vector<double> init_weights(net_builder.get_num_params());
-        for(std::size_t i = 0; i < init_weights.size(); i++)
-            init_weights[i] = init_net_weight_distr->next();
-            
-        torch_net = net_builder.build_network(init_weights);
-
-    } else
-        torch_net = net_builder.build_network();
-
-    TorchNetwork* torch_net_cast = dynamic_cast<TorchNetwork*>(torch_net); 
-    if(!torch_net_cast)
-    {
-        std::cerr << "Only TorchNetworks can be used to build a TorchNetwork!" << std::endl;
-        exit(0);
-    }
-
-    return torch_net_cast; 
-
-}
 
 const std::vector<std::pair<torch::Tensor, torch::Tensor>> 
     generate_batches(const unsigned batch_size, 

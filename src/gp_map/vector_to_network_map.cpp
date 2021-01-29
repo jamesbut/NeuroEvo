@@ -7,8 +7,7 @@ VectorToNetworkMap::VectorToNetworkMap(NetworkBuilder* net_builder) :
 
 Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
 {
-    const NetworkBuilder* net_builder_cast = 
-        dynamic_cast<const NetworkBuilder*>(_pheno_spec.get()); 
+    NetworkBuilder* net_builder_cast = dynamic_cast<NetworkBuilder*>(_pheno_spec.get()); 
 
     if(net_builder_cast == nullptr)
     {
@@ -18,7 +17,8 @@ Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
     }
 
     //Set network weights as the genes
-    auto network = net_builder_cast->build_network(genotype.genes());
+    net_builder_cast->set_init_weights(genotype.genes());
+    auto network = net_builder_cast->build_network();
     return network;
 
 }

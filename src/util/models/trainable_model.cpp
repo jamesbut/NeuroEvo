@@ -2,6 +2,15 @@
 
 namespace NeuroEvo {
 
+TrainableModel::TrainableModel(const torch::Tensor& training_data,
+                               const std::optional<const torch::Tensor>& test_data,
+                               NetworkBuilder& model_net_builder,
+                               const std::string& model_file_name) :
+    _training_data(training_data),
+    _test_data(test_data),
+    _model(dynamic_cast<TorchNetwork*>(model_net_builder.build_network())),
+    _model_file_name(model_file_name) {}
+
 const std::unique_ptr<TorchNetwork>& TrainableModel::get_model() const
 {
     return _model;

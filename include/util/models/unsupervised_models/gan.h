@@ -20,8 +20,7 @@ public:
 
     GAN(NetworkBuilder& generator_builder,
         NetworkBuilder& discriminator_builder, 
-        const torch::Tensor& real_data,
-        Distribution<double>* init_net_weight_distr = nullptr);
+        const torch::Tensor& real_data);
 
     void train(const unsigned num_epochs, const unsigned batch_size, 
                const double weight_decay = 0., const bool trace = true, 

@@ -12,8 +12,9 @@ Phenotype<double>* DoubleToNetworkNetMap::map(Genotype<double>& genotype)
     const std::vector<double> decoder_output = _decoder->activate(genotype.genes());
 
     //Set network weights to decoder output
-    const NetworkBuilder* pheno_net_builder = dynamic_cast<NetworkBuilder*>(_pheno_spec.get());
-    auto pheno = pheno_net_builder->build_network(decoder_output);
+    NetworkBuilder* pheno_net_builder = dynamic_cast<NetworkBuilder*>(_pheno_spec.get());
+    pheno_net_builder->set_init_weights(decoder_output);
+    auto pheno = pheno_net_builder->build_network();
     return pheno;
 }
 

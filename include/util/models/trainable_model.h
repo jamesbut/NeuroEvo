@@ -8,7 +8,7 @@
 #include <phenotype/neural_network/torch_network.h>
 #include <boost/filesystem.hpp>
 #include <phenotype/phenotype_specs/network_builder.h>
-#include <util/torch/torch_utils.h>
+#include <util/torch/batch_utils.h>
 
 namespace NeuroEvo {
 
@@ -20,11 +20,7 @@ public:
     TrainableModel(const torch::Tensor& training_data,
                    const std::optional<const torch::Tensor>& test_data,
                    NetworkBuilder& model_net_builder,
-                   const std::string& model_file_name) :
-        _training_data(training_data),
-        _test_data(test_data),
-        _model(build_torch_network(model_net_builder, nullptr)),
-        _model_file_name(model_file_name) {}
+                   const std::string& model_file_name);
 
     virtual ~TrainableModel() = default;
 

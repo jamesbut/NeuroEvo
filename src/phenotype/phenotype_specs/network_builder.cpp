@@ -26,7 +26,8 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
                                               hl_activation_func_spec, 
                                               ol_activation_func_spec, 
                                               batch_norm,
-                                              bias)) {}
+                                              bias)),
+    _torch_net(false) {}
 
 NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                                const unsigned num_hidden_layers, 
@@ -46,11 +47,38 @@ NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
     PhenotypeSpec(required_num_genes(layer_specs), trace),
     _num_inputs(layer_specs.front().get_inputs_per_neuron()),
     _num_outputs(layer_specs.back().get_num_neurons()),
-    _layer_specs(layer_specs) {}
+    _layer_specs(layer_specs),
+    _torch_net(false) {}
 
-Phenotype<double>* NetworkBuilder::build_network(
-        const std::optional<const std::vector<double>>& init_weights) const
+NetworkBuilder::NetworkBuilder(const NetworkBuilder& network_builder) :
+    PhenotypeSpec(required_num_genes(network_builder._layer_specs, network_builder._trace)),
+    _num_inputs(network_builder._num_inputs),
+    _num_outputs(network_builder._num_outputs),
+    _layer_specs(network_builder._layer_specs), 
+    _torch_net(network_builder._torch_net),
+    _init_weights(network_builder._init_weights),
+    _init_weight_distr(network_builder._init_weight_distr->clone()),
+    _hebbs_spec(network_builder._hebbs_spec),
+    _read_file_path(network_builder._read_file_path) {}
+
+Phenotype<double>* NetworkBuilder::build_network()
 {
+
+    //Generate init weights if a distribution has been given
+    if(_init_weight_distr)
+        _init_weights = generate_init_weights();
+    
+    //Check init weights size if needed
+    if(_init_weights.has_value())
+        if(_init_weights->size() != get_num_params())
+        {
+            std::cerr << "The number of genes given to build the network was not equal"
+                << " to the number of params required by the network" << std::endl;
+            std::cerr << "Num genes: " << _init_weights->size() << " Num params required: "
+                << get_num_params() << std::endl;
+            exit(0);
+        }
+
     //Check for Hebbian
     if(_hebbs_spec)
     {
@@ -60,7 +88,7 @@ Phenotype<double>* NetworkBuilder::build_network(
 
         //Split weights for Hebbs network into weights and learning rates
         const std::pair<std::vector<double>, std::vector<double>> split_weights =
-            split_hebbs_traits(init_weights.value());
+            split_hebbs_traits(_init_weights.value());
         network->propogate_weights(split_weights.first);
         network->propogate_learning_rates(split_weights.second); 
 
@@ -68,14 +96,13 @@ Phenotype<double>* NetworkBuilder::build_network(
 
     } 
 #if USE_TORCH
-    else if (_default_torch_net_init)
+    else if (_torch_net)
     {
 
         TorchNetwork* torch_network;
         
         //If weights are not given
-        //if(_default_torch_net_init.value())
-        if(!init_weights)
+        if(!_init_weights)
             //If the torch network is read from file
             if(_read_file_path)
                 torch_network = new TorchNetwork(_read_file_path.value(), 
@@ -87,7 +114,7 @@ Phenotype<double>* NetworkBuilder::build_network(
         //If torch network is initialised by given weights
         else 
             torch_network = new TorchNetwork(_layer_specs, 
-                                             init_weights.value(), 
+                                             _init_weights.value(), 
                                              _trace);
         return torch_network;
 
@@ -98,23 +125,10 @@ Phenotype<double>* NetworkBuilder::build_network(
         Network* network = new Network(_trace);
         network->create_net(_layer_specs);
 
-        if(init_weights)
-        {
-            //Check to see whether genes size is the same as the number of traits required
-            if(init_weights->size() == network->get_num_params())
-                network->propogate_weights(init_weights.value());
-            else
-            {
-                std::cerr << "The number of genes given to build the network was not equal"
-                    << " to the number of params required by the network" << std::endl;
-                std::cerr << "Num genes: " << init_weights->size() << " Num params required: "
-                    << network->get_num_params().value() << std::endl;
-                exit(0);
-            }
-        }
+        if(_init_weights)
+            network->propogate_weights(_init_weights.value());
 
         return network;
-
     }
     
 }
@@ -133,9 +147,9 @@ void NetworkBuilder::add_layer(LayerSpec& layer_spec)
     exit(0);
 }
 
-void NetworkBuilder::make_torch_net(const bool default_torch_net_init)
+void NetworkBuilder::make_torch_net(const bool torch_net)
 {
-    _default_torch_net_init = std::optional<bool>(default_torch_net_init);
+    _torch_net = torch_net;
 }
 
 void NetworkBuilder::add_read_file(const std::string& file_path) 
@@ -162,9 +176,19 @@ void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
 
 }
 
+void NetworkBuilder::set_init_weights(const std::vector<double>& init_weights)
+{
+    _init_weights = init_weights;
+}
+
+void NetworkBuilder::set_init_weight_distribution(Distribution<double>* init_weight_distr)
+{
+    _init_weight_distr.reset(init_weight_distr);
+}
+
 bool NetworkBuilder::is_torch_net() const
 {
-    return _default_torch_net_init.has_value();
+    return _torch_net;
 }
 
 const std::vector<LayerSpec>& NetworkBuilder::get_layer_specs() const
@@ -314,6 +338,14 @@ const std::pair<std::vector<double>, std::vector<double>>
 
     }
 
+}
+
+const std::vector<double> NetworkBuilder::generate_init_weights() const
+{
+    std::vector<double> init_weights(get_num_params());
+    for(std::size_t i = 0; i < init_weights.size(); i++)
+        init_weights[i] = _init_weight_distr->next();
+    return init_weights;
 }
 
 } // namespace NeuroEvo

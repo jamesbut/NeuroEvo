@@ -123,7 +123,7 @@ torch::nn::Sequential TorchNetwork::build_network(
     _num_params.emplace(calculate_num_net_params(net));
 
     //If initial weights are given, set parameters of net
-    if(init_weights)
+    if(init_weights.has_value())
     {
 
         //Check init weights are same size as parameters
@@ -134,19 +134,39 @@ torch::nn::Sequential TorchNetwork::build_network(
             exit(0);
         }
 
-        //Set weights in net
-        std::size_t init_weight_index = 0;
+        //Set initial weights of network
+        std::size_t weight_index = 0;
         for(const auto& params : net->parameters())
         {
-            const auto& flattened_params = params.flatten();
-            for(int64_t i = 0; i < flattened_params.flatten().size(0); i++)
-            {
-                flattened_params[i] = init_weights.value()[init_weight_index];
-                init_weight_index++;
-            }
-        }
-    }
+            //Determine number of parameters in parameter tensor
+            unsigned num_params = 1;
+            for(auto it = params.sizes().begin(); it != params.sizes().end(); it++)
+                num_params *= *it;
 
+            //Take a slice from init weights vector of num params size
+            std::vector<double> init_weights_slice = 
+                std::vector<double>(init_weights->begin() + weight_index,
+                                    init_weights->begin() + weight_index + num_params);
+            weight_index += num_params;
+
+            //Convert to tensor and reshape
+            torch::Tensor init_weights_t = torch::tensor(init_weights_slice);
+            init_weights_t = init_weights_t.reshape(params.sizes());
+            
+            //Set data
+            //I don't know how I set this when params is a const reference :/
+            params.set_data(init_weights_t);
+
+        }
+
+        /*
+        //This technique also seems to work
+        net->parameters()[0].set_requires_grad(false);
+        net->parameters()[0].index_put_({0, 0}, 1.);
+        net->parameters()[0].set_requires_grad(true);
+        */
+    }
+    
     net->to(torch::kFloat64);
 
     return net;

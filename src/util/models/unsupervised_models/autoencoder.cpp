@@ -5,10 +5,9 @@ namespace NeuroEvo {
 AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          NetworkBuilder& decoder_builder,
                          const torch::Tensor& training_data,  
-                         const std::optional<const torch::Tensor>& test_data,
-                         Distribution<double>* init_net_weight_distr) :
+                         const std::optional<const torch::Tensor>& test_data) :
     TrainableModel(training_data, test_data, decoder_builder, "ie_ae.pt"),
-    _encoder(build_torch_network(encoder_builder, init_net_weight_distr)),
+    _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model) {}
 
 void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
@@ -18,13 +17,12 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
     const double learning_rate = 1e-3;
 
+    //std::cout << _autoencoder->parameters() << std::endl;
+
     torch::optim::Adam optimizer(
         _autoencoder->parameters(), 
         torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
     );
-
-    //std::cout << _autoencoder->parameters() << std::endl;
-    //exit(0);
 
     /*
     const double momentum = 0.5;
