@@ -3,6 +3,9 @@
 #include <util/torch/schedulers/step_lr.h>
 #include <util/torch/schedulers/reduce_lr_on_plateau.h>
 #include <util/torch/schedulers/per_epoch_lr.h>
+#include <util/torch/schedulers/step_lr.h>
+
+#include <torch/optim/schedulers/step_lr.h>
 
 namespace NeuroEvo {
 
@@ -44,9 +47,11 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
 
     //Learning rate scheduler 
     unsigned epoch_num;
+    /*
     const unsigned step_size = 250;
     const double gamma = 0.5;
     StepLR lr_scheduler = StepLR(optimizer, epoch_num, step_size, gamma);
+    */
     
     double avg_loss_dbl = 0;
 
@@ -58,6 +63,11 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl, 
                                                        factor, patience, min_lr);
     */
+
+    const unsigned step_size = 250;
+    const double gamma = 0.5;
+    torch::optim::StepLR lr_scheduler(optimizer, step_size, gamma);
+    //StepLR lr_scheduler(optimizer, epoch_num, step_size, gamma);
 
     /*
     std::map<unsigned, double> epoch_lr_map;
@@ -86,7 +96,6 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         //Dump decoder
         if(epoch_num % test_every == 0)
             write_model(epoch_num);
-        //exit(0);
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_labels);
@@ -124,7 +133,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
                                            avg_test_loss.item<double>()};
         print_table_row(row_data, column_width);
 
-        lr_scheduler.step();
+        //lr_scheduler.step();
 
     }
 

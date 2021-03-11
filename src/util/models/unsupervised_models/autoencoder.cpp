@@ -18,9 +18,11 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
     const double learning_rate = 1e-3;
 
     //std::cout << _autoencoder->parameters() << std::endl;
+    //exit(0);
 
     torch::optim::Adam optimizer(
         _autoencoder->parameters(), 
+        //_model->parameters(), 
         torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
     );
 
@@ -82,6 +84,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
         _loss = avg_loss.item<double>();
     }
+    std::cout << _autoencoder->parameters() << std::endl;
 
 }
 
