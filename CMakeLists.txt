@@ -35,7 +35,8 @@ if(${WITH_TORCH})
     else()
         #set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.7/site-packages")
         #set(CMAKE_PREFIX_PATH "/Users/james/opt/anaconda3/envs/gym_api/lib/python3.7/site-packages")
-        set(CMAKE_PREFIX_PATH "/Users/james/Documents/projects/pytorch")
+        #set(CMAKE_PREFIX_PATH "/Users/james/Documents/projects/pytorch")
+        set(CMAKE_PREFIX_PATH "/Users/james/libraries/pytorch")
     endif()
     find_package(Torch REQUIRED)
 endif()
@@ -75,7 +76,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Remove torch related files from compilation
 if(NOT ${USE_TORCH})
-    list(REMOVE_ITEM SOURCES 
+    list(REMOVE_ITEM SOURCES
          "${NEURO_EVO_CMAKE_SRC_DIR}/src/phenotype/neural_network/torch_network.cpp"
          "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch_utils.cpp"
          "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/generative_models/autoencoder.cpp"
