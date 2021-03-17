@@ -12,9 +12,9 @@ namespace NeuroEvo {
 SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder& net_builder,
                                              const torch::Tensor& training_data,
                                              const torch::Tensor& training_labels,
-                                             const std::optional<const torch::Tensor>& 
+                                             const std::optional<const torch::Tensor>&
                                                  test_data,
-                                             const std::optional<const torch::Tensor>& 
+                                             const std::optional<const torch::Tensor>&
                                                  test_labels) :
     TrainableModel(training_data, test_data, net_builder, "ie_supervised.pt"),
     _training_labels(training_labels),
@@ -24,7 +24,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
                                   const double weight_decay, const bool trace,
                                   const unsigned test_every)
 {
-    
+
     const double learning_rate = 1e-4;
     torch::optim::Adam optimizer(
         _model->parameters(),
@@ -35,24 +35,24 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     const double momentum = 0.99;
     const bool nesterov = true;
     torch::optim::SGD optimizer(
-        _model->parameters(), 
+        _model->parameters(),
         torch::optim::SGDOptions(learning_rate).momentum(momentum).nesterov(nesterov)
     );
 
     torch::optim::RMSprop optimizer(
-        _model->parameters(), 
+        _model->parameters(),
         torch::optim::RMSpropOptions(learning_rate)
     );
     */
 
-    //Learning rate scheduler 
+    //Learning rate scheduler
     unsigned epoch_num;
     /*
     const unsigned step_size = 250;
     const double gamma = 0.5;
     StepLR lr_scheduler = StepLR(optimizer, epoch_num, step_size, gamma);
     */
-    
+
     double avg_loss_dbl = 0;
 
     /*
@@ -60,7 +60,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     const unsigned patience = 150;
     //const std::optional<double> min_lr = 1e-6;
     const std::optional<double> min_lr = std::nullopt;
-    ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl, 
+    ReduceLROnPlateau lr_scheduler = ReduceLROnPlateau(optimizer, avg_loss_dbl,
                                                        factor, patience, min_lr);
     */
 
@@ -89,7 +89,7 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
                                                "Training loss",
                                                "Test loss"};
     print_table_row(header_data, column_width, true, true);
-    
+
     for(epoch_num = 0; epoch_num < num_epochs; epoch_num++)
     {
 
@@ -145,13 +145,13 @@ torch::Tensor SupervisedFeedForward::loss_function(const torch::Tensor& output,
 
     /*
     torch::Tensor loss = torch::nn::functional::binary_cross_entropy(
-        output, 
+        output,
         labels,
         torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
     );
     */
     torch::Tensor loss = torch::nn::functional::mse_loss(
-        output, 
+        output,
         labels,
         torch::nn::functional::MSELossFuncOptions().reduction(torch::kSum)
     );

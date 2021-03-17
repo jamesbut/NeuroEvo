@@ -43,7 +43,7 @@ void TrainableModel::write_model(const std::optional<const unsigned>& prefix) co
         boost::filesystem::create_directory(_model_folder_path);
 
     //Add epoch number at beginning of file name if one is given
-    std::string model_file_name = _model_file_name;  
+    std::string model_file_name = _model_file_name;
     if(prefix.has_value())
         model_file_name = std::to_string(prefix.value()) + "_" + model_file_name;
     const std::string model_file_path = _model_folder_path + model_file_name;
@@ -83,6 +83,27 @@ std::string TrainableModel::generate_ie_file_path(
 void TrainableModel::print_params() const
 {
     std::cout << _model->parameters() << std::endl;
+}
+
+TrainableModel::LocalMinChecker::LocalMinChecker(const unsigned test_epoch,
+                                                 const double plateau_loss) :
+    _test_epoch(test_epoch),
+    _plateau_loss(plateau_loss) {}
+
+bool TrainableModel::LocalMinChecker::is_in_local_min(const unsigned current_epoch,
+                                                      const double current_loss)
+{
+    //Do not check unless the current epoch is at least the test epoch
+    if(current_epoch < _test_epoch)
+        return false;
+
+    //If the current loss is less than what we would expect to see the plateaued loss
+    //at a local minima, we assume it is not stuck in a local min
+    if(current_loss < _plateau_loss)
+        return false;
+
+    return true;
+
 }
 
 } // namespace NeuroEvo
