@@ -47,6 +47,8 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
     std::cout << "Init encoder params:" << std::endl;
     std::cout << _encoder->parameters() << std::endl;
+    //std::cout << _autoencoder->parameters() << std::endl;
+    //std::exit(0);
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 

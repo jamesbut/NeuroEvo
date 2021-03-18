@@ -2,17 +2,25 @@
 #include <torch/nn/options/linear.h>
 #include <filesystem>
 
+#include <util/torch/weight_initialisation.h>
+
 namespace NeuroEvo {
 
-TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace) :
+TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
+                           const bool trace) :
     Phenotype<double>(trace),
     _net(build_network(layer_specs, std::nullopt))
 {
     register_module("net", _net);
+
+    //set_module_weights_ones(*_net);
+    //std::cout << _net->parameters() << std::endl;
+
+    //std::exit(0);
 }
 
-TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs, 
-                           const std::vector<double>& init_weights, 
+TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
+                           const std::vector<double>& init_weights,
                            const bool trace) :
     Phenotype<double>(trace),
     _net(build_network(layer_specs, init_weights))
@@ -20,7 +28,7 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
     register_module("net", _net);
 }
 
-TorchNetwork::TorchNetwork(const std::string& file_path, 
+TorchNetwork::TorchNetwork(const std::string& file_path,
                            const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
     Phenotype<double>(trace),
@@ -37,9 +45,9 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
                                               {torch::kFloat64});
     for(unsigned i = 0; i < inputs.size(); i++)
         input_tensor.index_put_({0, (int64_t)i}, inputs[i]);
-    
 
-    if(_trace) 
+
+    if(_trace)
     {
         std::cout << "Inputs:" << std::endl << input_tensor << std::endl;
         std::cout << "Parameters:" << std::endl << _net->parameters() << std::endl;
@@ -48,7 +56,7 @@ std::vector<double> TorchNetwork::activate(const std::vector<double>& inputs)
     //Forward pass
     const torch::Tensor output_tensor = forward(input_tensor);
 
-    if(_trace) 
+    if(_trace)
         std::cout << "Outputs:" << std::endl << output_tensor << std::endl;
 
     //Convert output tensor to vector
@@ -75,7 +83,7 @@ void TorchNetwork::zero_grad()
 {
     _net->zero_grad();
 }
-    
+
 //Build network from layer specifications
 torch::nn::Sequential TorchNetwork::build_network(
         const std::vector<LayerSpec>& layer_specs,
@@ -106,14 +114,14 @@ torch::nn::Sequential TorchNetwork::build_network(
             auto batch_norm = torch::nn::BatchNorm1d(
                 torch::nn::BatchNorm1dOptions(layer_specs[i].get_num_neurons())
             );
-            net->push_back(batch_norm); 
+            net->push_back(batch_norm);
         }
 
         //Add activation function if one is given
         if(layer_specs[i].get_activation_func_spec())
         {
             auto activation_function = layer_specs[i].get_activation_func_spec()
-                                       ->create_torch_module(); 
+                                       ->create_torch_module();
             net->push_back(activation_function);
         }
 
@@ -144,7 +152,7 @@ torch::nn::Sequential TorchNetwork::build_network(
                 num_params *= *it;
 
             //Take a slice from init weights vector of num params size
-            std::vector<double> init_weights_slice = 
+            std::vector<double> init_weights_slice =
                 std::vector<double>(init_weights->begin() + weight_index,
                                     init_weights->begin() + weight_index + num_params);
             weight_index += num_params;
@@ -152,7 +160,7 @@ torch::nn::Sequential TorchNetwork::build_network(
             //Convert to tensor and reshape
             torch::Tensor init_weights_t = torch::tensor(init_weights_slice);
             init_weights_t = init_weights_t.reshape(params.sizes());
-            
+
             //Set data
             //I don't know how I set this when params is a const reference :/
             params.set_data(init_weights_t);
@@ -166,7 +174,7 @@ torch::nn::Sequential TorchNetwork::build_network(
         net->parameters()[0].set_requires_grad(true);
         */
     }
-    
+
     net->to(torch::kFloat64);
 
     return net;
@@ -180,9 +188,9 @@ void TorchNetwork::print(std::ostream& os) const
     os << _net->parameters() << std::endl;
 }
 
-void TorchNetwork::write(const std::string& file_path) const 
+void TorchNetwork::write(const std::string& file_path) const
 {
-    torch::save(_net, file_path); 
+    torch::save(_net, file_path);
 }
 
 torch::nn::Sequential TorchNetwork::read(const std::string& file_path,
