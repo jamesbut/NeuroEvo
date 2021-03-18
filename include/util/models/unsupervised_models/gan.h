@@ -19,11 +19,11 @@ class GAN : public TrainableModel
 public:
 
     GAN(NetworkBuilder& generator_builder,
-        NetworkBuilder& discriminator_builder, 
+        NetworkBuilder& discriminator_builder,
         const torch::Tensor& real_data);
 
-    void train(const unsigned num_epochs, const unsigned batch_size, 
-               const double weight_decay = 0., const bool trace = true, 
+    bool train(const unsigned num_epochs, const unsigned batch_size,
+               const double weight_decay = 0., const bool trace = true,
                const unsigned test_every = 1e6) override;
 
     torch::Tensor discriminate(const torch::Tensor& x) const;

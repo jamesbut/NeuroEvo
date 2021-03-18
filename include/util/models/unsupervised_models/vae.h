@@ -21,9 +21,9 @@ public:
         const torch::Tensor& training_data,
         const std::optional<const torch::Tensor>& test_data = std::nullopt);
 
-    virtual void train(const unsigned num_epochs, const unsigned batch_size,
-                       const double weight_decay = 0., const bool trace = false, 
-                       const unsigned test_every = 1e6) override;
+    bool train(const unsigned num_epochs, const unsigned batch_size,
+               const double weight_decay = 0., const bool trace = false,
+               const unsigned test_every = 1e6) override;
 
     //Returns a mean and log var
     std::pair<torch::Tensor, torch::Tensor> encode(const torch::Tensor& x);
@@ -31,7 +31,7 @@ public:
                          const bool trace = false) const;
 
     //Returns output of VAE, mu and log_var from sampling
-    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> 
+    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>
         vae_forward(const torch::Tensor& x, const bool trace = false);
 
 

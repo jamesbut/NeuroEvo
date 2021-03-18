@@ -24,7 +24,7 @@ public:
 
     virtual ~TrainableModel() = default;
 
-    virtual void train(const unsigned num_epochs, const unsigned batch_size,
+    virtual bool train(const unsigned num_epochs, const unsigned batch_size,
                        const double weight_decay = 0., const bool trace = false,
                        const unsigned test_every = 1e6) = 0;
 

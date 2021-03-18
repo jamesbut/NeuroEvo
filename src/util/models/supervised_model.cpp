@@ -20,7 +20,7 @@ SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder& net_builder,
     _training_labels(training_labels),
     _test_labels(test_labels) {}
 
-void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batch_size,
+bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batch_size,
                                   const double weight_decay, const bool trace,
                                   const unsigned test_every)
 {
@@ -136,6 +136,8 @@ void SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         //lr_scheduler.step();
 
     }
+
+    return true;
 
 }
 

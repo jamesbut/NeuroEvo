@@ -22,12 +22,12 @@ public:
         const std::optional<const torch::Tensor>& test_labels = std::nullopt
     );
 
-    void train(const unsigned num_epochs, const unsigned batch_size,
-               const double weight_decay = 0., const bool trace = false, 
+    bool train(const unsigned num_epochs, const unsigned batch_size,
+               const double weight_decay = 0., const bool trace = false,
                const unsigned test_every = 1e6) override;
 
 private:
-    
+
     torch::Tensor loss_function(const torch::Tensor& output,
                                 const torch::Tensor& labels) const;
 

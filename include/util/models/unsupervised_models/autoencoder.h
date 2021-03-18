@@ -16,12 +16,12 @@ class AutoEncoder : public TrainableModel
 public:
 
     AutoEncoder(NetworkBuilder& encoder_builder,
-                NetworkBuilder& decoder_builder, 
-                const torch::Tensor& training_data, 
+                NetworkBuilder& decoder_builder,
+                const torch::Tensor& training_data,
                 const std::optional<const torch::Tensor>& test_data = std::nullopt);
 
-    void train(const unsigned num_epochs, const unsigned batch_size, 
-               const double weight_decay = 0., const bool trace = false, 
+    bool train(const unsigned num_epochs, const unsigned batch_size,
+               const double weight_decay = 0., const bool trace = false,
                const unsigned test_every = 1e6) override;
 
     torch::Tensor encode(const torch::Tensor& x) const;

@@ -10,7 +10,7 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model) {}
 
-void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
+bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const double weight_decay, const bool trace,
                         const unsigned test_every)
 {
@@ -41,7 +41,7 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
     */
 
     //Local min checker
-    const unsigned test_epoch = 500;
+    const unsigned test_epoch = 200;
     const double plateau_loss = 5.;
     LocalMinChecker local_min_checker(test_epoch, plateau_loss);
 
@@ -95,16 +95,21 @@ void AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
         //Local min checker
         if(local_min_checker.is_in_local_min(i, _loss))
-        {
-            std::cout << "Stuck in local min!!!" << std::endl;
-            std::exit(0);
-        }
+            return false;
+        else
+            //But also for now return if not in local min but one has reached
+            //the test epoch - this is only to make local min testing faster
+            //I will remove this in future
+            if(i >= test_epoch)
+                return true;
 
 
     }
 
     std::cout << "Final encoder params:" << std::endl;
     std::cout << _encoder->parameters() << std::endl;
+
+    return true;
 
 }
 
