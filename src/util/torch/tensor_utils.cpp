@@ -1,4 +1,5 @@
-#include <util/torch/tensor_metrics.h>
+#include <torch/csrc/autograd/generated/variable_factories.h>
+#include <util/torch/tensor_utils.h>
 
 namespace NeuroEvo {
 
@@ -39,6 +40,11 @@ double measure_square_symmetry(const torch::Tensor& t)
 
     }
     return total_symmetry / t.size(0);
+}
+
+torch::Tensor apply_gaussian_noise(const torch::Tensor& t, const double sigma)
+{
+    return t + torch::normal(0, sigma, t.sizes());
 }
 
 } // namespace NeuroEvo

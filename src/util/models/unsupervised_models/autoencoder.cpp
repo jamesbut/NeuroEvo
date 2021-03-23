@@ -1,25 +1,24 @@
 #include <util/models/unsupervised_models/autoencoder.h>
+#include <util/torch/tensor_utils.h>
 
 namespace NeuroEvo {
 
 AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          NetworkBuilder& decoder_builder,
                          const torch::Tensor& training_data,
-                         const std::optional<const torch::Tensor>& test_data) :
+                         const std::optional<const torch::Tensor>& test_data,
+                         const std::optional<const double> denoising_sigma) :
     TrainableModel(training_data, test_data, decoder_builder, "ie_ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
-    _autoencoder(*_encoder, *_model) {}
+    _autoencoder(*_encoder, *_model),
+    _denoising_sigma(denoising_sigma) {}
 
 bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const double weight_decay, const bool trace,
                         const unsigned test_every)
 {
 
-    //const double learning_rate = 1e-3;
     const double learning_rate = 1e-3;
-
-    //std::cout << _autoencoder->parameters() << std::endl;
-    //exit(0);
 
     torch::optim::Adam optimizer(
         _autoencoder->parameters(),
@@ -45,10 +44,7 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
     const double plateau_loss = 5.;
     LocalMinChecker local_min_checker(test_epoch, plateau_loss);
 
-    std::cout << "Init encoder params:" << std::endl;
-    std::cout << _encoder->parameters() << std::endl;
-    //std::cout << _autoencoder->parameters() << std::endl;
-    //std::exit(0);
+    //std::cout << _encoder->parameters() << std::endl;
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
@@ -58,10 +54,18 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         //Dump decoder
         if(i % test_every == 0)
             write_model(i);
-        //exit(0);
 
-        const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
-            generate_batches(batch_size, _training_data, _training_data);
+        std::vector<std::pair<torch::Tensor, torch::Tensor>> batches;
+
+        //If denoising autoencoder, apply noise to input
+        if(_denoising_sigma.has_value())
+        {
+            const torch::Tensor corrupted_training_data =
+                apply_gaussian_noise(_training_data, _denoising_sigma.value());
+            batches = generate_batches(batch_size, corrupted_training_data,
+                                       _training_data);
+        } else
+            batches = generate_batches(batch_size, _training_data, _training_data);
 
         torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
@@ -95,6 +99,7 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
         _loss = avg_loss.item<double>();
 
+        /*
         //Local min checker
         if(local_min_checker.is_in_local_min(i, _loss))
             return false;
@@ -104,11 +109,11 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
             //I will remove this in future
             if(i >= test_epoch)
                 return true;
+        */
 
 
     }
 
-    std::cout << "Final encoder params:" << std::endl;
     std::cout << _encoder->parameters() << std::endl;
 
     return true;

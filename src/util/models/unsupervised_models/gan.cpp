@@ -5,7 +5,7 @@
 #include <util/models/unsupervised_models/gan.h>
 #include <util/statistics/distributions/gaussian_distribution.h>
 #include <util/formatting.h>
-#include <util/torch/tensor_metrics.h>
+#include <util/torch/tensor_utils.h>
 #include <util/number_ranges.h>
 
 namespace NeuroEvo {

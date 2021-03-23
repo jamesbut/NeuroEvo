@@ -3,11 +3,11 @@
 
 namespace NeuroEvo {
 
-const std::vector<std::pair<torch::Tensor, torch::Tensor>> 
-    generate_batches(const unsigned batch_size, 
-                     const torch::Tensor& data, 
+const std::vector<std::pair<torch::Tensor, torch::Tensor>>
+    generate_batches(const unsigned batch_size,
+                     const torch::Tensor& data,
                      const torch::Tensor& targets,
-                     const bool shuffle_data) 
+                     const bool shuffle_data)
 {
 
     std::vector<std::pair<torch::Tensor, torch::Tensor>> batches;
@@ -16,7 +16,8 @@ const std::vector<std::pair<torch::Tensor, torch::Tensor>>
     std::vector<int64_t> data_indexes(data.size(0));
     std::iota(data_indexes.begin(), data_indexes.end(), 0);
     if(shuffle_data)
-        std::shuffle(data_indexes.begin(), data_indexes.end(), std::default_random_engine{});
+        std::shuffle(data_indexes.begin(), data_indexes.end(),
+                     std::default_random_engine{});
 
     int64_t current_data_index = 0;
 
@@ -25,7 +26,7 @@ const std::vector<std::pair<torch::Tensor, torch::Tensor>>
 
         //Build single batch
         auto remaining_data_size = data.size(0) - current_data_index;
-        const int64_t this_batch_size = 
+        const int64_t this_batch_size =
             remaining_data_size > (int)batch_size ? batch_size : remaining_data_size;
 
         //Allocate tensor space
@@ -44,7 +45,7 @@ const std::vector<std::pair<torch::Tensor, torch::Tensor>>
         }
 
         //Push batch onto batches
-        batches.push_back(std::pair<torch::Tensor, torch::Tensor>(data_batch, 
+        batches.push_back(std::pair<torch::Tensor, torch::Tensor>(data_batch,
                                                                   target_batch));
     }
 
