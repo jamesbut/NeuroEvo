@@ -13,7 +13,18 @@ void set_module_weights_zeros(torch::nn::Module& module);
 void set_module_weights_ones(torch::nn::Module& module);
 
 //Set all weights according to a gaussian distribution
-void set_module_weights_gaussian(torch::nn::Module& module);
+void set_module_weights_gaussian(torch::nn::Module& module,
+                                 const double mean = 0., const double std_dev = 1.);
+
+//Set all weights according to uniform distribution
+void set_module_weights_uniform(torch::nn::Module& module,
+                                const double lb = 0., const double ub = 1.);
+
+void set_module_weights_kaiming_uniform(torch::nn::Module& module);
+void set_module_weights_kaiming_normal(torch::nn::Module& module);
+
+void set_module_weights_xavier_uniform(torch::nn::Module& module);
+void set_module_weights_xavier_normal(torch::nn::Module& module);
 
 
 #endif

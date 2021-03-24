@@ -2,8 +2,6 @@
 #include <torch/nn/options/linear.h>
 #include <filesystem>
 
-#include <util/torch/weight_initialisation.h>
-
 namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
@@ -12,11 +10,6 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
     _net(build_network(layer_specs, std::nullopt))
 {
     register_module("net", _net);
-
-    //set_module_weights_ones(*_net);
-    //std::cout << _net->parameters() << std::endl;
-
-    //std::exit(0);
 }
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
@@ -137,8 +130,8 @@ torch::nn::Sequential TorchNetwork::build_network(
         //Check init weights are same size as parameters
         if(_num_params != init_weights->size())
         {
-            std::cerr << "Initial weights given to TorchNet does not match the parameter size"
-                << std::endl;
+            std::cerr << "Initial weights given to TorchNet does not match the "
+                "parameter size" << std::endl;
             exit(0);
         }
 

@@ -1,5 +1,6 @@
 #include <util/models/unsupervised_models/autoencoder.h>
 #include <util/torch/tensor_utils.h>
+#include <util/torch/weight_initialisation.h>
 
 namespace NeuroEvo {
 
@@ -11,7 +12,12 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
     TrainableModel(training_data, test_data, decoder_builder, "ie_ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
-    _denoising_sigma(denoising_sigma) {}
+    _denoising_sigma(denoising_sigma)
+    {
+        //set_module_weights_kaiming_uniform(*_model);
+        //std::cout << _autoencoder->parameters() << std::endl;
+        //exit(0);
+    }
 
 bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const double weight_decay, const bool trace,
@@ -110,7 +116,6 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
             if(i >= test_epoch)
                 return true;
         */
-
 
     }
 
