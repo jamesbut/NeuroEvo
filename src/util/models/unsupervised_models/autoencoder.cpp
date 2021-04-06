@@ -24,7 +24,8 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const unsigned test_every)
 {
 
-    const double learning_rate = 1e-3;
+    //const double learning_rate = 1e-3;
+    const double learning_rate = 1e-2;
 
     torch::optim::Adam optimizer(
         _autoencoder->parameters(),
@@ -50,7 +51,11 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
     const double plateau_loss = 5.;
     LocalMinChecker local_min_checker(test_epoch, plateau_loss);
 
-    //std::cout << _encoder->parameters() << std::endl;
+    //Learning rate annealer
+    const unsigned step_size = 500;
+    const double gamma = 0.5;
+    const bool verbosity = true;
+    torch::optim::StepLR lr_scheduler(optimizer, step_size, gamma, verbosity);
 
     torch::Tensor avg_test_loss = torch::zeros({1}, {torch::kFloat64});
 
@@ -117,9 +122,12 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                 return true;
         */
 
+        //lr_scheduler.step();
+
     }
 
-    std::cout << _encoder->parameters() << std::endl;
+    //std::cout << _encoder->parameters() << std::endl;
+    //std::cout << _autoencoder->parameters() << std::endl;
 
     return true;
 

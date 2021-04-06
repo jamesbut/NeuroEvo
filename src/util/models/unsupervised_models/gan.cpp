@@ -99,14 +99,16 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
             torch::Tensor d_real_loss = torch::nn::functional::binary_cross_entropy(
                 d_real_output,
                 real_batch.second,
-                torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
+                torch::nn::functional::BinaryCrossEntropyFuncOptions()
+                    .reduction(torch::kSum)
             );
             d_real_loss.backward();
 
             /* Train discriminator on fake data */
             //Generate fake data using generator
             //Draw noise from unit normal distribution
-            auto noise = torch::randn({real_batch.first.size(0), _model->get_num_inputs()},
+            auto noise = torch::randn({real_batch.first.size(0),
+                                       _model->get_num_inputs()},
                                       {torch::kFloat64});
             //Draw noise from a uniform distribution [0,1]
             //auto noise = torch::rand({real_batch.first.size(0),
@@ -121,7 +123,8 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
             torch::Tensor d_fake_loss = torch::nn::functional::binary_cross_entropy(
                 d_fake_output,
                 fake_labels,
-                torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
+                torch::nn::functional::BinaryCrossEntropyFuncOptions()
+                    .reduction(torch::kSum)
             );
             d_fake_loss.backward();
 
@@ -149,7 +152,8 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
             torch::Tensor g_loss = torch::nn::functional::binary_cross_entropy(
                 d_output,
                 fake_labels,
-                torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
+                torch::nn::functional::BinaryCrossEntropyFuncOptions()
+                    .reduction(torch::kSum)
             );
             total_g_loss += g_loss;
             g_loss.backward();

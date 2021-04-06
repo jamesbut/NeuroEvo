@@ -11,7 +11,7 @@ StepLR::StepLR(torch::optim::Optimizer& optimiser,
     _step_size(step_size),
     _gamma(gamma) {}
 
-void StepLR::step() 
+void StepLR::step()
 {
 
     //if(_epoch_num == 0)
@@ -20,11 +20,11 @@ void StepLR::step()
     if(((_epoch_num+1) % _step_size) == 0)
     {
         set_learning_rate(get_learning_rate() * _gamma);
-        std::cout << "StepLR scheduler: Changing learning rate to: " << get_learning_rate() 
-            << std::endl;
+        std::cout << "StepLR scheduler: Changing learning rate to: "
+            << get_learning_rate() << std::endl;
 
     }
-     
+
 }
 
 } // namespace NeuroEvo

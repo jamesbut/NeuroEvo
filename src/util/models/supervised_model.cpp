@@ -124,7 +124,8 @@ bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         if(((epoch_num+1) % test_every == 0) && _test_data.has_value())
         {
             const torch::Tensor test_output = _model->forward(_test_data.value());
-            const torch::Tensor test_loss = loss_function(test_output, _test_labels.value());
+            const torch::Tensor test_loss = loss_function(test_output,
+                                                          _test_labels.value());
             avg_test_loss = test_loss / _test_data->size(0);
         }
 
