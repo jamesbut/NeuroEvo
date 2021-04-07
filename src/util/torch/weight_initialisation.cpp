@@ -16,7 +16,7 @@ void set_module_weights_zeros(torch::nn::Module& module)
 void set_module_weights_ones(torch::nn::Module& module)
 {
     torch::NoGradGuard no_grad;
-    for(auto& module : module.modules())
+    for(auto& module : module.modules(false))
         if(auto* linear = module->as<torch::nn::Linear>())
         {
             torch::nn::init::ones_(linear->weight);

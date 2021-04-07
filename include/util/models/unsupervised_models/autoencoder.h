@@ -20,6 +20,7 @@ public:
                 NetworkBuilder& decoder_builder,
                 const torch::Tensor& training_data,
                 const std::optional<const torch::Tensor>& test_data = std::nullopt,
+                const bool tied_weights = false,
                 //This is the standard deviation of the gaussian of a denoising AE's
                 //corruption function. If this value is not a null optional, this
                 //AE now acts as a denoising AE.
@@ -37,11 +38,14 @@ private:
     torch::Tensor loss_function(const torch::Tensor& output,
                                 const torch::Tensor& input) const;
 
-    std::unique_ptr<TorchNetwork> _encoder;
+    //Ties the weights of the encoder and decoder to be the transposition of one another
+    void tie_weights();
 
+    std::unique_ptr<TorchNetwork> _encoder;
     torch::nn::Sequential _autoencoder;
 
     const std::optional<const double> _denoising_sigma;
+    const bool _tied_weights;
 
 };
 

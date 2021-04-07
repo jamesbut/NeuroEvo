@@ -1,6 +1,7 @@
 #include <util/models/unsupervised_models/autoencoder.h>
 #include <util/torch/tensor_utils.h>
 #include <util/torch/weight_initialisation.h>
+#include <util/torch/module_utils.h>
 
 namespace NeuroEvo {
 
@@ -8,21 +9,26 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          NetworkBuilder& decoder_builder,
                          const torch::Tensor& training_data,
                          const std::optional<const torch::Tensor>& test_data,
+                         const bool tied_weights,
                          const std::optional<const double> denoising_sigma) :
     TrainableModel(training_data, test_data, decoder_builder, "ie_ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
-    _denoising_sigma(denoising_sigma)
+    _denoising_sigma(denoising_sigma),
+    _tied_weights(tied_weights)
     {
         //set_module_weights_kaiming_uniform(*_model);
-        //std::cout << _autoencoder->parameters() << std::endl;
-        //exit(0);
+
+        if(_tied_weights)
+            tie_weights();
+
     }
 
 bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
                         const double weight_decay, const bool trace,
                         const unsigned test_every)
 {
+    //std::cout << _autoencoder->parameters() << std::endl;
 
     //const double learning_rate = 1e-3;
     const double learning_rate = 1e-2;
@@ -155,6 +161,37 @@ torch::Tensor AutoEncoder::loss_function(const torch::Tensor& output,
     );
 
     return loss;
+
+}
+
+void AutoEncoder::tie_weights()
+{
+
+    //Check number of weights in encoder and decoder are equal
+    if(count_num_weights_linear(*_encoder) != count_num_weights_linear(*_model))
+    {
+        std::cout << "The number of weights in the encoder and decoder are not equal"
+            << std::endl << "Cannot tie weights in Autoencoder!" << std::endl;
+        exit(0);
+    }
+
+    /* Set transposed weights in the decoder */
+
+    //Isolate the linear layers and then iterate over them
+    std::vector<std::shared_ptr<torch::nn::Module>> e_linear_modules =
+        get_linear_layers(*_encoder);
+    std::vector<std::shared_ptr<torch::nn::Module>> d_linear_modules =
+        get_linear_layers(*_model);
+
+    for(std::size_t i = 0; i < e_linear_modules.size(); i++)
+    {
+        //Cast to Linear modules
+        auto* e_linear = e_linear_modules.at(i)->as<torch::nn::Linear>();
+        auto* d_linear =
+            d_linear_modules.at(e_linear_modules.size()-1-i)->as<torch::nn::Linear>();
+        //Set transposition
+        d_linear->weight.set_data(e_linear->weight.transpose(0, 1));
+    }
 
 }
 
