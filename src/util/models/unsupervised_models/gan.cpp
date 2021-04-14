@@ -30,8 +30,6 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
     //const double generator_learning_rate = 2e-4;
     //const double discriminator_learning_rate = 5e-4;
-    //const double generator_learning_rate = 1e-5;
-    //const double discriminator_learning_rate = 1e-5;
     const double generator_learning_rate = 1e-4;
     const double discriminator_learning_rate = 1e-4;
 
@@ -82,6 +80,9 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
+        //Dump decoder
+        if(i % test_every == 0)
+            write_model(i);
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> real_batches =
             generate_batches(batch_size, _training_data, real_labels);
