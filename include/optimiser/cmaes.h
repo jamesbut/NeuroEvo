@@ -44,8 +44,8 @@ public:
 
         if(init_mean.size() != this->_num_genes)
         {
-            std::cerr << "Initial mean vector to CMAES is not the same size as number of genes"
-                << std::endl;
+            std::cerr << "Initial mean vector to CMAES is not the same size as "
+                "number of genes" << std::endl;
             exit(0);
         }
         //Initialise mean
@@ -71,12 +71,14 @@ public:
         const double alpha_cov = 2.;
         _c_1 = alpha_cov / ((_N + 1.3) * (_N + 1.3) + _mu_eff);
         _c_mu = std::min(1 - _c_1,
-                         alpha_cov * (_mu_eff -2. + 1. / _mu_eff) / 
-                                     ((_N + 2.) * (_N + 2.) + alpha_cov * _mu_eff / 2.));  
+                         alpha_cov * (_mu_eff -2. + 1. / _mu_eff) /
+                                     ((_N + 2.) * (_N + 2.) + alpha_cov *
+                                      _mu_eff / 2.));
 
-        _d_sig = 1. + 2. * std::max(0., std::sqrt((_mu_eff - 1.) / (_N + 1.)) - 1.) + _c_sig; 
+        _d_sig = 1. + 2. * std::max(0., std::sqrt((_mu_eff - 1.) / (_N + 1.)) - 1.) +
+                 _c_sig;
         //Expectation of ||N(0,I)|| == norm(randn(N,1))
-        _chiN = std::sqrt(_N) * (1. - 1. / (4. * _N) + 1. / (21. * _N * _N)); 
+        _chiN = std::sqrt(_N) * (1. - 1. / (4. * _N) + 1. / (21. * _N * _N));
 
     }
 
@@ -85,18 +87,19 @@ public:
 
         _count_eval += this->_pop_size;
 
-        //Sort population 
+        //Sort population
         std::vector<std::size_t> sorted_pop_indices(this->_pop_size);
         std::iota(sorted_pop_indices.begin(), sorted_pop_indices.end(), 0);
         std::sort(sorted_pop_indices.begin(), sorted_pop_indices.end(),
-                  [this](std::size_t i, std::size_t j) 
+                  [this](std::size_t i, std::size_t j)
                   {
                       auto fitnesses = this->_population.get_fitnesses();
                       return fitnesses[i] > fitnesses[j];
                   });
-        
+
         //Place elite genomes into Eigen vector
-        std::vector<Eigen::VectorXd> elites(_mu, Eigen::VectorXd::Zero(this->_num_genes));
+        std::vector<Eigen::VectorXd> elites(_mu,
+                                            Eigen::VectorXd::Zero(this->_num_genes));
         const auto& orgs = this->_population.get_organisms();
         for(unsigned i = 0; i <_mu; i++)
         {
@@ -110,35 +113,39 @@ public:
         _mean = elites[0] * _weights(0);
         for(unsigned i = 1; i < _mu; i++)
             _mean += elites[i] * _weights(i);
-        
+
         //Update sigma evolutionary path
-        _p_sigma = (1. - _c_sig) * _p_sigma + std::sqrt(_c_sig * (2. - _c_sig) * _mu_eff) *
-                   _invsqrtC * (_mean - _mean_old) / _sigma;
+        _p_sigma = (1. - _c_sig) * _p_sigma + std::sqrt(_c_sig * (2. - _c_sig) *
+                   _mu_eff) * _invsqrtC * (_mean - _mean_old) / _sigma;
 
         if(_adapt_C)
         {
             //Update C evolutionary path
             double h_sig = 0.;
-            h_sig = (_p_sigma.squaredNorm() / _N / 
-                    (1. - std::pow((1. - _c_sig), (2. * (double)_count_eval / _lambda))))
+            h_sig = (_p_sigma.squaredNorm() / _N /
+                    (1. - std::pow((1. - _c_sig),
+                                   (2. * (double)_count_eval / _lambda))))
                     < (2. + 4. / (_N + 1.));
-            _p_c = (1. - _c_c) * _p_c + h_sig * std::sqrt(_c_c * (2. - _c_c) * _mu_eff) 
+            _p_c = (1. - _c_c) * _p_c + h_sig * std::sqrt(_c_c * (2. - _c_c) * _mu_eff)
                     * (_mean - _mean_old) / _sigma;
-            
+
             //Compute new C
             _C_old = _C;
-            _C = (elites[0] - _mean_old) * (elites[0] - _mean_old).transpose() * _weights(0);
+            _C = (elites[0] - _mean_old) * (elites[0] - _mean_old).transpose() *
+                 _weights(0);
             for(unsigned i = 1; i < _mu; i++)
-                _C += (elites[i] - _mean_old) * 
+                _C += (elites[i] - _mean_old) *
                       (elites[i] - _mean_old).transpose() * _weights(i);
             _C /= _sigma * _sigma;
-            _C = (1. - _c_1 - _c_mu) * _C_old + _c_mu * _C + 
-                _c_1 * ((_p_c * _p_c.transpose()) + (1. - h_sig) * _c_c * (2. - _c_c) * _C_old);
+            _C = (1. - _c_1 - _c_mu) * _C_old + _c_mu * _C +
+                _c_1 * ((_p_c * _p_c.transpose()) + (1. - h_sig) * _c_c * (2. - _c_c) *
+                        _C_old);
 
         }
-        
+
         //Compute new sigma
-        _sigma *= std::exp(std::min(0.6, (_c_sig / _d_sig) * (_p_sigma.norm() / _chiN - 1.)));
+        _sigma *= std::exp(
+            std::min(0.6, (_c_sig / _d_sig) * (_p_sigma.norm() / _chiN - 1.)));
 
         //std::cout << "Mean: " << std::endl << _mean << std::endl;
         //std::cout << "C: " << std::endl << _C << std::endl;
@@ -152,15 +159,15 @@ public:
 
     }
 
-private: 
+private:
 
     Population<double, T> initialise_population() override
     {
-        auto samp_pop = sample_population(); 
+        auto samp_pop = sample_population();
         return samp_pop;
     }
 
-    Population<double, T> sample_population() 
+    Population<double, T> sample_population()
     {
 
         std::vector<Genotype<double>> genotypes;
@@ -179,7 +186,7 @@ private:
             else
                 genes = _mean + (_sigma * norm_rands);
 
-            std::vector<double> genes_vec(genes.data(), 
+            std::vector<double> genes_vec(genes.data(),
                                           genes.data() + genes.rows() * genes.cols());
             genotypes.push_back(Genotype<double>(genes_vec));
         }
@@ -190,7 +197,7 @@ private:
     void perform_eigendecompostion() {
 
         //Enforce O(N^2)
-        if(static_cast<double>(_count_eval - _eigen_eval) > 
+        if(static_cast<double>(_count_eval - _eigen_eval) >
                                (_lambda / (_c_1 + _c_mu) / _N / 10.))
         {
             _eigen_eval = _count_eval;
@@ -212,14 +219,14 @@ private:
                     _invD(i, i) = 1. / _D(i, i);
                 _invsqrtC = _B * _invD * _B.transpose();
 
-            } 
+            }
             /*
             else {
                 std::cerr << "Eigen decomposition of _C failed!" << std::endl;
                 exit(0);
             }
             */
-        } 
+        }
 
     }
 
@@ -248,7 +255,7 @@ private:
         return new CMAES(*this);
     }
 
-    void reset() override 
+    void reset() override
     {
         if(this->_seed.has_value())
             _gauss_distr.set_seed(this->_seed.value());
@@ -265,7 +272,7 @@ private:
     Eigen::MatrixXd _C;
     Eigen::MatrixXd _C_old;
     Eigen::MatrixXd _invsqrtC;
-    
+
     double _N;
     double _lambda;
 

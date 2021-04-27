@@ -30,19 +30,21 @@ public:
     //Build with hidden layers all of the same size and type
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
-                   const std::shared_ptr<ActivationFunctionSpec> activation_func_spec = 
+                   const std::shared_ptr<ActivationFunctionSpec> activation_func_spec =
                        std::make_shared<SigmoidSpec>(),
                    const bool batch_norm = false,
                    const bool bias = true,
                    const NeuronType neuron_type = NeuronType::Standard,
                    const bool trace = false);
-    
-    //Build with hidden layers all of the same size and type but different activation functions
-    //for the hidden layers and output layer
+
+    //Build with hidden layers all of the same size and type but different activation
+    //functions for the hidden layers and output layer
     NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
                    const unsigned num_hidden_layers, const unsigned neurons_per_layer,
-                   const std::shared_ptr<ActivationFunctionSpec> hl_activation_func_spec,
-                   const std::shared_ptr<ActivationFunctionSpec> ol_activation_func_spec,
+                   const std::shared_ptr<ActivationFunctionSpec>
+                       hl_activation_func_spec,
+                   const std::shared_ptr<ActivationFunctionSpec>
+                       ol_activation_func_spec,
                    const bool batch_norm = false,
                    const bool bias = true,
                    const NeuronType neuron_type = NeuronType::Standard,
@@ -66,8 +68,10 @@ public:
     void make_hebbian(const bool evolve_init_weights,
                       const std::optional<double> default_init_weight = std::nullopt,
                       const bool print_weights_to_file = false,
-                      const std::optional<std::string>& weights_file_name = std::nullopt,
-                      const std::optional<std::string>& outputs_file_name = std::nullopt);
+                      const std::optional<std::string>& weights_file_name =
+                          std::nullopt,
+                      const std::optional<std::string>& outputs_file_name =
+                          std::nullopt);
     void set_init_weights(const std::vector<double>& init_weights);
     void set_init_weight_distribution(Distribution<double>* init_weight_distr);
 
@@ -87,7 +91,8 @@ protected:
 private:
 
     unsigned required_num_genes(const std::vector<LayerSpec>& layer_specs,
-                                const std::optional<HebbsSpec>& hebbs_spec = std::nullopt);
+                                const std::optional<HebbsSpec>& hebbs_spec =
+                                    std::nullopt);
     unsigned required_num_genes(
         const unsigned num_inputs,
         const unsigned num_outputs,
@@ -106,7 +111,7 @@ private:
         const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func,
         const bool bias);
 
-    const std::pair<std::vector<double>, std::vector<double>> 
+    const std::pair<std::vector<double>, std::vector<double>>
         split_hebbs_traits(const std::vector<double>& traits) const;
 
     const std::vector<double> generate_init_weights() const;

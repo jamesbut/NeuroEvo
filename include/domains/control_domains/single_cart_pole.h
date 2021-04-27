@@ -18,12 +18,12 @@
 namespace NeuroEvo {
 
 template <typename G>
-class SingleCartPole : public Domain<G, double> 
+class SingleCartPole : public Domain<G, double>
 {
 
 public:
 
-    struct CartPoleSpecs 
+    struct CartPoleSpecs
     {
 
         double gravity = 9.8;
@@ -43,7 +43,8 @@ public:
                    const bool render = false, const bool domain_trace = false,
                    const bool print_state = false, const unsigned max_steps = 100000,
                    const double starting_x = 0., const double starting_x_dot = 0.,
-                   const double starting_theta = 0., const double starting_theta_dot = 0.) :
+                   const double starting_theta = 0.,
+                   const double starting_theta_dot = 0.) :
         Domain<G, double>(domain_trace, max_steps, std::nullopt, render),
         _max_steps(max_steps),
         _markovian(markovian),
@@ -69,7 +70,8 @@ public:
         _cart_pole.cart_height = _cart_pole.cart_width / 2;
 
         _cart_pole.cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
-        _cart_pole.cart_render_height = _cart_pole.cart_height * _cart_pole.render_scale;
+        _cart_pole.cart_render_height = _cart_pole.cart_height *
+                                        _cart_pole.render_scale;
 
         _cart_pole.specs = cart_pole_specs;
 
@@ -77,7 +79,7 @@ public:
 
 private:
 
-    double single_run(Organism<G, double>& org, unsigned rand_seed) override 
+    double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
 
         //Seed random number generator with same seed as other members of the population
@@ -85,11 +87,11 @@ private:
 
         if(_random_start) {
 
-            double x_lb, x_ub, x_dot_lb, x_dot_ub, 
+            double x_lb, x_ub, x_dot_lb, x_dot_ub,
                    theta_lb, theta_ub, theta_dot_lb, theta_dot_ub;
             if(_markovian)
             {
-               x_lb = -2.; 
+               x_lb = -2.;
                x_ub = 2.;
                x_dot_lb = -1.;
                x_dot_ub = 1.;
@@ -99,7 +101,7 @@ private:
                theta_dot_ub = 1.;
             } else
             {
-               x_lb = -1.; 
+               x_lb = -1.;
                x_ub = 1.;
                x_dot_lb = -1.;
                x_dot_ub = 1.;
@@ -114,15 +116,15 @@ private:
             const double x_rand = UniformRealDistribution::get(x_lb, x_ub, rand_seed);
             //[-1., 1.]
             //const double x_dot_rand = (lrand48()%2000)/1000.0 - 1.0;
-            const double x_dot_rand = UniformRealDistribution::get(x_dot_lb, x_dot_ub, 
+            const double x_dot_rand = UniformRealDistribution::get(x_dot_lb, x_dot_ub,
                                                                    rand_seed);
             //[-0.2, 0.2]
             //const double theta_rand = (lrand48()%400)/1000.0 - 0.2
-            const double theta_rand = UniformRealDistribution::get(theta_lb, theta_ub, 
+            const double theta_rand = UniformRealDistribution::get(theta_lb, theta_ub,
                                                                    rand_seed);
             //[-1.5, 1.5]
             //const double theta_dot_rand = (lrand48()%3000)/1000.0 - 1.5;
-            const double theta_dot_rand = UniformRealDistribution::get(theta_dot_lb, 
+            const double theta_dot_rand = UniformRealDistribution::get(theta_dot_lb,
                                                                        theta_dot_ub,
                                                                        rand_seed);
 
@@ -159,12 +161,12 @@ private:
         std::vector<double> outputs(2);
 
         //Start interaction loop
-        while(steps++ < _max_steps) 
+        while(steps++ < _max_steps)
         {
 
             if(_print_state_to_file) print_state_to_file(_cart_pole);
 
-            if(this->_domain_trace) 
+            if(this->_domain_trace)
             {
                 std::cout << "x: " << _cart_pole.x << std::endl;
                 std::cout << "x_dot: " << _cart_pole.x_dot << std::endl;
@@ -173,7 +175,7 @@ private:
             }
 
             //Not sure what these random constants are
-            if(_markovian) 
+            if(_markovian)
             {
 
                 inputs.at(0) = (_cart_pole.x + 2.4) / 4.8;
@@ -181,7 +183,7 @@ private:
                 inputs.at(2) = (_cart_pole.theta + _cart_pole.twelve_degrees) / 0.41;
                 inputs.at(3) = (_cart_pole.theta_dot + 1.0) / 2.0;
 
-            } else 
+            } else
             {
 
                 inputs.at(0) = (_cart_pole.x + 2.4) / 4.8;
@@ -200,17 +202,20 @@ private:
             const double cos_theta = cos(_cart_pole.theta);
             const double sin_theta = sin(_cart_pole.theta);
 
-            const double temp = (force + _cart_pole.specs.polemass_length * 
-                                 _cart_pole.theta_dot * _cart_pole.theta_dot * sin_theta) / 
-                                _cart_pole.specs.total_mass;
+            const double temp = (force + _cart_pole.specs.polemass_length *
+                                 _cart_pole.theta_dot * _cart_pole.theta_dot *
+                                 sin_theta) /_cart_pole.specs.total_mass;
 
-            const double thetaacc = (_cart_pole.specs.gravity * sin_theta - cos_theta * temp) /
-                                    (_cart_pole.specs.pole_half_length * 
-                                    (_cart_pole.four_thirds - _cart_pole.specs.pole_mass *
-                                     cos_theta * cos_theta / _cart_pole.specs.total_mass));
+            const double thetaacc = (_cart_pole.specs.gravity * sin_theta -
+                                     cos_theta * temp) /
+                                    (_cart_pole.specs.pole_half_length *
+                                    (_cart_pole.four_thirds -
+                                     _cart_pole.specs.pole_mass *
+                                     cos_theta * cos_theta /
+                                     _cart_pole.specs.total_mass));
 
-            const double xacc = temp - _cart_pole.specs.polemass_length * thetaacc * cos_theta /
-                                _cart_pole.specs.total_mass;
+            const double xacc = temp - _cart_pole.specs.polemass_length * thetaacc *
+                                cos_theta / _cart_pole.specs.total_mass;
 
             //Update the four state variables using Euler's method
             _cart_pole.x += _cart_pole.specs.tau * _cart_pole.x_dot;
@@ -224,9 +229,9 @@ private:
 
             //Check for failure
             if (_cart_pole.x < -_boundary || _cart_pole.x > _boundary ||
-                //_cart_pole.theta < -_cart_pole.twelve_degrees || 
+                //_cart_pole.theta < -_cart_pole.twelve_degrees ||
                 //_cart_pole.theta > _cart_pole.twelve_degrees)
-                _cart_pole.theta < -_cart_pole.fortyfive_degrees || 
+                _cart_pole.theta < -_cart_pole.fortyfive_degrees ||
                 _cart_pole.theta > _cart_pole.fortyfive_degrees)
                 return (double)steps;
 
@@ -246,11 +251,11 @@ private:
         else if(net_outputs.size() == 1)
             action = (net_outputs.at(0) > 0.5) ? true : false;
 
-        if(this->_domain_trace) 
+        if(this->_domain_trace)
             std::cout << "action: " << action << std::endl;
 
         //Apply action to cart pole
-        const double force = (action) ? _cart_pole.specs.force_mag : 
+        const double force = (action) ? _cart_pole.specs.force_mag :
                                         -_cart_pole.specs.force_mag;
         return force;
 
@@ -258,17 +263,18 @@ private:
 
     double calculate_continuous_force(const std::vector<double>& net_outputs) const
     {
-        return net_outputs[0] * 2 * _cart_pole.specs.force_mag - _cart_pole.specs.force_mag;
+        return net_outputs[0] * 2 * _cart_pole.specs.force_mag -
+               _cart_pole.specs.force_mag;
     }
 
-    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override 
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
     {
 
-        const NetworkBuilder* network_builder = 
+        const NetworkBuilder* network_builder =
             dynamic_cast<const NetworkBuilder*>(&pheno_spec);
 
         //If it is not a network
-        if(network_builder == nullptr) 
+        if(network_builder == nullptr)
         {
             std::cout << "Only network specifications are allowed with" <<
                         " the single cart pole domain!" << std::endl;
@@ -276,7 +282,7 @@ private:
         }
 
         //If it has the correct number of inputs and outputs
-        if(_markovian) 
+        if(_markovian)
         {
 
             if(network_builder->get_num_inputs() != 4)
@@ -286,18 +292,18 @@ private:
                 return false;
             }
 
-        } else 
+        } else
         {
             if(network_builder->get_num_inputs() != 2)
             {
                 std::cout << "Number of inputs must be 2 " <<
-                            "for the non-markovian single part cole domain" << 
+                            "for the non-markovian single part cole domain" <<
                             std::endl;
                 return false;
             }
         }
 
-        if((network_builder->get_num_outputs() != 1) && 
+        if((network_builder->get_num_outputs() != 1) &&
            (network_builder->get_num_outputs() != 2))
         {
             std::cerr << "Number of outputs must be 1 or 2 for SCP domain" << std::endl;
@@ -309,9 +315,9 @@ private:
     }
 
     //Cart Pole struct to store cart variables
-    struct CartPole 
+    struct CartPole
     {
-    
+
         CartPoleSpecs specs;
 
         //Rendering properties
@@ -335,7 +341,7 @@ private:
 
     };
 
-    void print_state_to_file(CartPole& cart_pole) 
+    void print_state_to_file(CartPole& cart_pole)
     {
 
         std::ofstream state_file;
@@ -352,7 +358,7 @@ private:
 
     }
 
-    void render() override 
+    void render() override
     {
 #if SFML_FOUND
         sf::Event event;
@@ -363,10 +369,12 @@ private:
         this->_window.clear(sf::Color::Black);
 
         //Render cart
-        sf::Vector2f cart_size(_cart_pole.cart_render_width, _cart_pole.cart_render_height);
+        sf::Vector2f cart_size(_cart_pole.cart_render_width,
+                               _cart_pole.cart_render_height);
         sf::RectangleShape cart(cart_size);
 
-        const float cart_pos_x = x_to_pixel_x(_cart_pole.x) - _cart_pole.cart_render_width / 2;
+        const float cart_pos_x = x_to_pixel_x(_cart_pole.x) -
+                                 _cart_pole.cart_render_width / 2;
         const float cart_pos_y = this->_screen_height/2;
         cart.setPosition(cart_pos_x, cart_pos_y);
 
@@ -374,7 +382,7 @@ private:
 
         //Render pole
         const float pole_render_width = _cart_pole.cart_render_width / 10;
-        const float pole_render_height = _cart_pole.specs.pole_half_length * 2 * 
+        const float pole_render_height = _cart_pole.specs.pole_half_length * 2 *
                                          _cart_pole.render_scale;
         sf::Vector2f pole_size(pole_render_width, pole_render_height);
         sf::RectangleShape pole(pole_size);
@@ -393,7 +401,8 @@ private:
         //Render floor
         sf::Vector2f floor_size(this->_screen_width, 10.);
         sf::RectangleShape floor(floor_size);
-        const float floor_height = this->_screen_height/2 + _cart_pole.cart_render_height;
+        const float floor_height = this->_screen_height/2 +
+                                   _cart_pole.cart_render_height;
         floor.setPosition(0., floor_height);
 
         this->_window.draw(floor);
@@ -410,7 +419,7 @@ private:
         this->_window.draw(boundary_marker_r);
 
         sf::RectangleShape boundary_marker_l(boundary_marker_size);
-        const float boundary_marker_l_x = x_to_pixel_x(-_boundary) - 
+        const float boundary_marker_l_x = x_to_pixel_x(-_boundary) -
                                           _cart_pole.cart_render_width / 2;
         boundary_marker_l.setPosition(boundary_marker_l_x, boundary_marker_y);
         boundary_marker_l.setFillColor(sf::Color::Red);

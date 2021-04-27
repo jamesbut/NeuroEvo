@@ -10,6 +10,9 @@ endif()
 
 project(neuro_evo)
 
+# Compile gym http api
+add_subdirectory(lib/gym-http-api/binding-cpp)
+
 # Boost is required
 set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
@@ -51,6 +54,9 @@ else()
     set(USE_TORCH 0)
 endif()
 
+# Find Python libs for python/C++ binding
+find_package(PythonLibs REQUIRED)
+
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
 set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -90,6 +96,8 @@ add_library(neuroEvo SHARED
 
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
+    gym_binding
+    ${PYTHON_LIBRARIES}
 )
 
 if(${USE_TORCH})
@@ -109,6 +117,8 @@ target_include_directories(neuroEvo PUBLIC
     ${Boost_INCLUDE_DIRS}
     #${TORCH_INCLUDE_DIRS}
     lib/eigen
+    lib/gym-http-api/binding-cpp/include
+    ${PYTHON_INCLUDE_DIRS}
 )
 
 # Library used for parallelisation
