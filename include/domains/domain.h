@@ -23,25 +23,21 @@ namespace NeuroEvo {
 inline std::mutex mtx;
 
 template <typename G, typename T>
-class Domain 
+class Domain
 {
 
 public:
 
-    Domain(const bool domain_trace, const double completion_fitness = 0.0, 
+    Domain(const bool domain_trace, const double completion_fitness = 0.0,
            const std::optional<unsigned> seed = std::nullopt,
-           const bool render = false, const unsigned int screen_width = 1280, 
+           const bool render = false, const unsigned int screen_width = 1280,
            const unsigned int screen_height = 960) :
         _completion_fitness(completion_fitness),
         _complete(false),
         _domain_trace(domain_trace),
         _seed(seed),
         _trial_seed_sequence(seed),
-#if SFML_FOUND
         _render(render),
-#else
-        _render(false),
-#endif
         _screen_width(screen_width),
         _screen_height(screen_height)
     {
@@ -72,8 +68,8 @@ public:
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials
-    void evaluate_population(Population<G, T>& pop, const unsigned num_trials, 
-                             const bool parallel) 
+    void evaluate_population(Population<G, T>& pop, const unsigned num_trials,
+                             const bool parallel)
     {
 
         std::vector<std::vector<double> > fitnesses;
@@ -90,7 +86,7 @@ public:
         //Get accumulated fitnesses using functor - eventually
         for(std::size_t i = 0; i < pop.get_size(); i++) {
 
-            double average_fitness = std::accumulate(fitnesses.at(i).begin(), 
+            double average_fitness = std::accumulate(fitnesses.at(i).begin(),
                                                      fitnesses.at(i).end(), 0.0) /
                                      fitnesses.at(i).size();
 
@@ -106,12 +102,12 @@ public:
 
     //Evaluate individual for a number of trials
     double evaluate_org(Organism<G, T>& org, const unsigned num_trials = 1,
-                        const bool verbosity = true) 
+                        const bool verbosity = true)
     {
 
         std::vector<double> fitnesses(num_trials);
 
-        for(unsigned i = 0; i < num_trials; i++) 
+        for(unsigned i = 0; i < num_trials; i++)
         {
 
             //Need to reset the network
@@ -120,7 +116,7 @@ public:
             const auto trial_seed = _trial_seed_sequence.next();
             trial_reset(i);
 
-            fitnesses.at(i) = single_run(org, trial_seed); 
+            fitnesses.at(i) = single_run(org, trial_seed);
 
             if(verbosity)
                 std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
@@ -136,9 +132,9 @@ public:
     //Determines whether the current population
     //has 'completed' the domain, this normally
     //comes in the form of achieving a max fitness
-    bool complete() const 
-    { 
-        return _complete; 
+    bool complete() const
+    {
+        return _complete;
     };
 
     void exp_run_reset(const unsigned run_num)
@@ -160,7 +156,7 @@ public:
         return _completion_fitness;
     }
 
-    auto clone() const 
+    auto clone() const
     {
         return std::unique_ptr<Domain>(clone_impl());
     }
@@ -200,7 +196,7 @@ protected:
     virtual double single_run(Organism<G, T>& org, unsigned rand_seed) = 0;
 
     //Checks domain for completion - can be overriden
-    virtual bool check_for_completion(Population<G, T>& population) 
+    virtual bool check_for_completion(Population<G, T>& population)
     {
         for(const auto& org : population.get_organisms())
             if(org.is_domain_winner())
@@ -248,20 +244,20 @@ protected:
 private:
 
     std::vector<std::vector<double> > evaluate_pop_serial(Population<G, T>& pop,
-                                                          const unsigned num_trials) 
+                                                          const unsigned num_trials)
     {
 
         //Store fitnesses from runs
-        std::vector<std::vector<double> > fitnesses(pop.get_size(), 
+        std::vector<std::vector<double> > fitnesses(pop.get_size(),
                                                     std::vector<double>(num_trials));
 
-        for(unsigned i = 0; i < num_trials; i++) 
+        for(unsigned i = 0; i < num_trials; i++)
         {
             //Each individual in the population has the same seed for each trial
             const auto seed = _trial_seed_sequence.next();
             trial_reset(i);
 
-            for(std::size_t j = 0; j < pop.get_size(); j++) 
+            for(std::size_t j = 0; j < pop.get_size(); j++)
             {
                 const double fitness = single_run(pop.get_mutable_organism(j), seed);
                 fitnesses[j][i] = fitness;
@@ -281,7 +277,7 @@ private:
     std::vector<std::vector<double> > evaluate_pop_parallel(Population<G, T>& pop,
                                                             const unsigned num_trials) {
 
-        std::vector<std::vector<double> > fitnesses(pop.get_size(), 
+        std::vector<std::vector<double> > fitnesses(pop.get_size(),
                                                     std::vector<double>(num_trials));
         std::vector<Organism<G, T>>& orgs = pop.get_organisms();
 
@@ -301,7 +297,7 @@ private:
 
                 //Do not spawn more threads than there are CPU cores on the machine
                 unsigned num_organisms_left = orgs.size() - num_organisms_tested;
-                unsigned num_threads_to_spawn = std::min(num_organisms_left, 
+                unsigned num_threads_to_spawn = std::min(num_organisms_left,
                                                          concurrent_threads_supported);
 
                 for(unsigned j = 0; j < num_threads_to_spawn; j++) {
@@ -343,7 +339,7 @@ private:
                         //If I didn't terminate slave, print out what did and exit
                         if(WTERMSIG(slave_info) != SIGUSR1) {
 
-                            std::cerr << "Terminated with signal: " << WTERMSIG(slave_info) << 
+                            std::cerr << "Terminated with signal: " << WTERMSIG(slave_info) <<
                                 std::endl;
 
                             //Kill all child processes

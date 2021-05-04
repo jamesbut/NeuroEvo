@@ -10,9 +10,6 @@ endif()
 
 project(neuro_evo)
 
-# Compile gym http api
-add_subdirectory(lib/gym-http-api/binding-cpp)
-
 # Boost is required
 set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
@@ -96,7 +93,6 @@ add_library(neuroEvo SHARED
 
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
-    gym_binding
     ${PYTHON_LIBRARIES}
 )
 
@@ -117,7 +113,6 @@ target_include_directories(neuroEvo PUBLIC
     ${Boost_INCLUDE_DIRS}
     #${TORCH_INCLUDE_DIRS}
     lib/eigen
-    lib/gym-http-api/binding-cpp/include
     ${PYTHON_INCLUDE_DIRS}
 )
 
