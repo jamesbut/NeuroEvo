@@ -26,13 +26,22 @@ public:
     {
         initialise_gym();
         create_gym_env();
+
+        if(!_state_size.has_value())
+            _state_size = state_size();
+        if(!_num_actions.has_value())
+            _num_actions = num_actions();
     }
 
     ~GymDomain()
     {
         //Clean up
+        //I need to see whether this is going to lead to memory leaks
         //Py_DECREF(module);
         //Py_DECREF(pName);
+
+        close();
+        //Py_Finalize();
     }
 
 
@@ -103,7 +112,6 @@ private:
 
     void create_gym_env() const
     {
-
         //Give env id string to specify environment
         PyObject* args = PyTuple_New(1);
         PyObject* string_arg = PyUnicode_FromString(_gym_env_id.c_str());
@@ -193,6 +201,93 @@ private:
         return init_state;
     }
 
+    void close() const
+    {
+        PyObject* close_func = PyDict_GetItemString(_module_dict, (char*)"close");
+
+        if(close_func == NULL)
+            PyErr_Print();
+
+        if(PyCallable_Check(close_func))
+            PyObject_CallObject(close_func, NULL);
+        else
+            PyErr_Print();
+    }
+
+    unsigned state_size() const
+    {
+        PyObject* state_size_func = PyDict_GetItemString(_module_dict,
+                                                         (char*)"state_size");
+
+        if(state_size_func == NULL)
+            PyErr_Print();
+
+        unsigned state_size;
+
+        if(PyCallable_Check(state_size_func))
+        {
+            PyObject* state_size_return = PyObject_CallObject(state_size_func, NULL);
+            state_size = PyLong_AsLong(state_size_return);
+        }
+        else
+            PyErr_Print();
+
+        return state_size;
+    }
+
+    unsigned num_actions() const
+    {
+        PyObject* num_actions_func = PyDict_GetItemString(_module_dict,
+                                                          (char*)"num_actions");
+
+        if(num_actions_func == NULL)
+            PyErr_Print();
+
+        unsigned num_actions;
+
+        if(PyCallable_Check(num_actions_func))
+        {
+            PyObject* state_size_return = PyObject_CallObject(num_actions_func, NULL);
+            num_actions = PyLong_AsLong(state_size_return);
+        }
+        else
+            PyErr_Print();
+
+        return num_actions;
+    }
+
+    bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
+    {
+        const NetworkBuilder* network_builder =
+            dynamic_cast<const NetworkBuilder*>(&pheno_spec);
+
+        //If it is not a network
+        if(network_builder == nullptr)
+        {
+            std::cout << "Only network specifications are allowed with" <<
+                        " gym domains!" << std::endl;
+            return false;
+        }
+
+        //If it has the correct number of inputs and outputs
+        if(network_builder->get_num_inputs() != _state_size.value())
+        {
+            std::cerr << "Number of inputs must be " << _state_size.value() <<
+                " for this gym domain!" << std::endl;
+            return false;
+        }
+
+        if(network_builder->get_num_outputs() != _num_actions.value())
+        {
+            std::cerr << "Number of outputs must be " << _num_actions.value() <<
+                " for this gym domain!" << std::endl;
+            return false;
+        }
+
+        return true;
+
+    }
+
     void render() override {}
     void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
     void trial_reset(const unsigned trial_num) override {}
@@ -200,6 +295,9 @@ private:
 
     const std::string _gym_env_id;
     PyObject* _module_dict;
+
+    static inline std::optional<unsigned> _state_size = std::nullopt;
+    static inline std::optional<unsigned> _num_actions = std::nullopt;
 
 };
 

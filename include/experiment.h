@@ -20,31 +20,32 @@ class Experiment {
 
 public:
 
-    //Constructs an experiment conditional on whether the phenotype specification is 
+    //Constructs an experiment conditional on whether the phenotype specification is
     //appropriate for the domain
     static std::optional<Experiment> construct(Domain<G, T>& domain,
                                                GPMap<G, T>& gp_map,
                                                const bool dump_data = true,
-                                               const bool dump_winners_only = false) 
+                                               const bool dump_winners_only = false)
     {
-        
+
         //Check phenotype specification is appropriate for domain
         if(domain.check_phenotype_spec(*gp_map.get_pheno_spec()))
             return Experiment(domain, gp_map, dump_data, dump_winners_only);
         return std::nullopt;
-        
+
     }
-    
-    void individual_run(const std::string& organism_folder_name, 
+
+    void individual_run(const std::string& organism_folder_name,
                         const unsigned num_trials = 1,
                         const bool pheno_trace = false,
                         const bool domain_trace = false,
-                        const bool render = false) 
+                        const bool render = false)
     {
 
         // View the run of the saved best_winner_so_far
         std::stringstream best_winner_path;
-        best_winner_path << DATA_PATH << "/" << organism_folder_name << "/best_winner_so_far";
+        best_winner_path << DATA_PATH << "/" << organism_folder_name
+            << "/best_winner_so_far";
 
         if(pheno_trace)
             _gp_map.set_pheno_spec_trace(pheno_trace);
@@ -97,38 +98,40 @@ public:
         {
             //Trace is off in parallel runs
             const bool trace = false;
-            const RunArguments<G, T> run_args{&_domain, optimiser, &_gp_map, _exp_dir_path, 
-                                              _dump_winners_only, _num_winners, 
-                                              _total_winners_gens, trace, domain_parallel};
+            const RunArguments<G, T> run_args{&_domain, optimiser, &_gp_map,
+                                              _exp_dir_path, _dump_winners_only,
+                                              _num_winners, _total_winners_gens, trace,
+                                              domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
-        } else 
+        } else
         {
             //This flag is only needed for parallelisation
             bool completed_flag = false;
-            for(unsigned i = 0; i < num_runs; i++) 
+            for(unsigned i = 0; i < num_runs; i++)
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(&_domain, optimiser, &_gp_map, i, _exp_dir_path, _dump_winners_only, 
-                    _num_winners, completed_flag, _total_winners_gens, trace, domain_parallel);
+                run(&_domain, optimiser, &_gp_map, i, _exp_dir_path, _dump_winners_only,
+                    _num_winners, completed_flag, _total_winners_gens, trace,
+                    domain_parallel);
             }
         }
 
         //Calculate a few statistics
         const double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
         _avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
-        
+
         const unsigned non_winners = num_runs - _num_winners;
-        const unsigned total_winners_gens_winners_only = _total_winners_gens - 
-                                                         (non_winners * 
+        const unsigned total_winners_gens_winners_only = _total_winners_gens -
+                                                         (non_winners *
                                                           optimiser.get_max_gens());
-        _avg_winners_gens_winners_only = (double)total_winners_gens_winners_only / 
+        _avg_winners_gens_winners_only = (double)total_winners_gens_winners_only /
                                          (double)_num_winners;
 
         std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
         std::cout << "Average winner generation: " << _avg_winners_gens << std::endl;
-        std::cout << "Average winner generation (only winners): " << 
+        std::cout << "Average winner generation (only winners): " <<
             _avg_winners_gens_winners_only << std::endl;
         std::cout << "Duration: " << duration << " seconds" << std::endl;
 
@@ -145,7 +148,8 @@ public:
             return collect_dirs_in(_exp_dir_path.value());
         else
         {
-            std::cerr << "_exp_dir_path does not have a value in order to collect run dirs" <<
+            std::cerr <<
+                "_exp_dir_path does not have a value in order to collect run dirs" <<
                 std::endl;
             exit(0);
         }
@@ -183,7 +187,7 @@ private:
                GPMap<G, T>& gp_map,
                const bool dump_data,
                const bool dump_winners_only) :
-        _domain(domain), 
+        _domain(domain),
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
         _dump_data(dump_data),
@@ -206,7 +210,7 @@ private:
     {
 
         //Copy and reset domain
-        std::unique_ptr<Domain<G, T>> domain = m_domain->clone();        
+        std::unique_ptr<Domain<G, T>> domain = m_domain->clone();
         domain->exp_run_reset(run_num);
 
         //Copy and reset optimiser
@@ -214,20 +218,20 @@ private:
         optimiser->reset();
 
         //Create new data collector
-        DataCollector<G, T> data_collector(exp_dir_path, optimiser->get_max_gens(), 
+        DataCollector<G, T> data_collector(exp_dir_path, optimiser->get_max_gens(),
                                            dump_winners_only, trace);
 
         //Call optimiser
         const bool optimiser_status = optimiser->optimise(*domain, data_collector);
-        
+
         // Check whether the domain was solved or not
-        if(optimiser_status) 
+        if(optimiser_status)
         {
             std::cout << "FOUND WINNER!" << std::endl;
             std::cout << "Gen: " << optimiser->get_finished_gen() << std::endl;
             num_winners++;
         } else
-            std::cout << "GA finished at gen: " << optimiser->get_finished_gen() 
+            std::cout << "GA finished at gen: " << optimiser->get_finished_gen()
                 << " with no winner :(" << std::endl;
 
         total_winners_gens += optimiser->get_finished_gen();
@@ -235,8 +239,8 @@ private:
 
     }
 
-    //In most cases the domain and genotype spec will be the same for an 
-    //evolutionary run and an individual run so they are saved as member variables 
+    //In most cases the domain and genotype spec will be the same for an
+    //evolutionary run and an individual run so they are saved as member variables
     //and taken as constructor arguments
     Domain<G, T>& _domain;
     GPMap<G, T>& _gp_map;
