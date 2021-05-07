@@ -8,6 +8,7 @@
 
 #include <domains/domain.h>
 #include <Python.h>
+#include <util/python/python_binding.h>
 
 namespace NeuroEvo {
 
@@ -22,15 +23,42 @@ public:
               const bool domain_trace = false,
               const std::optional<const unsigned> seed = std::nullopt) :
         Domain<G, double>(domain_trace, max_reward, seed, render),
-        _gym_env_id(gym_env_id)
+        _gym_env_id(gym_env_id),
+        _gym_module(initialise_gym())
     {
-        initialise_gym();
+
+        _gym_module.initialise();
+
+        _gym_module.call_function("make_env", "MountainCar-v0");
+
+        std::tuple<std::vector<double>> init_state = _gym_module.call_function<std::vector<double>>("reset");
+        std::cout << "Init state: " << std::endl;
+        for(const auto& s : std::get<0>(init_state))
+            std::cout << s << " ";
+        std::cout << std::endl;
+
+        //auto num_actions = _gym_module.call_function("num_actions");
+        auto num_actions = _gym_module.call_function<const unsigned>("num_actions");
+
+        std::cout << "Num actions: " << std::get<0>(num_actions) << std::endl;
+
+        /*
+        std::tuple<int, std::string> return_tuple =
+            _gym_module.call_function<int, std::string>("super_func", 2, 3, "seven");
+        std::cout << std::get<0>(return_tuple) << " " << std::get<1>(return_tuple) <<
+            std::endl;
+        */
+
+        exit(0);
+
         create_gym_env();
 
+        /*
         if(!_state_size.has_value())
             _state_size = state_size();
         if(!_num_actions.has_value())
             _num_actions = num_actions();
+        */
     }
 
     ~GymDomain()
@@ -46,6 +74,16 @@ public:
 
 
 private:
+
+    PythonModule initialise_gym()
+    {
+        std::stringstream gym_dir;
+        gym_dir << NEURO_EVO_CMAKE_SRC_DIR <<
+            "/include/domains/control_domains/gym";
+
+        PythonModule gym_module("gym_env", gym_dir.str());
+        return gym_module;
+    }
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
@@ -83,31 +121,6 @@ private:
         }
 
         return reward;
-    }
-
-    void initialise_gym()
-    {
-
-        Py_Initialize();
-
-        //Add correct path to python interpreter
-        std::stringstream gym_dir;
-        gym_dir << NEURO_EVO_CMAKE_SRC_DIR <<
-            "/include/domains/control_domains/gym";
-        std::string py_command = "import sys; sys.path.insert(0, '" + gym_dir.str()
-            + "')";
-        PyRun_SimpleString(py_command.c_str());
-
-        //Load the module object
-        PyObject* module_name = PyUnicode_FromString((char*)"gym_env");
-        PyObject* module = PyImport_Import(module_name);
-
-        if(module == NULL)
-            PyErr_Print();
-
-        //Turn module into dictionary
-        _module_dict = PyModule_GetDict(module);
-
     }
 
     void create_gym_env() const
@@ -295,6 +308,7 @@ private:
 
     const std::string _gym_env_id;
     PyObject* _module_dict;
+    PythonModule _gym_module;
 
     static inline std::optional<unsigned> _state_size = std::nullopt;
     static inline std::optional<unsigned> _num_actions = std::nullopt;

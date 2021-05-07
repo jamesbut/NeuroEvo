@@ -3,9 +3,12 @@ import gym
 def make_env(env_id):
     global env
     env = gym.make(env_id)
+    print("Env made python side")
+    print("Env id:", env_id)
 
 def reset():
     init_state = env.reset()
+    print("Python init sate:", init_state)
     return init_state.tolist()
 
 def step(action, render):
