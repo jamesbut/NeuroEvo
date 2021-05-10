@@ -1,6 +1,13 @@
 #ifndef _PYTHON_BINDING_H_
 #define _PYTHON_BINDING_H_
 
+/*
+ * This python binding provides an abstract interface through which one can call
+ * arbitrary python functions from a python module.
+ * I have not accounted for memory leaks, if there are memory leaks this binding
+ * could be the culprit - just need to add more Py_DECREF()
+ */
+
 #include <string>
 #include <sstream>
 #include <Python.h>
@@ -19,6 +26,7 @@ public:
         _module_name(module_name),
         _module_path(module_path) {}
 
+    //Load python module
     void initialise()
     {
         //Initialise python interpreter
@@ -33,16 +41,21 @@ public:
         PyObject* module_name = PyUnicode_FromString((char*)_module_name.c_str());
         PyObject* module = PyImport_Import(module_name);
 
+        Py_DECREF(module_name);
+
         if(module == NULL)
             PyErr_Print();
 
         //Turn module into dictionary
         _module_dict = PyModule_GetDict(module);
+
+        Py_DECREF(module);
     }
 
 
     template <typename... T, typename... Args>
-    std::tuple<T...> call_function(const std::string& func_name, Args... args) const
+    std::tuple<T...> call_function(const std::string& func_name,
+                                   const Args&... args) const
     {
         //Send function and receive result
         ResultFeeder return_feeder = ResultFeeder(send_function(func_name, args...));
@@ -58,16 +71,13 @@ public:
 private:
 
     template <typename... Args>
-    PyObject* send_function(const std::string& func_name, Args... args) const
+    PyObject* send_function(const std::string& func_name, const Args&... args) const
     {
         const unsigned num_args = sizeof...(args);
 
-        PyObject* py_args = PyTuple_New(num_args);
-
         //Convert args to PyObjects
-        std::vector<PyObject*> arg_objs;
-        (arg_objs.push_back(Converter<Args>::convert(args)), ...);
-
+        PyObject* py_args = PyTuple_New(num_args);
+        std::vector<PyObject*> arg_objs{Converter<Args>::convert(args)...};
         for(unsigned i = 0; i < num_args; i++)
             PyTuple_SetItem(py_args, i, arg_objs[i]);
 
@@ -76,22 +86,28 @@ private:
 
         if(func_obj == NULL)
         {
-            std::cerr << "Not function!!" << std::endl;
+            std::cerr << "Function name: " << func_name << std::endl;
+            std::cerr << "Not a function!!" << std::endl;
             PyErr_Print();
+            exit(0);
         }
 
+        //Call function
         if(PyCallable_Check(func_obj))
             func_return = PyObject_CallObject(func_obj, py_args);
         else
         {
-            std::cerr << "Not callable functions :(" << std::endl;
+            std::cerr << "Function name: " << func_name << std::endl;
+            std::cerr << "Not a callable function" << std::endl;
             PyErr_Print();
+            exit(0);
         }
 
         if(func_return == NULL)
         {
             std::cout << "Function return is null!" << std::endl;
             PyErr_Print();
+            exit(0);
         }
 
         return func_return;
@@ -107,6 +123,7 @@ private:
         ResultFeeder(PyObject* return_result) :
             _return_results(queue_returns(return_result)) {}
 
+        //Returns next result
         PyObject* next()
         {
             PyObject* next_result = _return_results.front();
@@ -116,6 +133,7 @@ private:
 
     private:
 
+        //Queues return value(s)
         std::queue<PyObject*> queue_returns(PyObject* return_results)
         {
             std::queue<PyObject*> return_queue;
@@ -136,9 +154,7 @@ private:
 
         std::queue<PyObject*> _return_results;
 
-
     };
-
 
     //Can't do partial specialisation on functions so I used this struct workaround
     //I need the partial specialisation for the vector<T> implementation

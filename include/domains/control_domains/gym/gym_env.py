@@ -10,8 +10,8 @@ def reset():
 
 def step(action, render):
 
-    # print("Python action:", action)
-    # print("Python render:", render)
+    print("Python action:", action)
+    print("Python render:", render)
 
     if render:
         env.render()
@@ -20,9 +20,9 @@ def step(action, render):
     #Convert numpy array to list
     s = s.tolist()
 
-    # print("Python s:", s)
-    # print("Python r:", r)
-    # print("Python done:", done)
+    print("Python s:", s)
+    print("Python r:", r)
+    print("Python done:", done)
 
     return s, r, done
 
