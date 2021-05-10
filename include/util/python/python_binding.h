@@ -6,6 +6,7 @@
 #include <Python.h>
 #include <iostream>
 #include <vector>
+#include <queue>
 
 namespace NeuroEvo {
 
@@ -39,39 +40,33 @@ public:
         _module_dict = PyModule_GetDict(module);
     }
 
+
     template <typename... T, typename... Args>
-    std::tuple<T...> call_function(const std::string& func_name, Args... args)
+    std::tuple<T...> call_function(const std::string& func_name, Args... args) const
     {
-        PyObject* func_return = send_function(func_name, args...);
+        //Send function and receive result
+        ResultFeeder return_feeder = ResultFeeder(send_function(func_name, args...));
 
         //Check to see whether return tuple is empty
         if constexpr (!(std::is_same<T, void>::value && ...))
-        {
-            std::cout << "Returning val from call function" << std::endl;
-            //TODO: Change to make tuple?
-            std::tuple<T...> return_vals{(convert_py_object<T>(func_return), ...)};
-
-            return return_vals;
-        } else
-        {
-            std::cout << "Not returning anything from call function!" << std::endl;
-            //TODO: Change to make tuple?
-            std::tuple<T...> return_vals;
-            return return_vals;
-        }
+            //Build tuple from converted python objects
+            return std::make_tuple<T...>(Converter<T>::convert(return_feeder.next())...);
+        else
+            return std::make_tuple();
     }
 
 private:
 
     template <typename... Args>
-    PyObject* send_function(const std::string& func_name, Args... args)
+    PyObject* send_function(const std::string& func_name, Args... args) const
     {
         const unsigned num_args = sizeof...(args);
 
         PyObject* py_args = PyTuple_New(num_args);
 
+        //Convert args to PyObjects
         std::vector<PyObject*> arg_objs;
-        (arg_objs.push_back(convert_to_py_object(args)), ...);
+        (arg_objs.push_back(Converter<Args>::convert(args)), ...);
 
         for(unsigned i = 0; i < num_args; i++)
             PyTuple_SetItem(py_args, i, arg_objs[i]);
@@ -81,19 +76,15 @@ private:
 
         if(func_obj == NULL)
         {
-            std::cout << "Not function!!" << std::endl;
+            std::cerr << "Not function!!" << std::endl;
             PyErr_Print();
-        } else
-            std::cout << "Function :)" << std::endl;
+        }
 
         if(PyCallable_Check(func_obj))
-        {
-            std::cout << "Callable function :)" << std::endl;
             func_return = PyObject_CallObject(func_obj, py_args);
-        }
         else
         {
-            std::cout << "Not callable functions :(" << std::endl;
+            std::cerr << "Not callable functions :(" << std::endl;
             PyErr_Print();
         }
 
@@ -107,99 +98,170 @@ private:
 
     }
 
-
-    //TODO: Redo this as specific templates like the return types
-    template <typename T>
-    PyObject* convert_to_py_object(T args) const
+    //Processes the returns from Python function calls
+    class ResultFeeder
     {
-        if constexpr (std::is_same<T, int>::value)
+
+    public:
+
+        ResultFeeder(PyObject* return_result) :
+            _return_results(queue_returns(return_result)) {}
+
+        PyObject* next()
         {
-            std::cout << "To long.." << std::endl;
-            return PyLong_FromLong(args);
-        } else if constexpr (std::is_same<T, double>::value)
-        {
-            std::cout << "To float.." << std::endl;
-            return PyFloat_FromDouble(args);
-        } else if constexpr (std::is_same<T, std::string>::value)
-        {
-            std::cout << "To string from string.." << std::endl;
-            return PyUnicode_FromString(args);
-        } else if constexpr (std::is_same<T, char*>::value)
-        {
-            std::cout << "To string from char*.." << std::endl;
-            return PyUnicode_FromString(args);
-        } else if constexpr (std::is_same<T, const char*>::value)
-        {
-            std::cout << "To string from const char*.." << std::endl;
-            return PyUnicode_FromString(args);
-        } else
-        {
-            std::cerr << "Could not convert to PyObject!!" << std::endl;
-            return new PyObject;
+            PyObject* next_result = _return_results.front();
+            _return_results.pop();
+            return next_result;
         }
-    }
+
+    private:
+
+        std::queue<PyObject*> queue_returns(PyObject* return_results)
+        {
+            std::queue<PyObject*> return_queue;
+
+            //If return type is tuple, split up and queue elements
+            if(PyTuple_Check(return_results))
+            {
+                const unsigned tup_size = PyObject_Length(return_results);
+                for(unsigned i = 0; i < tup_size; i++)
+                    return_queue.push(PyTuple_GetItem(return_results, i));
+
+            } else
+                return_queue.push(return_results);
+
+            return return_queue;
+
+        }
+
+        std::queue<PyObject*> _return_results;
+
+
+    };
+
+
+    //Can't do partial specialisation on functions so I used this struct workaround
+    //I need the partial specialisation for the vector<T> implementation
+    template <typename T>
+    struct Converter;
+
+    template <>
+    struct Converter<int> {
+        static int convert(PyObject* py_object) {
+            return PyLong_AsLong(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<const int> {
+        static const int convert(PyObject* py_object) {
+            return PyLong_AsLong(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<unsigned> {
+        static unsigned convert(PyObject* py_object) {
+            if(!PyLong_Check(py_object))
+            {
+                std::cerr << "Trying to convert py object to an unsigned int " <<
+                    "that is not an unsigned int! " << std::endl;
+                exit(0);
+
+            }
+            return PyLong_AsLong(py_object);
+        }
+        static PyObject* convert(unsigned v) {
+            return PyLong_FromLong(v);
+        }
+    };
+
+    template <>
+    struct Converter<const unsigned> {
+        static const unsigned convert(PyObject* py_object) {
+            return PyLong_AsLong(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<double> {
+        static double convert(PyObject* py_object) {
+            return PyFloat_AsDouble(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<const double> {
+        static const double convert(PyObject* py_object) {
+            return PyFloat_AsDouble(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<float> {
+        static float convert(PyObject* py_object) {
+            return PyFloat_AsDouble(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<const float> {
+        static const float convert(PyObject* py_object) {
+            return PyFloat_AsDouble(py_object);
+        }
+    };
+
+    template <>
+    struct Converter<const char*> {
+        static PyObject* convert(const char* v) {
+            return PyUnicode_FromString(v);
+        }
+    };
+
+    template <>
+    struct Converter<const std::string> {
+        static PyObject* convert(const std::string v) {
+            return PyUnicode_FromString(v.c_str());
+        }
+    };
+
+    template <>
+    struct Converter<std::string> {
+        static PyObject* convert(std::string v) {
+            return PyUnicode_FromString(v.c_str());
+        }
+    };
+
+    template <>
+    struct Converter<bool> {
+        static bool convert(PyObject* py_object) {
+            return PyLong_AsLong(py_object);
+        }
+        static PyObject* convert(bool v) {
+            return v ? Py_True : Py_False;
+        }
+    };
 
     template <typename T>
-    T convert_py_object(PyObject* py_object) const;
-
-    template <>
-    int convert_py_object(PyObject* py_object) const
+    struct Converter<std::vector<T>>
     {
-        return PyLong_AsLong(py_object);
-    }
+        static std::vector<T> convert(PyObject* py_object)
+        {
+            if(!PyList_Check(py_object))
+            {
+                std::cerr << "Trying to convert py object to a vector that is not a" <<
+                    " list!";
+                exit(0);
 
-    template <>
-    const int convert_py_object(PyObject* py_object) const
-    {
-        return PyLong_AsLong(py_object);
-    }
-
-    template <>
-    unsigned convert_py_object(PyObject* py_object) const
-    {
-        return PyLong_AsLong(py_object);
-    }
-
-    template <>
-    const unsigned convert_py_object(PyObject* py_object) const
-    {
-        return PyLong_AsLong(py_object);
-    }
-
-    template <>
-    double convert_py_object(PyObject* py_object) const
-    {
-        return PyFloat_AsDouble(py_object);
-    }
-
-    template <>
-    const double convert_py_object(PyObject* py_object) const
-    {
-        return PyFloat_AsDouble(py_object);
-    }
-
-    template <>
-    float convert_py_object(PyObject* py_object) const
-    {
-        return PyFloat_AsDouble(py_object);
-    }
-
-    template <>
-    const float convert_py_object(PyObject* py_object) const
-    {
-        return PyFloat_AsDouble(py_object);
-    }
-
-    template <>
-    std::vector<double> convert_py_object(PyObject* py_object) const
-    {
-        PyObject* py_tuple = PyList_AsTuple(py_object);
-        const unsigned tup_size = PyObject_Length(py_tuple);
-        std::vector<double> list_vec(tup_size);
-        for(unsigned i = 0; i < tup_size; i++)
-            list_vec[i] = convert_py_object<double>(PyTuple_GetItem(py_tuple, i));
-        return list_vec;
-    }
+            }
+            PyObject* py_tuple = PyList_AsTuple(py_object);
+            const unsigned tup_size = PyObject_Length(py_tuple);
+            std::vector<T> list_vec(tup_size);
+            for(unsigned i = 0; i < tup_size; i++)
+                list_vec[i] = Converter<T>::convert(PyTuple_GetItem(py_tuple, i));
+            return list_vec;
+        }
+    };
 
     const std::string _module_name;
     const std::string _module_path;

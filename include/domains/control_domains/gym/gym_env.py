@@ -3,29 +3,30 @@ import gym
 def make_env(env_id):
     global env
     env = gym.make(env_id)
-    print("Env made python side")
-    print("Env id:", env_id)
 
 def reset():
     init_state = env.reset()
-    print("Python init sate:", init_state)
     return init_state.tolist()
 
 def step(action, render):
+
+    # print("Python action:", action)
+    # print("Python render:", render)
 
     if render:
         env.render()
     s, r, done, info = env.step(action)
 
-    #print("Python s:", s)
-
     #Convert numpy array to list
     s = s.tolist()
+
+    # print("Python s:", s)
+    # print("Python r:", r)
+    # print("Python done:", done)
 
     return s, r, done
 
 def close():
-    print("Closing")
     env.close()
 
 def num_actions():
