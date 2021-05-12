@@ -74,6 +74,7 @@ private:
             reward += step_return.reward;
             done = step_return.done;
 
+
             if(this->_domain_trace)
             {
                 std::cout << "net_outs: ";
@@ -154,8 +155,23 @@ private:
     }
 
     void render() override {}
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override
+    {
+        //Seed
+        if(this->_seed.has_value())
+            _gym_module.call_function("seed", run_seed);
+    }
+
     void trial_reset(const unsigned trial_num) override {}
+
+    void org_reset() override
+    {
+        //Seed
+        if(this->_seed.has_value())
+            _gym_module.call_function("seed", this->_seed.value());
+    }
+
 
     PythonModule _gym_module;
 

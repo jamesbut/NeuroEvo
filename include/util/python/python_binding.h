@@ -32,7 +32,7 @@ public:
         //Initialise python interpreter
         Py_Initialize();
 
-        //Add correct path to python interpreter
+        //Add module path to python interpreter
         std::string import_command = "import sys; sys.path.insert(0, '" + _module_path
             + "')";
         PyRun_SimpleString(import_command.c_str());
@@ -50,6 +50,9 @@ public:
         _module_dict = PyModule_GetDict(module);
 
         Py_DECREF(module);
+
+
+        PyCFunction_Call();
     }
 
 

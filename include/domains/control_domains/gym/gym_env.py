@@ -1,17 +1,15 @@
 import gym
 
-def make_env(env_id):
+def make_env(env_id, **kwargs):
     global env
-    env = gym.make(env_id)
+    print("Making env:", env_id)
+    env = gym.make(env_id, **kwargs)
 
 def reset():
     init_state = env.reset()
     return init_state.tolist()
 
 def step(action, render):
-
-    print("Python action:", action)
-    print("Python render:", render)
 
     if render:
         env.render()
@@ -20,9 +18,13 @@ def step(action, render):
     #Convert numpy array to list
     s = s.tolist()
 
+    '''
+    print("Python action:", action)
+    print("Python render:", render)
     print("Python s:", s)
     print("Python r:", r)
     print("Python done:", done)
+    '''
 
     return s, r, done
 
@@ -35,16 +37,12 @@ def num_actions():
 def state_size():
     return env.observation_space.shape[0]
 
-'''
-make_env('MountainCar-v0')
-#init_state = reset()
-#step_state = step(2, False)
+def seed(seed_val):
+    env.seed(seed_val)
 
-#print("Init state:", init_state)
-#print("Step state:", step_state)
+make_env('CartPole-v0', gravity=8.7)
+init_state = reset()
+step_state = step(1, False)
 
-print("Observation space:", observation_space())
-print("Obs shape:", state_size())
-print("Action space:", action_space())
-print("Num actions:", num_actions())
-'''
+print("Init state:", init_state)
+print("Step state:", step_state)

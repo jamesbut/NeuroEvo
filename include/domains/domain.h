@@ -123,7 +123,8 @@ public:
 
         }
 
-        return std::accumulate(fitnesses.begin(), fitnesses.end(), 0.0) / fitnesses.size();
+        return std::accumulate(fitnesses.begin(), fitnesses.end(), 0.0)
+                               / fitnesses.size();
 
     }
 
@@ -211,8 +212,15 @@ protected:
     virtual void render() = 0;
 
     //All domains should implement how they are reset
+    //I actually think these do not need to be abstract, it is not essential
+    //that they have implementations
+
+    //Reset after each experiment
     virtual void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) = 0;
+    //Reset after each trial
     virtual void trial_reset(const unsigned trial_num) = 0;
+    //Reset after each organism is evaluated
+    virtual void org_reset() {}
 
     //The fitness at which the domain is considered
     //solved
@@ -259,6 +267,7 @@ private:
 
             for(std::size_t j = 0; j < pop.get_size(); j++)
             {
+                org_reset();
                 const double fitness = single_run(pop.get_mutable_organism(j), seed);
                 fitnesses[j][i] = fitness;
                 pop.organism_genesis(j);
