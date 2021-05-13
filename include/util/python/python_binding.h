@@ -50,9 +50,6 @@ public:
         _module_dict = PyModule_GetDict(module);
 
         Py_DECREF(module);
-
-
-        PyCFunction_Call();
     }
 
 
@@ -66,7 +63,8 @@ public:
         //Check to see whether return tuple is empty
         if constexpr (!(std::is_same<T, void>::value && ...))
             //Build tuple from converted python objects
-            return std::make_tuple<T...>(Converter<T>::convert(return_feeder.next())...);
+            return std::make_tuple<T...>(
+                Converter<T>::convert(return_feeder.next())...);
         else
             return std::make_tuple();
     }
@@ -76,13 +74,24 @@ private:
     template <typename... Args>
     PyObject* send_function(const std::string& func_name, const Args&... args) const
     {
-        const unsigned num_args = sizeof...(args);
-
-        //Convert args to PyObjects
-        PyObject* py_args = PyTuple_New(num_args);
+        //Convert arguments to appropriate PyObjects
         std::vector<PyObject*> arg_objs{Converter<Args>::convert(args)...};
-        for(unsigned i = 0; i < num_args; i++)
+
+        //Pull dictionary out and assume this is the kwargs
+        PyObject* py_kwargs = NULL;
+        for(auto it = arg_objs.begin(); it != arg_objs.end(); it++)
+            if(PyDict_Check(*it))
+            {
+                py_kwargs = *it;
+                arg_objs.erase(it);
+                break;
+            }
+
+        //Put the rest of the arguments in a tuple
+        PyObject* py_args = PyTuple_New(arg_objs.size());
+        for(std::size_t i = 0; i < arg_objs.size(); i++)
             PyTuple_SetItem(py_args, i, arg_objs[i]);
+
 
         PyObject* func_obj = PyDict_GetItemString(_module_dict, func_name.c_str());
         PyObject* func_return;
@@ -97,7 +106,7 @@ private:
 
         //Call function
         if(PyCallable_Check(func_obj))
-            func_return = PyObject_CallObject(func_obj, py_args);
+            func_return = PyObject_Call(func_obj, py_args, py_kwargs);
         else
         {
             std::cerr << "Function name: " << func_name << std::endl;
@@ -207,12 +216,18 @@ private:
         static double convert(PyObject* py_object) {
             return PyFloat_AsDouble(py_object);
         }
+        static PyObject* convert(double v) {
+            return PyFloat_FromDouble(v);
+        }
     };
 
     template <>
     struct Converter<const double> {
         static const double convert(PyObject* py_object) {
             return PyFloat_AsDouble(py_object);
+        }
+        static PyObject* convert(const double v) {
+            return PyFloat_FromDouble(v);
         }
     };
 
@@ -279,6 +294,35 @@ private:
             for(unsigned i = 0; i < tup_size; i++)
                 list_vec[i] = Converter<T>::convert(PyTuple_GetItem(py_tuple, i));
             return list_vec;
+        }
+    };
+
+    template <typename T>
+    struct Converter<std::map<std::string, T>>
+    {
+        //Convert map to python dictionary
+        static PyObject* convert(std::map<std::string, T> v) {
+            PyObject* py_dict = PyDict_New();
+            for(auto& item : v)
+                PyDict_SetItem(py_dict,
+                               Converter<std::string>::convert(item.first),
+                               Converter<T>::convert(item.second));
+            return py_dict;
+        }
+    };
+
+    //TODO: Find some way to remove duplicate code for const versions
+    template <typename T>
+    struct Converter<std::map<const std::string, const T>>
+    {
+        //Convert map to python dictionary
+        static PyObject* convert(std::map<const std::string, const T> v) {
+            PyObject* py_dict = PyDict_New();
+            for(auto& item : v)
+                PyDict_SetItem(py_dict,
+                               Converter<const std::string>::convert(item.first),
+                               Converter<const T>::convert(item.second));
+            return py_dict;
         }
     };
 

@@ -15,9 +15,10 @@ class CartPole : public GymDomain<G>
 
 public:
 
-    CartPole(const bool render = false, const bool domain_trace = false,
+    CartPole(const std::optional<const GymMakeKwargs>& kwargs,
+             const bool render = false, const bool domain_trace = false,
              const std::optional<const unsigned> seed = std::nullopt) :
-        GymDomain<G>("CartPole-v0", 200., render, domain_trace, seed) {}
+        GymDomain<G>("CartPole-v0", kwargs, 200., render, domain_trace, seed) {}
 
 private:
 

@@ -3,6 +3,7 @@ import gym
 def make_env(env_id, **kwargs):
     global env
     print("Making env:", env_id)
+    print("kwargs:", kwargs)
     env = gym.make(env_id, **kwargs)
 
 def reset():
@@ -40,9 +41,11 @@ def state_size():
 def seed(seed_val):
     env.seed(seed_val)
 
+'''
 make_env('CartPole-v0', gravity=8.7)
 init_state = reset()
 step_state = step(1, False)
 
 print("Init state:", init_state)
 print("Step state:", step_state)
+'''

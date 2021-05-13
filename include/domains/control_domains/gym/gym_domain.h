@@ -11,13 +11,35 @@
 
 namespace NeuroEvo {
 
+//Keyword arguments that can be handed to env.make() on the Python side
+struct GymMakeKwargs
+{
+public:
+
+    void set_kwarg(const std::string& kwarg_name, const double kwarg_val)
+    {
+        _kwargs.insert({kwarg_name, kwarg_val});
+    }
+
+    std::map<const std::string, const double> get_kwargs() const
+    {
+        return _kwargs;
+    }
+
+private:
+
+    std::map<const std::string, const double> _kwargs;
+};
+
 template <typename G>
 class GymDomain : public Domain<G, double>
 {
 
 public:
 
-    GymDomain(const std::string gym_env_id, const double max_reward = 1e6,
+    GymDomain(const std::string gym_env_id,
+              const std::optional<const GymMakeKwargs>& kwargs = std::nullopt,
+              const double max_reward = 1e6,
               const bool render = false,
               const bool domain_trace = false,
               const std::optional<const unsigned> seed = std::nullopt) :
@@ -26,7 +48,10 @@ public:
     {
 
         //Make environment
-        _gym_module.call_function("make_env", gym_env_id);
+        if(kwargs.has_value())
+            _gym_module.call_function("make_env", gym_env_id, kwargs->get_kwargs());
+        else
+            _gym_module.call_function("make_env", gym_env_id);
 
         //Get state and action sizes
         _state_size = std::get<0>(_gym_module.call_function<unsigned>("state_size"));
