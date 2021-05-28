@@ -295,6 +295,14 @@ private:
                 list_vec[i] = Converter<T>::convert(PyTuple_GetItem(py_tuple, i));
             return list_vec;
         }
+
+        static PyObject* convert(std::vector<T> v)
+        {
+            PyObject* py_list = PyList_New(v.size());
+            for(std::size_t i = 0; i < v.size(); i++)
+                PyList_SET_ITEM(py_list, i, Converter<T>::convert(v[i]));
+            return py_list;
+        }
     };
 
     template <typename T>

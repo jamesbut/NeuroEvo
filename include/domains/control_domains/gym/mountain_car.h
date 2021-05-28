@@ -15,9 +15,11 @@ class MountainCar : public GymDomain<G>
 
 public:
 
-    MountainCar(const bool render = false, const bool domain_trace = false,
+    MountainCar(const std::optional<const GymMakeKwargs>& kwargs,
+                const bool render = false, const bool domain_trace = false,
                 const std::optional<const unsigned> seed = std::nullopt) :
-        GymDomain<G>("MountainCar-v0", -110., render, domain_trace, seed) {}
+        GymDomain<G>("MountainCar-v0", SpaceType::Discrete, kwargs, -110., render,
+                     domain_trace, seed) {}
 
 private:
 

@@ -8,6 +8,7 @@
 
 #include <domains/domain.h>
 #include <util/python/python_binding.h>
+#include <domains/control_domains/gym/space.h>
 
 namespace NeuroEvo {
 
@@ -38,13 +39,15 @@ class GymDomain : public Domain<G, double>
 public:
 
     GymDomain(const std::string gym_env_id,
+              const SpaceType action_space_type,
               const std::optional<const GymMakeKwargs>& kwargs = std::nullopt,
               const double max_reward = 1e6,
               const bool render = false,
               const bool domain_trace = false,
               const std::optional<const unsigned> seed = std::nullopt) :
         Domain<G, double>(domain_trace, max_reward, seed, render),
-        _gym_module(initialise_gym_module())
+        _gym_module(initialise_gym_module()),
+        _action_space_type(action_space_type)
     {
 
         //Make environment
@@ -53,17 +56,55 @@ public:
         else
             _gym_module.call_function("make_env", gym_env_id);
 
-        //Get state and action sizes
+        //Get state size
         _state_size = std::get<0>(_gym_module.call_function<unsigned>("state_size"));
-        _num_actions = std::get<0>(_gym_module.call_function<unsigned>("num_actions"));
+
+        //Get action space
+        if(_action_space_type == SpaceType::Box)
+        {
+            auto action_space_tup =
+                _gym_module.call_function<std::vector<unsigned>,
+                                          const double,
+                                          const double>("action_space");
+            _action_space = std::make_unique<BoxSpace>(std::get<0>(action_space_tup),
+                                                       std::get<1>(action_space_tup),
+                                                       std::get<2>(action_space_tup));
+        } else if (_action_space_type == SpaceType::Discrete)
+        {
+            auto action_space_tup = _gym_module.call_function<const unsigned>(
+                "action_space"
+            );
+            _action_space = std::make_unique<DiscreteSpace>(
+                std::get<0>(action_space_tup)
+            );
+        }
+
+        std::cout << "Action space: ";
+        _action_space->print();
 
     }
 
-    ~GymDomain()
+    ~GymDomain() = default;
+
+    GymDomain(const GymDomain& gym_domain) :
+        Domain<G, double>(gym_domain._domain_trace, gym_domain._completion_fitness,
+                          gym_domain._seed, gym_domain._render),
+        _gym_module(gym_domain._gym_module),
+        _state_size(gym_domain._state_size),
+        _action_space_type(gym_domain._action_space_type),
+        _action_space(gym_domain._action_space->clone()) {}
+
+    GymDomain(GymDomain&& gym_domain) = default;
+
+    GymDomain& operator=(const GymDomain& gym_domain)
     {
-        //Clean up
+        _gym_module = gym_domain._gym_module;
+        _state_size = gym_domain._state_size;
+        _action_space_type = gym_domain._action_space_type;
+        _action_space = gym_domain._action_space->clone();
     }
 
+    GymDomain& operator=(GymDomain&& gym_domain) = default;
 
 private:
 
@@ -90,23 +131,41 @@ private:
         {
             const std::vector<double> net_outs = org.get_phenotype().activate(state);
 
-            const unsigned max_action =
-                std::max_element(net_outs.begin(), net_outs.end()) - net_outs.begin();
-
-            const StepReturn step_return = step(max_action);
-
-            state = step_return.state;
-            reward += step_return.reward;
-            done = step_return.done;
-
-
             if(this->_domain_trace)
             {
                 std::cout << "net_outs: ";
                 for(auto v : net_outs)
                     std::cout << v << " ";
                 std::cout << std::endl;
-                std::cout << "Max action: " << max_action << std::endl;
+            }
+
+            StepReturn step_return;
+
+            //If action space is discrete, choose maximum net output index as action
+            if(_action_space_type == SpaceType::Discrete)
+            {
+                const unsigned max_action =
+                    std::max_element(net_outs.begin(), net_outs.end())
+                    - net_outs.begin();
+
+                if(this->_domain_trace)
+                    std::cout << "Max action: " << max_action << std::endl;
+
+                step_return = step(max_action);
+
+            } else if(_action_space_type == SpaceType::Box)
+            {
+                //TODO: Scale output between low and high
+                //Check for output activation function
+                step_return = step(net_outs);
+            }
+
+            state = step_return.state;
+            reward += step_return.reward;
+            done = step_return.done;
+
+            if(this->_domain_trace)
+            {
                 step_return.print();
                 std::cout << "Total reward: " << reward << std::endl;
             }
@@ -138,7 +197,8 @@ private:
         }
     };
 
-    StepReturn step(const unsigned action) const
+    template <typename A>
+    StepReturn step(const A& action) const
     {
         auto step_return = _gym_module.call_function<std::vector<double>, double, bool>
             ("step", action, this->_render);
@@ -168,10 +228,11 @@ private:
             return false;
         }
 
-        if(network_builder->get_num_outputs() != _num_actions)
+        if(network_builder->get_num_outputs() != _action_space->get_num_elements())
         {
-            std::cerr << "Number of outputs must be " << _num_actions <<
-                " for this gym domain!" << std::endl;
+            std::cerr << "Number of outputs must be " <<
+                _action_space->get_num_elements() << " for this gym domain!" <<
+                std::endl;
             return false;
         }
 
@@ -201,7 +262,9 @@ private:
     PythonModule _gym_module;
 
     unsigned _state_size;
-    unsigned _num_actions;
+
+    const SpaceType _action_space_type;
+    std::unique_ptr<Space> _action_space;
 
 };
 

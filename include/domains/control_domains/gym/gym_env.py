@@ -1,4 +1,5 @@
 import gym
+from gym.spaces import Discrete, Box
 
 def make_env(env_id, **kwargs):
     global env
@@ -32,8 +33,11 @@ def step(action, render):
 def close():
     env.close()
 
-def num_actions():
-    return env.action_space.n
+def action_space():
+    if isinstance(env.action_space, Discrete):
+        return env.action_space.n
+    if isinstance(env.action_space, Box):
+        return list(env.action_space.shape), env.action_space.low, env.action_space.high
 
 def state_size():
     return env.observation_space.shape[0]
