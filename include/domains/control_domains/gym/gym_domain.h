@@ -9,6 +9,7 @@
 #include <domains/domain.h>
 #include <util/python/python_binding.h>
 #include <domains/control_domains/gym/space.h>
+#include <phenotype/phenotype_specs/network_builder.h>
 
 namespace NeuroEvo {
 
@@ -122,6 +123,15 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
+        /*
+        const std::unique_ptr<const Network> final_layer_activ_func(
+            dynamic_cast<const Network*>(&org.get_phenotype())
+        );
+
+        const auto& layers =
+            dynamic_cast<const Network*>(&org.get_phenotype())->get_layers();
+        */
+
         double reward = 0.;
         bool done = false;
 
@@ -153,10 +163,15 @@ private:
 
                 step_return = step(max_action);
 
+            //If action space is box, scale the network outputs to the min and max
+            //value that the action can take
             } else if(_action_space_type == SpaceType::Box)
             {
                 //TODO: Scale output between low and high
                 //Check for output activation function
+
+                //auto final_layer_activ_func = org.get_phenotype()
+
                 step_return = step(net_outs);
             }
 

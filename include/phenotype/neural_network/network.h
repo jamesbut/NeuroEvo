@@ -10,7 +10,7 @@
 
 namespace NeuroEvo {
 
-class Network : public Phenotype<double> 
+class Network : public Phenotype<double>
 {
 
 public:
@@ -31,11 +31,13 @@ public:
 
     std::vector<double> get_weights() const;
 
+    const std::vector<std::unique_ptr<Layer>>& get_layers() const;
+
 protected:
 
-    virtual Network* clone_impl() const override 
-    { 
-        return new Network(*this); 
+    virtual Network* clone_impl() const override
+    {
+        return new Network(*this);
     };
 
     std::vector<double> propogate(const std::vector<double>& inputs);

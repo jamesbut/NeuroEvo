@@ -80,11 +80,20 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # Remove torch related files from compilation
 if(NOT ${USE_TORCH})
     list(REMOVE_ITEM SOURCES
-         "${NEURO_EVO_CMAKE_SRC_DIR}/src/phenotype/neural_network/torch_network.cpp"
-         "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch_utils.cpp"
-         "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/generative_models/autoencoder.cpp"
-         "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/generative_models/gan.cpp"
-         "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/generative_models/vae.cpp")
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/phenotype/neural_network/torch_network.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/batch_utils.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/module_utils.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/tensor_utils.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/weight_initialisation.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/schedulers/learning_rate_scheduler.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/schedulers/per_epoch_lr.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/schedulers/reduce_lr_on_plateau.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/torch/schedulers/step_lr.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/supervised_model.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/trainable_model.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/unsupervised_models/autoencoder.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/unsupervised_models/gan.cpp"
+        "${NEURO_EVO_CMAKE_SRC_DIR}/src/util/models/unsupervised_models/vae.cpp")
 endif()
 
 add_library(neuroEvo SHARED

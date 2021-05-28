@@ -4,7 +4,7 @@
 namespace NeuroEvo {
 
 Network::Network(const bool trace) :
-    Phenotype<double>(trace) {} 
+    Phenotype<double>(trace) {}
 
 Network::Network(const Network& network) :
     Phenotype<double>(network._trace),
@@ -14,7 +14,7 @@ Network::Network(const Network& network) :
         _layers[i] = network._layers[i]->clone();
 }
 
-void Network::create_net(const std::vector<LayerSpec>& layer_specs) 
+void Network::create_net(const std::vector<LayerSpec>& layer_specs)
 {
     for(const auto& layer_spec : layer_specs)
         _layers.push_back(
@@ -29,10 +29,10 @@ void Network::create_net(const std::vector<LayerSpec>& layer_specs)
     for(const auto& layer : _layers)
         num_weights += layer->get_number_of_weights();
     _num_params = num_weights;
-    
+
 }
 
-void Network::propogate_weights(const std::vector<double>& weights) 
+void Network::propogate_weights(const std::vector<double>& weights)
 {
 
     auto start = weights.begin();
@@ -52,7 +52,7 @@ void Network::propogate_weights(const std::vector<double>& weights)
 
 }
 
-std::vector<double> Network::activate(const std::vector<double>& inputs) 
+std::vector<double> Network::activate(const std::vector<double>& inputs)
 {
     return propogate(inputs);
 }
@@ -88,11 +88,16 @@ std::vector<double> Network::get_weights() const
 
 }
 
-std::vector<double> Network::propogate(const std::vector<double>& inputs) 
+const std::vector<std::unique_ptr<Layer>>& Network::get_layers() const
+{
+    return _layers;
+}
+
+std::vector<double> Network::propogate(const std::vector<double>& inputs)
 {
     std::vector<double> ins = inputs;
 
-    for(std::size_t i = 0; i < _layers.size(); i++) 
+    for(std::size_t i = 0; i < _layers.size(); i++)
     {
         if(_trace) std::cout << "\nLayer: " << i << std::endl;
         ins = _layers[i]->evaluate(ins);
