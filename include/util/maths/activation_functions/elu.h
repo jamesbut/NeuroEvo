@@ -8,22 +8,15 @@ namespace NeuroEvo {
 class ELU : public ActivationFunction
 {
 
-public: 
+public:
 
-    ELU(const double alpha = 1.) :
-        _alpha(alpha) {}
+    ELU(const double alpha = 1.);
 
-    double activate(const double x) override
-    {
-        return (x > 0) ? x : _alpha * (exp(x) - 1);
-    }
+    double activate(const double x) override;
 
 private:
 
-    ELU* clone_impl() const override
-    {
-        return new ELU(*this);
-    }
+    ELU* clone_impl() const override;
 
     const double _alpha;
 

@@ -30,8 +30,8 @@ public:
     void set_trace(const bool trace) override;
 
     std::vector<double> get_weights() const;
-
     const std::vector<std::unique_ptr<Layer>>& get_layers() const;
+    const std::shared_ptr<ActivationFunction> get_final_layer_activ_func() const;
 
 protected:
 

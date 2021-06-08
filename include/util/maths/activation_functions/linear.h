@@ -5,22 +5,18 @@
 
 namespace NeuroEvo {
 
-class Linear : public ActivationFunction 
+class Linear : public ActivationFunction
 {
 
 public:
 
-    double activate(const double x) override 
-    {
-        return x;
-    }
+    Linear();
 
-protected:
+    double activate(const double x) override;
 
-    Linear* clone_impl() const override 
-    { 
-        return new Linear(*this); 
-    };
+private:
+
+    Linear* clone_impl() const override;
 
 };
 

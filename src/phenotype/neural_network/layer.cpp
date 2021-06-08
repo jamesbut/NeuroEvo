@@ -11,7 +11,8 @@ Layer::Layer(const LayerSpec& layer_spec, const bool trace) :
     _num_neurons(layer_spec.get_num_neurons()),
     _neuron_type(layer_spec.get_neuron_type()),
     _activation_function(layer_spec.get_activation_func_spec() ?
-                         layer_spec.get_activation_func_spec()->create_activation_function() :
+                         layer_spec.get_activation_func_spec()
+                         ->create_activation_function() :
                          nullptr),
     _bias(layer_spec.get_bias()) {}
 
@@ -21,10 +22,10 @@ Layer::Layer(const Layer& layer) :
     _params_per_neuron(layer._params_per_neuron),
     _num_neurons(layer._num_neurons),
     _neuron_type(layer._neuron_type),
-    _activation_function(layer._activation_function ? 
+    _activation_function(layer._activation_function ?
                          layer._activation_function->clone() : nullptr),
     _bias(layer._bias),
-    _neurons(layer._num_neurons) 
+    _neurons(layer._num_neurons)
 {
     for(std::size_t i = 0; i < _neurons.size(); i++)
         _neurons[i] = layer._neurons[i]->clone();
@@ -34,19 +35,19 @@ void Layer::create_layer()
 {
     if(_neuron_type == NeuronType::GRU)
         for(unsigned i = 0; i < _num_neurons; i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_inputs_per_neuron, 
+            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_inputs_per_neuron,
                                                                      _activation_function,
                                                                      _trace)));
     else
         for(unsigned i = 0; i < _num_neurons; i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(_inputs_per_neuron, 
+            _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(_inputs_per_neuron,
                                                                   _neuron_type,
                                                                   _activation_function,
                                                                   _bias,
                                                                   _trace)));
 }
 
-void Layer::set_weights(const std::vector<double>& weights) 
+void Layer::set_weights(const std::vector<double>& weights)
 {
 
     auto start = weights.begin();
@@ -68,7 +69,7 @@ void Layer::set_weights(const std::vector<double>& weights)
 
 void Layer::set_trace(const bool trace)
 {
-   _trace = trace; 
+   _trace = trace;
    for(const auto& neuron : _neurons)
        neuron->set_trace(trace);
 }
@@ -80,7 +81,7 @@ unsigned Layer::get_number_of_weights() const
 
 std::vector<double> Layer::get_weights() const
 {
-    std::vector<double> weights; 
+    std::vector<double> weights;
     for(const auto& neuron : _neurons)
     {
         auto neuron_weights = neuron->get_weights();
@@ -89,7 +90,12 @@ std::vector<double> Layer::get_weights() const
     return weights;
 }
 
-std::vector<double> Layer::evaluate(const std::vector<double>& inputs) 
+const std::shared_ptr<ActivationFunction>& Layer::get_activation_function() const
+{
+    return _activation_function;
+}
+
+std::vector<double> Layer::evaluate(const std::vector<double>& inputs)
 {
 
     std::vector<double> outputs;
@@ -111,7 +117,7 @@ std::vector<double> Layer::evaluate(const std::vector<double>& inputs)
 
 }
 
-void Layer::print_outputs(const std::vector<double>& outputs) 
+void Layer::print_outputs(const std::vector<double>& outputs)
 {
 
     std::cout << "\n";
@@ -123,7 +129,7 @@ void Layer::print_outputs(const std::vector<double>& outputs)
 
 }
 
-void Layer::reset() 
+void Layer::reset()
 {
     for(auto& neuron : _neurons)
         neuron->reset();
@@ -141,7 +147,7 @@ void Layer::print_weights_to_file(std::ofstream& file) const
         neuron->print_weights_to_file(file);
 }
 
-void Layer::print_outputs_to_file(std::ofstream& file) const 
+void Layer::print_outputs_to_file(std::ofstream& file) const
 {
     for(const auto& neuron : _neurons)
         neuron->print_output_to_file(file);

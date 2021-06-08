@@ -32,6 +32,7 @@ public:
 
     unsigned get_number_of_weights() const;
     std::vector<double> get_weights() const;
+    const std::shared_ptr<ActivationFunction>& get_activation_function() const;
 
     std::vector<double> evaluate(const std::vector<double>& inputs);
 

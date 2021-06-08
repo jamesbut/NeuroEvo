@@ -5,22 +5,18 @@
 
 namespace NeuroEvo {
 
-class ReLU : public ActivationFunction 
+class ReLU : public ActivationFunction
 {
 
 public:
 
-    double activate(const double x) override 
-    {
-        return (x > 0) ? x : 0;
-    }
+    ReLU();
 
-protected:
+    double activate(const double x) override;
 
-    ReLU* clone_impl() const override 
-    { 
-        return new ReLU(*this); 
-    };
+private:
+
+    ReLU* clone_impl() const override;
 
 };
 

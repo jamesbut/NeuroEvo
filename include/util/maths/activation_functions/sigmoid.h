@@ -6,24 +6,18 @@
 
 namespace NeuroEvo {
 
-class Sigmoid : public ActivationFunction 
+class Sigmoid : public ActivationFunction
 {
 
 public:
 
-    Sigmoid(const double k = 1.) :
-        _k(k) {}
+    Sigmoid(const double k = 1.);
 
-    double activate(const double x) override 
-    {
-        return 1 / (1 + exp(-x / _k));
-    }
-
-protected:
-
-    Sigmoid* clone_impl() const override { return new Sigmoid(*this); };
+    double activate(const double x) override;
 
 private:
+
+    Sigmoid* clone_impl() const override;
 
     const double _k;
 

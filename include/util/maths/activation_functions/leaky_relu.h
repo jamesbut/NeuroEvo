@@ -10,21 +10,13 @@ class LeakyReLU : public ActivationFunction
 
 public:
 
-    LeakyReLU(const double negative_slope = 0.01) :
-        ActivationFunction(),
-        _negative_slope(negative_slope) {}
+    LeakyReLU(const double negative_slope = 0.01);
 
-    double activate(const double x) override
-    {
-        return (x > 0) ? x : _negative_slope * x;
-    }
+    double activate(const double x) override;
 
 private:
 
-    LeakyReLU* clone_impl() const override
-    {
-        return new LeakyReLU(*this);
-    }
+    LeakyReLU* clone_impl() const override;
 
     const double _negative_slope;
 

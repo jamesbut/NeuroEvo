@@ -7,27 +7,37 @@
 */
 
 #include <memory>
+#include <util/maths/number_bound.h>
 
 namespace NeuroEvo {
 
-class ActivationFunction 
+class ActivationFunction
 {
 
 public:
+
+    ActivationFunction(const NumberBound& lower_bound, const NumberBound& upper_bound);
 
     virtual ~ActivationFunction() = default;
 
     virtual double activate(const double x) = 0;
 
-    auto clone() const 
-    { 
-        return std::unique_ptr<ActivationFunction>(clone_impl()); 
-    };
+    auto clone() const
+    {
+        return std::unique_ptr<ActivationFunction>(clone_impl());
+    }
 
+    const NumberBound& get_lower_bound() const;
+    const NumberBound& get_upper_bound() const;
 
 protected:
 
     virtual ActivationFunction* clone_impl() const = 0;
+
+private:
+
+    const NumberBound _lower_bound;
+    const NumberBound _upper_bound;
 
 };
 

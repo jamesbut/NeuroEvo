@@ -10,8 +10,11 @@
 
 namespace NeuroEvo {
 
-struct Space
+class Space
 {
+
+public:
+
     virtual ~Space() = default;
 
     auto clone() const
@@ -28,68 +31,41 @@ protected:
 
 };
 
-struct DiscreteSpace : Space
+class DiscreteSpace : public Space
 {
-    DiscreteSpace(const unsigned n) :
-        _n(n) {}
+
+public:
+
+    DiscreteSpace(const unsigned n);
 
 private:
 
-    DiscreteSpace* clone_impl() const override
-    {
-        return new DiscreteSpace(*this);
-    }
+    DiscreteSpace* clone_impl() const override;
 
-    unsigned get_num_elements() const override
-    {
-        return _n;
-    }
+    unsigned get_num_elements() const override;
 
-    void print() const override
-    {
-        std::cout << "n: " << _n << std::endl;
-    }
+    void print() const override;
 
     const unsigned _n;
 };
 
-struct BoxSpace : Space
+class BoxSpace : public Space
 {
-    BoxSpace(const std::vector<unsigned> shape, const double low,
-             const double high) :
-        _shape(shape), _low(low), _high(high) {}
+
+public:
+
+    BoxSpace(const std::vector<unsigned> shape, const double low, const double high);
+
+    double get_low() const;
+    double get_high() const;
 
 private:
 
-    BoxSpace* clone_impl() const override
-    {
-        return new BoxSpace(*this);
-    }
+    BoxSpace* clone_impl() const override;
 
-    unsigned get_num_elements() const override
-    {
-        if(_shape.empty())
-            return 0;
-        else
-        {
-            unsigned num_elements = 1;
-            for(const auto& s : _shape)
-                num_elements *= s;
+    unsigned get_num_elements() const override;
 
-            return num_elements;
-        }
-    }
-
-    void print() const override
-    {
-        std::cout << "Shape: ( ";
-        for(const auto& s : _shape)
-            std::cout << s << " ";
-        std::cout << ")   ";
-
-        std::cout << "Low: " << _low << "   ";
-        std::cout << "High: " << _high << "   " << std::endl;
-    }
+    void print() const override;
 
     const std::vector<unsigned> _shape;
     const double _low;

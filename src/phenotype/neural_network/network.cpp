@@ -93,6 +93,11 @@ const std::vector<std::unique_ptr<Layer>>& Network::get_layers() const
     return _layers;
 }
 
+const std::shared_ptr<ActivationFunction> Network::get_final_layer_activ_func() const
+{
+    return _layers.back()->get_activation_function();
+}
+
 std::vector<double> Network::propogate(const std::vector<double>& inputs)
 {
     std::vector<double> ins = inputs;

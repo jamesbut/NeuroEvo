@@ -10,6 +10,7 @@
 #include <util/python/python_binding.h>
 #include <domains/control_domains/gym/space.h>
 #include <phenotype/phenotype_specs/network_builder.h>
+#include <util/maths/normalisation.h>
 
 namespace NeuroEvo {
 
@@ -123,14 +124,16 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
-        /*
-        const std::unique_ptr<const Network> final_layer_activ_func(
-            dynamic_cast<const Network*>(&org.get_phenotype())
-        );
 
-        const auto& layers =
-            dynamic_cast<const Network*>(&org.get_phenotype())->get_layers();
-        */
+        const auto final_layer_activ_func =
+            dynamic_cast<const Network*>(&org.get_phenotype())
+            ->get_final_layer_activ_func();
+        //Check final layer activation function is bounded on both sides
+        if(!(final_layer_activ_func->get_lower_bound().has_value() &&
+             final_layer_activ_func->get_upper_bound().has_value()))
+            throw std::runtime_error("The activation function for the final "
+                "layer of the control network for the gym domains must be "
+                "asymtoted on both sides");
 
         double reward = 0.;
         bool done = false;
@@ -139,6 +142,7 @@ private:
 
         while(!done)
         {
+            //Activate control network
             const std::vector<double> net_outs = org.get_phenotype().activate(state);
 
             if(this->_domain_trace)
@@ -167,12 +171,31 @@ private:
             //value that the action can take
             } else if(_action_space_type == SpaceType::Box)
             {
-                //TODO: Scale output between low and high
-                //Check for output activation function
+                //Cast Space to BoxSpace
+                const BoxSpace* box_action_space =
+                    dynamic_cast<BoxSpace*>(_action_space.get());
 
-                //auto final_layer_activ_func = org.get_phenotype()
+                //Scale net outputs correctly for action space
+                std::vector<double> action_vals(net_outs.size());
+                for(std::size_t i = 0; i < net_outs.size(); i++)
+                    action_vals[i] = normalise(
+                        net_outs[i],
+                        final_layer_activ_func->get_lower_bound().get_value(),
+                        final_layer_activ_func->get_upper_bound().get_value(),
+                        box_action_space->get_low(),
+                        box_action_space->get_high());
 
-                step_return = step(net_outs);
+                if(this->_domain_trace)
+                {
+                    std::cout << "action_vals: ";
+                    for(auto v : action_vals)
+                        std::cout << v << " ";
+                    std::cout << std::endl;
+                }
+
+                //const std::vector<double> action_vals = net_outs;
+
+                step_return = step(action_vals);
             }
 
             state = step_return.state;
