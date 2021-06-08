@@ -147,10 +147,13 @@ public:
         _sigma *= std::exp(
             std::min(0.6, (_c_sig / _d_sig) * (_p_sigma.norm() / _chiN - 1.)));
 
-        //std::cout << "Mean: " << std::endl << _mean << std::endl;
-        //std::cout << "C: " << std::endl << _C << std::endl;
-        //std::cout << "invsqrtC: " << std::endl << _invsqrtC << std::endl;
-        //std::cout << "sigma: " << std::endl << _sigma << std::endl;
+        if(this->_trace)
+        {
+            std::cout << "Mean: " << std::endl << _mean << std::endl;
+            std::cout << "C: " << std::endl << _C << std::endl;
+            //std::cout << "invsqrtC: " << std::endl << _invsqrtC << std::endl;
+            std::cout << "sigma: " << std::endl << _sigma << std::endl;
+        }
 
         if(_adapt_C)
             perform_eigendecompostion();

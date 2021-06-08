@@ -25,9 +25,10 @@ public:
         _gp_map(gp_map),
         _num_genes(num_genes),
         _max_gens(max_gens),
-        _pop_size(pop_size), 
+        _pop_size(pop_size),
         _num_trials(num_trials),
-        _seed(seed) {}
+        _seed(seed),
+        _trace(false) {}
 
     Optimiser(const Optimiser& optimiser) :
         _gp_map(optimiser._gp_map),
@@ -35,13 +36,14 @@ public:
         _max_gens(optimiser._max_gens),
         _pop_size(optimiser._pop_size),
         _num_trials(optimiser._num_trials),
-        _seed(optimiser._seed) {}
+        _seed(optimiser._seed),
+        _trace(optimiser._trace) {}
 
     virtual ~Optimiser() = default;
 
     //Optimise according to optimiser algorithm
     //Returns bool to indicate whether domain was solved or not
-    bool optimise(Domain<G, T>& domain, 
+    bool optimise(Domain<G, T>& domain,
                   DataCollector<G, T>& data_collector) {
 
         _population = initialise_population();
@@ -99,6 +101,11 @@ public:
         _seed = seed;
     }
 
+    void set_trace(const bool trace)
+    {
+        _trace = trace;
+    }
+
     auto clone() const
     {
         return std::unique_ptr<Optimiser>(clone_impl());
@@ -131,7 +138,9 @@ protected:
 
     std::optional<unsigned> _seed;
 
-private: 
+    bool _trace;
+
+private:
 
     bool optimisation_finished(const unsigned curr_gen, const Domain<G, T>& domain) const
     {

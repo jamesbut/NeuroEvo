@@ -284,7 +284,7 @@ private:
     {
         //Seed
         if(this->_seed.has_value())
-            _gym_module.call_function("seed", run_seed);
+            _gym_module.call_function("seed", this->_seed.value());
     }
 
     void trial_reset(const unsigned trial_num) override {}
