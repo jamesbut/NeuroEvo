@@ -1,4 +1,5 @@
 #include <util/maths/activation_functions/elu.h>
+#include <cmath>
 
 namespace NeuroEvo {
 

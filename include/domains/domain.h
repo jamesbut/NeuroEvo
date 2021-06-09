@@ -13,6 +13,7 @@
 #include <optional>
 #include <data/data_collection.h>
 #include <util/statistics/distributions/uniform_unsigned_distribution.h>
+#include <mutex>
 
 #if SFML_FOUND
 #include <SFML/Graphics.hpp>

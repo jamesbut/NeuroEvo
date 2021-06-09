@@ -1,5 +1,6 @@
 #include <util/vector_creation/square_symmetric_vector.h>
 #include <iostream>
+#include <algorithm>
 
 namespace NeuroEvo {
 
