@@ -5,6 +5,10 @@
  * Converter structs that define type conversions between C++ and python
  */
 
+#include <Python.h>
+#include <iostream>
+#include <map>
+
 namespace NeuroEvo {
 
 //Can't do partial specialisation on functions so I used this struct workaround

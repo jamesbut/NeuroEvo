@@ -64,8 +64,7 @@ public:
         //Check to see whether return tuple is empty
         if constexpr (!(std::is_same<T, void>::value && ...))
             //Build tuple from converted python objects
-            return std::make_tuple<T...>(
-                Converter<T>::convert(return_feeder.next())...);
+            return std::tuple<T...>{Converter<T>::convert(return_feeder.next())...};
         else
             return std::make_tuple();
     }
