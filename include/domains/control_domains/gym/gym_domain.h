@@ -210,6 +210,9 @@ private:
 
         }
 
+        if(this->_domain_trace)
+            std::cout << "--------------------" << std::endl;
+
         return reward;
     }
 

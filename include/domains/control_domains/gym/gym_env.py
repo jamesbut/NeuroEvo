@@ -25,6 +25,7 @@ def step(action, render):
     print("Python render:", render)
     print("Python s:", s)
     print("Python r:", r)
+    print("Python info:", info)
     print("Python done:", done)
     '''
 
