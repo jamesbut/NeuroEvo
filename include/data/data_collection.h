@@ -18,7 +18,6 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-//#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <util/formatting.h>
@@ -28,7 +27,7 @@
 namespace NeuroEvo {
 
 template <typename G, typename T>
-class DataCollector 
+class DataCollector
 {
 
 public:
@@ -42,7 +41,8 @@ public:
         _dump_winners_only(dump_winners_only),
         _trace(trace)
     {
-        //We can reserve up to max gens for member vectors so that they never have to resize
+        //We can reserve up to max gens for member vectors so that they never have
+        //to resize
         _mean_gen_fitnesses.reserve(max_gens);
         _median_gen_fitnesses.reserve(max_gens);
         _lq_gen_fitnesses.reserve(max_gens);
@@ -56,7 +56,7 @@ public:
         _best_winner_so_far.reset();
     }
 
-    void collect_generational_data(const Population<G, T>& population, 
+    void collect_generational_data(const Population<G, T>& population,
                                    const unsigned current_gen,
                                    const bool final_gen)
     {
@@ -82,14 +82,15 @@ public:
         //Save entire population to file
         if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
 
-        //If _dump_winners_only is true delete the entire run directory if the 
+        //If _dump_winners_only is true delete the entire run directory if the
         //best winner fitness is not a domain winner
         if(_dump_winners_only && final_gen)
             if(!_best_winner_so_far.value().is_domain_winner())
-                std::filesystem::remove_all(_run_dir_path.value());            
+                std::filesystem::remove_all(_run_dir_path.value());
 
-        if(_trace) 
-            print_info_to_screen(population, current_gen, gen_winner.get_fitness().value(), 
+        if(_trace)
+            print_info_to_screen(population, current_gen,
+                                 gen_winner.get_fitness().value(),
                                  _mean_gen_fitnesses.back());
 
     }
@@ -121,7 +122,7 @@ private:
         _uq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.75));
     }
 
-    //Fills the remainder of the statistics up to max gens if the run was finished early 
+    //Fills the remainder of the statistics up to max gens if the run was finished early
     //This helps with the python plots
     void complete_statistics()
     {
@@ -135,7 +136,7 @@ private:
         }
     }
 
-    double calculate_population_avergage_fitness(const Population<G, T>& population) const 
+    double calculate_population_avergage_fitness(const Population<G, T>& population) const
     {
         double total_fitness = 0.;
 
@@ -145,12 +146,12 @@ private:
         return total_fitness / (double)population.get_size();
     }
 
-    const Organism<G, T>& calculate_generational_winner(const Population<G, T>& population) 
-        const
+    const Organism<G, T>& calculate_generational_winner(
+        const Population<G, T>& population) const
     {
         const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
-        //If one of the organisms is a domain winner, this is immediately returned 
+        //If one of the organisms is a domain winner, this is immediately returned
         //regardless of fitness. Sometimes an organism can be a domain winner and not
         //have the highest fitness. The domain winners take precedent.
         for(const auto& org : orgs)
@@ -162,7 +163,7 @@ private:
         double gen_winner_fitness = orgs.at(gen_winner_index).get_fitness().value();
 
         for(std::size_t i = 1; i < population.get_size(); i++)
-            if(orgs[i].get_fitness() > gen_winner_fitness) 
+            if(orgs[i].get_fitness() > gen_winner_fitness)
             {
                 gen_winner_index = i;
                 gen_winner_fitness = orgs[i].get_fitness().value();
@@ -171,17 +172,12 @@ private:
         return orgs[gen_winner_index];
     }
 
-    void calculate_best_winner_so_far(const Organism<G, T>& gen_winner) 
+    void calculate_best_winner_so_far(const Organism<G, T>& gen_winner)
     {
-        if(gen_winner.is_domain_winner())
+        //Check whether gen winner beats the highest score so far
+        if(!_best_winner_so_far ||
+           gen_winner.get_fitness() > _best_winner_so_far->get_fitness())
             _best_winner_so_far = gen_winner;
-        else
-        {
-            //Check whether gen winner beats the highest score so far
-            if(!_best_winner_so_far || gen_winner.get_fitness() > 
-                    _best_winner_so_far->get_fitness())
-                _best_winner_so_far = gen_winner;
-        }
 
         //Save best winner so far fitness
         _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness().value());
@@ -211,28 +207,28 @@ private:
 
     }
 
-    void delete_exp_dir() const 
+    void delete_exp_dir() const
     {
         if(_exp_dir_path.has_value())
             boost::filesystem::remove_all(_exp_dir_path.value());
     }
 
-    void delete_run_dir() const 
+    void delete_run_dir() const
     {
         boost::filesystem::remove_all(_run_dir_path.value());
     }
 
     const std::optional<const std::string>& get_exp_dir_path() const
-    { 
-        return _exp_dir_path; 
-    }
-    
-    const std::string& get_run_dir_path() const
-    { 
-        return _run_dir_path.value(); 
+    {
+        return _exp_dir_path;
     }
 
-    void save_population_to_file(const Population<G, T>& population, const bool final_gen) 
+    const std::string& get_run_dir_path() const
+    {
+        return _run_dir_path.value();
+    }
+
+    void save_population_to_file(const Population<G, T>& population, const bool final_gen)
     {
 
         //The statistics files seem to be enough information to store for now
@@ -263,11 +259,11 @@ private:
 
     }
 
-    void save_population_statistics_to_file() const 
+    void save_population_statistics_to_file() const
     {
         //Fitness means
-        const std::string mean_fitnesses_file_name = _run_dir_path.value() 
-            + "/mean_fitnesses"; 
+        const std::string mean_fitnesses_file_name = _run_dir_path.value()
+            + "/mean_fitnesses";
         std::ofstream mean_fitnesses_file(mean_fitnesses_file_name);
 
         for(const auto& fitness : _mean_gen_fitnesses)
@@ -276,7 +272,7 @@ private:
         mean_fitnesses_file.close();
 
         //Fitness medians
-        const std::string median_fitnesses_file_name = _run_dir_path.value() 
+        const std::string median_fitnesses_file_name = _run_dir_path.value()
             + "/median_fitnesses";
         std::ofstream median_fitnesses_file(median_fitnesses_file_name);
 
@@ -304,8 +300,8 @@ private:
         uq_fitnesses_file.close();
 
         //Best fitnesses so far
-        const std::string best_fitnesses_file_name = _run_dir_path.value() 
-            + "/best_fitnesses"; 
+        const std::string best_fitnesses_file_name = _run_dir_path.value()
+            + "/best_fitnesses";
         std::ofstream best_fitnesses_file(best_fitnesses_file_name);
 
         for(const auto& fitness : _best_so_far_fitnesses)
@@ -314,7 +310,7 @@ private:
         best_fitnesses_file.close();
     }
 
-    void print_info_to_screen(const Population<G, T>& population, 
+    void print_info_to_screen(const Population<G, T>& population,
                               const unsigned current_gen,
                               const double gen_winner_fitness,
                               const double pop_average_fitness,
@@ -325,7 +321,7 @@ private:
         //Print header titles every set amount of generations
         if((current_gen-1) % print_header_every == 0)
         {
-            const std::vector<std::string> header_titles{"Gen", "Best Winner", 
+            const std::vector<std::string> header_titles{"Gen", "Best Winner",
                                                          "Gen Winner", "Gen Average"};
             print_table_row(header_titles, column_width, true, true);
         }
@@ -339,7 +335,7 @@ private:
 
     }
 
-    void print_table_header(const std::vector<std::string>& header_titles, 
+    void print_table_header(const std::vector<std::string>& header_titles,
                             const unsigned column_width) const
     {
         print_table_row(header_titles, column_width, true, true);
@@ -367,9 +363,9 @@ private:
         {
             std::vector<std::string> split_string;
             boost::split(split_string, name, boost::is_any_of("_"));
-            
-            //Just captures the exception where string is not integer 
-            try 
+
+            //Just captures the exception where string is not integer
+            try
             {
                 exp_numbers.push_back(std::stoi(split_string.back()));
             }
@@ -396,7 +392,7 @@ private:
             boost::filesystem::create_directory(DATA_PATH);
 
         std::stringstream exp_dir_path;
-        exp_dir_path << DATA_PATH << "/" << create_experiment_dir_name(); 
+        exp_dir_path << DATA_PATH << "/" << create_experiment_dir_name();
         return exp_dir_path.str();
     }
 
@@ -404,20 +400,20 @@ private:
     const std::string create_run_dir_name() const
     {
         //Use a UUID for folder name or the date and time
-        if(_uuid_folders) 
+        if(_uuid_folders)
         {
             //Create a unique indentifier for the directory name
             boost::uuids::uuid uuid = boost::uuids::random_generator()();
             return boost::uuids::to_string(uuid);
 
-        } else 
+        } else
         {
             //TODO: Come back and fix this!
             //Get data and time for folder name
             /*
             boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
             std::stringstream dir_name;
-            dir_name << "population-" << timeLocal.date() << "-" << timeLocal.time_of_day(); 
+            dir_name << "population-" << timeLocal.date() << "-" << timeLocal.time_of_day();
             return dir_name.str();
             */
             return "population-cannot-calculate-current-time";
@@ -426,13 +422,13 @@ private:
 
     }
 
-    void create_run_dir() 
+    void create_run_dir()
     {
         const std::string run_dir_name = create_run_dir_name();
-        
+
         //Create run directory
         std::stringstream run_dir_path;
-        run_dir_path << _exp_dir_path.value() << "/" << run_dir_name; 
+        run_dir_path << _exp_dir_path.value() << "/" << run_dir_name;
         boost::filesystem::create_directory(run_dir_path.str());
         _run_dir_path = run_dir_path.str();
 

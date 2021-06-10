@@ -21,10 +21,12 @@ public:
           const unsigned num_genes,
           const unsigned max_gens,
           const unsigned pop_size,
+          const bool quit_when_domain_complete = true,
           const unsigned num_trials = 1,
           const bool adapt_C = true,
           const std::optional<unsigned>& seed = std::nullopt) :
-        Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size, num_trials, seed),
+        Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size,
+                             quit_when_domain_complete, num_trials, seed),
         _mean(Eigen::VectorXd::Zero(this->_num_genes)),
         _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
         _sigma(init_sigma),

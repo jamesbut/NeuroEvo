@@ -20,6 +20,7 @@ public:
               const unsigned num_genes,
               const unsigned max_gens,
               const unsigned pop_size,
+              const bool quit_when_domain_complete = true,
               const unsigned num_trials = 1,
               const std::optional<unsigned> seed = std::nullopt) :
         _gp_map(gp_map),
@@ -28,7 +29,8 @@ public:
         _pop_size(pop_size),
         _num_trials(num_trials),
         _seed(seed),
-        _trace(false) {}
+        _trace(false),
+        _quit_when_domain_complete(quit_when_domain_complete) {}
 
     Optimiser(const Optimiser& optimiser) :
         _gp_map(optimiser._gp_map),
@@ -37,7 +39,8 @@ public:
         _pop_size(optimiser._pop_size),
         _num_trials(optimiser._num_trials),
         _seed(optimiser._seed),
-        _trace(optimiser._trace) {}
+        _trace(optimiser._trace),
+        _quit_when_domain_complete(optimiser._quit_when_domain_complete) {}
 
     virtual ~Optimiser() = default;
 
@@ -144,11 +147,14 @@ private:
 
     bool optimisation_finished(const unsigned curr_gen, const Domain<G, T>& domain) const
     {
-        if(curr_gen >= _max_gens ||
-           domain.complete())
+        if(curr_gen >= _max_gens)
+            return true;
+        if(domain.complete() && _quit_when_domain_complete)
             return true;
         return false;
     }
+
+    const bool _quit_when_domain_complete;
 
 };
 

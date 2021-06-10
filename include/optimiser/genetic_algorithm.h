@@ -19,9 +19,11 @@ public:
                      const unsigned num_genes,
                      const unsigned max_gens,
                      const unsigned pop_size,
+                     const bool quit_when_domain_complete = true,
                      const unsigned num_trials = 1,
                      const std::optional<unsigned>& seed = std::nullopt) :
-        Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size, num_trials, seed),
+        Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size,
+                        quit_when_domain_complete, num_trials, seed),
         _selector(selector.clone()),
         _mutator(mutator.clone()),
         _init_distr(init_distr.clone()) {}
@@ -41,11 +43,12 @@ public:
         for(unsigned i = 0; i < this->_pop_size; i++)
         {
             //Selection
-            Organism<G, T> child_org = _selector->select(this->_population.get_organisms());
+            Organism<G, T> child_org = _selector->select(
+                this->_population.get_organisms());
 
             //Mutation
             _mutator->mutate(child_org.get_genotype().genes());
-            
+
             new_orgs.push_back(child_org);
         }
 
@@ -72,7 +75,7 @@ private:
         }
 
         return Population<G, T>(genotypes, this->_gp_map);
-        
+
     }
 
     GeneticAlgorithm* clone_impl() const override
@@ -81,7 +84,7 @@ private:
     }
 
     //Nothing to reset in the GA
-    void reset() override 
+    void reset() override
     {
         _selector->reset(this->_seed);
         _mutator->reset(this->_seed);
@@ -96,7 +99,7 @@ private:
     std::unique_ptr<Selection<G, T>> _selector;
     std::unique_ptr<Mutator<G>> _mutator;
     //Add crossover at some point
-    
+
     std::unique_ptr<Distribution<G>> _init_distr;
 
 };
