@@ -27,6 +27,11 @@ public:
         _module_name(module_name),
         _module_path(module_path) {}
 
+    ~PythonModule()
+    {
+	Py_DECREF(_module_dict);
+    }	
+
     //Load python module
     void initialise()
     {
@@ -121,6 +126,11 @@ private:
             PyErr_Print();
             exit(0);
         }
+
+	if(py_kwargs != NULL)
+	    Py_DECREF(py_kwargs);
+	if(py_args != NULL)
+	    Py_DECREF(py_args);
 
         return func_return;
 

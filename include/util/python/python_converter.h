@@ -115,7 +115,8 @@ static bool convert(PyObject* py_object) {
     return PyLong_AsLong(py_object);
 }
 static PyObject* convert(bool v) {
-    return v ? Py_True : Py_False;
+    //return v ? Py_True : Py_False;
+    return v ? PyBool_FromLong(1) : PyBool_FromLong(0);
 }
 };
 
@@ -136,6 +137,7 @@ static std::vector<T> convert(PyObject* py_object)
     std::vector<T> list_vec(tup_size);
     for(unsigned i = 0; i < tup_size; i++)
 	list_vec[i] = Converter<T>::convert(PyTuple_GetItem(py_tuple, i));
+    Py_DECREF(py_tuple);
     return list_vec;
 }
 

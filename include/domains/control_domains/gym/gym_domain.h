@@ -94,7 +94,8 @@ public:
         _gym_module(gym_domain._gym_module),
         _state_size(gym_domain._state_size),
         _action_space_type(gym_domain._action_space_type),
-        _action_space(gym_domain._action_space->clone()) {}
+        _action_space(gym_domain._action_space ? 
+		      gym_domain._action_space->clone() : nullptr) {}
 
     GymDomain(GymDomain&& gym_domain) = default;
 
@@ -103,7 +104,10 @@ public:
         _gym_module = gym_domain._gym_module;
         _state_size = gym_domain._state_size;
         _action_space_type = gym_domain._action_space_type;
-        _action_space = gym_domain._action_space->clone();
+	if(gym_domain._action_space)
+            _action_space = gym_domain._action_space->clone();
+	else
+	    _action_space = nullptr;
     }
 
     GymDomain& operator=(GymDomain&& gym_domain) = default;
