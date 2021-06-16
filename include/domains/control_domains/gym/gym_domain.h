@@ -94,7 +94,7 @@ public:
         _gym_module(gym_domain._gym_module),
         _state_size(gym_domain._state_size),
         _action_space_type(gym_domain._action_space_type),
-        _action_space(gym_domain._action_space ? 
+        _action_space(gym_domain._action_space ?
 		      gym_domain._action_space->clone() : nullptr) {}
 
     GymDomain(GymDomain&& gym_domain) = default;
@@ -121,7 +121,6 @@ private:
             "/include/domains/control_domains/gym";
 
         PythonModule gym_module("gym_env", gym_dir.str());
-        _gym_module.initialise();
 
         return gym_module;
     }

@@ -25,12 +25,16 @@ public:
 
     PythonModule(const std::string& module_name, const std::string& module_path) :
         _module_name(module_name),
-        _module_path(module_path) {}
+        _module_path(module_path)
+    {
+        initialise();
+    }
 
     ~PythonModule()
     {
-	Py_DECREF(_module_dict);
-    }	
+        //This was causing a seg fault somewhere
+	//Py_DECREF(_module_dict);
+    }
 
     //Load python module
     void initialise()
@@ -71,7 +75,8 @@ public:
         if constexpr (!(std::is_same<T, void>::value && ...))
         {
             //Build tuple from converted python objects
-            std::tuple<T...> return_tuple{Converter<T>::convert(return_feeder.next())...};
+            std::tuple<T...> return_tuple{
+                Converter<T>::convert(return_feeder.next())...};
             Py_DECREF(func_return);
             return return_tuple;
         }
