@@ -115,7 +115,6 @@ static bool convert(PyObject* py_object) {
     return PyLong_AsLong(py_object);
 }
 static PyObject* convert(bool v) {
-    //return v ? Py_True : Py_False;
     return v ? PyBool_FromLong(1) : PyBool_FromLong(0);
 }
 };

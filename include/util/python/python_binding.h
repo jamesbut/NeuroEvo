@@ -64,12 +64,17 @@ public:
                                    const Args&... args) const
     {
         //Send function and receive result
-        ResultFeeder return_feeder = ResultFeeder(send_function(func_name, args...));
+        PyObject* func_return = send_function(func_name, args...);
+        ResultFeeder return_feeder = ResultFeeder(func_return);
 
         //Check to see whether return tuple is empty
         if constexpr (!(std::is_same<T, void>::value && ...))
+        {
             //Build tuple from converted python objects
-            return std::tuple<T...>{Converter<T>::convert(return_feeder.next())...};
+            std::tuple<T...> return_tuple{Converter<T>::convert(return_feeder.next())...};
+            Py_DECREF(func_return);
+            return return_tuple;
+        }
         else
             return std::make_tuple();
     }
@@ -96,7 +101,6 @@ private:
         PyObject* py_args = PyTuple_New(arg_objs.size());
         for(std::size_t i = 0; i < arg_objs.size(); i++)
             PyTuple_SetItem(py_args, i, arg_objs[i]);
-
 
         PyObject* func_obj = PyDict_GetItemString(_module_dict, func_name.c_str());
         PyObject* func_return;
