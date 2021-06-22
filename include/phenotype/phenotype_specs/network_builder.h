@@ -100,6 +100,7 @@ private:
         const unsigned neurons_per_layer,
         const NeuronType neuron_type,
         const std::shared_ptr<ActivationFunctionSpec>& activation_func,
+        const bool batch_norm,
         const bool bias);
     unsigned required_num_genes(
         const unsigned num_inputs,
@@ -109,6 +110,7 @@ private:
         const NeuronType neuron_type,
         const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func,
         const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func,
+        const bool batch_norm,
         const bool bias);
 
     const std::pair<std::vector<double>, std::vector<double>>

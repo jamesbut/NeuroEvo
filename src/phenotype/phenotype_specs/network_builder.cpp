@@ -17,7 +17,7 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
     PhenotypeSpec(required_num_genes(num_inputs, num_outputs,
                                      num_hidden_layers, neurons_per_layer,
                                      neuron_type, hl_activation_func_spec,
-                                     ol_activation_func_spec, bias),
+                                     ol_activation_func_spec, batch_norm, bias),
                   trace),
     _num_inputs(num_inputs),
     _num_outputs(num_outputs),
@@ -75,13 +75,11 @@ Phenotype<double>* NetworkBuilder::build_network()
     //Check init weights size if needed
     if(_init_weights.has_value())
         if(_init_weights->size() != get_num_params())
-        {
-            std::cerr << "The number of genes given to build the network was not equal"
-                << " to the number of params required by the network" << std::endl;
-            std::cerr << "Num genes: " << _init_weights->size() <<
-                " Num params required: " << get_num_params() << std::endl;
-            exit(0);
-        }
+            throw std::length_error(
+                "The number of genes given to build the network was not equal"
+                " to the number of params required by the network\n"
+                "Num genes: " + std::to_string(_init_weights->size()) +
+                "\nNum params required: " + std::to_string(get_num_params()));
 
     //Check for Hebbian
     if(_hebbs_spec)
@@ -185,7 +183,8 @@ void NetworkBuilder::set_init_weights(const std::vector<double>& init_weights)
     _init_weights = init_weights;
 }
 
-void NetworkBuilder::set_init_weight_distribution(Distribution<double>* init_weight_distr)
+void NetworkBuilder::set_init_weight_distribution(
+    Distribution<double>* init_weight_distr)
 {
     _init_weight_distr.reset(init_weight_distr);
 }
@@ -257,18 +256,21 @@ unsigned NetworkBuilder::required_num_genes(
     const NeuronType neuron_type,
     const std::shared_ptr<ActivationFunctionSpec>& hl_activation_func,
     const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func,
+    const bool batch_norm,
     const bool bias)
 {
 
     //Build LayerSpecs from the specification
-    std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs,
-                                                                      num_outputs,
-                                                                      num_hidden_layers,
-                                                                      neurons_per_layer,
-                                                                      neuron_type,
-                                                                      hl_activation_func,
-                                                                      ol_activation_func,
-                                                                      bias);
+    std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(
+        num_inputs,
+        num_outputs,
+        num_hidden_layers,
+        neurons_per_layer,
+        neuron_type,
+        hl_activation_func,
+        ol_activation_func,
+        batch_norm,
+        bias);
     return required_num_genes(layer_specs);
 
 }
@@ -280,6 +282,7 @@ unsigned NetworkBuilder::required_num_genes(
     const unsigned neurons_per_layer,
     const NeuronType neuron_type,
     const std::shared_ptr<ActivationFunctionSpec>& activation_func,
+    const bool batch_norm,
     const bool bias)
 {
 
