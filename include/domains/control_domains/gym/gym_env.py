@@ -3,8 +3,6 @@ from gym.spaces import Discrete, Box
 
 def make_env(env_id, **kwargs):
     global env
-    print("Making env:", env_id)
-    print("kwargs:", kwargs)
     env = gym.make(env_id, **kwargs)
 
 def reset():

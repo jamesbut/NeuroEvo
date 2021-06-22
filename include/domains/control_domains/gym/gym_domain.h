@@ -81,9 +81,6 @@ public:
             );
         }
 
-        std::cout << "Action space: ";
-        _action_space->print();
-
     }
 
     ~GymDomain() = default;

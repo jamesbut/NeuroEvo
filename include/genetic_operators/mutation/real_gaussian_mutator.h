@@ -10,7 +10,9 @@ class RealGaussianMutator : public Mutator<double> {
 
 public:
 
-    RealGaussianMutator(const double mutation_rate, const double mutation_power);
+    RealGaussianMutator(const double mutation_rate, const double mutation_power,
+                        const std::optional<const double> lower_bound = std::nullopt,
+                        const std::optional<const double> upper_bound = std::nullopt);
 
     double mutate_gene(double gene) override;
 
@@ -24,6 +26,10 @@ private:
     }
 
     GaussianDistribution _mut_power_distr;
+
+    //Will not mutate genes beyond bounds if bounds are given
+    const std::optional<const double> _lower_bound;
+    const std::optional<const double> _upper_bound;
 
 };
 
