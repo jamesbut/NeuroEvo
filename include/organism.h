@@ -28,8 +28,8 @@ public:
         _phenotype(gp_map.map(*_genotype)),
         _fitness(std::nullopt),
         _domain_winner(false) {}
-        
-    Organism(GPMap<G, T>& gp_map, 
+
+    Organism(GPMap<G, T>& gp_map,
              const std::string file_name) :
         _genotype(new Genotype<G>(file_name)),
         _gp_map(gp_map.clone()),
@@ -44,7 +44,7 @@ public:
         _fitness(organism.get_fitness()),
         _domain_winner(organism._domain_winner) {}
 
-    Organism& operator=(const Organism& organism) 
+    Organism& operator=(const Organism& organism)
     {
 
         _genotype = organism.get_genotype().clone();
@@ -63,29 +63,29 @@ public:
 
     //Pass in domain completion fitness too in order to determine whether the
     //organism is a domain winner
-    void set_fitness(const double fitness, const double domain_completion_fitness) 
+    void set_fitness(const double fitness, const double domain_completion_fitness)
     {
         if(fitness >= domain_completion_fitness)
             _domain_winner = true;
         _fitness = fitness;
     }
 
-    const std::optional<const double> get_fitness() const 
+    const std::optional<const double> get_fitness() const
     {
         return _fitness;
     }
 
-    Genotype<G>& get_genotype() const 
+    Genotype<G>& get_genotype() const
     {
         return *_genotype;
     }
 
-    GPMap<G, T>& get_gp_map() const 
+    GPMap<G, T>& get_gp_map() const
     {
         return *_gp_map;
     }
 
-    Phenotype<T>& get_phenotype() const 
+    Phenotype<T>& get_phenotype() const
     {
         return *_phenotype;
     }
@@ -95,20 +95,20 @@ public:
         return _domain_winner;
     }
 
-    void set_domain_winner(const bool winner) 
+    void set_domain_winner(const bool winner)
     {
         _domain_winner = winner;
     }
 
     //Creates new phenotype out of modified genotype
-    void genesis() 
+    void genesis()
     {
         _phenotype.reset(_gp_map->map(*_genotype));
     }
 
     void save_org_to_file(const std::string& file_name) const
     {
-        
+
         //Print fitness and then the genotype
         std::ofstream org_file;
         org_file.open(file_name);
@@ -129,7 +129,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Organism& organism)
     {
         //Just print genotype for now
-        os << "Genotype: " << std::endl << "[" << *organism._genotype << "]" << std::endl
+        os << "Genotype: " << std::endl << "[" << *organism._genotype << "]"
+            << std::endl
            << "Phenotype: " << std::endl << *organism._phenotype << std::endl
            << "Fitness: ";
         if(organism._fitness.has_value())

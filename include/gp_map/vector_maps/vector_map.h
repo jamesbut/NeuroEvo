@@ -7,6 +7,7 @@
 
 #include <gp_map/gp_map.h>
 #include <phenotype/vector_phenotype.h>
+#include <phenotype/phenotype_specs/vector_phenotype_spec.h>
 
 namespace NeuroEvo {
 
@@ -29,7 +30,7 @@ public:
 
 protected:
 
-    VectorMap* clone_impl() const override 
+    VectorMap* clone_impl() const override
     {
         return new VectorMap<G>(*this);
     }

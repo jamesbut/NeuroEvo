@@ -125,9 +125,12 @@ private:
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
 
-        const auto final_layer_activ_func =
-            dynamic_cast<const Network*>(&org.get_phenotype())
-            ->get_final_layer_activ_func();
+        auto pheno_net = dynamic_cast<const Network*>(&org.get_phenotype());
+        if(!pheno_net)
+            throw std::runtime_error("Cannot cast phenotype to Network in GymDomain"
+                " single_run");
+        const auto final_layer_activ_func = pheno_net->get_final_layer_activ_func();
+
         //Check final layer activation function is bounded on both sides
         if(!(final_layer_activ_func->get_lower_bound().has_value() &&
              final_layer_activ_func->get_upper_bound().has_value()))
