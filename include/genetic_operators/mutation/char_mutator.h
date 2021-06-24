@@ -11,7 +11,7 @@
 
 namespace NeuroEvo {
 
-class CharMutator : public Mutator<char> 
+class CharMutator : public Mutator<char>
 {
 
 public:
@@ -19,7 +19,7 @@ public:
     CharMutator(const double mutation_rate, const std::set<char>& char_set,
                 const std::optional<std::vector<double>>& char_distr = std::nullopt);
 
-    char mutate_gene(char gene) override;
+    void mutate(std::vector<char>& genes) override;
 
 private:
 

@@ -22,15 +22,9 @@ public:
 
     virtual ~Mutator() = default;
 
-    void mutate(std::vector<G>& genes) {
+    virtual void mutate(std::vector<G>& genes) = 0;
 
-        for(std::size_t i = 0; i < genes.size(); i++)
-            if(should_mutate())
-                genes[i] = mutate_gene(genes[i]);
-
-    }
-
-    auto clone() const 
+    auto clone() const
     {
         return std::unique_ptr<Mutator>(clone_impl());
     }
@@ -46,8 +40,6 @@ public:
 
 protected:
 
-    virtual G mutate_gene(G gene) = 0;
-    
     virtual Mutator* clone_impl() const = 0;
 
     virtual void reset_mutator(const std::optional<unsigned>& seed) = 0;
@@ -58,8 +50,6 @@ protected:
     //Distribution used to sample from to determine
     //whether a gene should mutate or not
     UniformRealDistribution _mutation_distr;
-
-private:
 
     //Determines whether gene should mutate
     bool should_mutate() {

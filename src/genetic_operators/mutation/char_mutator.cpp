@@ -7,13 +7,19 @@ CharMutator::CharMutator(const double mutation_rate, const std::set<char>& char_
     Mutator(mutation_rate),
     _char_distr(char_set, char_distr) {}
 
-char CharMutator::mutate_gene(char gene) {
+void CharMutator::mutate(std::vector<char>& genes)
+{
 
-    char new_gene = gene;
-    while(new_gene == gene)
-        new_gene = _char_distr.next(); 
+    for(auto& gene : genes)
+    {
+        if(!should_mutate())
+            continue;
 
-    return new_gene;
+        char new_gene = gene;
+        while(new_gene == gene)
+            new_gene = _char_distr.next();
+
+    }
 
 }
 

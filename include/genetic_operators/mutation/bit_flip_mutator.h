@@ -5,14 +5,14 @@
 
 namespace NeuroEvo {
 
-class BitFlipMutator : public Mutator<bool> 
+class BitFlipMutator : public Mutator<bool>
 {
 
 public:
 
     BitFlipMutator(const double mutation_rate);
 
-    bool mutate_gene(bool gene) override;
+    void mutate(std::vector<bool>& genes) override;
 
 private:
 
