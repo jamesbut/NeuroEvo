@@ -20,8 +20,8 @@ public:
     //This vector must be the same size as the genotype otherwise an exception
     //will be thrown when trying to mutate
     RealGaussianMutator(const double mutation_rate, const double mutation_power,
-                        const std::vector<const double>& lower_bounds,
-                        const std::vector<const double>& upper_bounds);
+                        const std::vector<double>& lower_bounds,
+                        const std::vector<double>& upper_bounds);
 
     void mutate(std::vector<double>& genes) override;
 
@@ -42,8 +42,8 @@ private:
     //otherwise different bounds are used for each individual gene
     const std::optional<const double> _lower_bound;
     const std::optional<const double> _upper_bound;
-    const std::optional<const std::vector<const double>> _lower_bounds;
-    const std::optional<const std::vector<const double>> _upper_bounds;
+    const std::optional<const std::vector<double>> _lower_bounds;
+    const std::optional<const std::vector<double>> _upper_bounds;
 
 };
 

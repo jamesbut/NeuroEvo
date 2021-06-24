@@ -1,4 +1,5 @@
 #include <genetic_operators/mutation/real_gaussian_mutator.h>
+#include <stdexcept>
 
 namespace NeuroEvo {
 
@@ -27,8 +28,8 @@ RealGaussianMutator::RealGaussianMutator(
 RealGaussianMutator::RealGaussianMutator(
     const double mutation_rate,
     const double mutation_power,
-    const std::vector<const double>& lower_bounds,
-    const std::vector<const double>& upper_bounds) :
+    const std::vector<double>& lower_bounds,
+    const std::vector<double>& upper_bounds) :
     Mutator(mutation_rate),
     _mut_power_distr(0, mutation_power),
     _lower_bound(std::nullopt),
