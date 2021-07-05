@@ -14,24 +14,25 @@ GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder,
          const torch::Tensor& real_data) :
     TrainableModel(real_data, std::nullopt, generator_builder, "ie_gan.pt"),
-    _discriminator(dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())) {}
+    _discriminator(
+        dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())) {}
 
 bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
                 const double weight_decay, const bool trace,
                 const unsigned test_every)
 {
 
-    //This was part of the tutorial but stop loss reducing to zero - maybe it is important
-    //for a GAN
+    //This was part of the tutorial but stop loss reducing to zero - maybe it is
+    //important for a GAN
     //torch::Tensor real_labels = torch::empty(_real_data.size(0)).uniform_(0.8, 1.0);
     //torch::Tensor real_labels = torch::ones(_real_data.size(0));
     torch::Tensor real_labels = torch::ones({_training_data.size(0), 1},
                                             {torch::kFloat64});
 
-    //const double generator_learning_rate = 2e-4;
-    //const double discriminator_learning_rate = 5e-4;
-    const double generator_learning_rate = 1e-4;
-    const double discriminator_learning_rate = 1e-4;
+    const double generator_learning_rate = 2e-4;
+    const double discriminator_learning_rate = 5e-4;
+    //const double generator_learning_rate = 1e-4;
+    //const double discriminator_learning_rate = 1e-4;
 
     //const double beta_1 = 0.9;
     //const double beta_2 = 0.999;

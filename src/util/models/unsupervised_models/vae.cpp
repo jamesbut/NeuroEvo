@@ -12,16 +12,16 @@ VAE::VAE(NetworkBuilder* encoder_builder,
     TrainableModel(training_data, test_data, decoder_builder, "ie_vae.pt"),
     _encoder(encoder_builder ?
              dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
-    _encoder_mean_linear_layer(_encoder ? torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                                   _model->get_num_inputs()) :
-                                          torch::nn::LinearOptions(training_data.size(1),
-                                                                   _model->get_num_inputs())),
-    _encoder_logvar_linear_layer(_encoder ? torch::nn::LinearOptions(
-                                                _encoder->get_num_outputs(),
-                                                _model->get_num_inputs()) :
-                                            torch::nn::LinearOptions(
-                                                training_data.size(1),
-                                                _model->get_num_inputs()))
+    _encoder_mean_linear_layer(_encoder ?
+                               torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                                        _model->get_num_inputs()) :
+                               torch::nn::LinearOptions(training_data.size(1),
+                                                        _model->get_num_inputs())),
+    _encoder_logvar_linear_layer(_encoder ?
+                                 torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                                          _model->get_num_inputs()) :
+                                 torch::nn::LinearOptions(training_data.size(1),
+                                                          _model->get_num_inputs()))
     {
         _encoder_mean_linear_layer->to(torch::kFloat64);
         _encoder_logvar_linear_layer->to(torch::kFloat64);
@@ -127,8 +127,10 @@ torch::Tensor VAE::sample(const torch::Tensor& mu, const torch::Tensor& log_var,
     return eps * stddev + mu;
 }
 
-torch::Tensor VAE::loss_function(const torch::Tensor& output, const torch::Tensor& input,
-                                 const torch::Tensor& mu, const torch::Tensor& log_var) const
+torch::Tensor VAE::loss_function(const torch::Tensor& output,
+                                 const torch::Tensor& input,
+                                 const torch::Tensor& mu,
+                                 const torch::Tensor& log_var) const
 {
 
     //The difference between the input and the output (reconstruction loss)
