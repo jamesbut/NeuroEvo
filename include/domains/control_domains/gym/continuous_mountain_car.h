@@ -16,7 +16,7 @@ class ContinuousMountainCar : public GymDomain<G>
 public:
 
     ContinuousMountainCar(const std::optional<const GymMakeKwargs>& kwargs,
-                          const std::optional<const std::vector<const double>>&
+                          const std::optional<const std::vector<double>>&
                               power_values = std::nullopt,
                           const bool render = false, const bool domain_trace = false,
                           const std::optional<const unsigned> seed = std::nullopt) :
@@ -60,7 +60,7 @@ private:
         return new ContinuousMountainCar<G>(*this);
     }
 
-    const std::optional<const std::vector<const double>> _power_values;
+    const std::optional<const std::vector<double>> _power_values;
 
 };
 
