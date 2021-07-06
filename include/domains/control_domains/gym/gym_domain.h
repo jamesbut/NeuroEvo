@@ -24,9 +24,22 @@ public:
         _kwargs.insert({kwarg_name, kwarg_val});
     }
 
+    void remove_kwarg(const std::string& kwarg_name)
+    {
+        _kwargs.erase(kwarg_name);
+    }
+
     std::map<const std::string, const double> get_kwargs() const
     {
         return _kwargs;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const GymMakeKwargs& gym_make_kwargs)
+    {
+        for(const auto kwarg : gym_make_kwargs._kwargs)
+            os << kwarg.first << " " << kwarg.second << std::endl;
+        return os;
     }
 
 private:
@@ -42,21 +55,19 @@ public:
 
     GymDomain(const std::string gym_env_id,
               const SpaceType action_space_type,
-              const std::optional<const GymMakeKwargs>& kwargs = std::nullopt,
+              const std::optional<GymMakeKwargs>& kwargs = std::nullopt,
               const double max_reward = 1e6,
               const bool render = false,
               const bool domain_trace = false,
               const std::optional<const unsigned> seed = std::nullopt) :
         Domain<G, double>(domain_trace, max_reward, seed, render),
+        _kwargs(kwargs),
         _gym_module(initialise_gym_module()),
         _action_space_type(action_space_type)
     {
 
         //Make environment
-        if(kwargs.has_value())
-            _gym_module.call_function("make_env", gym_env_id, kwargs->get_kwargs());
-        else
-            _gym_module.call_function("make_env", gym_env_id);
+        make_env(gym_env_id, kwargs);
 
         //Get state size
         _state_size = std::get<0>(_gym_module.call_function<unsigned>("state_size"));
@@ -88,6 +99,7 @@ public:
     GymDomain(const GymDomain& gym_domain) :
         Domain<G, double>(gym_domain._domain_trace, gym_domain._completion_fitness,
                           gym_domain._seed, gym_domain._render),
+        _kwargs(gym_domain._kwargs),
         _gym_module(gym_domain._gym_module),
         _state_size(gym_domain._state_size),
         _action_space_type(gym_domain._action_space_type),
@@ -98,6 +110,7 @@ public:
 
     GymDomain& operator=(const GymDomain& gym_domain)
     {
+        _kwargs = gym_domain._kwargs;
         _gym_module = gym_domain._gym_module;
         _state_size = gym_domain._state_size;
         _action_space_type = gym_domain._action_space_type;
@@ -108,6 +121,28 @@ public:
     }
 
     GymDomain& operator=(GymDomain&& gym_domain) = default;
+
+protected:
+
+    void make_env(const std::string gym_env_id,
+                  const std::optional<const GymMakeKwargs>& kwargs = std::nullopt)
+    {
+
+        if(kwargs.has_value())
+            _gym_module.call_function("make_env", gym_env_id, kwargs->get_kwargs());
+        else
+            _gym_module.call_function("make_env", gym_env_id);
+
+    }
+
+    void seed_env() const
+    {
+        //Seed
+        if(this->_seed.has_value())
+            _gym_module.call_function("seed", this->_seed.value());
+    }
+
+    std::optional<GymMakeKwargs> _kwargs;
 
 private:
 
@@ -286,22 +321,12 @@ private:
 
     void render() override {}
 
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override
-    {
-        //Seed
-        if(this->_seed.has_value())
-            _gym_module.call_function("seed", this->_seed.value());
-    }
-
     void trial_reset(const unsigned trial_num) override {}
 
     void org_reset() override
     {
-        //Seed
-        if(this->_seed.has_value())
-            _gym_module.call_function("seed", this->_seed.value());
+        seed_env();
     }
-
 
     PythonModule _gym_module;
 

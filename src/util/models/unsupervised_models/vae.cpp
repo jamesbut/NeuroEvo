@@ -90,7 +90,8 @@ std::pair<torch::Tensor, torch::Tensor> VAE::encode(const torch::Tensor& x)
     if(_encoder)
         hidden_layer_out = _encoder->forward(x);
     const torch::Tensor mu = _encoder_mean_linear_layer->forward(hidden_layer_out);
-    const torch::Tensor log_var = _encoder_logvar_linear_layer->forward(hidden_layer_out);
+    const torch::Tensor log_var =
+        _encoder_logvar_linear_layer->forward(hidden_layer_out);
     return {mu, log_var};
 }
 
@@ -100,8 +101,8 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>
 {
     const auto [mu, log_var] = encode(x);
     if(trace)
-        std::cout << "Mu: " << std::endl << mu << std::endl << "Log var: " << std::endl <<
-            log_var << std::endl;
+        std::cout << "Mu: " << std::endl << mu << std::endl << "Log var: "
+            << std::endl << log_var << std::endl;
 
     const auto z = sample(mu, log_var, trace);
     if(trace)
@@ -153,6 +154,9 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output,
     //I think this is difference between the output gauss params and a unit normal
     torch::Tensor KLD_loss = -0.5 * torch::sum(1 + log_var - mu.pow(2) - log_var.exp());
     KLD_loss /= output.size(0);
+
+    //std::cout << "Reconstruction loss: " << reconstruction_loss << std::endl;
+    //std::cout << "KLD loss:" << KLD_loss << std::endl;
 
     return reconstruction_loss + KLD_loss;
 
