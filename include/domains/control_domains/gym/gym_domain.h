@@ -125,7 +125,7 @@ public:
 protected:
 
     void make_env(const std::string gym_env_id,
-                  const std::optional<const GymMakeKwargs>& kwargs = std::nullopt)
+                  const std::optional<const GymMakeKwargs>& kwargs = std::nullopt) const
     {
 
         if(kwargs.has_value())
@@ -133,6 +133,11 @@ protected:
         else
             _gym_module.call_function("make_env", gym_env_id);
 
+    }
+
+    void close_env() const
+    {
+        _gym_module.call_function("close");
     }
 
     void seed_env() const

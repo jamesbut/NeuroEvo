@@ -34,6 +34,10 @@ private:
         //Reset domain with different power values
         if(_power_values.has_value())
         {
+            //First close previous environment (because we are going to make another
+            //it might lead to a memory leak)
+            this->close_env();
+
             std::cout << "Kwargs before:" << std::endl;
             std::cout << this->_kwargs.value();
 
