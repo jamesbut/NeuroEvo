@@ -32,7 +32,7 @@ bool VAE::train(const unsigned num_epochs, const unsigned batch_size,
                 const unsigned test_every)
 {
 
-    const double learning_rate = 1e-3;
+    const double learning_rate = 5e-4;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
 

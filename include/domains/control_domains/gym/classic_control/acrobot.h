@@ -15,11 +15,18 @@ class Acrobot : public GymDomain<G>
 
 public:
 
-    Acrobot(const bool render = false, const bool domain_trace = false,
+    Acrobot(const std::optional<const GymMakeKwargs>& kwargs = std::nullopt,
+            const bool render = false, const bool domain_trace = false,
             const std::optional<const unsigned> seed = std::nullopt) :
-        GymDomain<G>("Acrobot-v1", -100., render, domain_trace, seed) {}
+        GymDomain<G>("Acrobot-v1", SpaceType::Discrete, kwargs, -100., render,
+                     domain_trace, seed) {}
 
 private:
+
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override
+    {
+        this->seed_env();
+    }
 
     Acrobot<G>* clone_impl() const override
     {

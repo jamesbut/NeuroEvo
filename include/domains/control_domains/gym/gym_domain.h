@@ -77,8 +77,8 @@ public:
         {
             auto action_space_tup =
                 _gym_module.call_function<std::vector<unsigned>,
-                                          const double,
-                                          const double>("action_space");
+                                          std::vector<double>,
+                                          std::vector<double>>("action_space");
             _action_space = std::make_unique<BoxSpace>(std::get<0>(action_space_tup),
                                                        std::get<1>(action_space_tup),
                                                        std::get<2>(action_space_tup));
@@ -225,8 +225,8 @@ private:
                         net_outs[i],
                         final_layer_activ_func->get_lower_bound().get_value(),
                         final_layer_activ_func->get_upper_bound().get_value(),
-                        box_action_space->get_low(),
-                        box_action_space->get_high());
+                        box_action_space->get_lows()[i],
+                        box_action_space->get_highs()[i]);
 
                 if(this->_domain_trace)
                 {

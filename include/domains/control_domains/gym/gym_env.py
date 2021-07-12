@@ -36,7 +36,9 @@ def action_space():
     if isinstance(env.action_space, Discrete):
         return env.action_space.n
     if isinstance(env.action_space, Box):
-        return list(env.action_space.shape), env.action_space.low, env.action_space.high
+        #These might not always be easily converted to lists if they are
+        #multi-dimensional arrays
+        return list(env.action_space.shape), env.action_space.low.tolist(), env.action_space.high.tolist()
 
 def state_size():
     return env.observation_space.shape[0]

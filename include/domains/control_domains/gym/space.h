@@ -55,10 +55,14 @@ class BoxSpace : public Space
 
 public:
 
-    BoxSpace(const std::vector<unsigned> shape, const double low, const double high);
+    BoxSpace(const std::vector<unsigned>& shape,
+             const std::vector<double>& lows,
+             const std::vector<double>& highs);
 
-    double get_low() const;
-    double get_high() const;
+    std::vector<double> get_lows() const;
+    std::vector<double> get_highs() const;
+
+    void print() const override;
 
 private:
 
@@ -66,11 +70,9 @@ private:
 
     unsigned get_num_elements() const override;
 
-    void print() const override;
-
     const std::vector<unsigned> _shape;
-    const double _low;
-    const double _high;
+    const std::vector<double> _lows;
+    const std::vector<double> _highs;
 };
 
 enum SpaceType

@@ -30,8 +30,8 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 {
     //std::cout << _autoencoder->parameters() << std::endl;
 
-    const double learning_rate = 1e-3;
-    //const double learning_rate = 1e-2;
+    //const double learning_rate = 1e-3;
+    const double learning_rate = 5e-3;
 
     torch::optim::Adam optimizer(
         _autoencoder->parameters(),

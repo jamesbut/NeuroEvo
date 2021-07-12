@@ -23,9 +23,10 @@ void DiscreteSpace::print() const
 
 
 
-BoxSpace::BoxSpace(const std::vector<unsigned> shape,
-                   const double low, const double high) :
-    _shape(shape), _low(low), _high(high) {}
+BoxSpace::BoxSpace(const std::vector<unsigned>& shape,
+                   const std::vector<double>& lows,
+                   const std::vector<double>& highs) :
+    _shape(shape), _lows(lows), _highs(highs) {}
 
 BoxSpace* BoxSpace::clone_impl() const
 {
@@ -46,14 +47,14 @@ unsigned BoxSpace::get_num_elements() const
     }
 }
 
-double BoxSpace::get_low() const
+std::vector<double> BoxSpace::get_lows() const
 {
-    return _low;
+    return _lows;
 }
 
-double BoxSpace::get_high() const
+std::vector<double> BoxSpace::get_highs() const
 {
-    return _high;
+    return _highs;
 }
 
 void BoxSpace::print() const
@@ -63,8 +64,14 @@ void BoxSpace::print() const
         std::cout << s << " ";
     std::cout << ")   ";
 
-    std::cout << "Low: " << _low << "   ";
-    std::cout << "High: " << _high << "   " << std::endl;
+    std::cout << "Lows: [";
+    for(const auto l : _lows)
+        std::cout << l << " ";
+    std::cout << "]   ";
+    std::cout << "Highs: [";
+    for(const auto h : _highs)
+        std::cout << h << " ";
+    std::cout << "]" << std::endl;
 }
 
 } // namespace NeuroEvo
