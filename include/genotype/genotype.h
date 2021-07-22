@@ -39,7 +39,7 @@ public:
         return std::unique_ptr<Genotype<G>>(new Genotype<G>(*this));
     }
 
-    std::vector<G>& genes() 
+    std::vector<G>& genes()
     {
         return _genes;
     }
@@ -49,7 +49,7 @@ public:
         return _fitness;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype) 
+    friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype)
     {
         for(std::size_t i = 0; i < genotype._genes.size(); i++)
         {
@@ -95,7 +95,7 @@ private:
 
             _fitness = std::stod(fitness_str);
             return genes;
-            
+
         } else
         {
             std::cerr << "Could not open genotype file: " << file_name << std::endl;

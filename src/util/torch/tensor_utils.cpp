@@ -47,4 +47,20 @@ torch::Tensor apply_gaussian_noise(const torch::Tensor& t, const double sigma)
     return t + torch::normal(0, sigma, t.sizes());
 }
 
+torch::Tensor matrix_to_tensor(std::vector<std::vector<double>>& matrix)
+{
+    if(matrix.size() < 1)
+        throw std::length_error("Trying to convert matrix to torch tensor that does "
+            "not have any elements");
+
+    torch::Tensor t = torch::zeros({(int64_t)matrix.size(),
+                                    (int64_t)matrix.at(0).size()});
+
+    for(std::size_t i = 0; i < matrix.size(); i++)
+        for(std::size_t j = 0; j < matrix[i].size(); j++)
+            t.index_put_({(int64_t)i, (int64_t)j}, matrix[i][j]);
+
+    return t;
+}
+
 } // namespace NeuroEvo

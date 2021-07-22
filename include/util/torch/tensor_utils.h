@@ -18,6 +18,9 @@ double measure_square_symmetry(const torch::Tensor& t);
 //Apply gaussian noise to copy of torch tensor and return copy
 torch::Tensor apply_gaussian_noise(const torch::Tensor& t, const double sigma);
 
+//Converts vector of vector of doubles to torch tensor
+torch::Tensor matrix_to_tensor(std::vector<std::vector<double>>& matrix);
+
 } // namespace NeuroEvo
 
 #endif
