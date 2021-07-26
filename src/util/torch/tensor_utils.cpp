@@ -63,4 +63,15 @@ torch::Tensor matrix_to_tensor(std::vector<std::vector<double>>& matrix)
     return t;
 }
 
+std::vector<std::vector<double>> tensor_to_matrix(const torch::Tensor& t)
+{
+    std::vector<std::vector<double>> v(t.size(0), std::vector<double>(t.size(1), 0.));
+
+    for(unsigned i = 0; i < v.size(); i++)
+        for(unsigned j = 0; j < v[i].size(); j++)
+            v[i][j] = t.index({(int64_t)i, (int64_t)j}).item<double>();
+
+    return v;
+}
+
 } // namespace NeuroEvo

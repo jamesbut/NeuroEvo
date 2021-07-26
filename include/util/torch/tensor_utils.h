@@ -21,6 +21,9 @@ torch::Tensor apply_gaussian_noise(const torch::Tensor& t, const double sigma);
 //Converts vector of vector of doubles to torch tensor
 torch::Tensor matrix_to_tensor(std::vector<std::vector<double>>& matrix);
 
+//Converts torch tensor to vector of vector of doubles
+std::vector<std::vector<double>> tensor_to_matrix(const torch::Tensor& t);
+
 } // namespace NeuroEvo
 
 #endif

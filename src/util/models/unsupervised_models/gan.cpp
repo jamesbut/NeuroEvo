@@ -12,10 +12,12 @@ namespace NeuroEvo {
 
 GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder,
-         const torch::Tensor& real_data) :
+         const torch::Tensor& real_data,
+         const std::optional<cGANParams>& cgan_params) :
     TrainableModel(real_data, std::nullopt, generator_builder, "ie_gan.pt"),
     _discriminator(
-        dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())) {}
+        dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())),
+    _cgan_params(cgan_params) {}
 
 bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
                 const double weight_decay, const bool trace,
@@ -70,6 +72,13 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
         torch::optim::RMSpropOptions(discriminator_learning_rate)
     );
 
+
+    //Concatenate conditional labels with training data if there is any
+    if(_cgan_params.has_value())
+        _training_data = torch::cat({_training_data,
+                                     _cgan_params.value().conditional_labels},
+                                     1);
+
     const unsigned column_width = 20;
     const std::vector<std::string> header_data{"Epoch",
                                                "Discriminator loss",
@@ -108,16 +117,34 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
             /* Train discriminator on fake data */
             //Generate fake data using generator
+
+            //Do not generate noise for conditional inputs yet
+            unsigned noise_size = _model->get_num_inputs();
+            if(_cgan_params.has_value())
+                noise_size -= _cgan_params->conditional_labels.size(1);
+
             //Draw noise from unit normal distribution
-            auto noise = torch::randn({real_batch.first.size(0),
-                                       _model->get_num_inputs()},
+            auto noise = torch::randn({real_batch.first.size(0), noise_size},
                                       {torch::kFloat64});
             //Draw noise from a uniform distribution [0,1]
             //auto noise = torch::rand({real_batch.first.size(0),
             //                          _generator->get_num_inputs()},
             //                         {torch::kFloat64});
 
+            //Draw noise for conditional input if cGAN
+            std::optional<torch::Tensor> conditional_noise = std::nullopt;
+            if(_cgan_params.has_value())
+            {
+                conditional_noise = draw_conditional_noise(real_batch.first.size(0));
+                //Concatenate with normal noise
+                noise = torch::cat({noise, conditional_noise.value()}, 1);
+            }
+
             torch::Tensor fake_data = _model->forward(noise);
+
+            //Concatenate conditional noise if cGAN
+            if(conditional_noise.has_value())
+                fake_data = torch::cat({fake_data, conditional_noise.value()}, 1);
 
             torch::Tensor d_fake_output = _discriminator->forward(fake_data.detach());
             torch::Tensor fake_labels = torch::zeros({fake_data.size(0), 1},
@@ -210,6 +237,18 @@ double GAN::test_generator_symmetry(const bool random_noise) const
     //const double symmetry = measure_symmetry(generator_out);
     const double symmetry = measure_square_symmetry(generator_out);
     return symmetry;
+}
+
+torch::Tensor GAN::draw_conditional_noise(const unsigned num_noise_vecs) const
+{
+    //Create noise in appropriate conditional bounds
+    torch::Tensor noise = torch::rand({num_noise_vecs,
+                                       _cgan_params->conditional_labels.size(1)},
+                                      {torch::kFloat64});
+    noise *= (_cgan_params->conditional_ub - _cgan_params->conditional_lb);
+    noise += _cgan_params->conditional_lb;
+
+    return noise;
 }
 
 } // namespace NeuroEvo

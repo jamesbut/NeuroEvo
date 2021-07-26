@@ -51,8 +51,9 @@ public:
 
 protected:
 
-    //Determines whether training is stuck in a local minima by checking the current loss
-    //is greater than some plataeu loss when training has reached a certain test_epoch
+    //Determines whether training is stuck in a local minima by checking the current
+    //loss is greater than some plataeu loss when training has reached a certain
+    //test_epoch
     class LocalMinChecker
     {
 
@@ -68,7 +69,7 @@ protected:
 
     };
 
-    const torch::Tensor _training_data;
+    torch::Tensor _training_data;
     const std::optional<const torch::Tensor> _test_data;
     double _loss;
 
