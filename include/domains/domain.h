@@ -58,7 +58,8 @@ public:
         _trial_seed_sequence(domain._trial_seed_sequence),
         _render(domain._render),
         _screen_width(domain._screen_width),
-        _screen_height(domain._screen_height)
+        _screen_height(domain._screen_height),
+        _domain_hyperparams(domain._domain_hyperparams)
     {
 #if SFML_FOUND
         if(_render)
@@ -120,7 +121,8 @@ public:
             fitnesses.at(i) = single_run(org, trial_seed);
 
             if(verbosity)
-                std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i) << std::endl;
+                std::cout << "Run: " << i << " Fitness: " << fitnesses.at(i)
+                    << std::endl;
 
         }
 
@@ -187,6 +189,11 @@ public:
         }
     }
 
+    std::optional<std::vector<double>> get_hyperparams() const
+    {
+        return _domain_hyperparams;
+    }
+
 protected:
 
     //This function is abstract and all domains should implement
@@ -217,11 +224,18 @@ protected:
     //that they have implementations
 
     //Reset after each experiment
-    virtual void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) = 0;
+    virtual void exp_run_reset_impl(const unsigned run_num,
+                                    const unsigned run_seed) = 0;
     //Reset after each trial
     virtual void trial_reset(const unsigned trial_num) = 0;
     //Reset after each organism is evaluated
     virtual void org_reset() {}
+
+    //Set domain hyperparameters
+    void set_hyperparams(const std::vector<double>& hyperparams)
+    {
+        _domain_hyperparams = hyperparams;
+    }
 
     //The fitness at which the domain is considered
     //solved
@@ -392,6 +406,10 @@ private:
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
+
+
+    //Domain hyperparameters
+    std::optional<std::vector<double>> _domain_hyperparams;
 
 };
 

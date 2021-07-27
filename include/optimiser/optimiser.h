@@ -63,10 +63,10 @@ public:
             finished = optimisation_finished(gen, domain);
 
             //Collect data
-            data_collector.collect_generational_data(_population, gen, finished);
+            data_collector.collect_generational_data(_population, gen, finished,
+                                                     domain.get_hyperparams());
 
-            if(finished)
-                break;
+            if(finished) break;
 
             //Optimiser step - creates next generation population
             _population = step();

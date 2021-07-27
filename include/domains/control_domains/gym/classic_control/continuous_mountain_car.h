@@ -55,6 +55,11 @@ private:
             std::cout << this->_kwargs.value();
 
             this->make_env("MountainCarContinuous-v0", this->_kwargs.value());
+
+
+            //Set power value as domain hyperparameters
+            std::vector<double> hyperparam;
+            this->set_hyperparams(std::vector<double>(1, new_power));
         }
 
     }

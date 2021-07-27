@@ -32,8 +32,10 @@ class DataCollector
 
 public:
 
-    //If one does not want to dump the data then just provide a nullopt to the constructor
-    DataCollector(const std::optional<std::string>& exp_dir_path, const unsigned max_gens,
+    //If one does not want to dump the data then just provide a nullopt to the
+    //constructor
+    DataCollector(const std::optional<std::string>& exp_dir_path,
+                  const unsigned max_gens,
                   const bool dump_winners_only, const bool trace) :
         _uuid_folders(true),
         _exp_dir_path(exp_dir_path),
@@ -56,9 +58,11 @@ public:
         _best_winner_so_far.reset();
     }
 
-    void collect_generational_data(const Population<G, T>& population,
-                                   const unsigned current_gen,
-                                   const bool final_gen)
+    void collect_generational_data(
+        const Population<G, T>& population,
+        const unsigned current_gen,
+        const bool final_gen,
+        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path && _exp_dir_path.has_value())
@@ -73,7 +77,8 @@ public:
 
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
-        if(_exp_dir_path.has_value()) save_best_winner_so_far_to_file();
+        if(_exp_dir_path.has_value())
+            save_best_winner_so_far_to_file(domain_hyperparams);
 
         calculate_population_statistics(population);
         if(final_gen)
@@ -136,7 +141,8 @@ private:
         }
     }
 
-    double calculate_population_avergage_fitness(const Population<G, T>& population) const
+    double calculate_population_avergage_fitness(const Population<G, T>& population)
+        const
     {
         double total_fitness = 0.;
 
@@ -192,16 +198,19 @@ private:
         gen_winner.save_org_to_file(file_name.str());
     }
 
-    void save_best_winner_so_far_to_file() const
+    void save_best_winner_so_far_to_file(
+        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
+            const
     {
         std::stringstream file_name;
         file_name << _run_dir_path.value() << "/best_winner_so_far";
 
         if(_best_winner_so_far.has_value())
-            _best_winner_so_far->save_org_to_file(file_name.str());
+            _best_winner_so_far->save_org_to_file(file_name.str(), domain_hyperparams);
         else
         {
-            std::cerr << "There is no best winner so far set to save to file" << std::endl;
+            std::cerr << "There is no best winner so far set to save to file"
+                << std::endl;
             exit(0);
         }
 

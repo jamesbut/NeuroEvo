@@ -106,7 +106,10 @@ public:
         _phenotype.reset(_gp_map->map(*_genotype));
     }
 
-    void save_org_to_file(const std::string& file_name) const
+    void save_org_to_file(
+        const std::string& file_name,
+        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
+            const
     {
 
         //Print fitness and then the genotype
@@ -121,6 +124,18 @@ public:
 
         //if(_gp_map)
         //    _gp_map.get()->print(org_file);
+
+        //If domain hyperparams are given write them to a new line
+        if(domain_hyperparams.has_value())
+        {
+            org_file << "\n";
+            for(std::size_t i = 0; i < domain_hyperparams.value().size(); i++)
+            {
+                org_file << domain_hyperparams.value()[i];
+                if(i != domain_hyperparams.value().size()-1)
+                    org_file << ",";
+            }
+        }
 
         org_file.close();
 
