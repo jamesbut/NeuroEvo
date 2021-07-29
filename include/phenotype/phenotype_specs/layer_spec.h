@@ -20,20 +20,20 @@ namespace NeuroEvo {
     Only normal, recurrent and GRU units can be used currently.
 */
 
-enum NeuronType 
+enum NeuronType
 {
     Standard,
     Recurrent,
     GRU
 };
 
-class LayerSpec 
+class LayerSpec
 {
 
 public:
 
     LayerSpec(const unsigned num_neurons,
-              const unsigned inputs_per_neuron, 
+              const unsigned inputs_per_neuron,
               const std::shared_ptr<ActivationFunctionSpec> activation_func_spec,
               const bool batch_norm = false,
               const NeuronType neuron_type = NeuronType::Standard,
@@ -44,7 +44,7 @@ public:
     LayerSpec(LayerSpec&& layer_spec) = default;
     LayerSpec& operator=(LayerSpec&& layer_spec) = default;
     ~LayerSpec() = default;
-    
+
     //A static function to build a number of layers according to a specification
     //This is helpful
     static std::vector<LayerSpec> build_layer_specs(
@@ -79,7 +79,7 @@ public:
 
     void print_spec() const;
 
-private: 
+private:
 
     NeuronType _neuron_type;
     unsigned _num_neurons;

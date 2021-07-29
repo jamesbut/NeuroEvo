@@ -6,7 +6,7 @@ namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
-    Phenotype<double>(trace),
+    NetworkBase(trace),
     _net(build_network(layer_specs, std::nullopt))
 {
     register_module("net", _net);
@@ -15,7 +15,7 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
                            const std::vector<double>& init_weights,
                            const bool trace) :
-    Phenotype<double>(trace),
+    NetworkBase(trace),
     _net(build_network(layer_specs, init_weights))
 {
     register_module("net", _net);
@@ -24,7 +24,7 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
 TorchNetwork::TorchNetwork(const std::string& file_path,
                            const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
-    Phenotype<double>(trace),
+    NetworkBase(trace),
     _net(read(file_path, layer_specs))
 {
     register_module("net", _net);
@@ -120,6 +120,10 @@ torch::nn::Sequential TorchNetwork::build_network(
 
     }
 
+    //Save final layer activation function
+    _final_layer_activ_func.reset(
+        layer_specs.back().get_activation_func_spec()->create_activation_function());
+
     //Set param size
     _num_params.emplace(calculate_num_net_params(net));
 
@@ -200,16 +204,6 @@ torch::nn::Sequential TorchNetwork::read(const std::string& file_path,
     }
 
     return net;
-}
-
-unsigned TorchNetwork::get_num_inputs() const
-{
-    return _num_inputs;
-}
-
-unsigned TorchNetwork::get_num_outputs() const
-{
-    return _num_outputs;
 }
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const

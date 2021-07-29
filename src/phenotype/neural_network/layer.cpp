@@ -35,9 +35,10 @@ void Layer::create_layer()
 {
     if(_neuron_type == NeuronType::GRU)
         for(unsigned i = 0; i < _num_neurons; i++)
-            _neurons.push_back(std::unique_ptr<Neuron>(new GRUNeuron(_inputs_per_neuron,
-                                                                     _activation_function,
-                                                                     _trace)));
+            _neurons.push_back(std::unique_ptr<Neuron>(
+                new GRUNeuron(_inputs_per_neuron,
+                              _activation_function,
+                              _trace)));
     else
         for(unsigned i = 0; i < _num_neurons; i++)
             _neurons.push_back(std::unique_ptr<Neuron>(new Neuron(_inputs_per_neuron,
@@ -90,7 +91,7 @@ std::vector<double> Layer::get_weights() const
     return weights;
 }
 
-const std::shared_ptr<ActivationFunction>& Layer::get_activation_function() const
+std::shared_ptr<ActivationFunction> Layer::get_activation_function() const
 {
     return _activation_function;
 }

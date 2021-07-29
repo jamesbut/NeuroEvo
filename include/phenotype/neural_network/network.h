@@ -5,12 +5,12 @@
     Defines a network as a vector of layers
 */
 
-#include <phenotype/phenotype.h>
+#include <phenotype/neural_network/network_base.h>
 #include <phenotype/neural_network/layer.h>
 
 namespace NeuroEvo {
 
-class Network : public Phenotype<double>
+class Network : public NetworkBase
 {
 
 public:
@@ -31,7 +31,6 @@ public:
 
     std::vector<double> get_weights() const;
     const std::vector<std::unique_ptr<Layer>>& get_layers() const;
-    const std::shared_ptr<ActivationFunction> get_final_layer_activ_func() const;
 
 protected:
 

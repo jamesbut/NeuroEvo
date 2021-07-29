@@ -4,10 +4,10 @@
 namespace NeuroEvo {
 
 Network::Network(const bool trace) :
-    Phenotype<double>(trace) {}
+    NetworkBase(trace) {}
 
 Network::Network(const Network& network) :
-    Phenotype<double>(network._trace),
+    NetworkBase(network._trace),
     _layers(network._layers.size())
 {
     for(std::size_t i = 0; i < _layers.size(); i++)
@@ -29,6 +29,13 @@ void Network::create_net(const std::vector<LayerSpec>& layer_specs)
     for(const auto& layer : _layers)
         num_weights += layer->get_number_of_weights();
     _num_params = num_weights;
+
+    //Calculate and set num inputs and outputs
+    _num_inputs = layer_specs[0].get_inputs_per_neuron();
+    _num_outputs = layer_specs.back().get_num_neurons();
+
+    //Set final layer activation function
+    _final_layer_activ_func = _layers.back()->get_activation_function();
 
 }
 
@@ -91,11 +98,6 @@ std::vector<double> Network::get_weights() const
 const std::vector<std::unique_ptr<Layer>>& Network::get_layers() const
 {
     return _layers;
-}
-
-const std::shared_ptr<ActivationFunction> Network::get_final_layer_activ_func() const
-{
-    return _layers.back()->get_activation_function();
 }
 
 std::vector<double> Network::propogate(const std::vector<double>& inputs)

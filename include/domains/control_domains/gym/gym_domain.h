@@ -165,9 +165,9 @@ private:
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
 
-        auto pheno_net = dynamic_cast<const Network*>(&org.get_phenotype());
+        auto pheno_net = dynamic_cast<const NetworkBase*>(&org.get_phenotype());
         if(!pheno_net)
-            throw std::runtime_error("Cannot cast phenotype to Network in GymDomain"
+            throw std::runtime_error("Cannot cast phenotype to NetworkBase in GymDomain"
                 " single_run");
         const auto final_layer_activ_func = pheno_net->get_final_layer_activ_func();
 
@@ -182,6 +182,14 @@ private:
         bool done = false;
 
         std::vector<double> state = reset_env();
+
+        if(this->_domain_trace)
+        {
+            std::cout << "State: ";
+            for(const auto s : state)
+                std::cout << s << " ";
+            std::cout << std::endl;
+        }
 
         while(!done)
         {
