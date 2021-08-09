@@ -58,9 +58,6 @@ private:
 
     torch::nn::Sequential _net;
 
-    unsigned _num_inputs;
-    unsigned _num_outputs;
-
 };
 
 } // namespace NeuroEvo

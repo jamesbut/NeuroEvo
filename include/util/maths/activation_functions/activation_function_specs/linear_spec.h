@@ -1,15 +1,15 @@
-#ifndef _RELU_SPEC_H_
-#define _RELU_SPEC_H_
+#ifndef _LINEAR_SPEC_H_
+#define _LINEAR_SPEC_H_
 
 #if USE_TORCH
 #include <torch/nn/modules/activation.h>
 #endif
 #include <util/maths/activation_functions/activation_function_specs/activation_function_spec.h>
-#include <util/maths/activation_functions/relu.h>
+#include <util/maths/activation_functions/linear.h>
 
 namespace NeuroEvo {
 
-class ReLUSpec : public ActivationFunctionSpec
+class LinearSpec : public ActivationFunctionSpec
 {
 
 public:
@@ -17,21 +17,21 @@ public:
 #if USE_TORCH
     torch::nn::AnyModule create_torch_module() const override
     {
-        torch::nn::AnyModule relu_module((torch::nn::ReLU()));
-        return relu_module;
+        torch::nn::AnyModule identity_module((torch::nn::Identity()));
+        return identity_module;
     }
 #endif
 
     ActivationFunction* create_activation_function() const override
     {
-        return new ReLU();
+        return new Linear();
     }
 
 private:
 
-    ReLUSpec* clone_impl() const override
+    LinearSpec* clone_impl() const override
     {
-        return new ReLUSpec(*this);
+        return new LinearSpec(*this);
     }
 
 };

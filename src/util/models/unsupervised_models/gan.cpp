@@ -106,6 +106,7 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
             /* Train discriminator on real data */
             _discriminator->zero_grad();
             torch::Tensor d_real_output = _discriminator->forward(real_batch.first);
+
             //BCE loss with summed reduction (just sums the loss for the batch)
             torch::Tensor d_real_loss = torch::nn::functional::binary_cross_entropy(
                 d_real_output,

@@ -21,7 +21,8 @@ double TrainableModel::get_loss() const
     return _loss;
 }
 
-torch::Tensor TrainableModel::forward(const torch::Tensor& input, const bool trace) const
+torch::Tensor TrainableModel::forward(const torch::Tensor& input, const bool trace)
+    const
 {
     const torch::Tensor output = _model->forward(input);
 

@@ -100,7 +100,6 @@ Phenotype<double>* NetworkBuilder::build_network()
 #if USE_TORCH
     else if (_torch_net)
     {
-
         TorchNetwork* torch_network;
 
         //If weights are not given
@@ -118,6 +117,7 @@ Phenotype<double>* NetworkBuilder::build_network()
             torch_network = new TorchNetwork(_layer_specs,
                                              _init_weights.value(),
                                              _trace);
+
         return torch_network;
 
     }
