@@ -2,6 +2,7 @@
 #define _LEARNING_RATE_SCHEDULER_H_
 
 #include <torch/optim/optimizer.h>
+#include <iostream>
 
 namespace NeuroEvo {
 
@@ -18,10 +19,10 @@ public:
     //base class, the base class does not contain the learning rate, dispite it being
     //common in all optimisers :/
     //So in order to get pointers to the learning rates(s) (of the parameter 'groups')
-    //we have to try to cast to each optimiser option in this function and then get 
+    //we have to try to cast to each optimiser option in this function and then get
     //the pointers to said learning rates.
     //With these pointers we should be able to modify at will.
-    std::vector<double*> ascertain_param_group_lr_refs(torch::optim::Optimizer& optimiser) 
+    std::vector<double*> ascertain_param_group_lr_refs(torch::optim::Optimizer& optimiser)
         const;
 
 protected:
@@ -34,7 +35,7 @@ protected:
 private:
 
     //Pointers to the learning rates of each of the different parameter groups
-    std::vector<double*> _param_group_lrs; 
+    std::vector<double*> _param_group_lrs;
 
 };
 

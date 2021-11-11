@@ -18,7 +18,7 @@ std::vector<double*> LearningRateScheduler::ascertain_param_group_lr_refs(
 
     //Adam
     if(adam_options)
-        for(auto& param_group : optimiser.param_groups())  
+        for(auto& param_group : optimiser.param_groups())
             lr_refs.push_back(
                 &static_cast<torch::optim::AdamOptions&>(param_group.options()).lr());
 
