@@ -193,6 +193,7 @@ private:
 
         while(!done)
         {
+
             //Activate control network
             const std::vector<double> net_outs = org.get_phenotype().activate(state);
 

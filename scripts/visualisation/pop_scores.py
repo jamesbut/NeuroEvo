@@ -7,7 +7,7 @@ import numpy as np
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=sys.maxsize)
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches 
+import matplotlib.patches as mpatches
 import csv
 import os
 import glob
@@ -66,7 +66,7 @@ def read_run_data(folder_name):
 
     mean_fitnesses = []
 
-    try: 
+    try:
         with open(means_file_name, 'r') as means_file:
            mean_fitnesses = means_file.readlines()
     except FileNotFoundError:
@@ -91,7 +91,7 @@ def read_run_data(folder_name):
 # Finds most recent run in experiment 1
 def get_default_exp_and_run():
 
-    folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')), 
+    folder = max(glob.glob(os.path.join(parent_dir + '/../data/exp_1/', '*/')),
                  key=os.path.getmtime)
     split_folder_str = folder.split("/")
     return [["exp_1/" + split_folder_str[-2]]]
@@ -99,10 +99,12 @@ def get_default_exp_and_run():
 def get_run_folder_names(exp_dir_name):
 
     folders = glob.glob(os.path.join(parent_dir + '/../data/' + exp_dir_name + '/', '*/'))
+
     split_folders = []
     for folder in folders:
         split_folder = folder.split("/")
-        folder_name = split_folder[-3] + "/" + split_folder[-2] 
+        #folder_name = split_folder[-3] + "/" + split_folder[-2]
+        folder_name = exp_dir_name + "/" + split_folder[-2]
         split_folders.append(folder_name)
 
     return split_folders
@@ -116,23 +118,23 @@ def plot_experiment(mean_best_so_far, median_means, uq_means, lq_means, colour):
     plotted_data_avg = np.column_stack((x, median_means))
     plotted_data_high_quantile = np.column_stack((x, uq_means))
     plotted_data_low_quantile = np.column_stack((x, lq_means))
-    plotted_data = np.array([plotted_data_best, plotted_data_avg, 
+    plotted_data = np.array([plotted_data_best, plotted_data_avg,
                              plotted_data_high_quantile, plotted_data_low_quantile])
 
-    xlabel = 'Generation'
-    ylabel = 'Fitness'
-
-    legend_labels = ["Best fitness so far", "Population avg fitness", 
+    legend_labels = ["Best fitness so far", "Population avg fitness",
                      "High quantile", "Low quantile"]
     line_styles = ['--', '-', '--', '--']
     line_widths = [1., 1., 0.25, 0.25]
 
     for i in range(plotted_data.shape[0]):
-        plt.plot(plotted_data[i,:,0], plotted_data[i,:,1], 
+        plt.plot(plotted_data[i,:,0], plotted_data[i,:,1],
                  color=colour, linestyle=line_styles[i],
                  linewidth=line_widths[i])
 
     plt.fill_between(x, lq_means, uq_means, color=colour, alpha=0.1)
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
 
 if __name__ == '__main__':
 
@@ -161,8 +163,11 @@ if __name__ == '__main__':
         sys.exit()
 
     exp_plot_colours = ['b', 'r', 'g', 'm', 'y']
-    legend_labels = ['Direct map', 'AE', 'VAE', 'GAN']
+    #legend_labels = ['Direct map', 'AE', 'VAE', 'GAN']
     #legend_labels = ['\u03C3=1.', '\u03C3=0.25', '\u03c3=0.1', '\u03c3=0.01']
+    #legend_labels = ['Direct Encoding', 'Indirect Encoding', 'VAE', 'GAN']
+    #legend_labels = ['VAE IE', 'GAN IE', 'VAE', 'GAN']
+    legend_labels = ['1', '2', '3', '4']
     legend_items = []
 
     # Import data
@@ -174,16 +179,18 @@ if __name__ == '__main__':
         mean_fitnesses, best_fitnesses = read_experiment_data(exp_folder)
 
         #Calculate statistics
-        #mean_best_so_far_fitnesses = np.mean(best_fitnesses, axis=0)
+        mean_best_so_far_fitnesses = np.mean(best_fitnesses, axis=0)
         median_best_so_far_fitnesses = np.median(best_fitnesses, axis=0)
-        median_mean_fitnesses = np.median(mean_fitnesses, axis=0)  
+        median_mean_fitnesses = np.median(mean_fitnesses, axis=0)
         lq_mean_fitnesses = np.quantile(mean_fitnesses, 0.25, axis=0)
         uq_mean_fitnesses = np.quantile(mean_fitnesses, 0.75, axis=0)
 
         #NOTE: If best fitnesses are lower on the graph than mean fitnesses remember we are
         #comparing a median and a mean
 
-        plot_experiment(median_best_so_far_fitnesses, median_mean_fitnesses,
+        #plot_experiment(median_best_so_far_fitnesses, median_mean_fitnesses,
+        #                uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])
+        plot_experiment(mean_best_so_far_fitnesses, median_mean_fitnesses,
                         uq_mean_fitnesses, lq_mean_fitnesses, exp_plot_colours[i])
 
         legend_items.append(mpatches.Patch(color=exp_plot_colours[i], label=legend_labels[i]))
