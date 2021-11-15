@@ -15,14 +15,12 @@ set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
 # SFML used for rendering
-find_package(SFML COMPONENTS graphics)
-if(${SFML_FOUND})
-    set(SFML_FOUND 1)
-else()
-    set(SFML_FOUND 0)
-endif()
-#SFML is working right now
-set(SFML_FOUND 0)
+#find_package(SFML COMPONENTS graphics)
+#if(${SFML_FOUND})
+#    set(SFML_FOUND 1)
+#else()
+#    set(SFML_FOUND 0)
+#endif()
 
 #Torch is on by default
 if(NOT DEFINED WITH_TORCH)
@@ -33,10 +31,7 @@ if(${WITH_TORCH})
     if(LINUX)
         set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.8/dist-packages")
     else()
-        #set(CMAKE_PREFIX_PATH "/usr/local/lib/python3.7/site-packages")
-        #set(CMAKE_PREFIX_PATH "/Users/james/opt/anaconda3/envs/gym_api/lib/python3.7/site-packages")
-        #set(CMAKE_PREFIX_PATH "/Users/james/Documents/projects/pytorch")
-        set(CMAKE_PREFIX_PATH "/Users/james/libraries/pytorch")
+        set(CMAKE_PREFIX_PATH "~/libraries/libtorch")
     endif()
     find_package(Torch REQUIRED)
 endif()
@@ -120,7 +115,6 @@ endif()
 target_include_directories(neuroEvo PUBLIC
     include
     ${Boost_INCLUDE_DIRS}
-    #${TORCH_INCLUDE_DIRS}
     lib/eigen
     ${PYTHON_INCLUDE_DIRS}
 )
