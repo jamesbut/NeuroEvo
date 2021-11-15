@@ -21,6 +21,8 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 #else()
 #    set(SFML_FOUND 0)
 #endif()
+# SFML is not working right now
+set(SFML_FOUND 0)
 
 #Torch is on by default
 if(NOT DEFINED WITH_TORCH)
@@ -66,12 +68,6 @@ if(hasParent)
     set(SFML_FOUND ${SFML_FOUND} PARENT_SCOPE)
 endif()
 
-# Make variable available to the C++ source code
-add_compile_definitions(DATA_PATH="${DATA_PATH}")
-add_compile_definitions(NEURO_EVO_CMAKE_SRC_DIR="${NEURO_EVO_CMAKE_SRC_DIR}")
-add_compile_definitions(SFML_FOUND=${SFML_FOUND})
-add_compile_definitions(USE_TORCH=${USE_TORCH})
-
 # Build all files in src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -97,6 +93,15 @@ endif()
 add_library(neuroEvo SHARED
     ${SOURCES}
 )
+
+# Make variable available to the C++ source code
+target_compile_definitions(neuroEvo PUBLIC
+    -DDATA_PATH="${DATA_PATH}"
+    -DNEURO_EVO_CMAKE_SRC_DIR="${NEURO_EVO_CMAKE_SRC_DIR}"
+    -DSFML_FOUND=${SFML_FOUND}
+    -DUSE_TORCH=${USE_TORCH}
+)
+
 
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}

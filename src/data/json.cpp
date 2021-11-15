@@ -6,7 +6,7 @@ namespace NeuroEvo {
 
 JSON::JSON(const std::string& file_name) : _j(read_json(file_name)) {}
 
-nlohmann::json JSON::read_json(const std::string& file_path)
+nlohmann::json JSON::read_json(const std::string& file_path) const
 {
     std::ifstream json_file(file_path);
     if(json_file.fail())

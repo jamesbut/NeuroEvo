@@ -25,7 +25,7 @@ public:
 
 private:
 
-    nlohmann::json read_json(const std::string& file_path);
+    nlohmann::json read_json(const std::string& file_path) const;
 
     nlohmann::json _j;
 
