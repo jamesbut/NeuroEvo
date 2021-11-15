@@ -49,6 +49,9 @@ endif()
 # Find Python libs for python/C++ binding
 find_package(PythonLibs REQUIRED)
 
+# JSON library
+find_package(nlohmann_json REQUIRED)
+
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
 set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -98,6 +101,7 @@ add_library(neuroEvo SHARED
 target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
+    nlohmann_json::nlohmann_json
 )
 
 if(${USE_TORCH})
