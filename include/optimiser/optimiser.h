@@ -23,7 +23,7 @@ public:
               const bool quit_when_domain_complete = true,
               const unsigned num_trials = 1,
               const std::optional<unsigned> seed = std::nullopt) :
-        _gp_map(gp_map),
+        //_gp_map(gp_map),
         _num_genes(num_genes),
         _max_gens(max_gens),
         _pop_size(pop_size),
@@ -33,7 +33,7 @@ public:
         _quit_when_domain_complete(quit_when_domain_complete) {}
 
     Optimiser(const Optimiser& optimiser) :
-        _gp_map(optimiser._gp_map),
+        //_gp_map(optimiser._gp_map),
         _num_genes(optimiser._num_genes),
         _max_gens(optimiser._max_gens),
         _pop_size(optimiser._pop_size),
@@ -41,6 +41,19 @@ public:
         _seed(optimiser._seed),
         _trace(optimiser._trace),
         _quit_when_domain_complete(optimiser._quit_when_domain_complete) {}
+
+    Optimiser(const JSON& json) :
+        //_gp_map(nullptr),
+        _num_genes(5),
+        _max_gens(5),
+        _pop_size(100),
+        _num_trials(1),
+        _seed(std::nullopt),
+        _trace(false),
+        _quit_when_domain_complete(true)
+    {
+        std::cout << "Optimiser JSON constructor" << std::endl;
+    }
 
     virtual ~Optimiser() = default;
 
@@ -128,7 +141,7 @@ protected:
 
     virtual Optimiser* clone_impl() const = 0;
 
-    GPMap<G, T>& _gp_map;
+    //GPMap<G, T>& _gp_map;
 
     const unsigned _num_genes;
     const unsigned _max_gens;

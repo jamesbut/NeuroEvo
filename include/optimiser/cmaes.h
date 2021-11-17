@@ -7,6 +7,8 @@
 
 #include <Eigen/Dense>
 
+#include <util/factory.h>
+
 namespace NeuroEvo {
 
 template <typename T>
@@ -25,7 +27,9 @@ public:
           const unsigned num_trials = 1,
           const bool adapt_C = true,
           const std::optional<unsigned>& seed = std::nullopt) :
-        Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size,
+        //Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size,
+        //                     quit_when_domain_complete, num_trials, seed),
+        Optimiser<double, T>(num_genes, max_gens, pop_size,
                              quit_when_domain_complete, num_trials, seed),
         _mean(Eigen::VectorXd::Zero(this->_num_genes)),
         _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
@@ -82,6 +86,27 @@ public:
         //Expectation of ||N(0,I)|| == norm(randn(N,1))
         _chiN = std::sqrt(_N) * (1. - 1. / (4. * _N) + 1. / (21. * _N * _N));
 
+    }
+
+    CMAES(const JSON& json) :
+        Optimiser<double, T>(json),
+        _mean(Eigen::VectorXd::Zero(this->_num_genes)),
+        _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
+        _sigma(0.),
+        _B(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
+        _D(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
+        _invD(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
+        _C(_D * _D),
+        _C_old(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
+        _invsqrtC(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
+        _p_c(Eigen::VectorXd::Zero(this->_num_genes)),
+        _p_sigma(Eigen::VectorXd::Zero(this->_num_genes)),
+        _count_eval(0),
+        _eigen_eval(0),
+        _gauss_distr(0, 1),
+        _adapt_C(false)
+    {
+        std::cout << "CMAES json constructor" << std::endl;
     }
 
     Population<double, T> step() override
@@ -196,7 +221,7 @@ private:
             genotypes.push_back(Genotype<double>(genes_vec));
         }
 
-        return Population<double, T>(genotypes, this->_gp_map);
+        //return Population<double, T>(genotypes, this->_gp_map);
     }
 
     void perform_eigendecompostion() {
@@ -304,7 +329,13 @@ private:
 
     const bool _adapt_C;
 
+
 };
+
+//REGISTER(CMAES<double>, Optimiser<double, double>)
+static Factory<Optimiser<double, double>>::Registrar registrar("CMAES",
+    [](const JSON& json) {return std::make_shared<CMAES<double>>(json);});
+
 
 } // namespace NeuroEvo
 
