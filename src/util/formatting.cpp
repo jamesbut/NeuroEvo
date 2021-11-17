@@ -9,5 +9,4 @@ void print_horizontal_line(const unsigned width)
     std::cout << std::endl;
 }
 
-
 } // namespace NeuroEvo

@@ -21,11 +21,11 @@ void print_table_element(const T& element, const unsigned width)
 
 //Prints a formatted table row with column width
 template <typename T>
-void print_table_row(const std::vector<T>& elements, const unsigned width, 
+void print_table_row(const std::vector<T>& elements, const unsigned width,
                      const bool line_below = false, const bool line_above = false)
 {
 
-    if(line_above) 
+    if(line_above)
     {
         const unsigned line_size = (width + 1) * elements.size() + 1;
         print_horizontal_line(line_size);
@@ -38,7 +38,7 @@ void print_table_row(const std::vector<T>& elements, const unsigned width,
     }
     std::cout << std::endl;
 
-    if(line_below) 
+    if(line_below)
     {
         const unsigned line_size = (width + 1) * elements.size() + 1;
         print_horizontal_line(line_size);
@@ -46,6 +46,21 @@ void print_table_row(const std::vector<T>& elements, const unsigned width,
 
 }
 
+//Overload << operator for vector
+template <typename T>
+std::ostream& operator << (std::ostream& os, const std::vector<T>& vec)
+{
+    //If T is a string, put quotes around the values
+    std::string quote = "";
+    if(std::is_same<T, std::string>::value)
+        quote = "\"";
+
+    os << "[";
+    for(const auto& v : vec)
+        os << " " << quote << v << quote;
+    os << " ]" << std::endl;
+    return os;
+}
 
 } // namespace NeuroEvo
 
