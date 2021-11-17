@@ -6,6 +6,8 @@ namespace NeuroEvo {
 
 JSON::JSON(const std::string& file_name) : _j(read_json(file_name)) {}
 
+JSON::JSON(const nlohmann::json& json) : _j(json) {}
+
 nlohmann::json JSON::read_json(const std::string& file_path) const
 {
     std::ifstream json_file(file_path);
@@ -14,9 +16,17 @@ nlohmann::json JSON::read_json(const std::string& file_path) const
     return nlohmann::json::parse(json_file);
 }
 
-const nlohmann::json& JSON::get() const
+const nlohmann::json JSON::at(const std::vector<const std::string>& keys) const
 {
-    return _j;
+    nlohmann::json json = _j;
+    for(const auto& key : keys)
+        json = json.at(key);
+    return json;
+}
+
+const nlohmann::json JSON::at(const std::string& key) const
+{
+    return at(std::vector<const std::string>{key});
 }
 
 std::ostream& operator<<(std::ostream& s, const JSON& json)

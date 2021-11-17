@@ -24,12 +24,12 @@ public:
     static std::shared_ptr<T> create(const JSON& json)
     {
         // Get name of registered class from json
-        const std::string derived_class_name = json.get()[_T_class_name]["name"];
+        const std::string derived_class_name = json.at({_T_class_name, "name"});
         // Find function pointer to constructor of that class in factory map
         auto it = _factory_map.find(derived_class_name);
         // If constructor pointer is in factory map, call constructor
         if(it != _factory_map.end())
-            return it->second(json);
+            return it->second(JSON(json.at(_T_class_name)));
         else
             throw std::invalid_argument(derived_class_name + " is not in factory map");
     }
@@ -46,15 +46,15 @@ public:
             factory._factory_map[derived_class_name] = func;
 
         }
-    };
 
-    // Macro to make registration easier
-    // TODO: should make_shared be derived class or base class?
-    // TODO: should this be inside Registrar
-    #define REGISTER(DERIVED_CLASS, BASE_CLASS) \
-        static Factory<BASE_CLASS>::Registrar registrar( \
+        // Macro to make registration easier
+        // TODO: Come back to this to make it work more generically
+        #define REGISTER(DERIVED_CLASS, BASE_CLASS, T) \
+        static Factory<BASE_CLASS<T, T>>::Registrar registrar( \
             #DERIVED_CLASS, \
-            [](const JSON& json) {return std::make_shared<DERIVED_CLASS>(json;)});
+            [](const JSON& json) {return std::make_shared<DERIVED_CLASS<T>>(json);});
+
+    };
 
     // Print factory map state
     static void print()

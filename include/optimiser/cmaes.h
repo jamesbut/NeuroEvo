@@ -19,7 +19,7 @@ public:
 
     CMAES(const std::vector<double>& init_mean,
           double init_sigma,
-          GPMap<double, T>& gp_map,
+          //GPMap<double, T>& gp_map,
           const unsigned num_genes,
           const unsigned max_gens,
           const unsigned pop_size,
@@ -89,25 +89,14 @@ public:
     }
 
     CMAES(const JSON& json) :
-        Optimiser<double, T>(json),
-        _mean(Eigen::VectorXd::Zero(this->_num_genes)),
-        _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
-        _sigma(0.),
-        _B(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
-        _D(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
-        _invD(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
-        _C(_D * _D),
-        _C_old(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
-        _invsqrtC(Eigen::MatrixXd::Identity(this->_num_genes, this->_num_genes)),
-        _p_c(Eigen::VectorXd::Zero(this->_num_genes)),
-        _p_sigma(Eigen::VectorXd::Zero(this->_num_genes)),
-        _count_eval(0),
-        _eigen_eval(0),
-        _gauss_distr(0, 1),
-        _adapt_C(false)
-    {
-        std::cout << "CMAES json constructor" << std::endl;
-    }
+        CMAES(json.at("init_mean"),
+              json.at("init_sigma"),
+              json.at("num_genes"),
+              json.at("num_gens"),
+              json.at("pop_size"),
+              json.at("quit_domain_when_complete"),
+              json.at("num_trials"),
+              json.at("adapt_C")) {}
 
     Population<double, T> step() override
     {
@@ -329,13 +318,9 @@ private:
 
     const bool _adapt_C;
 
-
 };
 
-//REGISTER(CMAES<double>, Optimiser<double, double>)
-static Factory<Optimiser<double, double>>::Registrar registrar("CMAES",
-    [](const JSON& json) {return std::make_shared<CMAES<double>>(json);});
-
+REGISTER(CMAES, Optimiser, double)
 
 } // namespace NeuroEvo
 

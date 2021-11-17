@@ -7,6 +7,7 @@
 
 #include <population.h>
 #include <domains/domain.h>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -16,8 +17,8 @@ class Optimiser
 
 public:
 
-    Optimiser(GPMap<G, T>& gp_map,
-              const unsigned num_genes,
+    //Optimiser(GPMap<G, T>& gp_map,
+    Optimiser(const unsigned num_genes,
               const unsigned max_gens,
               const unsigned pop_size,
               const bool quit_when_domain_complete = true,
@@ -44,16 +45,13 @@ public:
 
     Optimiser(const JSON& json) :
         //_gp_map(nullptr),
-        _num_genes(5),
-        _max_gens(5),
-        _pop_size(100),
-        _num_trials(1),
+        _num_genes(json.at("num_genes")),
+        _max_gens(json.at("num_gens")),
+        _pop_size(json.at("pop_size")),
+        _num_trials(json.at("num_trials")),
         _seed(std::nullopt),
         _trace(false),
-        _quit_when_domain_complete(true)
-    {
-        std::cout << "Optimiser JSON constructor" << std::endl;
-    }
+        _quit_when_domain_complete(json.at("quit_domain_when_complete")) {}
 
     virtual ~Optimiser() = default;
 
