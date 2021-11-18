@@ -54,6 +54,11 @@ find_package(PythonLibs REQUIRED)
 # JSON library
 find_package(nlohmann_json REQUIRED)
 
+# Pretty table library
+set(FORT_ENABLE_TESTING OFF CACHE INTERNAL "")
+add_subdirectory(lib/libfort)
+
+
 # Set path of population data directory
 set(DATA_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data")
 set(NEURO_EVO_CMAKE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -107,6 +112,7 @@ target_link_libraries(neuroEvo
     ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
     nlohmann_json::nlohmann_json
+    fort
 )
 
 if(${USE_TORCH})
@@ -126,6 +132,7 @@ target_include_directories(neuroEvo PUBLIC
     ${Boost_INCLUDE_DIRS}
     lib/eigen
     ${PYTHON_INCLUDE_DIRS}
+    lib/libfort/lib
 )
 
 # Library used for parallelisation

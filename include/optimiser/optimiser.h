@@ -7,7 +7,6 @@
 
 #include <population.h>
 #include <domains/domain.h>
-#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -42,16 +41,6 @@ public:
         _seed(optimiser._seed),
         _trace(optimiser._trace),
         _quit_when_domain_complete(optimiser._quit_when_domain_complete) {}
-
-    Optimiser(const JSON& json) :
-        //_gp_map(nullptr),
-        _num_genes(json.at("num_genes")),
-        _max_gens(json.at("num_gens")),
-        _pop_size(json.at("pop_size")),
-        _num_trials(json.at("num_trials")),
-        _seed(std::nullopt),
-        _trace(false),
-        _quit_when_domain_complete(json.at("quit_domain_when_complete")) {}
 
     virtual ~Optimiser() = default;
 

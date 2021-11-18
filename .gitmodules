@@ -4,3 +4,6 @@
 [submodule "lib/gym"]
 	path = lib/gym
 	url = https://github.com/jamesbut/gym.git
+[submodule "lib/libfort"]
+	path = lib/libfort
+	url = git@github.com:seleznevae/libfort.git

@@ -10,6 +10,7 @@
 #include <data/json.h>
 #include <util/string.h>
 #include <util/formatting.h>
+#include <fort.hpp>
 
 
 namespace NeuroEvo {
@@ -59,11 +60,16 @@ public:
     // Print factory map state
     static void print()
     {
-        std::cout << _T_class_name << " Factory Map" << std::endl;
-        std::cout << "------------------------------" << std::endl;
-        for(const auto& fm : _factory_map)
-            std::cout << fm.first << " : " << &fm.second << std::endl;
-        std::cout << "------------------------------" << std::endl;
+        fort::char_table table;
+            table << fort::header << _T_class_name + " Factory Map" << fort::endr;
+
+        table[0][0].set_cell_span(2);
+        table[0].set_cell_row_type(fort::row_type::header);
+
+        for(const auto& fm_element : _factory_map)
+            table << fm_element.first << &fm_element.second << fort::endr;
+
+        std::cout << table.to_string();
     }
 
 private:
