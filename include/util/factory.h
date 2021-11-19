@@ -32,7 +32,8 @@ public:
         if(it != _factory_map.end())
             return it->second(JSON(json.at(_T_class_name)));
         else
-            throw std::invalid_argument(derived_class_name + " is not in factory map");
+            throw std::invalid_argument(derived_class_name + " is not in " +
+                                        _T_class_name + " factory map");
     }
 
     // A class to register JSON constructors of derived classes

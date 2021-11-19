@@ -12,32 +12,49 @@ class GeneticAlgorithm : public Optimiser<G, T>
 
 public:
 
+    /*
     GeneticAlgorithm(Selection<G, T>& selector,
                      Mutator<G>& mutator,
                      Distribution<G>& init_distr,
                      GPMap<G, T>& gp_map,
-                     const unsigned num_genes,
+    */
+    GeneticAlgorithm(const unsigned num_genes,
                      const unsigned max_gens,
                      const unsigned pop_size,
                      const bool quit_when_domain_complete = true,
                      const unsigned num_trials = 1,
                      const std::optional<unsigned>& seed = std::nullopt) :
-        Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size,
-                        quit_when_domain_complete, num_trials, seed),
+        //Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size,
+        //                quit_when_domain_complete, num_trials, seed),
+        Optimiser<G, T>(num_genes, max_gens, pop_size,
+                        quit_when_domain_complete, num_trials, seed) {}
+        /*
         _selector(selector.clone()),
         _mutator(mutator.clone()),
         _init_distr(init_distr.clone()) {}
+        */
 
     GeneticAlgorithm(const GeneticAlgorithm& genetic_algorithm) :
-        Optimiser<G, T>(genetic_algorithm),
+        Optimiser<G, T>(genetic_algorithm) {}
+        /*
         _selector(genetic_algorithm._selector->clone()),
         _mutator(genetic_algorithm._mutator->clone()),
         _init_distr(genetic_algorithm._init_distr->clone()) {}
+        */
+
+    GeneticAlgorithm(const JSON& json) :
+        GeneticAlgorithm(json.at("num_genes"),
+                         json.at("num_gens"),
+                         json.at("pop_size"),
+                         json.at("quit_domain_when_complete"),
+                         json.at("num_trials")) {}
+
 
     Population<G, T> step() override
     {
 
         std::vector<Organism<G, T>> new_orgs;
+        /*
         new_orgs.reserve(this->_pop_size);
 
         for(unsigned i = 0; i < this->_pop_size; i++)
@@ -51,6 +68,7 @@ public:
 
             new_orgs.push_back(child_org);
         }
+        */
 
         return Population<G, T>(new_orgs);
 
@@ -62,6 +80,7 @@ private:
     Population<G, T> initialise_population() override
     {
 
+        /*
         std::vector<Genotype<G>> genotypes;
         genotypes.reserve(this->_pop_size);
 
@@ -74,7 +93,8 @@ private:
             genotypes.push_back(Genotype<G>(genes));
         }
 
-        return Population<G, T>(genotypes, this->_gp_map);
+        //return Population<G, T>(genotypes, this->_gp_map);
+        */
 
     }
 
@@ -86,6 +106,7 @@ private:
     //Nothing to reset in the GA
     void reset() override
     {
+        /*
         _selector->reset(this->_seed);
         _mutator->reset(this->_seed);
 
@@ -93,16 +114,24 @@ private:
             _init_distr->set_seed(this->_seed.value());
         else
             _init_distr->randomly_seed();
+            */
 
     }
 
+    /*
     std::unique_ptr<Selection<G, T>> _selector;
     std::unique_ptr<Mutator<G>> _mutator;
     //Add crossover at some point
 
     std::unique_ptr<Distribution<G>> _init_distr;
+    */
 
 };
+
+//Register(GeneticAlgorithm, Optimiser, double)
+static Factory<Optimiser<double, double>>::Registrar ga_registrar("GeneticAlgorithm",
+    [](const JSON& json)
+    {return std::make_shared<GeneticAlgorithm<double, double>>(json);});
 
 } // namespace NeuroEvo
 

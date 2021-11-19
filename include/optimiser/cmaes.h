@@ -7,8 +7,6 @@
 
 #include <Eigen/Dense>
 
-#include <util/factory.h>
-
 namespace NeuroEvo {
 
 template <typename T>
@@ -320,7 +318,10 @@ private:
 
 };
 
-REGISTER(CMAES, Optimiser, double)
+//REGISTER(CMAES, Optimiser, double)
+static Factory<Optimiser<double, double>>::Registrar cames_registrar("CMAES",
+    [](const JSON& json)
+    {return std::make_shared<CMAES<double>>(json);});
 
 } // namespace NeuroEvo
 
