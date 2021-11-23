@@ -2,8 +2,8 @@
 #define _RUN_SCHEDULER_
 
 /*
- * The purpose of this class is to run a number of experimental runs in parallel. It does this 
- * by monitoring which threads are running and, if they are finished, another job will be 
+ * The purpose of this class is to run a number of experimental runs in parallel. It does this
+ * by monitoring which threads are running and, if they are finished, another job will be
  * assigned to that thread.
  */
 
@@ -16,19 +16,20 @@ namespace NeuroEvo {
 template <typename G, typename T>
 class RunScheduler {
 
-public: 
+public:
 
-   RunScheduler(const RunArguments<G, T>& run_arguments, 
+   RunScheduler(const RunArguments<G, T>& run_arguments,
                 const unsigned num_runs,
-                const unsigned max_num_threads = std::thread::hardware_concurrency() - 1) :
+                const unsigned max_num_threads =
+                    std::thread::hardware_concurrency() - 1) :
         _run_args(run_arguments),
         _num_runs(num_runs),
         _max_num_threads(max_num_threads) {}
 
     //Dispatches jobs - blocks until finished
-    void dispatch(void (&run)(Domain<G, T>*,
-                              Optimiser<G, T>& optimiser,
-                              GPMap<G, T>*,
+    void dispatch(void (&run)(std::shared_ptr<Domain<G, T>>,
+                              std::shared_ptr<Optimiser<G, T>> optimiser,
+                              std::shared_ptr<GPMap<G, T>>,
                               const unsigned,
                               const std::optional<const std::string>,
                               const bool,
@@ -56,16 +57,17 @@ public:
 
                 for(std::size_t i = 0; i < _max_num_threads; i++)
                     if(finished_flags[i] &&
-                       //Also check whether the index is already in the deque before adding
+                       //Also check whether the index is already in the deque before
+                       //adding
                        std::find(available_thread_indices.begin(),
                                  available_thread_indices.end(),
                                  i) == available_thread_indices.end())
                         available_thread_indices.push_back(i);
 
-                //If there are available threads 
+                //If there are available threads
                 if(!available_thread_indices.empty())
                 {
-               
+
                     //Get available thread index and pop queue
                     const std::size_t thread_index = available_thread_indices.front();
                     available_thread_indices.pop_front();
@@ -85,18 +87,18 @@ public:
                         std::cout << "Starting run: " << num_runs_started << std::endl;
 
                         threads[thread_index] = std::thread(
-                                run, 
-                                _run_args.domain, 
-                                std::ref(_run_args.optimiser), 
-                                _run_args.gp_map, 
+                                run,
+                                _run_args.domain,
+                                std::ref(_run_args.optimiser),
+                                _run_args.gp_map,
                                 num_runs_started,
-                                _run_args.exp_dir_path, 
-                                _run_args.dump_winners_only, 
+                                _run_args.exp_dir_path,
+                                _run_args.dump_winners_only,
                                 std::ref(_run_args.num_winners),
                                 std::ref(finished_flags[thread_index]),
                                 std::ref(_run_args.total_winners_gens),
                                 _run_args.trace, _run_args.domain_parallel);
-                        
+
                         num_runs_started++;
 
                     }

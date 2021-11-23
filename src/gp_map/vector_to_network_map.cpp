@@ -2,16 +2,16 @@
 
 namespace NeuroEvo {
 
-VectorToNetworkMap::VectorToNetworkMap(NetworkBuilder* net_builder) :
+VectorToNetworkMap::VectorToNetworkMap(std::shared_ptr<NetworkBuilder> net_builder) :
     GPMap<double, double>(net_builder) {}
 
 Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
 {
-    NetworkBuilder* net_builder_cast = dynamic_cast<NetworkBuilder*>(_pheno_spec.get()); 
+    NetworkBuilder* net_builder_cast = dynamic_cast<NetworkBuilder*>(_pheno_spec.get());
 
     if(net_builder_cast == nullptr)
     {
-        std::cerr << "Must pass NetworkBuilder to VectorToNetworkMap map function" << 
+        std::cerr << "Must pass NetworkBuilder to VectorToNetworkMap map function" <<
             std::endl;
         exit(0);
     }

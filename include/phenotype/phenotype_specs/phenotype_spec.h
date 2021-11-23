@@ -7,27 +7,30 @@
 */
 
 #include <phenotype/phenotype.h>
+#include <data/json.h>
+#include <util/factory.h>
 
 namespace NeuroEvo {
 
-class PhenotypeSpec 
+class PhenotypeSpec
 {
 
 public:
 
     PhenotypeSpec(const unsigned num_params, const bool trace = false);
+    PhenotypeSpec(const JSON& json);
 
     virtual ~PhenotypeSpec() = default;
 
     unsigned get_num_params() const;
-    bool get_trace() const; 
+    bool get_trace() const;
     bool get_print_weights() const;
 
     void set_trace(const bool trace);
 
     auto clone() const
-    { 
-        return std::unique_ptr<PhenotypeSpec>(clone_impl()); 
+    {
+        return std::unique_ptr<PhenotypeSpec>(clone_impl());
     }
 
 protected:

@@ -12,20 +12,21 @@ namespace NeuroEvo {
 
 MatrixMap::MatrixMap(const unsigned genotype_size,
                      const unsigned phenotype_size,
-                     PhenotypeSpec* pheno_spec) :
+                     std::shared_ptr<PhenotypeSpec> pheno_spec) :
     GPMap<double, double>(pheno_spec),
-    _interaction_matrix(phenotype_size, genotype_size) 
+    _interaction_matrix(phenotype_size, genotype_size)
 {
 
     //Create the identity interaction matrix
     for(unsigned i = 0; i < _interaction_matrix.get_height(); i++)
-        for(unsigned j = 0; j < _interaction_matrix.get_width(); j++) 
+        for(unsigned j = 0; j < _interaction_matrix.get_width(); j++)
             if(i == j)
                 _interaction_matrix.set(i, j, 1.0);
 
 }
 
-MatrixMap::MatrixMap(const std::string& file_name, PhenotypeSpec* pheno_spec) :
+MatrixMap::MatrixMap(const std::string& file_name,
+                     std::shared_ptr<PhenotypeSpec> pheno_spec) :
     GPMap<double, double>(pheno_spec),
     _interaction_matrix(read_matrix(file_name)) {}
 
@@ -52,7 +53,7 @@ Phenotype<double>* MatrixMap::map(Genotype<double>& genotype)
         return new VectorPhenotype<double>(traits_vector);
 }
 
-void MatrixMap::print(std::ostream& os) const 
+void MatrixMap::print(std::ostream& os) const
 {
 
     os << "\n\n";
@@ -71,7 +72,7 @@ void MatrixMap::print(std::ostream& os) const
 
 }
 
-Matrix<double> MatrixMap::read_matrix(const std::string& file_name) 
+Matrix<double> MatrixMap::read_matrix(const std::string& file_name)
 {
 
     std::vector<std::vector<double>> vector_matrix;

@@ -15,14 +15,14 @@
 namespace NeuroEvo {
 
 //Assume that DCTMap can only use genes of type double
-class DCTMap : public GPMap<double, double> 
+class DCTMap : public GPMap<double, double>
 {
 
 public:
 
     // c represents the number of coefficients that will be used in the reconstruction
-    DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
-           NetworkBuilder* net_builder);
+    DCTMap(const unsigned c, const unsigned num_neurons,
+           const unsigned inputs_per_neuron, std::shared_ptr<NetworkBuilder> net_builder);
 
     // Perform DCTIII (inverse DCTII) on genotype
     Phenotype<double>* map(Genotype<double>& genotype) override;

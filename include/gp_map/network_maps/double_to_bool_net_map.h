@@ -16,7 +16,8 @@ class DoubleToBoolNetMap : public NetworkMap<double, bool>
 
 public:
 
-    DoubleToBoolNetMap(NetworkBuilder& decoder_spec, VectorPhenotypeSpec* pheno_spec);
+    DoubleToBoolNetMap(NetworkBuilder& decoder_spec,
+                       std::shared_ptr<VectorPhenotypeSpec> pheno_spec);
 
     Phenotype<bool>* map(Genotype<double>& genotype) override;
 

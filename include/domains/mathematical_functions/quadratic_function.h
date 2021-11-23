@@ -14,16 +14,18 @@ public:
 
     QuadraticFunction(const double a, const double b, const double c,
                       const bool domain_trace = false,
-                      const double completion_fitness = 0.0) :
-        Domain<G, double>(domain_trace, completion_fitness),
+                      const double completion_fitness = 0.0,
+                      const std::optional<const unsigned> seed = std::nullopt) :
+        Domain<G, double>(domain_trace, completion_fitness, seed),
         _a(a),
         _b(b),
         _c(c) {}
 
     QuadraticFunction(const JSON& json) :
-        QuadraticFunction(json.at("a"),
-                          json.at("b"),
-                          json.at("c")) {}
+        Domain<G, double>(json),
+        _a(json.at({"a"})),
+        _b(json.at({"b"})),
+        _c(json.at({"c"})) {}
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
     {

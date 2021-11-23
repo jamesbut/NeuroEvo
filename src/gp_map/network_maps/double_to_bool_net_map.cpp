@@ -4,7 +4,7 @@
 namespace NeuroEvo {
 
 DoubleToBoolNetMap::DoubleToBoolNetMap(NetworkBuilder& net_builder,
-                                       VectorPhenotypeSpec* pheno_spec) :
+                                       std::shared_ptr<VectorPhenotypeSpec> pheno_spec) :
     NetworkMap<double, bool>(net_builder, pheno_spec) {}
 
 Phenotype<bool>* DoubleToBoolNetMap::map(Genotype<double>& genotype)

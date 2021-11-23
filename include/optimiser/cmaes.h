@@ -17,7 +17,6 @@ public:
 
     CMAES(const std::vector<double>& init_mean,
           double init_sigma,
-          //GPMap<double, T>& gp_map,
           const unsigned num_genes,
           const unsigned max_gens,
           const unsigned pop_size,
@@ -25,10 +24,8 @@ public:
           const unsigned num_trials = 1,
           const bool adapt_C = true,
           const std::optional<unsigned>& seed = std::nullopt) :
-        //Optimiser<double, T>(gp_map, num_genes, max_gens, pop_size,
-        //                     quit_when_domain_complete, num_trials, seed),
-        Optimiser<double, T>(num_genes, max_gens, pop_size,
-                             quit_when_domain_complete, num_trials, seed),
+        Optimiser<double, T>(num_genes, max_gens, pop_size, quit_when_domain_complete,
+                             num_trials, seed),
         _mean(Eigen::VectorXd::Zero(this->_num_genes)),
         _mean_old(Eigen::VectorXd::Zero(this->_num_genes)),
         _sigma(init_sigma),
@@ -87,16 +84,16 @@ public:
     }
 
     CMAES(const JSON& json) :
-        CMAES(json.at("init_mean"),
-              json.at("init_sigma"),
-              json.at("num_genes"),
-              json.at("num_gens"),
-              json.at("pop_size"),
-              json.at("quit_domain_when_complete"),
-              json.at("num_trials"),
-              json.at("adapt_C")) {}
+        CMAES(json.at({"init_mean"}),
+              json.at({"init_sigma"}),
+              json.at({"num_genes"}),
+              json.at({"num_gens"}),
+              json.at({"pop_size"}),
+              json.at({"quit_domain_when_complete"}),
+              json.at({"num_trials"}),
+              json.at({"adapt_C"})) {}
 
-    Population<double, T> step() override
+    Population<double, T> step(std::shared_ptr<GPMap<double, T>> gp_map) override
     {
 
         _count_eval += this->_pop_size;
@@ -172,19 +169,20 @@ public:
         if(_adapt_C)
             perform_eigendecompostion();
 
-        return sample_population();
+        return sample_population(gp_map);
 
     }
 
 private:
 
-    Population<double, T> initialise_population() override
+    Population<double, T> initialise_population(
+        std::shared_ptr<GPMap<double, T>> gp_map) override
     {
-        auto samp_pop = sample_population();
+        auto samp_pop = sample_population(gp_map);
         return samp_pop;
     }
 
-    Population<double, T> sample_population()
+    Population<double, T> sample_population(std::shared_ptr<GPMap<double, T>> gp_map)
     {
 
         std::vector<Genotype<double>> genotypes;
@@ -208,7 +206,7 @@ private:
             genotypes.push_back(Genotype<double>(genes_vec));
         }
 
-        //return Population<double, T>(genotypes, this->_gp_map);
+        return Population<double, T>(genotypes, gp_map);
     }
 
     void perform_eigendecompostion() {

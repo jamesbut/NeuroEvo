@@ -22,17 +22,16 @@ public:
 
     //Constructs an experiment conditional on whether the phenotype specification is
     //appropriate for the domain
-    static std::optional<Experiment> construct(Domain<G, T>& domain,
-                                               GPMap<G, T>& gp_map,
+    static std::optional<Experiment> construct(std::shared_ptr<Domain<G, T>> domain,
+                                               std::shared_ptr<GPMap<G, T>> gp_map,
                                                const bool dump_data = true,
                                                const bool dump_winners_only = false)
     {
 
         //Check phenotype specification is appropriate for domain
-        if(domain.check_phenotype_spec(*gp_map.get_pheno_spec()))
+        if(domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
             return Experiment(domain, gp_map, dump_data, dump_winners_only);
-        return std::nullopt;
-
+        throw std::invalid_argument("Phenotype spec is not appropriate for this domain");
     }
 
     void individual_run(const std::string& organism_folder_name,
@@ -80,7 +79,7 @@ public:
 
     }
 
-    void evolutionary_run(Optimiser<G, T>& optimiser,
+    void evolutionary_run(std::shared_ptr<Optimiser<G, T>> optimiser,
                           const unsigned num_runs = 1,
                           const bool parallel_runs = false,
                           const bool trace = true,
@@ -98,7 +97,7 @@ public:
         {
             //Trace is off in parallel runs
             const bool trace = false;
-            const RunArguments<G, T> run_args{&_domain, optimiser, &_gp_map,
+            const RunArguments<G, T> run_args{_domain, optimiser, _gp_map,
                                               _exp_dir_path, _dump_winners_only,
                                               _num_winners, _total_winners_gens, trace,
                                               domain_parallel};
@@ -112,7 +111,7 @@ public:
             for(unsigned i = 0; i < num_runs; i++)
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(&_domain, optimiser, &_gp_map, i, _exp_dir_path, _dump_winners_only,
+                run(_domain, optimiser, _gp_map, i, _exp_dir_path, _dump_winners_only,
                     _num_winners, completed_flag, _total_winners_gens, trace,
                     domain_parallel);
             }
@@ -125,7 +124,7 @@ public:
         const unsigned non_winners = num_runs - _num_winners;
         const unsigned total_winners_gens_winners_only = _total_winners_gens -
                                                          (non_winners *
-                                                          optimiser.get_max_gens());
+                                                          optimiser->get_max_gens());
         _avg_winners_gens_winners_only = (double)total_winners_gens_winners_only /
                                          (double)_num_winners;
 
@@ -183,8 +182,8 @@ public:
 private:
 
     //Cannot construct experiment because it is dependent on valid specifications
-    Experiment(Domain<G, T>& domain,
-               GPMap<G, T>& gp_map,
+    Experiment(std::shared_ptr<Domain<G, T>> domain,
+               std::shared_ptr<GPMap<G, T>> gp_map,
                const bool dump_data,
                const bool dump_winners_only) :
         _domain(domain),
@@ -196,9 +195,9 @@ private:
         _total_winners_gens(0),
         _avg_winners_gens(0) {}
 
-    static void run(Domain<G, T>* m_domain,
-                    Optimiser<G, T>& a_optimiser,
-                    GPMap<G, T>* m_gp_map,
+    static void run(std::shared_ptr<Domain<G, T>> m_domain,
+                    std::shared_ptr<Optimiser<G, T>> a_optimiser,
+                    std::shared_ptr<GPMap<G, T>> m_gp_map,
                     const unsigned run_num,
                     const std::optional<const std::string> exp_dir_path,
                     const bool dump_winners_only,
@@ -214,7 +213,7 @@ private:
         domain->exp_run_reset(run_num);
 
         //Copy and reset optimiser
-        std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser.clone();
+        std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser->clone();
         optimiser->reset();
 
         //Create new data collector
@@ -222,7 +221,8 @@ private:
                                            dump_winners_only, trace);
 
         //Call optimiser
-        const bool optimiser_status = optimiser->optimise(*domain, data_collector);
+        const bool optimiser_status = optimiser->optimise(domain, m_gp_map,
+                                                          data_collector);
 
         // Check whether the domain was solved or not
         if(optimiser_status)
@@ -242,8 +242,12 @@ private:
     //In most cases the domain and genotype spec will be the same for an
     //evolutionary run and an individual run so they are saved as member variables
     //and taken as constructor arguments
+    /*
     Domain<G, T>& _domain;
     GPMap<G, T>& _gp_map;
+    */
+    std::shared_ptr<Domain<G, T>> _domain;
+    std::shared_ptr<GPMap<G, T>> _gp_map;
 
     std::optional<std::string> _exp_dir_path;
     const bool _dump_data;

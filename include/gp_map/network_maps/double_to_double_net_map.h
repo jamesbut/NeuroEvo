@@ -16,7 +16,8 @@ class DoubleToDoubleNetMap : public NetworkMap<double, double>
 
 public:
 
-    DoubleToDoubleNetMap(NetworkBuilder& decoder_spec, VectorPhenotypeSpec* pheno_spec);
+    DoubleToDoubleNetMap(NetworkBuilder& decoder_spec,
+                         std::shared_ptr<VectorPhenotypeSpec> pheno_spec);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 

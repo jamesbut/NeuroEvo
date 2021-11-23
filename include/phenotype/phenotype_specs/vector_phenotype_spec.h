@@ -6,12 +6,13 @@
 
 namespace NeuroEvo {
 
-class VectorPhenotypeSpec : public PhenotypeSpec 
+class VectorPhenotypeSpec : public PhenotypeSpec
 {
 
 public:
 
     VectorPhenotypeSpec(const unsigned num_genes);
+    VectorPhenotypeSpec(const JSON& json);
 
 protected:
 

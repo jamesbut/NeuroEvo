@@ -24,11 +24,6 @@ const nlohmann::json JSON::at(const std::vector<const std::string>& keys) const
     return json;
 }
 
-const nlohmann::json JSON::at(const std::string& key) const
-{
-    return at(std::vector<const std::string>{key});
-}
-
 std::ostream& operator<<(std::ostream& s, const JSON& json)
 {
     return s << std::setw(4) << json._j << std::endl;

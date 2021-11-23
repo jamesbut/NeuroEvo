@@ -17,14 +17,14 @@
 
 namespace NeuroEvo {
 
-class MatrixMap : public GPMap<double, double> 
+class MatrixMap : public GPMap<double, double>
 {
 
 public:
 
     MatrixMap(const unsigned genotype_size, const unsigned phenotype_size,
-              PhenotypeSpec* pheno_spec);
-    MatrixMap(const std::string& file_name, PhenotypeSpec* pheno_spec);
+              std::shared_ptr<PhenotypeSpec> pheno_spec);
+    MatrixMap(const std::string& file_name, std::shared_ptr<PhenotypeSpec> pheno_spec);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 
@@ -32,9 +32,9 @@ public:
 
 protected:
 
-    MatrixMap* clone_impl() const override 
-    { 
-        return new MatrixMap(*this); 
+    MatrixMap* clone_impl() const override
+    {
+        return new MatrixMap(*this);
     };
 
 private:

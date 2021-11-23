@@ -17,8 +17,11 @@ class VectorMap : public GPMap<G, G>
 
 public:
 
-    VectorMap(VectorPhenotypeSpec* pheno_spec) :
+    VectorMap(std::shared_ptr<VectorPhenotypeSpec> pheno_spec) :
         GPMap<G, G>(pheno_spec) {}
+
+    VectorMap(const JSON& json) :
+        GPMap<G, G>(json) {}
 
     Phenotype<G>* map(Genotype<G>& genotype) override
     {
@@ -36,6 +39,10 @@ protected:
     }
 
 };
+
+static Factory<GPMap<double, double>>::Registrar vector_map_registrar(
+    "VectorMap",
+    [](const JSON& json) {return std::make_shared<VectorMap<double>>(json);});
 
 } // namespace NeuroEvo
 

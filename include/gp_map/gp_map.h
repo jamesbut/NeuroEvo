@@ -9,31 +9,40 @@
 #include <phenotype/phenotype_specs/phenotype_spec.h>
 #include <util/maths/matrix.h>
 #include <optional>
+#include <util/factory.h>
 
 namespace NeuroEvo {
 
 template <typename G, typename T>
-class GPMap 
+class GPMap
 {
 
 public:
 
-    //Do not implement default constructor! We always want _pheno_spec set to something 
+    //Do not implement default constructor! We always want _pheno_spec set to something
 
     //I assume the phenotype specification will not change throughout an experiment
-    GPMap(PhenotypeSpec* pheno_spec) :
+    GPMap(std::shared_ptr<PhenotypeSpec> pheno_spec) :
         _pheno_spec(pheno_spec) {}
 
     GPMap(const GPMap& gpmap) :
         _pheno_spec(gpmap._pheno_spec->clone()) {}
 
+    GPMap(const JSON& json) :
+        _pheno_spec(create_pheno_spec(json)) {}
+
+    std::shared_ptr<PhenotypeSpec> create_pheno_spec(const JSON& json)
+    {
+        return Factory<PhenotypeSpec>::create(json);
+    }
+
     virtual ~GPMap() = default;
 
     virtual Phenotype<T>* map(Genotype<G>& genotype) = 0;
 
-    const PhenotypeSpec* get_pheno_spec() const
+    const std::shared_ptr<PhenotypeSpec>& get_pheno_spec() const
     {
-        return _pheno_spec.get();
+        return _pheno_spec;
     }
 
     void set_pheno_spec_trace(const bool trace)
@@ -43,9 +52,9 @@ public:
 
     virtual void print(std::ostream& os) const = 0;
 
-    auto clone() const 
-    { 
-        return std::unique_ptr<GPMap>(clone_impl()); 
+    auto clone() const
+    {
+        return std::unique_ptr<GPMap>(clone_impl());
     }
 
 
@@ -53,7 +62,7 @@ protected:
 
     virtual GPMap* clone_impl() const = 0;
 
-    const std::unique_ptr<PhenotypeSpec> _pheno_spec;
+    const std::shared_ptr<PhenotypeSpec> _pheno_spec;
 
 };
 

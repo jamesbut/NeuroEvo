@@ -21,11 +21,11 @@ class NetworkMap : public GPMap<G, T>
 
 public:
 
-    NetworkMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec) :
+    NetworkMap(NetworkBuilder& decoder_spec, std::shared_ptr<PhenotypeSpec> pheno_spec) :
         GPMap<G, T>(pheno_spec),
         _decoder(decoder_spec.build_network()) {}
 
-    NetworkMap(NetworkBuilder& decoder_spec, PhenotypeSpec* pheno_spec, 
+    NetworkMap(NetworkBuilder& decoder_spec, std::shared_ptr<PhenotypeSpec> pheno_spec,
                const std::string& file_name) :
         GPMap<G, T>(pheno_spec),
         _decoder(read_network(file_name, decoder_spec)) {}
@@ -36,12 +36,12 @@ public:
 
     Phenotype<T>* map(Genotype<G>& genotype) override = 0;
 
-    void print(std::ostream& os) const override 
+    void print(std::ostream& os) const override
     {
         std::cout << *_decoder << std::endl;
     }
 
-    const std::unique_ptr<Phenotype<double>>& get_decoder() const 
+    const std::unique_ptr<Phenotype<double>>& get_decoder() const
     {
         return _decoder;
     }
@@ -61,10 +61,10 @@ protected:
         std::string line;
         std::vector<double> weights;
 
-        if(file.is_open()) 
+        if(file.is_open())
         {
 
-            while(getline(file, line)) 
+            while(getline(file, line))
             {
 
                 //Split line by white spaces
@@ -77,7 +77,7 @@ protected:
 
             }
 
-        } else 
+        } else
         {
 
             std::cout << "Could not open: " << file_path.str() << std::endl;

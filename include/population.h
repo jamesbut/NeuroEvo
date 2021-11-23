@@ -22,15 +22,15 @@ public:
 
     Population() = default;
 
-    Population(const std::vector<Genotype<G>>& genotypes, 
-               GPMap<G, T>& gp_map)
+    Population(const std::vector<Genotype<G>>& genotypes,
+               std::shared_ptr<GPMap<G, T>> gp_map)
     {
         for(const auto& genotype : genotypes)
             _organisms.push_back(Organism(genotype, gp_map));
     }
 
     Population(const std::vector<Organism<G, T>>& organisms) :
-        _organisms(organisms) 
+        _organisms(organisms)
     {
         genesis();
     }
@@ -46,7 +46,7 @@ public:
         return _organisms;
     }
 
-    Organism<G, T>& get_mutable_organism(const std::size_t org) 
+    Organism<G, T>& get_mutable_organism(const std::size_t org)
     {
         return _organisms.at(org);
     }
@@ -65,7 +65,7 @@ public:
     }
 
     void set_organism_fitness(const std::size_t org, const double fitness,
-                              const double domain_completion_fitness) 
+                              const double domain_completion_fitness)
     {
         _organisms.at(org).set_fitness(fitness, domain_completion_fitness);
     }

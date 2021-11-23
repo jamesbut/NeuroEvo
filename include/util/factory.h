@@ -30,7 +30,7 @@ public:
         auto it = _factory_map.find(derived_class_name);
         // If constructor pointer is in factory map, call constructor
         if(it != _factory_map.end())
-            return it->second(JSON(json.at(_T_class_name)));
+            return it->second(JSON(json.at({_T_class_name})));
         else
             throw std::invalid_argument(derived_class_name + " is not in " +
                                         _T_class_name + " factory map");

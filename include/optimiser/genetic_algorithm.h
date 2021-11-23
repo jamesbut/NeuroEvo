@@ -43,14 +43,14 @@ public:
         */
 
     GeneticAlgorithm(const JSON& json) :
-        GeneticAlgorithm(json.at("num_genes"),
-                         json.at("num_gens"),
-                         json.at("pop_size"),
-                         json.at("quit_domain_when_complete"),
-                         json.at("num_trials")) {}
+        GeneticAlgorithm(json.at({"num_genes"}),
+                         json.at({"num_gens"}),
+                         json.at({"pop_size"}),
+                         json.at({"quit_domain_when_complete"}),
+                         json.at({"num_trials"})) {}
 
 
-    Population<G, T> step() override
+    Population<G, T> step(std::shared_ptr<GPMap<G, T>>) override
     {
 
         std::vector<Organism<G, T>> new_orgs;
@@ -77,7 +77,7 @@ public:
 private:
 
     //Initialise population according to init_distr
-    Population<G, T> initialise_population() override
+    Population<G, T> initialise_population(std::shared_ptr<GPMap<G, T>>) override
     {
 
         /*

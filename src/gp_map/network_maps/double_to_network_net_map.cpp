@@ -2,8 +2,8 @@
 
 namespace NeuroEvo {
 
-DoubleToNetworkNetMap::DoubleToNetworkNetMap(NetworkBuilder& decoder_spec, 
-                                             NetworkBuilder* pheno_spec) :
+DoubleToNetworkNetMap::DoubleToNetworkNetMap(NetworkBuilder& decoder_spec,
+                                             std::shared_ptr<NetworkBuilder> pheno_spec) :
     NetworkMap<double, double>(decoder_spec, pheno_spec) {}
 
 Phenotype<double>* DoubleToNetworkNetMap::map(Genotype<double>& genotype)

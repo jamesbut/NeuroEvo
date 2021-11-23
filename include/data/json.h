@@ -21,7 +21,6 @@ public:
 
     //Retrieve element from JSON with a vector of key strings
     const nlohmann::json at(const std::vector<const std::string>& keys) const;
-    const nlohmann::json at(const std::string& key) const;
 
     friend std::ostream& operator<<(std::ostream& s, const JSON& json);
 

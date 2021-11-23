@@ -2,7 +2,7 @@
 #define _DOUBLE_TO_NETWORK_NET_MAP_H_
 
 /*
- * This map takes a vector of doubles, passes them through a decoder network and 
+ * This map takes a vector of doubles, passes them through a decoder network and
  * produces a neural net as the phenotype whose weights are the output of the decoder.
  */
 
@@ -15,7 +15,8 @@ class DoubleToNetworkNetMap : public NetworkMap<double, double>
 
 public:
 
-    DoubleToNetworkNetMap(NetworkBuilder& decoder_spec, NetworkBuilder* pheno_spec);
+    DoubleToNetworkNetMap(NetworkBuilder& decoder_spec,
+                          std::shared_ptr<NetworkBuilder> pheno_spec);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 

@@ -67,6 +67,16 @@ public:
 #endif
     }
 
+    Domain(const JSON& json) :
+        _completion_fitness(json.at({"completion_fitness"})),
+        _complete(false),
+        _domain_trace(json.at({"trace"})),
+        _seed(json.at({"seed"})),
+        _trial_seed_sequence(json.at({"seed"})),
+        _render(json.at({"render"})),
+        _screen_width(1280),
+        _screen_height(960) {}
+
     virtual ~Domain() = default;
 
     //Evaluate entire population each for a number of trials

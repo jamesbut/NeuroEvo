@@ -6,8 +6,9 @@
 
 namespace NeuroEvo {
 
-DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inputs_per_neuron,
-               NetworkBuilder* net_builder) :
+DCTMap::DCTMap(const unsigned c, const unsigned num_neurons,
+               const unsigned inputs_per_neuron,
+               std::shared_ptr<NetworkBuilder> net_builder) :
     GPMap<double, double>(net_builder),
     _c(c),
     _num_neurons(num_neurons),
@@ -33,7 +34,7 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons, const unsigned inpu
 
 }
 
-void DCTMap::remove_higher_frequencies(Matrix<double>& coefficients) 
+void DCTMap::remove_higher_frequencies(Matrix<double>& coefficients)
 {
 
     const unsigned& height = coefficients.get_height();
@@ -54,7 +55,8 @@ void DCTMap::remove_higher_frequencies(Matrix<double>& coefficients)
         int end_row_index = std::min(i, (height-1));
         int end_col_index = std::min(i, (width-1));
 
-        unsigned diagonal_size = std::min(std::min((i+1), height), (width - start_col_index));
+        unsigned diagonal_size = std::min(std::min((i+1), height),
+                                          (width - start_col_index));
 
         for(unsigned j = 0; j < diagonal_size; j++) {
 

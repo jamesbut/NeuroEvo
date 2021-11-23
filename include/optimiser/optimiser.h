@@ -16,14 +16,12 @@ class Optimiser
 
 public:
 
-    //Optimiser(GPMap<G, T>& gp_map,
     Optimiser(const unsigned num_genes,
               const unsigned max_gens,
               const unsigned pop_size,
               const bool quit_when_domain_complete = true,
               const unsigned num_trials = 1,
               const std::optional<unsigned> seed = std::nullopt) :
-        //_gp_map(gp_map),
         _num_genes(num_genes),
         _max_gens(max_gens),
         _pop_size(pop_size),
@@ -33,7 +31,6 @@ public:
         _quit_when_domain_complete(quit_when_domain_complete) {}
 
     Optimiser(const Optimiser& optimiser) :
-        //_gp_map(optimiser._gp_map),
         _num_genes(optimiser._num_genes),
         _max_gens(optimiser._max_gens),
         _pop_size(optimiser._pop_size),
@@ -46,10 +43,11 @@ public:
 
     //Optimise according to optimiser algorithm
     //Returns bool to indicate whether domain was solved or not
-    bool optimise(Domain<G, T>& domain,
+    bool optimise(std::unique_ptr<Domain<G, T>>& domain,
+                  std::shared_ptr<GPMap<G, T>> gp_map,
                   DataCollector<G, T>& data_collector) {
 
-        _population = initialise_population();
+        _population = initialise_population(gp_map);
 
         bool finished = false;
         unsigned gen = 1;
@@ -57,19 +55,19 @@ public:
         do
         {
             //Evaluate population on domain
-            domain.evaluate_population(_population, _num_trials, false);
+            domain->evaluate_population(_population, _num_trials, false);
 
             //Check for completion
             finished = optimisation_finished(gen, domain);
 
             //Collect data
             data_collector.collect_generational_data(_population, gen, finished,
-                                                     domain.get_hyperparams());
+                                                     domain->get_hyperparams());
 
             if(finished) break;
 
             //Optimiser step - creates next generation population
-            _population = step();
+            _population = step(gp_map);
 
             gen++;
 
@@ -83,7 +81,7 @@ public:
         std::cout << best_org << std::endl;
         */
 
-        if(domain.complete())
+        if(domain->complete())
             return true;
         return false;
 
@@ -121,14 +119,13 @@ protected:
 
     //Applies evolutionary operators and creates new population
     //This is different for each optimiser
-    virtual Population<G, T> step() = 0;
+    virtual Population<G, T> step(std::shared_ptr<GPMap<G, T>> gp_map) = 0;
 
     //Each algorithm will intialise its population differently - implement that in here
-    virtual Population<G, T> initialise_population() = 0;
+    virtual Population<G, T> initialise_population(
+        std::shared_ptr<GPMap<G, T>> gp_map) = 0;
 
     virtual Optimiser* clone_impl() const = 0;
-
-    //GPMap<G, T>& _gp_map;
 
     const unsigned _num_genes;
     const unsigned _max_gens;
@@ -145,11 +142,12 @@ protected:
 
 private:
 
-    bool optimisation_finished(const unsigned curr_gen, const Domain<G, T>& domain) const
+    bool optimisation_finished(const unsigned curr_gen,
+                               const std::unique_ptr<Domain<G, T>>& domain) const
     {
         if(curr_gen >= _max_gens)
             return true;
-        if(domain.complete() && _quit_when_domain_complete)
+        if(domain->complete() && _quit_when_domain_complete)
             return true;
         return false;
     }

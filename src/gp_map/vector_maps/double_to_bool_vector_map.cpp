@@ -3,7 +3,8 @@
 
 namespace NeuroEvo {
 
-DoubleToBoolVectorMap::DoubleToBoolVectorMap(VectorPhenotypeSpec* pheno_spec) :
+DoubleToBoolVectorMap::DoubleToBoolVectorMap(
+    std::shared_ptr<VectorPhenotypeSpec> pheno_spec) :
     GPMap<double, bool>(pheno_spec) {}
 
 //If the gene value is less than 0.5 then the trait is false and vice versa

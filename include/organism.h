@@ -22,18 +22,18 @@ class Organism {
 
 public:
 
-    Organism(const Genotype<G>& genotype, GPMap<G, T>& gp_map) :
+    Organism(const Genotype<G>& genotype, std::shared_ptr<GPMap<G, T>> gp_map) :
         _genotype(genotype.clone()),
-        _gp_map(gp_map.clone()),
-        _phenotype(gp_map.map(*_genotype)),
+        _gp_map(gp_map->clone()),
+        _phenotype(gp_map->map(*_genotype)),
         _fitness(std::nullopt),
         _domain_winner(false) {}
 
     Organism(GPMap<G, T>& gp_map,
              const std::string file_name) :
         _genotype(new Genotype<G>(file_name)),
-        _gp_map(gp_map.clone()),
-        _phenotype(gp_map.map(*_genotype)),
+        _gp_map(gp_map->clone()),
+        _phenotype(gp_map->map(*_genotype)),
         _fitness(std::nullopt),
         _domain_winner(false) {}
 
