@@ -47,16 +47,16 @@ public:
             << "/best_winner_so_far";
 
         if(pheno_trace)
-            _gp_map.set_pheno_spec_trace(pheno_trace);
+            _gp_map->set_pheno_spec_trace(pheno_trace);
 
         Organism organism(_gp_map, best_winner_path.str());
 
-        _domain.set_render(render);
-        _domain.set_trace(domain_trace);
+        _domain->set_render(render);
+        _domain->set_trace(domain_trace);
 
-        _domain.exp_run_reset(0);
+        _domain->exp_run_reset(0);
 
-        double fitness = _domain.evaluate_org(organism, num_trials);
+        double fitness = _domain->evaluate_org(organism, num_trials);
 
         std::cout << "Individual run fitness: " << fitness << std::endl;
 
@@ -156,12 +156,12 @@ public:
 
     void set_domain_trace(const bool domain_trace)
     {
-        _domain.set_trace(domain_trace);
+        _domain->set_trace(domain_trace);
     }
 
     void set_domain_seed(const unsigned seed)
     {
-        _domain.set_seed(seed);
+        _domain->set_seed(seed);
     }
 
     double get_avg_winners_gens() const

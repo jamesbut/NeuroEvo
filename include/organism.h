@@ -29,7 +29,7 @@ public:
         _fitness(std::nullopt),
         _domain_winner(false) {}
 
-    Organism(GPMap<G, T>& gp_map,
+    Organism(std::shared_ptr<GPMap<G, T>> gp_map,
              const std::string file_name) :
         _genotype(new Genotype<G>(file_name)),
         _gp_map(gp_map->clone()),

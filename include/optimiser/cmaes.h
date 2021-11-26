@@ -1,5 +1,5 @@
-#ifndef _CMAES_
-#define _CMAES_
+#ifndef _CMAES_H_
+#define _CMAES_H_
 
 #include <optimiser/optimiser.h>
 #include <util/maths/matrix.h>
