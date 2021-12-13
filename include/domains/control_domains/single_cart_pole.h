@@ -26,56 +26,80 @@ public:
     struct CartPoleSpecs
     {
 
-        double gravity = 9.8;
-        double cart_mass = 1.0;
-        double pole_mass = 0.1;
-        double total_mass = cart_mass + pole_mass;
-        double pole_half_length = 0.5;
-        double polemass_length = (pole_mass * pole_half_length);
-        double force_mag = 10.0;
-        double tau = 0.02;    //seconds between state updates
+        CartPoleSpecs(const double gravity = 9.8, const double cart_mass = 1.0,
+                      const double pole_mass = 0.1, const double pole_half_length = 0.5,
+                      const double force_mag = 10.0, const double tau = 0.02) :
+            gravity(gravity),
+            cart_mass(cart_mass),
+            pole_mass(pole_mass),
+            total_mass(cart_mass + pole_mass),
+            pole_half_length(pole_half_length),
+            polemass_length(pole_mass * pole_half_length),
+            force_mag(force_mag),
+            tau(tau) {}
+
+        CartPoleSpecs(const JSON& json) :
+            CartPoleSpecs(json.at({"gravity"}),
+                          json.at({"cart_mass"}),
+                          json.at({"pole_mass"}),
+                          json.at({"pole_half_length"}),
+                          json.at({"force_mag"}),
+                          json.at({"tau"})) {}
+
+        double gravity;
+        double cart_mass;
+        double pole_mass;
+        double total_mass;
+        double pole_half_length;
+        double polemass_length;
+        double force_mag;
+        double tau;    //seconds between state updates
 
     };
 
-    SingleCartPole(const bool markovian, const bool random_start,
+    SingleCartPole(const bool markovian = true, const bool random_start = false,
                    const bool continuous_actuator = true,
                    const CartPoleSpecs& cart_pole_specs = CartPoleSpecs(),
                    const bool render = false, const bool domain_trace = false,
-                   const bool print_state = false, const unsigned max_steps = 100000,
+                   const bool print_state = false, const unsigned max_steps = 1e5,
                    const double starting_x = 0., const double starting_x_dot = 0.,
                    const double starting_theta = 0.,
-                   const double starting_theta_dot = 0.) :
+                   const double starting_theta_dot = 0.,
+                   const double boundary = 2.4) :
         Domain<G, double>(domain_trace, max_steps, std::nullopt, render),
         _max_steps(max_steps),
         _markovian(markovian),
         _random_start(random_start),
         _continuous_actuator(continuous_actuator),
-        _print_state_to_file(print_state),
-        _state_file_name(std::string(DATA_PATH) + "/single_cp_state"),
+        _boundary(boundary),
+        _x_max(1.2 * boundary),
+        _cart_pole(cart_pole_specs, boundary, _x_max, this->_screen_width),
         _starting_x(starting_x),
         _starting_x_dot(starting_x_dot),
         _starting_theta(starting_theta),
-        _starting_theta_dot(starting_theta_dot)
-    {
+        _starting_theta_dot(starting_theta_dot),
+        _print_state_to_file(print_state),
+        _state_file_name(std::string(DATA_PATH) + "/single_cp_state") {}
 
-        //Remove previous state file
-        remove(_state_file_name.c_str());
+    SingleCartPole(const JSON& json) :
+        Domain<G, double>(json),
+        _max_steps(json.value({"max_steps"}, 1e5)),
+        _markovian(json.value({"markovian"}, true)),
+        _random_start(json.value({"random_start"}, false)),
+        _continuous_actuator(json.value({"continuous_actuator"}, true)),
+        _boundary(json.value({"boundary"}, 2.4)),
+        _x_max(1.2 * _boundary),
+        _cart_pole(json.has_value({"cart_pole_specs"}) ?
+                       CartPoleSpecs(JSON(json.at({"cart_pole_specs"}))) :
+                       CartPoleSpecs(),
+                   _boundary, _x_max, this->_screen_width),
+        _starting_x(json.value({"starting_x"}, 0.0)),
+        _starting_x_dot(json.value({"starting_x_dot"}, 0.0)),
+        _starting_theta(json.value({"starting_theta"}, 0.0)),
+        _starting_theta_dot(json.value({"starting_theta_dot"}, 0.0)),
+        _print_state_to_file(false),
+        _state_file_name(std::string(DATA_PATH) + "/single_cp_state") {}
 
-        _x_max = 1.2*_boundary;
-
-        _cart_pole.render_scale = this->_screen_width / (_x_max * 2);
-
-        //Set up some variables for cart pole
-        _cart_pole.cart_width = _boundary * 2 / 10;
-        _cart_pole.cart_height = _cart_pole.cart_width / 2;
-
-        _cart_pole.cart_render_width = _cart_pole.cart_width * _cart_pole.render_scale;
-        _cart_pole.cart_render_height = _cart_pole.cart_height *
-                                        _cart_pole.render_scale;
-
-        _cart_pole.specs = cart_pole_specs;
-
-    }
 
 private:
 
@@ -318,15 +342,24 @@ private:
     struct CartPole
     {
 
+        CartPole(const CartPoleSpecs& specs, const double boundary,
+                 const double x_max, const double screen_width) :
+            specs(specs),
+            cart_width(boundary * 2.0 / 10.0),
+            cart_height(cart_width / 2.0),
+            render_scale(screen_width / (x_max * 2)),
+            cart_render_width(cart_width * render_scale),
+            cart_render_height(cart_height * render_scale) {}
+
         CartPoleSpecs specs;
 
         //Rendering properties
-        double cart_width;
-        double cart_height;
-        double cart_render_width;
-        double cart_render_height;
+        const double cart_width;
+        const double cart_height;
         //This is like pixels per unit x
-        double render_scale;
+        const double render_scale;
+        const double cart_render_width;
+        const double cart_render_height;
 
         const double twelve_degrees = 0.2094384;
         const double ninety_degrees = M_PI/4;
@@ -474,20 +507,24 @@ private:
     const bool _random_start;
     const bool _continuous_actuator;
 
-    const bool _print_state_to_file;
-    const std::string _state_file_name;
+    const double _boundary;
+    const double _x_max;
 
     CartPole _cart_pole;
-
-    const double _boundary = 2.4;
-    double _x_max;
 
     const double _starting_x;
     const double _starting_x_dot;
     const double _starting_theta;
     const double _starting_theta_dot;
 
+    const bool _print_state_to_file;
+    const std::string _state_file_name;
+
 };
+
+static Factory<Domain<double, double>>::Registrar scp_registrar("SingleCartPole",
+    [](const JSON& json)
+    {return std::make_shared<SingleCartPole<double>>(json);});
 
 } // namespace NeuroEvo
 

@@ -68,12 +68,13 @@ public:
     }
 
     Domain(const JSON& json) :
-        _completion_fitness(json.at({"completion_fitness"})),
+        _completion_fitness(json.value({"completion_fitness"}, 0.0)),
         _complete(false),
-        _domain_trace(json.at({"trace"})),
-        _seed(json.at({"seed"})),
-        _trial_seed_sequence(json.at({"seed"})),
-        _render(json.at({"render"})),
+        _domain_trace(json.value({"trace"}, false)),
+        _seed(json.value<std::optional<unsigned>>({"seed"}, std::nullopt)),
+        _trial_seed_sequence(json.value<std::optional<unsigned>>({"seed"},
+                                                                 std::nullopt)),
+        _render(json.value({"render"}, false)),
         _screen_width(1280),
         _screen_height(960) {}
 

@@ -24,6 +24,16 @@ const nlohmann::json JSON::at(const std::vector<const std::string>& keys) const
     return json;
 }
 
+bool JSON::has_value(const std::vector<const std::string>& keys) const
+{
+    try {
+        at(keys);
+    } catch(nlohmann::detail::out_of_range&) {
+        return false;
+    }
+    return true;
+}
+
 std::ostream& operator<<(std::ostream& s, const JSON& json)
 {
     return s << std::setw(4) << json._j << std::endl;

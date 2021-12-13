@@ -22,6 +22,21 @@ public:
     //Retrieve element from JSON with a vector of key strings
     const nlohmann::json at(const std::vector<const std::string>& keys) const;
 
+    //The same as at() but with a default value
+    template <typename T>
+    T value(const std::vector<const std::string>& keys,
+            const T& default_value) const
+    {
+        try {
+            return at(keys);
+        } catch(nlohmann::detail::out_of_range&) {
+            return default_value;
+        }
+    }
+
+    //Returns true if value is in json dictionary
+    bool has_value(const std::vector<const std::string>& keys) const;
+
     friend std::ostream& operator<<(std::ostream& s, const JSON& json);
 
 private:
