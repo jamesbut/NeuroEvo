@@ -6,6 +6,7 @@
 #endif
 #include <util/maths/activation_functions/activation_function_specs/activation_function_spec.h>
 #include <util/maths/activation_functions/sigmoid.h>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -14,25 +15,17 @@ class SigmoidSpec : public ActivationFunctionSpec
 
 public:
 
-#if USE_TORCH
-    torch::nn::AnyModule create_torch_module() const override
-    {
-        torch::nn::AnyModule sigmoid_module((torch::nn::Sigmoid()));
-        return sigmoid_module;
-    }
-#endif
+    SigmoidSpec();
+    SigmoidSpec(const JSON& json);
 
-    ActivationFunction* create_activation_function() const override
-    {
-        return new Sigmoid(); 
-    }
+#if USE_TORCH
+    torch::nn::AnyModule create_torch_module() const override;
+#endif
+    ActivationFunction* create_activation_function() const override;
 
 protected:
 
-    SigmoidSpec* clone_impl() const override
-    {
-        return new SigmoidSpec(*this);
-    }
+    SigmoidSpec* clone_impl() const override;
 
 };
 

@@ -29,7 +29,7 @@ class Domain
 
 public:
 
-    Domain(const bool domain_trace, const double completion_fitness = 0.0,
+    Domain(const bool domain_trace = false, const double completion_fitness = 0.0,
            const std::optional<unsigned> seed = std::nullopt,
            const bool render = false, const unsigned int screen_width = 1280,
            const unsigned int screen_height = 960) :
@@ -67,8 +67,8 @@ public:
 #endif
     }
 
-    Domain(const JSON& json) :
-        _completion_fitness(json.value({"completion_fitness"}, 0.0)),
+    Domain(const JSON& json, const double completion_fitness = 0.0) :
+        _completion_fitness(completion_fitness),
         _complete(false),
         _domain_trace(json.value({"trace"}, false)),
         _seed(json.value<std::optional<unsigned>>({"seed"}, std::nullopt)),

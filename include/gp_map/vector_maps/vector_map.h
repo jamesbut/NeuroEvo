@@ -21,7 +21,8 @@ public:
         GPMap<G, G>(pheno_spec) {}
 
     VectorMap(const JSON& json) :
-        GPMap<G, G>(json) {}
+        VectorMap(
+            std::make_shared<VectorPhenotypeSpec>(JSON(json.at({"PhenotypeSpec"})))) {}
 
     Phenotype<G>* map(Genotype<G>& genotype) override
     {

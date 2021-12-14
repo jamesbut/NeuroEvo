@@ -28,14 +28,6 @@ public:
     GPMap(const GPMap& gpmap) :
         _pheno_spec(gpmap._pheno_spec->clone()) {}
 
-    GPMap(const JSON& json) :
-        _pheno_spec(create_pheno_spec(json)) {}
-
-    std::shared_ptr<PhenotypeSpec> create_pheno_spec(const JSON& json)
-    {
-        return Factory<PhenotypeSpec>::create(json);
-    }
-
     virtual ~GPMap() = default;
 
     virtual Phenotype<T>* map(Genotype<G>& genotype) = 0;

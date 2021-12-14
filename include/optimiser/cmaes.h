@@ -15,7 +15,7 @@ class CMAES : public Optimiser<double, T>
 
 public:
 
-    CMAES(const std::vector<double>& init_mean,
+    CMAES(std::vector<double> init_mean,
           double init_sigma,
           const unsigned num_genes,
           const unsigned max_gens,
@@ -43,12 +43,15 @@ public:
         _adapt_C(adapt_C)
     {
 
+        //If only one element is given in initial mean vector, assume that this value
+        //is to be repeated for all genes
+        if(init_mean.size() == 1)
+            init_mean = std::vector<double>(num_genes, init_mean.at(0));
+
         if(init_mean.size() != this->_num_genes)
-        {
-            std::cerr << "Initial mean vector to CMAES is not the same size as "
-                "number of genes" << std::endl;
-            exit(0);
-        }
+            throw std::length_error("Initial mean vector to CMAES is not the same size "
+                                    "as number of genes");
+
         //Initialise mean
         for(std::size_t i = 0; i < init_mean.size(); i++)
             _mean(i) = init_mean[i];

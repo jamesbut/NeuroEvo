@@ -5,6 +5,9 @@ namespace NeuroEvo {
 VectorToNetworkMap::VectorToNetworkMap(std::shared_ptr<NetworkBuilder> net_builder) :
     GPMap<double, double>(net_builder) {}
 
+VectorToNetworkMap::VectorToNetworkMap(const JSON& json) :
+    VectorToNetworkMap(std::make_shared<NetworkBuilder>(json.at({"PhenotypeSpec"}))) {}
+
 Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
 {
     NetworkBuilder* net_builder_cast = dynamic_cast<NetworkBuilder*>(_pheno_spec.get());
@@ -20,7 +23,10 @@ Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
     net_builder_cast->set_init_weights(genotype.genes());
     auto network = net_builder_cast->build_network();
     return network;
-
 }
+
+static Factory<GPMap<double, double>>::Registrar vector_to_network_map_registrar(
+    "VectorToNetworkMap",
+    [](const JSON& json) {return std::make_shared<VectorToNetworkMap>(json);});
 
 } // namespace NeuroEvo

@@ -82,7 +82,7 @@ public:
         _state_file_name(std::string(DATA_PATH) + "/single_cp_state") {}
 
     SingleCartPole(const JSON& json) :
-        Domain<G, double>(json),
+        Domain<G, double>(json, json.value({"max_steps"}, 1e5)),
         _max_steps(json.value({"max_steps"}, 1e5)),
         _markovian(json.value({"markovian"}, true)),
         _random_start(json.value({"random_start"}, false)),

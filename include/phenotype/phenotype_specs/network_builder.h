@@ -50,9 +50,12 @@ public:
                    const NeuronType neuron_type = NeuronType::Standard,
                    const bool trace = false);
 
-    //Build with layer specs in which one can provde more fine grained detail
+    //Build with layer specs in which one can provide more fine grained detail
     NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
                    const bool trace = false);
+
+    //Build network using json format
+    NetworkBuilder(const JSON& json);
 
     NetworkBuilder(const NetworkBuilder& network_builder);
 
