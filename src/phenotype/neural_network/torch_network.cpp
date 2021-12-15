@@ -1,6 +1,7 @@
 #include <phenotype/neural_network/torch_network.h>
 #include <torch/nn/options/linear.h>
 #include <filesystem>
+#include <util/exceptions/not_implemented_exception.h>
 
 namespace NeuroEvo {
 
@@ -221,6 +222,16 @@ unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net
     }
 
     return net_params_size;
+}
+
+JSON TorchNetwork::to_json_impl() const
+{
+    throw NotImplementedException("TorchNetwork::to_json_impl()");
+}
+
+TorchNetwork* TorchNetwork::clone_impl() const
+{
+    return new TorchNetwork(*this);
 }
 
 } // namespace NeuroEvo

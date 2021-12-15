@@ -105,7 +105,6 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
-
         //Seed random number generator with same seed as other members of the population
         srand48(rand_seed);
 

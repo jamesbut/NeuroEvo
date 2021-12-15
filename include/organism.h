@@ -46,7 +46,6 @@ public:
 
     Organism& operator=(const Organism& organism)
     {
-
         _genotype = organism.get_genotype().clone();
         _gp_map = organism._gp_map->clone();
         _phenotype = organism.get_phenotype().clone_phenotype();
@@ -54,7 +53,6 @@ public:
         _domain_winner = organism._domain_winner;
 
         return *this;
-
     }
 
     ~Organism() = default;
@@ -106,6 +104,7 @@ public:
         _phenotype.reset(_gp_map->map(*_genotype));
     }
 
+    //TODO: Remove
     void save_org_to_file(
         const std::string& file_name,
         const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
@@ -139,6 +138,17 @@ public:
 
         org_file.close();
 
+    }
+
+    JSON to_json() const
+    {
+        JSON json;
+        json.emplace("fitness", _fitness.value());
+        json.emplace("domain_winner", _domain_winner);
+        json.emplace("genes", _genotype->to_json().at({"genes"}));
+        json.emplace("GPMap", _gp_map->to_json());
+        json.emplace("Phenotype", _phenotype->to_json());
+        return json;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Organism& organism)

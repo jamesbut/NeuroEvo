@@ -34,16 +34,14 @@ public:
 
 protected:
 
-    virtual Network* clone_impl() const override
-    {
-        return new Network(*this);
-    };
-
     std::vector<double> propogate(const std::vector<double>& inputs);
 
     std::vector<std::unique_ptr<Layer>> _layers;
 
 private:
+
+    JSON to_json_impl() const override;
+    Network* clone_impl() const override;
 
     void print(std::ostream& os) const override;
 

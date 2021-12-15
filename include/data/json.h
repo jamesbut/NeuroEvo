@@ -16,11 +16,15 @@ class JSON
 
 public:
 
+    JSON();
     JSON(const std::string& file_path);
     JSON(const nlohmann::json& json);
 
     //Retrieve element from JSON with a vector of key strings
-    const nlohmann::json at(const std::vector<const std::string>& keys) const;
+    //If no argument is given a copy of the underlying nlohmann::json object is returned
+    const nlohmann::json at(
+        const std::vector<const std::string>& keys = std::vector<const std::string>()
+    ) const;
 
     //The same as at() but with a default value
     template <typename T>
@@ -34,8 +38,32 @@ public:
         }
     }
 
+    //Emplace key value pair in json
+    template <typename T>
+    void emplace(const std::string& key, const T& value)
+    {
+        if constexpr(std::is_same<T, JSON>::value)
+            _j[key] = value.at();
+        else
+            _j.emplace(key, value);
+    }
+
+    template <typename T>
+    void emplace_back(const T& value)
+    {
+        _j.emplace_back(value);
+    }
+
+    auto items() const
+    {
+        return _j.items();
+    }
+
     //Returns true if value is in json dictionary
     bool has_value(const std::vector<const std::string>& keys) const;
+
+    //Saves json to file
+    void save_to_file(const std::string& file_path) const;
 
     friend std::ostream& operator<<(std::ostream& s, const JSON& json);
 

@@ -23,8 +23,9 @@ public:
 #endif
     ActivationFunction* create_activation_function() const override;
 
-protected:
+private:
 
+    JSON to_json() const override;
     SigmoidSpec* clone_impl() const override;
 
 };

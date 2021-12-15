@@ -19,7 +19,13 @@ Phenotype<bool>* DoubleToBoolVectorMap::map(Genotype<double>& genotype)
             traits[i] = true;
 
     return new VectorPhenotype<bool>(traits);
+}
 
+JSON DoubleToBoolVectorMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "DoubleToBoolVectorMap");
+    return json;
 }
 
 DoubleToBoolVectorMap* DoubleToBoolVectorMap::clone_impl() const

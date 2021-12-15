@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <limits>
 #include <iterator>
+#include <util/exceptions/not_implemented_exception.h>
 
 namespace NeuroEvo {
 
@@ -120,6 +121,16 @@ Matrix<double> MatrixMap::read_matrix(const std::string& file_name)
 
     return Matrix<double>(vector_matrix);
 
+}
+
+JSON MatrixMap::to_json_impl() const
+{
+    throw NotImplementedException("MatrixMap::to_json_impl()");
+}
+
+MatrixMap* MatrixMap::clone_impl() const
+{
+    return new MatrixMap(*this);
 }
 
 } // namespace NeuroEvo

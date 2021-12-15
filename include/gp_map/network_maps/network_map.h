@@ -48,6 +48,13 @@ public:
 
 protected:
 
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("name", "NetworkMap");
+        json.emplace("decoder", _decoder->to_json().at());
+        return json;
+    }
     NetworkMap* clone_impl() const override = 0;
 
     Phenotype<double>* read_network(const std::string& file_name,
@@ -69,8 +76,9 @@ protected:
 
                 //Split line by white spaces
                 std::istringstream iss(line);
-                std::vector<std::string> split_string{std::istream_iterator<std::string>{iss},
-                                                      std::istream_iterator<std::string>{}};
+                std::vector<std::string> split_string{
+                    std::istream_iterator<std::string>{iss},
+                    std::istream_iterator<std::string>{}};
 
                 for(const auto& weight : split_string)
                     weights.push_back(std::stod(weight));

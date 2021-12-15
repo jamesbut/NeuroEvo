@@ -11,6 +11,7 @@
 #include <memory>
 #include <fstream>
 #include <sstream>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -47,6 +48,13 @@ public:
     const std::optional<double>& get_fitness() const
     {
         return _fitness;
+    }
+
+    JSON to_json() const
+    {
+        JSON json;
+        json.emplace("genes", _genes);
+        return json;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Genotype& genotype)
@@ -104,8 +112,9 @@ private:
 
     }
 
-    std::vector<G> generate_genes_from_distr(const unsigned num_genes,
-                                             std::unique_ptr<Distribution<G>>& gene_distr) const
+    std::vector<G> generate_genes_from_distr(
+        const unsigned num_genes,
+        std::unique_ptr<Distribution<G>>& gene_distr) const
     {
         std::vector<G> genes(num_genes);
         for(unsigned i = 0; i < num_genes; i++)

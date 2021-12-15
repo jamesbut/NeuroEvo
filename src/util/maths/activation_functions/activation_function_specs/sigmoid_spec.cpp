@@ -20,6 +20,13 @@ ActivationFunction* SigmoidSpec::create_activation_function() const
     return new Sigmoid();
 }
 
+JSON SigmoidSpec::to_json() const
+{
+    JSON json;
+    json.emplace("name", "SigmoidSpec");
+    return json;
+}
+
 SigmoidSpec* SigmoidSpec::clone_impl() const
 {
     return new SigmoidSpec(*this);

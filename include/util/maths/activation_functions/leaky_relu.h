@@ -16,6 +16,7 @@ public:
 
 private:
 
+    JSON to_json_impl() const override;
     LeakyReLU* clone_impl() const override;
 
     const double _negative_slope;

@@ -10,6 +10,13 @@ double Linear::activate(const double x)
     return x;
 }
 
+JSON Linear::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "Linear");
+    return json;
+}
+
 Linear* Linear::clone_impl() const
 {
     return new Linear(*this);

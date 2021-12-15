@@ -21,8 +21,9 @@ public:
 
     void print(std::ostream& os) const override {}
 
-protected:
+private:
 
+    JSON to_json_impl() const override;
     DoubleToBoolVectorMap* clone_impl() const override;
 
 };

@@ -79,6 +79,8 @@ public:
 
     void print_spec() const;
 
+    JSON to_json() const;
+
 private:
 
     NeuronType _neuron_type;

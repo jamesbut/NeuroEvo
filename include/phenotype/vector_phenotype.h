@@ -20,14 +20,14 @@ public:
         Phenotype<T>(traits.size()),
         _traits(traits) {}
 
-    std::vector<T> activate(const std::vector<double>& inputs) override 
+    std::vector<T> activate(const std::vector<double>& inputs) override
     {
         return _traits;
     }
 
     void reset() override {}
 
-    void print(std::ostream& os) const override 
+    void print(std::ostream& os) const override
     {
         os << "[";
         for(std::size_t i = 0; i < _traits.size(); i++)
@@ -39,14 +39,19 @@ public:
         os << "]";
     }
 
-protected:
+private:
+
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("traits", _traits);
+        return json;
+    }
 
     VectorPhenotype* clone_impl() const override
     {
         return new VectorPhenotype(*this);
     }
-
-private:
 
     const std::vector<T> _traits;
 

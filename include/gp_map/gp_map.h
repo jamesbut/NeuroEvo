@@ -42,6 +42,17 @@ public:
         _pheno_spec->set_trace(trace);
     }
 
+    JSON to_json() const
+    {
+        JSON json;
+        //Add all key value pairs of derived class
+        for(auto& [key, value] : to_json_impl().items())
+            json.emplace(key, value);
+        //Add phenotype spec
+        json.emplace("PhenotypeSpec", _pheno_spec->to_json());
+        return json;
+    }
+
     virtual void print(std::ostream& os) const = 0;
 
     auto clone() const
@@ -51,6 +62,8 @@ public:
 
 
 protected:
+
+    virtual JSON to_json_impl() const = 0;
 
     virtual GPMap* clone_impl() const = 0;
 

@@ -14,30 +14,17 @@ class ELUSpec : public ActivationFunctionSpec
 
 public:
 
-    ELUSpec(const double alpha = 1.) :
-        _alpha(alpha) {}
+    ELUSpec(const double alpha = 1.);
 
 #if USE_TORCH
-    torch::nn::AnyModule create_torch_module() const override
-    {
-        torch::nn::AnyModule elu_module(
-            (torch::nn::ELU(torch::nn::ELUOptions().alpha(_alpha)))
-        );
-        return elu_module;
-    }
+    torch::nn::AnyModule create_torch_module() const override;
 #endif
-
-    ActivationFunction* create_activation_function() const override
-    {
-        return new ELU(_alpha);
-    }
+    ActivationFunction* create_activation_function() const override;
 
 private:
 
-    ELUSpec* clone_impl() const override
-    {
-        return new ELUSpec(*this);
-    }
+    JSON to_json() const override;
+    ELUSpec* clone_impl() const override;
 
     const double _alpha;
 

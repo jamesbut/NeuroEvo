@@ -25,6 +25,18 @@ Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
     return network;
 }
 
+JSON VectorToNetworkMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "VectorToNetworkMap");
+    return json;
+}
+
+VectorToNetworkMap* VectorToNetworkMap::clone_impl() const
+{
+    return new VectorToNetworkMap(*this);
+}
+
 static Factory<GPMap<double, double>>::Registrar vector_to_network_map_registrar(
     "VectorToNetworkMap",
     [](const JSON& json) {return std::make_shared<VectorToNetworkMap>(json);});

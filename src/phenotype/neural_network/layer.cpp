@@ -154,4 +154,29 @@ void Layer::print_outputs_to_file(std::ofstream& file) const
         neuron->print_output_to_file(file);
 }
 
+Layer* Layer::clone_impl() const
+{
+    return new Layer(*this);
+}
+
+JSON Layer::to_json() const
+{
+    JSON json;
+    json.emplace("inputs_per_neuron", _inputs_per_neuron);
+    json.emplace("params_per_neuron", _params_per_neuron);
+    json.emplace("num_neurons", _num_neurons);
+    json.emplace("neuron_type", _neuron_type);
+    json.emplace("bias", _bias);
+    json.emplace("trace", _trace);
+    json.emplace("activation_function", _activation_function->to_json().at());
+    std::vector<double> weights;
+    for(const auto& neuron : _neurons)
+    {
+        const auto& neuron_weights = neuron->get_weights();
+        weights.insert(weights.end(), neuron_weights.begin(), neuron_weights.end());
+    }
+    json.emplace("weights", weights);
+    return json;
+}
+
 } // namespace NeuroEvo

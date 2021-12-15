@@ -55,7 +55,6 @@ private:
 
     double single_run(Organism<G, double>& org, unsigned rand_seed) override
     {
-
         //There are no inputs and outputs for a mathematical function
         //The output is just the value of the gene itself
         std::vector<double> inputs = std::vector<double>();
@@ -65,7 +64,6 @@ private:
         const double y = _a * pow(x, 2) + _b * x + _c;
 
         return y;
-
     }
 
     void render() override {}

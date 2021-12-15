@@ -5,7 +5,7 @@
 
 namespace NeuroEvo {
 
-Neuron::Neuron(const unsigned num_inputs, const NeuronType& neuron_type, 
+Neuron::Neuron(const unsigned num_inputs, const NeuronType& neuron_type,
                const std::shared_ptr<ActivationFunction> activation_function,
                const bool bias,
                const bool trace) :
@@ -17,7 +17,7 @@ Neuron::Neuron(const unsigned num_inputs, const NeuronType& neuron_type,
     _previous_output(0.0) {}
 
 //Sets the weights of the Neuron
-void Neuron::set_weights(const std::vector<double>& weights) 
+void Neuron::set_weights(const std::vector<double>& weights)
 {
     check_num_weights(weights);
     _weights = weights;
@@ -28,12 +28,12 @@ void Neuron::set_trace(const bool trace)
     _trace = trace;
 }
 
-std::vector<double> Neuron::get_weights() const
+const std::vector<double>& Neuron::get_weights() const
 {
     return _weights;
 }
 
-double Neuron::evaluate(const std::vector<double>& inputs) 
+double Neuron::evaluate(const std::vector<double>& inputs)
 {
     return propogate(inputs);
 }
@@ -42,30 +42,30 @@ double Neuron::propogate(const std::vector<double>& inputs)
 {
     double activation_val = 0.0;
 
-    for(std::size_t i = 0; i < inputs.size(); i++) 
+    for(std::size_t i = 0; i < inputs.size(); i++)
     {
         if(_trace) std::cout << "\n" << inputs[i] << " x " << _weights[i];
         activation_val += inputs[i] * _weights[i];
     }
-    
+
     if(_trace) std::cout << std::endl;
 
     //Recurrent input
-    if(_neuron_type == NeuronType::Recurrent) 
+    if(_neuron_type == NeuronType::Recurrent)
     {
 
         activation_val += _previous_output * _weights[inputs.size()];
         if(_bias)
             activation_val += _weights[inputs.size()+1];
 
-        if(_trace) 
+        if(_trace)
         {
             std::cout << _previous_output << " x " << _weights[inputs.size()] << std::endl;
             if(_bias)
                 std::cout << "1 x " << _weights[inputs.size()+1] << "\n\n";
         }
 
-    } else 
+    } else
     {
         if(_bias)
         {
@@ -105,7 +105,7 @@ void Neuron::print_output_to_file(std::ofstream& file) const
     file << _previous_output << ",";
 }
 
-void Neuron::reset() 
+void Neuron::reset()
 {
     _previous_output = 0.0;
 }

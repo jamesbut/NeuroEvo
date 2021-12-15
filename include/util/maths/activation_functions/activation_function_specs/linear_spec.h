@@ -15,24 +15,14 @@ class LinearSpec : public ActivationFunctionSpec
 public:
 
 #if USE_TORCH
-    torch::nn::AnyModule create_torch_module() const override
-    {
-        torch::nn::AnyModule identity_module((torch::nn::Identity()));
-        return identity_module;
-    }
+    torch::nn::AnyModule create_torch_module() const override;
 #endif
-
-    ActivationFunction* create_activation_function() const override
-    {
-        return new Linear();
-    }
+    ActivationFunction* create_activation_function() const override;
 
 private:
 
-    LinearSpec* clone_impl() const override
-    {
-        return new LinearSpec(*this);
-    }
+    JSON to_json() const override;
+    LinearSpec* clone_impl() const override;
 
 };
 

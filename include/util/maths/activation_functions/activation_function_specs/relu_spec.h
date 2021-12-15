@@ -25,6 +25,7 @@ public:
 
 private:
 
+    JSON to_json() const override;
     ReLUSpec* clone_impl() const override;
 
 };

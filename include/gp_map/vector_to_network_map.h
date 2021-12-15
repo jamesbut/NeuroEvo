@@ -22,12 +22,10 @@ public:
 
     void print(std::ostream& os) const override {}
 
-protected:
+private:
 
-    VectorToNetworkMap* clone_impl() const override
-    {
-        return new VectorToNetworkMap(*this);
-    }
+    JSON to_json_impl() const override;
+    VectorToNetworkMap* clone_impl() const override;
 
 };
 

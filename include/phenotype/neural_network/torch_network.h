@@ -51,10 +51,8 @@ private:
 
     void print(std::ostream& os) const override;
 
-    TorchNetwork* clone_impl() const override
-    {
-        return new TorchNetwork(*this);
-    }
+    JSON to_json_impl() const override;
+    TorchNetwork* clone_impl() const override;
 
     torch::nn::Sequential _net;
 

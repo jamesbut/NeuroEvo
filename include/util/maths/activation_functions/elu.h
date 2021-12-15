@@ -16,6 +16,7 @@ public:
 
 private:
 
+    JSON to_json_impl() const override;
     ELU* clone_impl() const override;
 
     const double _alpha;

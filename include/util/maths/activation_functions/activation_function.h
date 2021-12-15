@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <util/maths/number_bound.h>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -22,6 +23,7 @@ public:
 
     virtual double activate(const double x) = 0;
 
+    JSON to_json() const;
     auto clone() const
     {
         return std::unique_ptr<ActivationFunction>(clone_impl());
@@ -30,11 +32,10 @@ public:
     const NumberBound& get_lower_bound() const;
     const NumberBound& get_upper_bound() const;
 
-protected:
-
-    virtual ActivationFunction* clone_impl() const = 0;
-
 private:
+
+    virtual JSON to_json_impl() const = 0;
+    virtual ActivationFunction* clone_impl() const = 0;
 
     const NumberBound _lower_bound;
     const NumberBound _upper_bound;

@@ -16,6 +16,7 @@ public:
 
 private:
 
+    JSON to_json_impl() const override;
     Linear* clone_impl() const override;
 
 };

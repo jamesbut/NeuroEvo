@@ -20,6 +20,13 @@ ActivationFunction* ReLUSpec::create_activation_function() const
     return new ReLU();
 }
 
+JSON ReLUSpec::to_json() const
+{
+    JSON json;
+    json.emplace("name", "ReLUSpec");
+    return json;
+}
+
 ReLUSpec* ReLUSpec::clone_impl() const
 {
     return new ReLUSpec(*this);

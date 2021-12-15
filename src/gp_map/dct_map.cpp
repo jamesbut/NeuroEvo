@@ -14,23 +14,23 @@ DCTMap::DCTMap(const unsigned c, const unsigned num_neurons,
     _num_neurons(num_neurons),
     _inputs_per_neuron(inputs_per_neuron) {}
 
-    Phenotype<double>* DCTMap::map(Genotype<double>& genotype)
-    {
-        // Assume genes are the DCT coefficients
-        Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
+Phenotype<double>* DCTMap::map(Genotype<double>& genotype)
+{
+    // Assume genes are the DCT coefficients
+    Matrix<double> coefficients(_num_neurons, _inputs_per_neuron, genotype.genes());
 
-        // Only keep _C coefficients
-        remove_higher_frequencies(coefficients);
+    // Only keep _C coefficients
+    remove_higher_frequencies(coefficients);
 
-        // Use inverse DCT
-        Matrix<double> traits = Utils::DCTIII(coefficients);
+    // Use inverse DCT
+    Matrix<double> traits = Utils::DCTIII(coefficients);
 
-        //TODO: For now, can only turn into Fixed Network
-        auto net_builder = dynamic_cast<const NetworkBuilder*>(_pheno_spec.get());
-        Network* network = new Network(net_builder->get_trace());
-        network->create_net(net_builder->get_layer_specs());
-        network->propogate_weights(traits.get_vector());
-        return network;
+    //TODO: For now, can only turn into Fixed Network
+    auto net_builder = dynamic_cast<const NetworkBuilder*>(_pheno_spec.get());
+    Network* network = new Network(net_builder->get_trace());
+    network->create_net(net_builder->get_layer_specs());
+    network->propogate_weights(traits.get_vector());
+    return network;
 
 }
 
@@ -83,6 +83,21 @@ void DCTMap::remove_higher_frequencies(Matrix<double>& coefficients)
 
     }
 
+}
+
+JSON DCTMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "DCTMap");
+    json.emplace("c", _c);
+    json.emplace("num_neurons", _num_neurons);
+    json.emplace("inputs_per_neuron", _inputs_per_neuron);
+    return json;
+}
+
+DCTMap* DCTMap::clone_impl() const
+{
+    return new DCTMap(*this);
 }
 
 } // namespace NeuroEvo

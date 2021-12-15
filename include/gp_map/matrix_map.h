@@ -30,13 +30,6 @@ public:
 
     void print(std::ostream& os) const override;
 
-protected:
-
-    MatrixMap* clone_impl() const override
-    {
-        return new MatrixMap(*this);
-    };
-
 private:
 
     //Matrix defining the affect the the genome has on each of the phenotypic
@@ -44,6 +37,9 @@ private:
     Matrix<double> _interaction_matrix;
 
     Matrix<double> read_matrix(const std::string& file_name);
+
+    JSON to_json_impl() const override;
+    MatrixMap* clone_impl() const override;
 
 };
 

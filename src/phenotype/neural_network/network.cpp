@@ -113,4 +113,18 @@ std::vector<double> Network::propogate(const std::vector<double>& inputs)
     return ins;
 }
 
+JSON Network::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "Network");
+    for(std::size_t i = 0; i < _layers.size(); i++)
+        json.emplace("Layer" + std::to_string(i), _layers.at(i)->to_json().at());
+    return json;
+}
+
+Network* Network::clone_impl() const
+{
+    return new Network(*this);
+};
+
 } // namespace NeuroEvo

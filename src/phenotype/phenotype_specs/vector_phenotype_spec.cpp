@@ -8,6 +8,13 @@ VectorPhenotypeSpec::VectorPhenotypeSpec(const unsigned num_genes) :
 VectorPhenotypeSpec::VectorPhenotypeSpec(const JSON& json) :
     PhenotypeSpec(json) {}
 
+JSON VectorPhenotypeSpec::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "VectorPhenotypeSpec");
+    return json;
+}
+
 VectorPhenotypeSpec* VectorPhenotypeSpec::clone_impl() const
 {
     return new VectorPhenotypeSpec(*this);

@@ -15,8 +15,8 @@ class Neuron {
 
 public:
 
-    Neuron(const unsigned num_inputs, 
-           const NeuronType& neuron_type, 
+    Neuron(const unsigned num_inputs,
+           const NeuronType& neuron_type,
            const std::shared_ptr<ActivationFunction> activation_function,
            const bool bias,
            const bool trace);
@@ -27,14 +27,14 @@ public:
     virtual void set_learning_rates(const std::vector<double>& learning_rates) {}
     void set_trace(const bool trace);
 
-    std::vector<double> get_weights() const;
+    const std::vector<double>& get_weights() const;
 
     virtual double evaluate(const std::vector<double>& inputs);
 
     virtual void reset();
-    auto clone() const 
-    { 
-        return std::unique_ptr<Neuron>(clone_impl()); 
+    auto clone() const
+    {
+        return std::unique_ptr<Neuron>(clone_impl());
     };
 
     void print(std::ostream& os) const;
@@ -43,9 +43,9 @@ public:
 
 protected:
 
-    virtual Neuron* clone_impl() const 
-    { 
-        return new Neuron(*this); 
+    virtual Neuron* clone_impl() const
+    {
+        return new Neuron(*this);
     };
 
     double propogate(const std::vector<double>& inputs);

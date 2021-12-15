@@ -1,7 +1,7 @@
 #ifndef _HEBBS_SPEC_H_
 #define _HEBBS_SPEC_H_
 
-/* Contains information about a Hebbian specification. 
+/* Contains information about a Hebbian specification.
 * A Hebbian network can either evolve the initial weights before hebbian training
 * or it can not evolve them - if it doesn't evolve them, the question is whether
 * the intial weights are set randomly or to a some default value.
@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -28,6 +29,8 @@ public:
     const std::string& get_weights_file_name() const;
     const std::string& get_outputs_file_name() const;
     const std::optional<const double>& get_default_weight_init() const;
+
+    JSON to_json() const;
 
 private:
 

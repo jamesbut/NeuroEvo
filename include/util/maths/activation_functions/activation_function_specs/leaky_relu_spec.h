@@ -14,33 +14,19 @@ class LeakyReLUSpec : public ActivationFunctionSpec
 
 public:
 
-    LeakyReLUSpec(const double negative_slope = 0.01) :
-        ActivationFunctionSpec(),
-        _negative_slope(negative_slope) {}
+    LeakyReLUSpec(const double negative_slope = 0.01);
 
 #if USE_TORCH
-    torch::nn::AnyModule create_torch_module() const override
-    {
-        torch::nn::AnyModule leaky_relu_module(
-            (torch::nn::LeakyReLU(torch::nn::LeakyReLUOptions().negative_slope(_negative_slope)))
-        );
-        return leaky_relu_module;
-    }
+    torch::nn::AnyModule create_torch_module() const override;
 #endif
-
-    ActivationFunction* create_activation_function() const override
-    {
-        return new LeakyReLU(_negative_slope);
-    }
+    ActivationFunction* create_activation_function() const override;
 
 private:
 
-    const double _negative_slope;
+    JSON to_json() const override;
+    LeakyReLUSpec* clone_impl() const override;
 
-    LeakyReLUSpec* clone_impl() const override
-    {
-        return new LeakyReLUSpec(*this);
-    }
+    const double _negative_slope;
 
 };
 

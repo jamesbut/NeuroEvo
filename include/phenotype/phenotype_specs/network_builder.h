@@ -87,10 +87,6 @@ public:
 
     auto clone() const;
 
-protected:
-
-    NetworkBuilder* clone_impl() const override;
-
 private:
 
     unsigned required_num_genes(const std::vector<LayerSpec>& layer_specs,
@@ -120,6 +116,9 @@ private:
         split_hebbs_traits(const std::vector<double>& traits) const;
 
     const std::vector<double> generate_init_weights() const;
+
+    JSON to_json_impl() const override;
+    NetworkBuilder* clone_impl() const override;
 
     /* Essential parameters of any network */
     const unsigned _num_inputs;

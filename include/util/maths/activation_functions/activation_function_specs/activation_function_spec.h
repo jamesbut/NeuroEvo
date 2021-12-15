@@ -13,7 +13,7 @@
 
 namespace NeuroEvo {
 
-class ActivationFunctionSpec 
+class ActivationFunctionSpec
 {
 
 public:
@@ -28,7 +28,8 @@ public:
     //Define how to create a NeuroEvo activation function
     virtual ActivationFunction* create_activation_function() const = 0;
 
-    auto clone() const 
+    virtual JSON to_json() const = 0;
+    auto clone() const
     {
         return std::unique_ptr<ActivationFunctionSpec>(clone_impl());
     }

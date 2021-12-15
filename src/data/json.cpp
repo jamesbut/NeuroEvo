@@ -4,6 +4,8 @@
 
 namespace NeuroEvo {
 
+JSON::JSON() {}
+
 JSON::JSON(const std::string& file_name) : _j(read_json(file_name)) {}
 
 JSON::JSON(const nlohmann::json& json) : _j(json) {}
@@ -32,6 +34,13 @@ bool JSON::has_value(const std::vector<const std::string>& keys) const
         return false;
     }
     return true;
+}
+
+void JSON::save_to_file(const std::string& file_path) const
+{
+    std::ofstream json_file(file_path + ".json");
+    json_file << *this;
+    json_file.close();
 }
 
 std::ostream& operator<<(std::ostream& s, const JSON& json)

@@ -29,10 +29,6 @@ public:
 
     void print(std::ostream& os) const override {};
 
-protected:
-
-    DCTMap* clone_impl() const override { return new DCTMap(*this); };
-
 private:
 
     const unsigned _c;
@@ -40,6 +36,10 @@ private:
     const unsigned _inputs_per_neuron;
 
     void remove_higher_frequencies(Matrix<double>& coefficients);
+
+    JSON to_json_impl() const override;
+
+    DCTMap* clone_impl() const override;
 
 };
 

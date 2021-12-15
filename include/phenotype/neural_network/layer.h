@@ -7,6 +7,7 @@
 
 #include <phenotype/neural_network/neuron.h>
 #include <vector>
+#include <data/json.h>
 
 namespace NeuroEvo {
 
@@ -42,12 +43,9 @@ public:
     void print_weights_to_file(std::ofstream& file) const;
     void print_outputs_to_file(std::ofstream& file) const;
 
-protected:
+    JSON to_json() const;
 
-    virtual Layer* clone_impl() const
-    {
-        return new Layer(*this);
-    }
+protected:
 
     bool _trace;
     const unsigned _inputs_per_neuron;
@@ -57,9 +55,13 @@ protected:
     const std::shared_ptr<ActivationFunction> _activation_function;
     const bool _bias;
 
-    std::vector<std::unique_ptr<Neuron> > _neurons;
+    std::vector<std::unique_ptr<Neuron>> _neurons;
 
     void print_outputs(const std::vector<double>& outputs);
+
+private:
+
+    virtual Layer* clone_impl() const;
 
 };
 

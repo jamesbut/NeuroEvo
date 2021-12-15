@@ -1,4 +1,5 @@
 #include <phenotype/phenotype_specs/network_builder.h>
+#include <util/exceptions/not_implemented_exception.h>
 
 namespace NeuroEvo {
 
@@ -153,16 +154,12 @@ Phenotype<double>* NetworkBuilder::build_network()
 
 void NetworkBuilder::make_recurrent()
 {
-    //TODO: rebuild layer specs!
-    std::cerr << "Rebuild layer specs in network builder!" << std::endl;
-    exit(0);
+    throw NotImplementedException("NetworkBuilder::make_recurrent()");
 }
 
 void NetworkBuilder::add_layer(LayerSpec& layer_spec)
 {
-    //TODO: Write!
-    std::cerr << "Write add_layer in NetworkBuilder" << std::endl;
-    exit(0);
+    throw NotImplementedException("NetworkBuilder::add_layer(LayerSpec&)");
 }
 
 void NetworkBuilder::make_torch_net(const bool torch_net)
@@ -233,16 +230,6 @@ unsigned NetworkBuilder::get_num_inputs() const
 unsigned NetworkBuilder::get_num_outputs() const
 {
     return _num_outputs;
-}
-
-auto NetworkBuilder::clone() const
-{
-    return std::unique_ptr<NetworkBuilder>(clone_impl());
-}
-
-NetworkBuilder* NetworkBuilder::clone_impl() const
-{
-    return new NetworkBuilder(*this);
 }
 
 unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_specs,
@@ -369,6 +356,32 @@ const std::vector<double> NetworkBuilder::generate_init_weights() const
     for(std::size_t i = 0; i < init_weights.size(); i++)
         init_weights[i] = _init_weight_distr->next();
     return init_weights;
+}
+
+auto NetworkBuilder::clone() const
+{
+    return std::unique_ptr<NetworkBuilder>(clone_impl());
+}
+
+JSON NetworkBuilder::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "NetworkBuilder");
+    json.emplace("num_inputs", _num_inputs);
+    json.emplace("num_outputs", _num_outputs);
+    json.emplace("torch_net", _torch_net);
+    if(_hebbs_spec.has_value())
+        json.emplace("hebbs_spec", _hebbs_spec->to_json().at());
+    if(_read_file_path.has_value())
+        json.emplace("read_file_path", _read_file_path.value());
+    for(std::size_t i = 0; i < _layer_specs.size(); i++)
+        json.emplace("LayerSpec" + std::to_string(i), _layer_specs.at(i).to_json().at());
+    return json;
+}
+
+NetworkBuilder* NetworkBuilder::clone_impl() const
+{
+    return new NetworkBuilder(*this);
 }
 
 } // namespace NeuroEvo

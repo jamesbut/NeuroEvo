@@ -32,7 +32,14 @@ public:
 
     void print(std::ostream& os) const override {}
 
-protected:
+private:
+
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("name", "VectorMap");
+        return json;
+    }
 
     VectorMap* clone_impl() const override
     {

@@ -167,4 +167,17 @@ void LayerSpec::print_spec() const
     std::cout << "Bias: " << _bias << std::endl;
 }
 
+JSON LayerSpec::to_json() const
+{
+    JSON json;
+    json.emplace("neuron_type", _neuron_type);
+    json.emplace("num_neurons", _num_neurons);
+    json.emplace("inputs_per_neuron", _inputs_per_neuron);
+    json.emplace("params_per_neuron", _params_per_neuron);
+    json.emplace("batch_norm", _batch_norm);
+    json.emplace("bias", _bias);
+    json.emplace("ActivationFunctionSpec", _activation_func_spec->to_json().at());
+    return json;
+}
+
 } // namespace NeuroEvo

@@ -34,6 +34,16 @@ public:
         const std::vector<double>& inputs = std::vector<double>()) = 0;
     virtual void reset() = 0;
 
+    virtual JSON to_json() const
+    {
+        JSON json;
+        json.emplace("num_params", _num_params.value());
+        json.emplace("trace", _trace);
+        for(auto& [key, value] : to_json_impl().items())
+            json.emplace(key, value);
+        return json;
+    }
+
     auto clone_phenotype() const { return std::unique_ptr<Phenotype>(clone_impl()); }
 
     const std::optional<unsigned>& get_num_params() const
@@ -54,6 +64,7 @@ public:
 
 protected:
 
+    virtual JSON to_json_impl() const = 0;
     virtual Phenotype* clone_impl() const = 0;
 
     std::optional<unsigned> _num_params;

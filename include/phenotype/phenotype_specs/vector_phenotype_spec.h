@@ -14,8 +14,9 @@ public:
     VectorPhenotypeSpec(const unsigned num_genes);
     VectorPhenotypeSpec(const JSON& json);
 
-protected:
+private:
 
+    JSON to_json_impl() const override;
     VectorPhenotypeSpec* clone_impl() const override;
 
 };

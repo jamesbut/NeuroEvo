@@ -78,7 +78,7 @@ public:
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
         if(_exp_dir_path.has_value())
-            save_best_winner_so_far_to_file(domain_hyperparams);
+            save_best_winner_so_far_to_file();
 
         calculate_population_statistics(population);
         if(final_gen)
@@ -198,22 +198,11 @@ private:
         gen_winner.save_org_to_file(file_name.str());
     }
 
-    void save_best_winner_so_far_to_file(
-        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
-            const
+    void save_best_winner_so_far_to_file() const
     {
-        std::stringstream file_name;
-        file_name << _run_dir_path.value() << "/best_winner_so_far";
-
-        if(_best_winner_so_far.has_value())
-            _best_winner_so_far->save_org_to_file(file_name.str(), domain_hyperparams);
-        else
-        {
-            std::cerr << "There is no best winner so far set to save to file"
-                << std::endl;
-            exit(0);
-        }
-
+        std::stringstream file_path;
+        file_path << _run_dir_path.value() << "/best_winner_so_far";
+        _best_winner_so_far->to_json().save_to_file(file_path.str());
     }
 
     void delete_exp_dir() const
