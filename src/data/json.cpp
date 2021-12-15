@@ -36,6 +36,12 @@ bool JSON::has_value(const std::vector<const std::string>& keys) const
     return true;
 }
 
+void JSON::emplace(const JSON& json)
+{
+    for(const auto& [key, value] : json.items())
+        emplace(key, value);
+}
+
 void JSON::save_to_file(const std::string& file_path) const
 {
     std::ofstream json_file(file_path + ".json");

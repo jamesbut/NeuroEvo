@@ -37,10 +37,10 @@ public:
     virtual JSON to_json() const
     {
         JSON json;
-        json.emplace("num_params", _num_params.value());
+        if(_num_params.has_value())
+            json.emplace("num_params", _num_params.value());
         json.emplace("trace", _trace);
-        for(auto& [key, value] : to_json_impl().items())
-            json.emplace(key, value);
+        json.emplace(to_json_impl());
         return json;
     }
 

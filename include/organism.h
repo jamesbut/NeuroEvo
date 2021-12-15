@@ -143,7 +143,8 @@ public:
     JSON to_json() const
     {
         JSON json;
-        json.emplace("fitness", _fitness.value());
+        if(_fitness.has_value())
+            json.emplace("fitness", _fitness.value());
         json.emplace("domain_winner", _domain_winner);
         json.emplace("genes", _genotype->to_json().at({"genes"}));
         json.emplace("GPMap", _gp_map->to_json());

@@ -44,6 +44,7 @@ private:
     JSON to_json_impl() const override
     {
         JSON json;
+        json.emplace("name", "VectorPhenotype");
         json.emplace("traits", _traits);
         return json;
     }

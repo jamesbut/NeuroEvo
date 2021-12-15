@@ -48,6 +48,9 @@ public:
             _j.emplace(key, value);
     }
 
+    //Emplace all values of given json in this json with no key value
+    void emplace(const JSON& json);
+
     template <typename T>
     void emplace_back(const T& value)
     {

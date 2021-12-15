@@ -46,8 +46,7 @@ public:
     {
         JSON json;
         //Add all key value pairs of derived class
-        for(auto& [key, value] : to_json_impl().items())
-            json.emplace(key, value);
+        json.emplace(to_json_impl());
         //Add phenotype spec
         json.emplace("PhenotypeSpec", _pheno_spec->to_json());
         return json;

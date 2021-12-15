@@ -32,4 +32,15 @@ void PhenotypeSpec::set_trace(const bool trace)
     _trace = trace;
 }
 
+JSON PhenotypeSpec::to_json() const
+{
+    JSON json;
+    json.emplace("num_params", _num_params);
+    json.emplace("trace", _trace);
+    json.emplace("print_traits", _print_traits);
+    //Add all key value pairs from derived class
+    json.emplace(to_json_impl());
+    return json;
+}
+
 } // namespace NeuroEvo

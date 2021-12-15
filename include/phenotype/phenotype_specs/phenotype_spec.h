@@ -28,18 +28,7 @@ public:
 
     void set_trace(const bool trace);
 
-    JSON to_json() const
-    {
-        JSON json;
-        json.emplace("num_params", _num_params);
-        json.emplace("trace", _trace);
-        json.emplace("print_traits", _print_traits);
-        //Add all key value pairs from derived class
-        for(auto& [key, value] : to_json_impl().items())
-            json.emplace(key, value);
-        return json;
-    }
-
+    JSON to_json() const;
     auto clone() const
     {
         return std::unique_ptr<PhenotypeSpec>(clone_impl());
