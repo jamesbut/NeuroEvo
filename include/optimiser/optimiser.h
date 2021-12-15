@@ -7,6 +7,7 @@
 
 #include <population.h>
 #include <domains/domain.h>
+#include <data/data_collection.h>
 
 namespace NeuroEvo {
 
@@ -61,8 +62,7 @@ public:
             finished = optimisation_finished(gen, domain);
 
             //Collect data
-            data_collector.collect_generational_data(_population, gen, finished,
-                                                     domain->get_hyperparams());
+            data_collector.collect_generational_data(_population, gen, finished, domain);
 
             if(finished) break;
 

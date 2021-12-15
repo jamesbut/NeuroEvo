@@ -70,6 +70,16 @@ private:
     void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
     void trial_reset(const unsigned trial_num) override {}
 
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("name", "QuadraticFunction");
+        json.emplace("a", _a);
+        json.emplace("b", _b);
+        json.emplace("c", _c);
+        return json;
+    }
+
     QuadraticFunction* clone_impl() const override
     {
         return new QuadraticFunction(*this);

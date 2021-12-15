@@ -46,14 +46,28 @@ public:
                           json.at({"force_mag"}),
                           json.at({"tau"})) {}
 
-        double gravity;
-        double cart_mass;
-        double pole_mass;
-        double total_mass;
-        double pole_half_length;
-        double polemass_length;
-        double force_mag;
-        double tau;    //seconds between state updates
+        JSON to_json() const
+        {
+            JSON json;
+            json.emplace("gravity", gravity);
+            json.emplace("cart_mass", cart_mass);
+            json.emplace("pole_mass", pole_mass);
+            json.emplace("total_mass", total_mass);
+            json.emplace("pole_half_length", pole_half_length);
+            json.emplace("polemass_length", polemass_length);
+            json.emplace("force_mag", force_mag);
+            json.emplace("tau", tau);
+            return json;
+        }
+
+        const double gravity;
+        const double cart_mass;
+        const double pole_mass;
+        const double total_mass;
+        const double pole_half_length;
+        const double polemass_length;
+        const double force_mag;
+        const double tau;    //seconds between state updates
 
     };
 
@@ -350,6 +364,18 @@ private:
             cart_render_width(cart_width * render_scale),
             cart_render_height(cart_height * render_scale) {}
 
+        JSON to_json() const
+        {
+            JSON json;
+            json.emplace("cart_width", cart_width);
+            json.emplace("cart_height", cart_height);
+            json.emplace("render_scale", render_scale);
+            json.emplace("cart_render_width", cart_render_width);
+            json.emplace("cart_render_height", cart_render_height);
+            json.emplace("Specs", specs.to_json());
+            return json;
+        }
+
         CartPoleSpecs specs;
 
         //Rendering properties
@@ -494,6 +520,26 @@ private:
                 break;
         }
         */
+    }
+
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("name", "SingleCartPole");
+        json.emplace("max_steps", _max_steps);
+        json.emplace("markovian", _markovian);
+        json.emplace("rand_start", _random_start);
+        json.emplace("continuous_actuator", _continuous_actuator);
+        json.emplace("boundary", _boundary);
+        json.emplace("x_max", _x_max);
+        json.emplace("starting_x", _starting_x);
+        json.emplace("starting_x_dot", _starting_x_dot);
+        json.emplace("starting_theta", _starting_theta);
+        json.emplace("stating_theta_dot", _starting_theta_dot);
+        json.emplace("print_state_to_file", _print_state_to_file);
+        json.emplace("state_file_name", _state_file_name);
+        json.emplace("CartPole", _cart_pole.to_json());
+        return json;
     }
 
     SingleCartPole<G>* clone_impl() const override

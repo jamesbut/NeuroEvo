@@ -23,6 +23,7 @@
 #include <util/formatting.h>
 #include <util/statistics/statistic.h>
 #include <filesystem>
+#include <domains/domain.h>
 
 namespace NeuroEvo {
 
@@ -62,7 +63,7 @@ public:
         const Population<G, T>& population,
         const unsigned current_gen,
         const bool final_gen,
-        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
+        const std::unique_ptr<Domain<G, T>>& domain)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path && _exp_dir_path.has_value())
@@ -78,7 +79,7 @@ public:
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
         if(_exp_dir_path.has_value())
-            save_best_winner_so_far_to_file();
+            save_best_winner_so_far_to_file(domain);
 
         calculate_population_statistics(population);
         if(final_gen)
@@ -198,11 +199,16 @@ private:
         gen_winner.save_org_to_file(file_name.str());
     }
 
-    void save_best_winner_so_far_to_file() const
+    //Pass in domain reference so the domain used to train the organism is saved also
+    void save_best_winner_so_far_to_file(const std::unique_ptr<Domain<G, T>>& domain)
+        const
     {
         std::stringstream file_path;
         file_path << _run_dir_path.value() << "/best_winner_so_far";
-        _best_winner_so_far->to_json().save_to_file(file_path.str());
+        JSON json;
+        json.emplace("Organism", _best_winner_so_far->to_json());
+        json.emplace("Domain", domain->to_json());
+        json.save_to_file(file_path.str());
     }
 
     void delete_exp_dir() const
@@ -226,7 +232,8 @@ private:
         return _run_dir_path.value();
     }
 
-    void save_population_to_file(const Population<G, T>& population, const bool final_gen)
+    void save_population_to_file(const Population<G, T>& population,
+                                 const bool final_gen)
     {
 
         //The statistics files seem to be enough information to store for now
@@ -280,7 +287,8 @@ private:
         median_fitnesses_file.close();
 
         //Fitness lower quantiles
-        const std::string lq_fitnesses_file_name = _run_dir_path.value() + "/lq_fitnesses";
+        const std::string lq_fitnesses_file_name =
+            _run_dir_path.value() + "/lq_fitnesses";
         std::ofstream lq_fitnesses_file(lq_fitnesses_file_name);
 
         for(const auto& fitness : _lq_gen_fitnesses)
@@ -289,7 +297,8 @@ private:
         lq_fitnesses_file.close();
 
         //Fitness upper quantiles
-        const std::string uq_fitnesses_file_name = _run_dir_path.value() + "/uq_fitnesses";
+        const std::string uq_fitnesses_file_name =
+            _run_dir_path.value() + "/uq_fitnesses";
         std::ofstream uq_fitnesses_file(uq_fitnesses_file_name);
 
         for(const auto& fitness : _uq_gen_fitnesses)

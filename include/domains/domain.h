@@ -11,7 +11,6 @@
 #include <numeric>
 #include <util/memory/shared_fitness_memory.h>
 #include <optional>
-#include <data/data_collection.h>
 #include <util/statistics/distributions/uniform_unsigned_distribution.h>
 #include <mutex>
 
@@ -205,6 +204,24 @@ public:
         return _domain_hyperparams;
     }
 
+    JSON to_json() const
+    {
+        JSON json;
+        json.emplace("completion_fitness", _completion_fitness);
+        json.emplace("complete", _complete);
+        json.emplace("trace", _domain_trace);
+        if(_seed.has_value())
+            json.emplace("seed", _seed.value());
+        //TODO: Include seed sequences at some point and maybe render info
+        if(_domain_hyperparams.has_value())
+            json.emplace("hyperparameters", _domain_hyperparams.value());
+
+        //Add subclass json
+        json.emplace(to_json_impl());
+
+        return json;
+    }
+
 protected:
 
     //This function is abstract and all domains should implement
@@ -224,6 +241,8 @@ protected:
 
         return false;
     }
+
+    virtual JSON to_json_impl() const = 0;
 
     virtual Domain* clone_impl() const = 0;
 
@@ -277,13 +296,13 @@ protected:
 
 private:
 
-    std::vector<std::vector<double> > evaluate_pop_serial(Population<G, T>& pop,
-                                                          const unsigned num_trials)
+    std::vector<std::vector<double>> evaluate_pop_serial(Population<G, T>& pop,
+                                                         const unsigned num_trials)
     {
 
         //Store fitnesses from runs
-        std::vector<std::vector<double> > fitnesses(pop.get_size(),
-                                                    std::vector<double>(num_trials));
+        std::vector<std::vector<double>> fitnesses(pop.get_size(),
+                                                   std::vector<double>(num_trials));
 
         for(unsigned i = 0; i < num_trials; i++)
         {
@@ -417,7 +436,6 @@ private:
 
     //Slave IDs for parallel execution
     std::vector<pid_t> _slave_PIDs;
-
 
     //Domain hyperparameters
     std::optional<std::vector<double>> _domain_hyperparams;
