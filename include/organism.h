@@ -29,6 +29,7 @@ public:
         _fitness(std::nullopt),
         _domain_winner(false) {}
 
+    /*
     Organism(std::shared_ptr<GPMap<G, T>> gp_map,
              const std::string file_name) :
         _genotype(new Genotype<G>(file_name)),
@@ -36,6 +37,14 @@ public:
         _phenotype(gp_map->map(*_genotype)),
         _fitness(std::nullopt),
         _domain_winner(false) {}
+    */
+
+    Organism(const JSON& json) :
+        _genotype(json.at({"genes"})),
+        _gp_map(json.at({"GPMap"})),
+        _phenotype(json.at({"Phenotype"})),
+        _fitness(json.at({"fitness"})),
+        _domain_winner(json.at({"domain_winner"})) {}
 
     Organism(const Organism& organism) :
         _genotype(organism.get_genotype().clone()),

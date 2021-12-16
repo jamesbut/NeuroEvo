@@ -22,61 +22,23 @@ public:
 
     //Constructs an experiment conditional on whether the phenotype specification is
     //appropriate for the domain
-    static std::optional<Experiment> construct(std::shared_ptr<Domain<G, T>> domain,
-                                               std::shared_ptr<GPMap<G, T>> gp_map,
-                                               const bool dump_data = true,
-                                               const bool dump_winners_only = false)
+    Experiment(std::shared_ptr<Domain<G, T>> domain,
+               std::shared_ptr<GPMap<G, T>> gp_map,
+               const bool dump_data,
+               const bool dump_winners_only) :
+        _domain(domain),
+        _gp_map(gp_map),
+        _exp_dir_path(std::nullopt),
+        _dump_data(dump_data),
+        _dump_winners_only(dump_winners_only),
+        _num_winners(0),
+        _total_winners_gens(0),
+        _avg_winners_gens(0)
     {
-
         //Check phenotype specification is appropriate for domain
-        if(domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
-            return Experiment(domain, gp_map, dump_data, dump_winners_only);
-        throw std::invalid_argument("Phenotype spec is not appropriate for this domain");
-    }
-
-    void individual_run(const std::string& organism_folder_name,
-                        const unsigned num_trials = 1,
-                        const bool pheno_trace = false,
-                        const bool domain_trace = false,
-                        const bool render = false)
-    {
-
-        // View the run of the saved best_winner_so_far
-        std::stringstream best_winner_path;
-        best_winner_path << DATA_PATH << "/" << organism_folder_name
-            << "/best_winner_so_far";
-
-        if(pheno_trace)
-            _gp_map->set_pheno_spec_trace(pheno_trace);
-
-        Organism organism(_gp_map, best_winner_path.str());
-
-        _domain->set_render(render);
-        _domain->set_trace(domain_trace);
-
-        _domain->exp_run_reset(0);
-
-        double fitness = _domain->evaluate_org(organism, num_trials);
-
-        std::cout << "Individual run fitness: " << fitness << std::endl;
-
-    }
-
-    //Tests and individual given a set of genes
-    void individual_run(const std::vector<G>& genes,
-                        const unsigned num_trials)
-    {
-        //_gp_map.set_pheno_spec_trace(true);
-        Genotype<G> genotype(genes);
-        Organism<G, T> organism(genotype, _gp_map);
-
-        _domain.exp_run_reset(0);
-
-        //_domain.set_trace(true);
-        double fitness = _domain.evaluate_org(organism, num_trials);
-
-        std::cout << "Individual run fitness: " << fitness << std::endl;
-
+        if(!domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
+            throw std::invalid_argument("Phenotype spec is not appropriate for this "
+                                        "domain");
     }
 
     void evolutionary_run(std::shared_ptr<Optimiser<G, T>> optimiser,
@@ -143,15 +105,7 @@ public:
 
     std::vector<std::string> get_run_dir_paths() const
     {
-        if(_exp_dir_path.has_value())
-            return collect_dirs_in(_exp_dir_path.value());
-        else
-        {
-            std::cerr <<
-                "_exp_dir_path does not have a value in order to collect run dirs" <<
-                std::endl;
-            exit(0);
-        }
+        return collect_dirs_in(_exp_dir_path.value());
     }
 
     void set_domain_trace(const bool domain_trace)
@@ -180,20 +134,6 @@ public:
     }
 
 private:
-
-    //Cannot construct experiment because it is dependent on valid specifications
-    Experiment(std::shared_ptr<Domain<G, T>> domain,
-               std::shared_ptr<GPMap<G, T>> gp_map,
-               const bool dump_data,
-               const bool dump_winners_only) :
-        _domain(domain),
-        _gp_map(gp_map),
-        _exp_dir_path(std::nullopt),
-        _dump_data(dump_data),
-        _dump_winners_only(dump_winners_only),
-        _num_winners(0),
-        _total_winners_gens(0),
-        _avg_winners_gens(0) {}
 
     static void run(std::shared_ptr<Domain<G, T>> m_domain,
                     std::shared_ptr<Optimiser<G, T>> a_optimiser,
@@ -239,13 +179,6 @@ private:
 
     }
 
-    //In most cases the domain and genotype spec will be the same for an
-    //evolutionary run and an individual run so they are saved as member variables
-    //and taken as constructor arguments
-    /*
-    Domain<G, T>& _domain;
-    GPMap<G, T>& _gp_map;
-    */
     std::shared_ptr<Domain<G, T>> _domain;
     std::shared_ptr<GPMap<G, T>> _gp_map;
 
@@ -259,6 +192,46 @@ private:
     double _avg_winners_gens_winners_only;
 
 };
+
+template <typename G, typename T>
+void individual_run(const JSON& json,
+                    const unsigned num_trials = 1,
+                    const bool domain_trace = false,
+                    const bool render = false)
+{
+
+    Organism<G, T> organism(json.at({"Organism"}));
+
+    auto domain = Factory<Domain<G, T>>::create(json.at({"Domain"}));
+    domain->set_render(render);
+    domain->set_trace(domain_trace);
+    domain->exp_run_reset(0);
+
+    double fitness = domain->evaluate_org(organism, num_trials);
+
+    std::cout << "Individual run fitness: " << fitness << std::endl;
+
+}
+
+/*
+//Tests and individual given a set of genes
+void individual_run(const std::vector<G>& genes,
+                    const unsigned num_trials)
+{
+    //_gp_map.set_pheno_spec_trace(true);
+    Genotype<G> genotype(genes);
+    Organism<G, T> organism(genotype, _gp_map);
+
+    _domain.exp_run_reset(0);
+
+    //_domain.set_trace(true);
+    double fitness = _domain.evaluate_org(organism, num_trials);
+
+    std::cout << "Individual run fitness: " << fitness << std::endl;
+
+}
+*/
+
 
 } // namespace NeuroEvo
 
