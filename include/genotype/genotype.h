@@ -28,6 +28,7 @@ public:
     Genotype(const unsigned num_genes, std::unique_ptr<Distribution<G>>& gene_distr) :
         _genes(generate_genes_from_distr(num_genes, gene_distr)) {}
 
+    //TODO: Remove
     Genotype(const std::string& genotype_file_name) :
         _genes(read_genes_from_file(genotype_file_name)) {}
 
