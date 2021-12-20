@@ -39,6 +39,8 @@ public:
               const NeuronType neuron_type = NeuronType::Standard,
               const bool bias = true);
 
+    LayerSpec(const JSON& json);
+
     LayerSpec(const LayerSpec& layer_spec);
     LayerSpec& operator=(const LayerSpec& layer_spec);
     LayerSpec(LayerSpec&& layer_spec) = default;
@@ -67,6 +69,8 @@ public:
             const std::shared_ptr<ActivationFunctionSpec>& ol_activation_func_spec,
             const bool batch_norm = false,
             const bool bias = true);
+
+    static std::vector<LayerSpec> build_layer_specs(const JSON& json);
 
     NeuronType get_neuron_type() const;
     unsigned get_num_neurons() const;

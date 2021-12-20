@@ -53,20 +53,7 @@ NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
     _torch_net(false) {}
 
 NetworkBuilder::NetworkBuilder(const JSON& json) :
-    NetworkBuilder(json.at({"num_inputs"}), json.at({"num_outputs"}),
-                   json.at({"num_hidden_layers"}), json.at({"neurons_per_hidden_layer"}),
-                   json.has_value({"hidden_layer_activation_function"}) ?
-                       Factory<ActivationFunctionSpec>::create(
-                           json.at({"hidden_layer_activation_function"})) :
-                       std::make_shared<ReLUSpec>(),
-                   json.has_value({"final_layer_activation_function"}) ?
-                       Factory<ActivationFunctionSpec>::create(
-                           json.at({"final_layer_activation_function"})) :
-                       std::make_shared<SigmoidSpec>(),
-                   json.value({"batch_norm"}, false),
-                   json.value({"bias"}, true),
-                   json.value({"neuron_type"}, NeuronType::Standard),
-                   json.value({"trace"}, false)) {}
+    NetworkBuilder(LayerSpec::build_layer_specs(json), json.value({"trace"}, false)) {}
 
 NetworkBuilder::NetworkBuilder(const NetworkBuilder& network_builder) :
     PhenotypeSpec(required_num_genes(network_builder._layer_specs,

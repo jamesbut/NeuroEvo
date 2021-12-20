@@ -1,5 +1,8 @@
-#include "phenotype/neural_network/hebbs_layer.h"
+#include <phenotype/neural_network/hebbs_layer.h>
 #include <phenotype/phenotype_specs/layer_spec.h>
+#include <util/factory.h>
+#include <util/maths/activation_functions/activation_function_specs/relu_spec.h>
+#include <util/maths/activation_functions/activation_function_specs/sigmoid_spec.h>
 
 namespace NeuroEvo {
 
@@ -38,6 +41,14 @@ LayerSpec::LayerSpec(const unsigned num_neurons,
         _params_per_neuron = (inputs_per_neuron * 3) + 6;
 
 }
+
+LayerSpec::LayerSpec(const JSON& json) :
+    LayerSpec(json.at({"num_neurons"}), json.at({"inputs_per_neuron"}),
+              Factory<ActivationFunctionSpec>::create(
+                  json.at({"ActivationFunctionSpec"})),
+              json.value({"batch_norm"}, false),
+              json.value({"neuron_type"}, NeuronType::Standard),
+              json.value({"bias"}, true)) {}
 
 LayerSpec::LayerSpec(const LayerSpec& layer_spec) :
     _neuron_type(layer_spec._neuron_type),
@@ -113,6 +124,49 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
     }
 
     return layer_specs;
+
+}
+
+std::vector<LayerSpec> LayerSpec::build_layer_specs(const JSON& json)
+{
+
+    //Check for shorter format (without specifying full layer details)
+    if(json.has_value({"num_hidden_layers"}))
+    {
+        return build_layer_specs(json.at({"num_inputs"}), json.at({"num_outputs"}),
+                                 json.at({"num_hidden_layers"}),
+                                 json.at({"neurons_per_hidden_layer"}),
+                                 json.value({"neuron_type"}, NeuronType::Standard),
+                                 json.has_value({"hidden_layer_activation_function"}) ?
+                                    Factory<ActivationFunctionSpec>::create(
+                                        json.at({"hidden_layer_activation_function"})) :
+                                    std::make_shared<ReLUSpec>(),
+                                 json.has_value({"final_layer_activation_function"}) ?
+                                    Factory<ActivationFunctionSpec>::create(
+                                        json.at({"final_layer_activation_function"})) :
+                                    std::make_shared<SigmoidSpec>(),
+                                 json.value({"batch_norm"}, false),
+                                 json.value({"bias"}, false));
+
+    //Full layer format
+    } else
+    {
+        std::vector<LayerSpec> layer_specs;
+        unsigned layer_num = 0;
+        std::string layer_name = "LayerSpec" + std::to_string(layer_num);
+        //Read in all layer specs from json
+        while(json.has_value({layer_name}))
+        {
+            layer_specs.push_back(LayerSpec(JSON(json.at({layer_name}))));
+            layer_num++;
+            layer_name = "LayerSpec" + std::to_string(layer_num);
+        }
+
+        if(layer_specs.size() == 0)
+            throw std::length_error("Layer specs have not been read from JSON");
+
+        return layer_specs;
+    }
 
 }
 

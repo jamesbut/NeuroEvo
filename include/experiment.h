@@ -213,26 +213,6 @@ void individual_run(const JSON& json,
 
 }
 
-/*
-//Tests and individual given a set of genes
-void individual_run(const std::vector<G>& genes,
-                    const unsigned num_trials)
-{
-    //_gp_map.set_pheno_spec_trace(true);
-    Genotype<G> genotype(genes);
-    Organism<G, T> organism(genotype, _gp_map);
-
-    _domain.exp_run_reset(0);
-
-    //_domain.set_trace(true);
-    double fitness = _domain.evaluate_org(organism, num_trials);
-
-    std::cout << "Individual run fitness: " << fitness << std::endl;
-
-}
-*/
-
-
 } // namespace NeuroEvo
 
 #endif
