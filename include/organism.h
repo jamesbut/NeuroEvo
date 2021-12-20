@@ -104,42 +104,6 @@ public:
         _phenotype.reset(_gp_map->map(*_genotype));
     }
 
-    //TODO: Remove
-    void save_org_to_file(
-        const std::string& file_name,
-        const std::optional<std::vector<double>>& domain_hyperparams = std::nullopt)
-            const
-    {
-
-        //Print fitness and then the genotype
-        std::ofstream org_file;
-        org_file.open(file_name);
-
-        org_file << _fitness.value();
-
-        org_file << std::setprecision(std::numeric_limits<double>::max_digits10);
-
-        org_file << "," << *_genotype;
-
-        //if(_gp_map)
-        //    _gp_map.get()->print(org_file);
-
-        //If domain hyperparams are given write them to a new line
-        if(domain_hyperparams.has_value())
-        {
-            org_file << "\n";
-            for(std::size_t i = 0; i < domain_hyperparams.value().size(); i++)
-            {
-                org_file << domain_hyperparams.value()[i];
-                if(i != domain_hyperparams.value().size()-1)
-                    org_file << ",";
-            }
-        }
-
-        org_file.close();
-
-    }
-
     JSON to_json() const
     {
         JSON json;

@@ -74,7 +74,8 @@ public:
 
         //Generational winner
         const Organism<G, T>& gen_winner = calculate_generational_winner(population);
-        if(_exp_dir_path.has_value()) save_generational_winner_to_file(gen_winner);
+        if(_exp_dir_path.has_value())
+            save_generational_winner_to_file(gen_winner, domain);
 
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
@@ -86,7 +87,8 @@ public:
             complete_statistics();
 
         //Save entire population to file
-        if(_exp_dir_path.has_value()) save_population_to_file(population, final_gen);
+        if(_exp_dir_path.has_value())
+            save_population_to_file(population, final_gen);
 
         //If _dump_winners_only is true delete the entire run directory if the
         //best winner fitness is not a domain winner
@@ -190,13 +192,15 @@ private:
         _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness().value());
     }
 
-    void save_generational_winner_to_file(const Organism<G, T>& gen_winner) const
+    void save_generational_winner_to_file(const Organism<G, T>& gen_winner,
+                                          const std::unique_ptr<Domain<G, T>>& domain)
+        const
     {
         //Print out highest scoring organism
-        std::stringstream file_name;
-        file_name << _run_dir_path.value() << "/generational_winner";
-
-        gen_winner.save_org_to_file(file_name.str());
+        JSON json;
+        json.emplace("Organism", gen_winner.to_json());
+        json.emplace("Domain", domain->to_json());
+        json.save_to_file(_run_dir_path.value() + "/generational_winner");
     }
 
     //Pass in domain reference so the domain used to train the organism is saved also
@@ -418,9 +422,11 @@ private:
             //TODO: Come back and fix this!
             //Get data and time for folder name
             /*
-            boost::posix_time::ptime timeLocal = boost::posix_time::second_clock::local_time();
+            boost::posix_time::ptime timeLocal =
+                boost::posix_time::second_clock::local_time();
             std::stringstream dir_name;
-            dir_name << "population-" << timeLocal.date() << "-" << timeLocal.time_of_day();
+            dir_name << "population-" << timeLocal.date() << "-" <<
+                timeLocal.time_of_day();
             return dir_name.str();
             */
             return "population-cannot-calculate-current-time";

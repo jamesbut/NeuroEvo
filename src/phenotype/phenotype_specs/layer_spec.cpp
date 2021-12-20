@@ -146,7 +146,7 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(const JSON& json)
                                         json.at({"final_layer_activation_function"})) :
                                     std::make_shared<SigmoidSpec>(),
                                  json.value({"batch_norm"}, false),
-                                 json.value({"bias"}, false));
+                                 json.value({"bias"}, true));
 
     //Full layer format
     } else
