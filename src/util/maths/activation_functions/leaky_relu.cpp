@@ -11,7 +11,7 @@ double LeakyReLU::activate(const double x)
     return (x > 0) ? x : _negative_slope * x;
 }
 
-JSON LeakyReLU::to_json_impl() const
+JSON LeakyReLU::to_json() const
 {
     JSON json;
     json.emplace("name", "LeakyReLU");

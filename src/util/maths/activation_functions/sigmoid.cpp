@@ -11,7 +11,7 @@ double Sigmoid::activate(const double x)
     return 1 / (1 + exp(-x / _k));
 }
 
-JSON Sigmoid::to_json_impl() const
+JSON Sigmoid::to_json() const
 {
     JSON json;
     json.emplace("name", "Sigmoid");

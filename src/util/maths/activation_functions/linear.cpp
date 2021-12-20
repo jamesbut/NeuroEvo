@@ -10,7 +10,7 @@ double Linear::activate(const double x)
     return x;
 }
 
-JSON Linear::to_json_impl() const
+JSON Linear::to_json() const
 {
     JSON json;
     json.emplace("name", "Linear");

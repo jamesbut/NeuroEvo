@@ -10,7 +10,7 @@ double ReLU::activate(const double x)
     return (x > 0) ? x : 0;
 }
 
-JSON ReLU::to_json_impl() const
+JSON ReLU::to_json() const
 {
     JSON json;
     json.emplace("name", "ReLU");

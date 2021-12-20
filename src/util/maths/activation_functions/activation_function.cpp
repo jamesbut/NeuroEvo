@@ -17,13 +17,5 @@ const NumberBound& ActivationFunction::get_upper_bound() const
     return _upper_bound;
 }
 
-JSON ActivationFunction::to_json() const
-{
-    JSON json;
-    for(const auto& [key, value] : to_json_impl().items())
-        json.emplace(key, value);
-    return json;
-}
-
 } // namespace NeuroEvo
 

@@ -12,7 +12,7 @@ double ELU::activate(const double x)
     return (x > 0) ? x : _alpha * (exp(x) - 1);
 }
 
-JSON ELU::to_json_impl() const
+JSON ELU::to_json() const
 {
     JSON json;
     json.emplace("name", "ELU");

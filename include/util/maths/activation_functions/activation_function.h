@@ -23,7 +23,7 @@ public:
 
     virtual double activate(const double x) = 0;
 
-    JSON to_json() const;
+    virtual JSON to_json() const = 0;
     auto clone() const
     {
         return std::unique_ptr<ActivationFunction>(clone_impl());
@@ -34,7 +34,6 @@ public:
 
 private:
 
-    virtual JSON to_json_impl() const = 0;
     virtual ActivationFunction* clone_impl() const = 0;
 
     const NumberBound _lower_bound;

@@ -17,7 +17,7 @@ public:
 
 private:
 
-    JSON to_json_impl() const override;
+    JSON to_json() const override;
     Sigmoid* clone_impl() const override;
 
     const double _k;
