@@ -37,7 +37,7 @@ public:
         return std::unique_ptr<Genotype<G>>(new Genotype<G>(*this));
     }
 
-    std::vector<G>& genes()
+    const std::vector<G>& genes() const
     {
         return _genes;
     }

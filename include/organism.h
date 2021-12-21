@@ -73,12 +73,12 @@ public:
         return _fitness;
     }
 
-    Genotype<G>& get_genotype() const
+    const Genotype<G>& get_genotype() const
     {
         return *_genotype;
     }
 
-    GPMap<G, T>& get_gp_map() const
+    const GPMap<G, T>& get_gp_map() const
     {
         return *_gp_map;
     }

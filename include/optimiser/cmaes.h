@@ -267,7 +267,6 @@ private:
 
     }
 
-
     CMAES* clone_impl() const override
     {
         return new CMAES(*this);
