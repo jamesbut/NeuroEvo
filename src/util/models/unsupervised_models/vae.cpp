@@ -9,7 +9,7 @@ VAE::VAE(NetworkBuilder* encoder_builder,
          NetworkBuilder& decoder_builder,
          const torch::Tensor& training_data,
          const std::optional<const torch::Tensor>& test_data) :
-    TrainableModel(training_data, test_data, decoder_builder, "ie_vae.pt"),
+    TrainableModel(training_data, test_data, decoder_builder, "vae.pt"),
     _encoder(encoder_builder ?
              dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
     _encoder_mean_linear_layer(_encoder ?

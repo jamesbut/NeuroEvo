@@ -16,7 +16,7 @@ SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder& net_builder,
                                                  test_data,
                                              const std::optional<const torch::Tensor>&
                                                  test_labels) :
-    TrainableModel(training_data, test_data, net_builder, "ie_supervised.pt"),
+    TrainableModel(training_data, test_data, net_builder, "supervised.pt"),
     _training_labels(training_labels),
     _test_labels(test_labels) {}
 
@@ -93,9 +93,11 @@ bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
     for(epoch_num = 0; epoch_num < num_epochs; epoch_num++)
     {
 
+        /*
         //Dump decoder
         if(epoch_num % test_every == 0)
             write_model(epoch_num);
+        */
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
             generate_batches(batch_size, _training_data, _training_labels);

@@ -41,13 +41,9 @@ public:
     torch::Tensor forward(const torch::Tensor& input, const bool trace = false) const;
 
     //Write model to file
-    void write_model(const std::optional<const unsigned>& prefix = std::nullopt) const;
-
-    //Static function to generate ie file path for outside the library based upon the
-    //ie type used
-    static std::string generate_ie_file_path(
-        const unsigned ie_type,
-        const std::optional<const std::string>& prefix = std::nullopt);
+    //Can give prefix to model file name, this is typically an epoch number
+    void write_model(const std::string& model_dir,
+                     const std::optional<const unsigned>& prefix = std::nullopt) const;
 
 protected:
 
@@ -78,9 +74,6 @@ protected:
 private:
 
     const std::string _model_file_name;
-    inline static const std::string _model_folder_path =
-        std::string(NEURO_EVO_CMAKE_SRC_DIR) +
-        std::string("/config/decoders/");
 
 };
 

@@ -14,7 +14,7 @@ GAN::GAN(NetworkBuilder& generator_builder,
          NetworkBuilder& discriminator_builder,
          const torch::Tensor& real_data,
          const std::optional<cGANParams>& cgan_params) :
-    TrainableModel(real_data, std::nullopt, generator_builder, "ie_gan.pt"),
+    TrainableModel(real_data, std::nullopt, generator_builder, "gan.pt"),
     _discriminator(
         dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())),
     _cgan_params(cgan_params) {}
@@ -90,9 +90,11 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
     for(unsigned i = 0; i < num_epochs; i++)
     {
+        /*
         //Dump decoder
         if(i % test_every == 0)
             write_model(i);
+        */
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> real_batches =
             generate_batches(batch_size, _training_data, real_labels);

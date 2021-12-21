@@ -37,48 +37,14 @@ torch::Tensor TrainableModel::forward(const torch::Tensor& input, const bool tra
     return output;
 }
 
-void TrainableModel::write_model(const std::optional<const unsigned>& prefix) const
+void TrainableModel::write_model(const std::string& model_dir,
+                                 const std::optional<const unsigned>& prefix) const
 {
-    //Check decoders directory exists first
-    if(!boost::filesystem::exists(_model_folder_path))
-        boost::filesystem::create_directory(_model_folder_path);
-
     //Add epoch number at beginning of file name if one is given
     std::string model_file_name = _model_file_name;
     if(prefix.has_value())
         model_file_name = std::to_string(prefix.value()) + "_" + model_file_name;
-    const std::string model_file_path = _model_folder_path + model_file_name;
-
-    _model->write(model_file_path);
-
-}
-
-std::string TrainableModel::generate_ie_file_path(
-    const unsigned ie_type,
-    const std::optional<const std::string>& prefix)
-{
-    std::string ie_file_name;
-    switch(ie_type)
-    {
-        case 0:
-            ie_file_name = "ie_ae.pt";
-            break;
-        case 1:
-            ie_file_name = "ie_vae.pt";
-            break;
-        case 2:
-            ie_file_name = "ie_gan.pt";
-            break;
-        case 3:
-            ie_file_name = "ie_supervised.pt";
-            break;
-    }
-
-    if(prefix.has_value())
-        ie_file_name = prefix.value() + ie_file_name;
-
-    return _model_folder_path + ie_file_name;
-
+    _model->write(model_dir + model_file_name);
 }
 
 void TrainableModel::print_params() const

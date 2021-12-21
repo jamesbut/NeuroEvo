@@ -11,7 +11,7 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
                          const std::optional<const torch::Tensor>& test_data,
                          const bool tied_weights,
                          const std::optional<const double> denoising_sigma) :
-    TrainableModel(training_data, test_data, decoder_builder, "ie_ae.pt"),
+    TrainableModel(training_data, test_data, decoder_builder, "ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
     _denoising_sigma(denoising_sigma),
@@ -70,9 +70,11 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
     for(unsigned i = 0; i < num_epochs; i++)
     {
 
+        /*
         //Dump decoder
         if(i % test_every == 0)
-            write_model(i);
+            write(i);
+        */
 
         std::vector<std::pair<torch::Tensor, torch::Tensor>> batches;
 
@@ -171,11 +173,8 @@ void AutoEncoder::tie_weights()
 
     //Check number of weights in encoder and decoder are equal
     if(count_num_weights_linear(*_encoder) != count_num_weights_linear(*_model))
-    {
-        std::cout << "The number of weights in the encoder and decoder are not equal"
-            << std::endl << "Cannot tie weights in Autoencoder!" << std::endl;
-        exit(0);
-    }
+        throw std::length_error("The number of weights in the encoder and decoder are "
+            "not equal\n Cannot tie weights in Autoencoder!");
 
     /* Set transposed weights in the decoder */
 
