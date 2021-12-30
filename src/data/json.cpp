@@ -15,6 +15,8 @@ nlohmann::json JSON::read_json(const std::string& file_path) const
     std::ifstream json_file(file_path);
     if(json_file.fail())
         throw std::ios_base::failure("Cannot read json at " + file_path);
+    if(file_path.find(".json") == std::string::npos)
+        throw std::invalid_argument(file_path + " does not have .json suffix");
     return nlohmann::json::parse(json_file);
 }
 
