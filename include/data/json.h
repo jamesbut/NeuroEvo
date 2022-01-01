@@ -26,6 +26,13 @@ public:
         const std::vector<const std::string>& keys = std::vector<const std::string>()
     ) const;
 
+    //Retrieve json value as T
+    template <typename T>
+    T get(const std::vector<const std::string>& keys) const
+    {
+        return at(keys).get<T>();
+    }
+
     //The same as at() but with a default value
     template <typename T>
     T value(const std::vector<const std::string>& keys,

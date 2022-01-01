@@ -32,12 +32,15 @@ class GAN : public TrainableModel
 
 public:
 
-    GAN(NetworkBuilder& generator_builder,
-        NetworkBuilder& discriminator_builder,
-        const torch::Tensor& real_data,
+    GAN(NetworkBuilder generator_builder,
+        NetworkBuilder discriminator_builder,
         const std::optional<cGANParams>& cgan_params);
 
+    GAN(const JSON& config);
+
     bool train(const unsigned num_epochs, const unsigned batch_size,
+               const torch::Tensor& train_data,
+               const std::optional<const torch::Tensor>& test_data = std::nullopt,
                const double weight_decay = 0., const bool trace = true,
                const unsigned test_every = 1e6) override;
 
@@ -48,6 +51,10 @@ private:
     double test_generator_symmetry(const bool random_noise) const;
 
     torch::Tensor draw_conditional_noise(const unsigned num_noise_vecs) const;
+
+    //Create generator and discriminator builders from json
+    NetworkBuilder create_generator_builder(JSON config) const;
+    NetworkBuilder create_discriminator_builder(JSON config) const;
 
     std::unique_ptr<TorchNetwork> _discriminator;
 

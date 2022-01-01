@@ -5,33 +5,37 @@ namespace NeuroEvo {
 
 //When handing encoder builder one does not have to define the separate fully connected
 //layers that go separately to create mean and stddev - the constructor will do this
-VAE::VAE(NetworkBuilder* encoder_builder,
-         NetworkBuilder& decoder_builder,
-         const torch::Tensor& training_data,
-         const std::optional<const torch::Tensor>& test_data) :
-    TrainableModel(training_data, test_data, decoder_builder, "vae.pt"),
+VAE::VAE(std::optional<NetworkBuilder> encoder_builder,
+         NetworkBuilder decoder_builder) :
+    TrainableModel(decoder_builder, "vae.pt"),
     _encoder(encoder_builder ?
              dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
     _encoder_mean_linear_layer(_encoder ?
                                torch::nn::LinearOptions(_encoder->get_num_outputs(),
                                                         _model->get_num_inputs()) :
-                               torch::nn::LinearOptions(training_data.size(1),
+                               torch::nn::LinearOptions(_encoder->get_num_inputs(),
                                                         _model->get_num_inputs())),
     _encoder_logvar_linear_layer(_encoder ?
                                  torch::nn::LinearOptions(_encoder->get_num_outputs(),
                                                           _model->get_num_inputs()) :
-                                 torch::nn::LinearOptions(training_data.size(1),
+                                 torch::nn::LinearOptions(_encoder->get_num_inputs(),
                                                           _model->get_num_inputs()))
     {
         _encoder_mean_linear_layer->to(torch::kFloat64);
         _encoder_logvar_linear_layer->to(torch::kFloat64);
     }
 
+VAE::VAE(const JSON& config) :
+    VAE(create_encoder_builder(config), create_decoder_builder(config)) {}
+
 bool VAE::train(const unsigned num_epochs, const unsigned batch_size,
+                const torch::Tensor& training_data,
+                const std::optional<const torch::Tensor>& test_data,
                 const double weight_decay, const bool trace,
                 const unsigned test_every)
 {
 
+    //TODO: move to config
     const double learning_rate = 5e-4;
     auto adam_options = torch::optim::AdamOptions(learning_rate);
     adam_options.weight_decay(weight_decay);
@@ -52,7 +56,7 @@ bool VAE::train(const unsigned num_epochs, const unsigned batch_size,
     {
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
-            generate_batches(batch_size, _training_data, _training_data);
+            generate_batches(batch_size, training_data, training_data);
 
         torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
@@ -72,7 +76,7 @@ bool VAE::train(const unsigned num_epochs, const unsigned batch_size,
 
         }
 
-        auto avg_loss = total_loss / _training_data.size(0);
+        auto avg_loss = total_loss / training_data.size(0);
 
         std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>()
             << std::endl;
@@ -160,6 +164,33 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output,
 
     return reconstruction_loss + KLD_loss;
 
+}
+
+//TODO: VAE JSON constructor, check for num hidden layers == 0, like below
+//Num hidden layers should be -1 from what is given maybe?
+/*
+if(e_num_hidden_layers == 0)
+    return std::make_unique<NeuroEvo::VAE>(nullptr, decoder_spec, training_data);
+else
+{
+    auto encoder_spec = define_vae_encoder(data_vec_size, e_num_hidden_nodes,
+                                           e_num_hidden_layers);
+    return std::make_unique<NeuroEvo::VAE>(&encoder_spec, decoder_spec,
+                                           training_data);
+}
+*/
+std::optional<NetworkBuilder> VAE::create_encoder_builder(JSON config) const
+{
+    std::cout << "Encoder config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
+}
+
+NetworkBuilder VAE::create_decoder_builder(JSON config) const
+{
+    std::cout << "Decoder config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
 }
 
 } // namespace NeuroEvo

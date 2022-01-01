@@ -10,27 +10,36 @@
 
 namespace NeuroEvo {
 
-GAN::GAN(NetworkBuilder& generator_builder,
-         NetworkBuilder& discriminator_builder,
-         const torch::Tensor& real_data,
+GAN::GAN(NetworkBuilder generator_builder,
+         NetworkBuilder discriminator_builder,
          const std::optional<cGANParams>& cgan_params) :
-    TrainableModel(real_data, std::nullopt, generator_builder, "gan.pt"),
+    TrainableModel(generator_builder, "gan.pt"),
     _discriminator(
         dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())),
     _cgan_params(cgan_params) {}
 
+GAN::GAN(const JSON& config) :
+    GAN(create_generator_builder(config),
+        create_discriminator_builder(config),
+        std::nullopt) {}
+
 bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
+                const torch::Tensor& train_data,
+                const std::optional<const torch::Tensor>& test_data,
                 const double weight_decay, const bool trace,
                 const unsigned test_every)
 {
+
+    torch::Tensor training_data = train_data.clone().detach().set_requires_grad(true);
 
     //This was part of the tutorial but stop loss reducing to zero - maybe it is
     //important for a GAN
     //torch::Tensor real_labels = torch::empty(_real_data.size(0)).uniform_(0.8, 1.0);
     //torch::Tensor real_labels = torch::ones(_real_data.size(0));
-    torch::Tensor real_labels = torch::ones({_training_data.size(0), 1},
+    torch::Tensor real_labels = torch::ones({training_data.size(0), 1},
                                             {torch::kFloat64});
 
+    //TODO: Move to JSON config
     const double generator_learning_rate = 2e-4;
     const double discriminator_learning_rate = 5e-4;
     //const double generator_learning_rate = 1e-4;
@@ -75,9 +84,9 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
 
     //Concatenate conditional labels with training data if there is any
     if(_cgan_params.has_value())
-        _training_data = torch::cat({_training_data,
-                                     _cgan_params.value().conditional_labels},
-                                     1);
+        training_data = torch::cat({training_data,
+                                    _cgan_params.value().conditional_labels},
+                                    1);
 
     const unsigned column_width = 20;
     const std::vector<std::string> header_data{"Epoch",
@@ -97,7 +106,7 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
         */
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> real_batches =
-            generate_batches(batch_size, _training_data, real_labels);
+            generate_batches(batch_size, training_data, real_labels);
 
         torch::Tensor total_d_loss = torch::zeros(1, {torch::kFloat64});
         torch::Tensor total_g_loss = torch::zeros(1, {torch::kFloat64});
@@ -202,9 +211,9 @@ bool GAN::train(const unsigned num_epochs, const unsigned batch_size,
         }
 
         //Divide by total number of data points seen
-        torch::Tensor avg_d_loss = total_d_loss / (_training_data.size(0) * 2);
+        torch::Tensor avg_d_loss = total_d_loss / (training_data.size(0) * 2);
         //Divide by size of fake data
-        torch::Tensor avg_g_loss = total_g_loss / _training_data.size(0);
+        torch::Tensor avg_g_loss = total_g_loss / training_data.size(0);
 
         const std::vector<double> row_data{static_cast<double>(i),
                                            avg_d_loss.item<double>(),
@@ -252,6 +261,21 @@ torch::Tensor GAN::draw_conditional_noise(const unsigned num_noise_vecs) const
     noise += _cgan_params->conditional_lb;
 
     return noise;
+}
+
+NetworkBuilder GAN::create_generator_builder(JSON config) const
+{
+    //Code size for generator must also include the conditional label size - eventually
+    std::cout << "Generator config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
+}
+
+NetworkBuilder GAN::create_discriminator_builder(JSON config) const
+{
+    std::cout << "Discriminator config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
 }
 
 } // namespace NeuroEvo

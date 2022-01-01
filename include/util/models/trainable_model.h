@@ -17,14 +17,14 @@ class TrainableModel
 
 public:
 
-    TrainableModel(const torch::Tensor& training_data,
-                   const std::optional<const torch::Tensor>& test_data,
-                   NetworkBuilder& model_net_builder,
+    TrainableModel(NetworkBuilder& model_net_builder,
                    const std::string& model_file_name);
 
     virtual ~TrainableModel() = default;
 
     virtual bool train(const unsigned num_epochs, const unsigned batch_size,
+                       const torch::Tensor& training_data,
+                       const std::optional<const torch::Tensor>& test_data,
                        const double weight_decay = 0., const bool trace = false,
                        const unsigned test_every = 1e6) = 0;
 
@@ -65,8 +65,6 @@ protected:
 
     };
 
-    torch::Tensor _training_data;
-    const std::optional<const torch::Tensor> _test_data;
     double _loss;
 
     std::unique_ptr<TorchNetwork> _model;

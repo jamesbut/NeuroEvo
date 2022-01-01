@@ -16,17 +16,19 @@ class AutoEncoder : public TrainableModel
 
 public:
 
-    AutoEncoder(NetworkBuilder& encoder_builder,
-                NetworkBuilder& decoder_builder,
-                const torch::Tensor& training_data,
-                const std::optional<const torch::Tensor>& test_data = std::nullopt,
+    AutoEncoder(NetworkBuilder encoder_builder,
+                NetworkBuilder decoder_builder,
                 const bool tied_weights = false,
                 //This is the standard deviation of the gaussian of a denoising AE's
                 //corruption function. If this value is not a null optional, this
                 //AE now acts as a denoising AE.
                 const std::optional<const double> denoising_sigma = std::nullopt);
 
+    AutoEncoder(const JSON& config);
+
     bool train(const unsigned num_epochs, const unsigned batch_size,
+               const torch::Tensor& training_data,
+               const std::optional<const torch::Tensor>& test_data = std::nullopt,
                const double weight_decay = 0., const bool trace = false,
                const unsigned test_every = 1e6) override;
 
@@ -40,6 +42,10 @@ private:
 
     //Ties the weights of the encoder and decoder to be the transposition of one another
     void tie_weights();
+
+    //Create encoder and decoder builders from json
+    NetworkBuilder create_encoder_builder(JSON config) const;
+    NetworkBuilder create_decoder_builder(JSON config) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
     torch::nn::Sequential _autoencoder;

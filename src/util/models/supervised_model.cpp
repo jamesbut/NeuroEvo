@@ -4,27 +4,33 @@
 #include <util/torch/schedulers/reduce_lr_on_plateau.h>
 #include <util/torch/schedulers/per_epoch_lr.h>
 #include <util/torch/schedulers/step_lr.h>
+#include <util/exceptions/not_implemented_exception.h>
 
 #include <torch/optim/schedulers/step_lr.h>
 
 namespace NeuroEvo {
 
-SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder& net_builder,
-                                             const torch::Tensor& training_data,
+SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder net_builder,
                                              const torch::Tensor& training_labels,
                                              const std::optional<const torch::Tensor>&
-                                                 test_data,
-                                             const std::optional<const torch::Tensor>&
                                                  test_labels) :
-    TrainableModel(training_data, test_data, net_builder, "supervised.pt"),
+    TrainableModel(net_builder, "supervised.pt"),
     _training_labels(training_labels),
     _test_labels(test_labels) {}
 
+SupervisedFeedForward::SupervisedFeedForward(const JSON& config) :
+    SupervisedFeedForward(create_feedforward_builder(config),
+                          read_training_labels(config),
+                          read_test_labels(config)) {}
+
 bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batch_size,
+                                  const torch::Tensor& training_data,
+                                  const std::optional<const torch::Tensor>& test_data,
                                   const double weight_decay, const bool trace,
                                   const unsigned test_every)
 {
 
+    //TODO: Move all hyperparams to JSON
     const double learning_rate = 1e-4;
     torch::optim::Adam optimizer(
         _model->parameters(),
@@ -100,7 +106,7 @@ bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         */
 
         const std::vector<std::pair<torch::Tensor, torch::Tensor>> batches =
-            generate_batches(batch_size, _training_data, _training_labels);
+            generate_batches(batch_size, training_data, _training_labels);
 
         torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
@@ -119,16 +125,16 @@ bool SupervisedFeedForward::train(const unsigned num_epochs, const unsigned batc
         }
 
 
-        torch::Tensor avg_loss = total_loss / _training_data.size(0);
+        torch::Tensor avg_loss = total_loss / training_data.size(0);
         avg_loss_dbl = avg_loss.item<double>();
 
         // Test on test set
-        if(((epoch_num+1) % test_every == 0) && _test_data.has_value())
+        if(((epoch_num+1) % test_every == 0) && test_data.has_value())
         {
-            const torch::Tensor test_output = _model->forward(_test_data.value());
+            const torch::Tensor test_output = _model->forward(test_data.value());
             const torch::Tensor test_loss = loss_function(test_output,
                                                           _test_labels.value());
-            avg_test_loss = test_loss / _test_data->size(0);
+            avg_test_loss = test_loss / test_data->size(0);
         }
 
         const std::vector<double> row_data{static_cast<double>(epoch_num),
@@ -163,6 +169,26 @@ torch::Tensor SupervisedFeedForward::loss_function(const torch::Tensor& output,
 
     return loss;
 
+}
+
+NetworkBuilder SupervisedFeedForward::create_feedforward_builder(const JSON& config)
+    const
+{
+    std::cout << "FeedForward builder config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
+}
+
+const torch::Tensor SupervisedFeedForward::read_training_labels(const JSON& config)
+    const
+{
+    throw NotImplementedException("SupervisedFeedForward::read_training_labels()");
+}
+
+std::optional<const torch::Tensor> SupervisedFeedForward::read_test_labels(
+    const JSON& config) const
+{
+    throw NotImplementedException("SupervisedFeedForward::read_test_labels()");
 }
 
 } // namspace NeuroEvo

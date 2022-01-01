@@ -16,12 +16,14 @@ class VAE : public TrainableModel
 
 public:
 
-    VAE(NetworkBuilder* encoder_builder,
-        NetworkBuilder& decoder_builder,
-        const torch::Tensor& training_data,
-        const std::optional<const torch::Tensor>& test_data = std::nullopt);
+    VAE(std::optional<NetworkBuilder> encoder_builder,
+        NetworkBuilder decoder_builder);
+
+    VAE(const JSON& config);
 
     bool train(const unsigned num_epochs, const unsigned batch_size,
+               const torch::Tensor& training_data,
+               const std::optional<const torch::Tensor>& test_data = std::nullopt,
                const double weight_decay = 0., const bool trace = false,
                const unsigned test_every = 1e6) override;
 
@@ -41,6 +43,9 @@ private:
                                 const torch::Tensor& input,
                                 const torch::Tensor& mu,
                                 const torch::Tensor& log_var) const;
+
+    std::optional<NetworkBuilder> create_encoder_builder(JSON config) const;
+    NetworkBuilder create_decoder_builder(JSON config) const;
 
     std::unique_ptr<TorchNetwork> _encoder;
 

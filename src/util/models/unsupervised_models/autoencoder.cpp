@@ -5,13 +5,11 @@
 
 namespace NeuroEvo {
 
-AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
-                         NetworkBuilder& decoder_builder,
-                         const torch::Tensor& training_data,
-                         const std::optional<const torch::Tensor>& test_data,
+AutoEncoder::AutoEncoder(NetworkBuilder encoder_builder,
+                         NetworkBuilder decoder_builder,
                          const bool tied_weights,
                          const std::optional<const double> denoising_sigma) :
-    TrainableModel(training_data, test_data, decoder_builder, "ae.pt"),
+    TrainableModel(decoder_builder, "ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
     _denoising_sigma(denoising_sigma),
@@ -24,7 +22,18 @@ AutoEncoder::AutoEncoder(NetworkBuilder& encoder_builder,
 
     }
 
+AutoEncoder::AutoEncoder(const JSON& config) :
+    AutoEncoder(
+        create_encoder_builder(config.at({"EncoderSpec"})),
+        create_decoder_builder(config.at({"DecoderSpec"})),
+        config.value({"tied_weights"}, false),
+        config.value<const std::optional<const double>>(
+            {"denoising_sigma"}, std::nullopt)
+    ) {}
+
 bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
+                        const torch::Tensor& training_data,
+                        const std::optional<const torch::Tensor>& test_data,
                         const double weight_decay, const bool trace,
                         const unsigned test_every)
 {
@@ -82,11 +91,11 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
         if(_denoising_sigma.has_value())
         {
             const torch::Tensor corrupted_training_data =
-                apply_gaussian_noise(_training_data, _denoising_sigma.value());
+                apply_gaussian_noise(training_data, _denoising_sigma.value());
             batches = generate_batches(batch_size, corrupted_training_data,
-                                       _training_data);
+                                       training_data);
         } else
-            batches = generate_batches(batch_size, _training_data, _training_data);
+            batches = generate_batches(batch_size, training_data, training_data);
 
         torch::Tensor total_loss = torch::zeros(1, {torch::kFloat64});
 
@@ -104,14 +113,14 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 
         }
 
-        torch::Tensor avg_loss = total_loss / _training_data.size(0);
+        torch::Tensor avg_loss = total_loss / training_data.size(0);
 
         // Test on test set
-        if(((i+1) % test_every == 0) && _test_data.has_value())
+        if(((i+1) % test_every == 0) && test_data.has_value())
         {
-            const auto [test_output, test_code] = ae_forward(_test_data.value());
-            const auto test_loss = loss_function(test_output, _test_data.value());
-            avg_test_loss = test_loss / _test_data->size(0);
+            const auto [test_output, test_code] = ae_forward(test_data.value());
+            const auto test_loss = loss_function(test_output, test_data.value());
+            avg_test_loss = test_loss / test_data->size(0);
         }
 
 
@@ -194,6 +203,20 @@ void AutoEncoder::tie_weights()
         d_linear->weight.set_data(e_linear->weight.transpose(0, 1));
     }
 
+}
+
+NetworkBuilder AutoEncoder::create_encoder_builder(JSON config) const
+{
+    std::cout << "Encoder config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
+}
+
+NetworkBuilder AutoEncoder::create_decoder_builder(JSON config) const
+{
+    std::cout << "Decoder config" << std::endl;
+    std::cout << config << std::endl;
+    exit(0);
 }
 
 } // namespace NeuroEvo
