@@ -14,6 +14,8 @@ class LinearSpec : public ActivationFunctionSpec
 
 public:
 
+    LinearSpec(const JSON& json);
+
 #if USE_TORCH
     torch::nn::AnyModule create_torch_module() const override;
 #endif

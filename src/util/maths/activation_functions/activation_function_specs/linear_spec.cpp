@@ -1,6 +1,9 @@
 #include <util/maths/activation_functions/activation_function_specs/linear_spec.h>
+#include <util/factory.h>
 
 namespace NeuroEvo {
+
+LinearSpec::LinearSpec(const JSON& json) {}
 
 #if USE_TORCH
 torch::nn::AnyModule LinearSpec::create_torch_module() const
@@ -27,5 +30,7 @@ LinearSpec* LinearSpec::clone_impl() const
     return new LinearSpec(*this);
 }
 
+static Factory<ActivationFunctionSpec>::Registrar linear_spec_registrar("LinearSpec",
+    [](const JSON& json) {return std::make_shared<LinearSpec>(json);});
 
 } // namespace NeuroEvo

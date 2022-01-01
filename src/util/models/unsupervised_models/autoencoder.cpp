@@ -24,8 +24,8 @@ AutoEncoder::AutoEncoder(NetworkBuilder encoder_builder,
 
 AutoEncoder::AutoEncoder(const JSON& config) :
     AutoEncoder(
-        create_encoder_builder(config.at({"EncoderSpec"})),
-        create_decoder_builder(config.at({"DecoderSpec"})),
+        create_encoder_builder(config),
+        create_decoder_builder(config),
         config.value({"tied_weights"}, false),
         config.value<const std::optional<const double>>(
             {"denoising_sigma"}, std::nullopt)
@@ -39,6 +39,7 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 {
     //std::cout << _autoencoder->parameters() << std::endl;
 
+    //TODO: move to config
     //const double learning_rate = 1e-3;
     const double learning_rate = 5e-3;
 
@@ -207,16 +208,43 @@ void AutoEncoder::tie_weights()
 
 NetworkBuilder AutoEncoder::create_encoder_builder(JSON config) const
 {
-    std::cout << "Encoder config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+    JSON encoder_config = config.at({"EncoderSpec"});
+
+    //Add number of inputs and outputs for AE encoder
+    encoder_config.emplace("num_inputs", config.at({"data_vec_size"}));
+    encoder_config.emplace("num_outputs", config.at({"code_size"}));
+
+    //Add sigmoid activation spec if none is given
+    if(!encoder_config.has_value({"final_layer_activation_function"}))
+    {
+        JSON sigmoid_json;
+        sigmoid_json.emplace("name", "SigmoidSpec");
+        encoder_config.emplace("final_layer_activation_function", sigmoid_json);
+    }
+
+    NetworkBuilder encoder_builder(encoder_config);
+    encoder_builder.make_torch_net();
+
+    return encoder_builder;
 }
 
 NetworkBuilder AutoEncoder::create_decoder_builder(JSON config) const
 {
-    std::cout << "Decoder config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+    JSON decoder_config = config.at({"DecoderSpec"});
+
+    //Add number of inputs and outputs for AE encoder
+    decoder_config.emplace("num_inputs", config.at({"code_size"}));
+    decoder_config.emplace("num_outputs", config.at({"data_vec_size"}));
+
+    //Add linear activation function to final layer
+    JSON linear_json;
+    linear_json.emplace("name", "LinearSpec");
+    decoder_config.emplace("final_layer_activation_function", linear_json);
+
+    NetworkBuilder decoder_builder(decoder_config);
+    decoder_builder.make_torch_net();
+
+    return decoder_builder;
 }
 
 } // namespace NeuroEvo
