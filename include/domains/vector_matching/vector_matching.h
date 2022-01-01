@@ -14,10 +14,10 @@ template <typename G, typename T>
 class VectorMatching : public Domain<G, T>
 {
 
-public: 
+public:
 
-    VectorMatching(const std::vector<T>& matching_vector, 
-                   const bool domain_trace, 
+    VectorMatching(const std::vector<T>& matching_vector,
+                   const bool domain_trace,
                    const double completion_fitness) :
         Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector(matching_vector),
@@ -26,13 +26,28 @@ public:
     //If a matching vector is not given then one is randomly generated
     //according to a distribution
     VectorMatching(const std::shared_ptr<VectorCreationPolicy<T>> vector_creation_policy,
-                   const bool domain_trace, 
+                   const bool domain_trace,
                    const double completion_fitness) :
         Domain<G, T>(domain_trace, completion_fitness),
         _matching_vector(vector_creation_policy->generate_vector(0)),
         _vector_creation_policy(vector_creation_policy)
     {
         print_matching_vector();
+    }
+
+    VectorMatching(const JSON& json) :
+        Domain<G, T>(json),
+        _matching_vector(json.value({"matching_vector"}, std::vector<T>())),
+        _vector_creation_policy(
+            json.has_value({"VectorCreationPolicy"}) ?
+                Factory<VectorCreationPolicy<T>>::create(
+                    json.at({"VectorCreationPolicy"})
+                ) :
+                nullptr
+        )
+    {
+        if(_vector_creation_policy)
+            _matching_vector = _vector_creation_policy->generate_vector(0);
     }
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :
@@ -53,8 +68,10 @@ public:
 
         if(vec_pheno_spec->get_num_params() != _matching_vector.size())
         {
-            std::cerr << "The number of phenotype parameters does not match the size of the" <<
-                " matching vector" << std::endl;
+            std::cerr << "The number of phenotype parameters {" +
+                std::to_string(vec_pheno_spec->get_num_params()) + "} "
+                "does not match the size of the matching vector {" +
+                std::to_string(_matching_vector.size()) + "}" << std::endl;
             return false;
         }
 
@@ -70,7 +87,7 @@ protected:
 
     void print_matching_vector() const
     {
-        std::cout << "Matching vector: "; 
+        std::cout << "Matching vector: ";
         for(const auto v : this->_matching_vector)
             std::cout << v << " ";
         std::cout << std::endl;
@@ -79,11 +96,11 @@ protected:
     std::vector<T> _matching_vector;
     std::shared_ptr<VectorCreationPolicy<T>> _vector_creation_policy;
 
-private: 
+private:
 
     double single_run(Organism<G, T>& org, unsigned rand_seed) override
     {
-        const std::vector<T> phenotype_vector = 
+        const std::vector<T> phenotype_vector =
             org.get_phenotype().activate(std::vector<double>());
 
         const double fitness = calculate_match_value(org);
@@ -91,7 +108,7 @@ private:
         return fitness;
     }
 
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override 
+    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override
     {
 
         //Reset matching vector if it was generated from a distribution

@@ -7,14 +7,28 @@ GaussianDistribution::GaussianDistribution(const double mean, const double stdde
     Distribution(seed),
     _distr(mean, stddev) {}
 
-double GaussianDistribution::next() 
+double GaussianDistribution::next()
 {
     return _distr(_rng);
 }
 
-void GaussianDistribution::reset() 
+void GaussianDistribution::reset()
 {
     _distr.reset();
+}
+
+GaussianDistribution* GaussianDistribution::clone_impl() const
+{
+    return new GaussianDistribution(*this);
+}
+
+JSON GaussianDistribution::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "GaussianDistribution");
+    json.emplace("mean", _distr.mean());
+    json.emplace("stddev", _distr.stddev());
+    return json;
 }
 
 } // namespace NeuroEvo

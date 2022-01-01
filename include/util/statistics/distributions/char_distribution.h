@@ -13,11 +13,12 @@
 
 namespace NeuroEvo {
 
-class CharDistribution : public Distribution<char> {
+class CharDistribution : public Distribution<char>
+{
 
 public:
 
-    CharDistribution(const std::set<char>& char_set, 
+    CharDistribution(const std::set<char>& char_set,
                      const std::optional<std::vector<double>>& char_distr = std::nullopt);
 
     char next() override;
@@ -25,13 +26,11 @@ public:
 private:
 
     void reset() override;
+    CharDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
-    CharDistribution* clone_impl() const override
-    {
-        return new CharDistribution(*this);
-    }
-
-    //Better to store this as a vector because we can index in O(1) time as oppose to O(n)
+    //Better to store this as a vector because we can index in O(1) time as
+    //oppose to O(n)
     const std::vector<char> _char_set;
     std::discrete_distribution<unsigned> _distr;
 

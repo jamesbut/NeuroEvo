@@ -11,7 +11,7 @@ namespace NeuroEvo {
 
 class UniformUnsignedDistribution : public Distribution<unsigned long>
 {
-   
+
 public:
 
     UniformUnsignedDistribution(const std::optional<unsigned> seed = std::nullopt);
@@ -24,19 +24,17 @@ public:
 
     //Functional call to get a number between bounds
     //Default bound values are the full range able to be stored in unsigned longs
-    static unsigned long get(const unsigned long lower_bound = 
+    static unsigned long get(const unsigned long lower_bound =
                                  std::numeric_limits<unsigned long>::lowest(),
-                             const unsigned long upper_bound = 
+                             const unsigned long upper_bound =
                                  std::numeric_limits<unsigned long>::max());
 
 private:
 
     void reset() override;
 
-    UniformUnsignedDistribution* clone_impl() const override
-    {
-        return new UniformUnsignedDistribution(*this);
-    }
+    UniformUnsignedDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
     std::uniform_int_distribution<unsigned long> _distr;
 
@@ -44,4 +42,4 @@ private:
 
 } // namespace NeuroEvo
 
-#endif 
+#endif

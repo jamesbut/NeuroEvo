@@ -18,14 +18,17 @@ public:
 
     SymmetricRandomVectorGenerator(const unsigned vector_size,
                                    std::shared_ptr<Distribution<T>> vector_distr) :
-        RandomVectorGenerator<T>(vector_size, vector_distr) 
+        RandomVectorGenerator<T>(vector_size, vector_distr)
     {
         if(this->_vector_size % 2 != 0)
-        {
-            std::cerr << "Cannot generate a symmetric vector of odd size!" << std::endl;
-            exit(0);
-        }
+            throw std::domain_error("Cannot generate a symmetric vector of odd size!");
     }
+
+    SymmetricRandomVectorGenerator(const JSON& json) :
+        SymmetricRandomVectorGenerator(
+            json.at({"vector_size"}),
+            Factory<Distribution<T>>::create(json.at({"Distribution"}))
+        ) {}
 
 private:
 
@@ -39,12 +42,12 @@ private:
         std::vector<T> first_half_matching_vector;
         first_half_matching_vector.reserve(num_unique_elements);
 
-        for(unsigned i = 0; i < num_unique_elements; i++)   
+        for(unsigned i = 0; i < num_unique_elements; i++)
             first_half_matching_vector.push_back(this->_vector_distr->next());
 
         //Create symmetric second half
         std::vector<T> second_half_matching_vector(first_half_matching_vector);
-        std::reverse(second_half_matching_vector.begin(), 
+        std::reverse(second_half_matching_vector.begin(),
                      second_half_matching_vector.end());
 
         //Concatenate
@@ -57,7 +60,23 @@ private:
 
     }
 
+    JSON to_json_impl() const override
+    {
+        JSON json;
+        json.emplace("name", "SymmetricRandomVectorGenerator");
+        json.emplace("vector_size", this->_vector_size);
+        json.emplace("Distribution", this->_vector_distr->to_json());
+        return json;
+    }
+
 };
+
+static Factory<VectorCreationPolicy<double>>::Registrar
+    symmetric_random_vector_generator_registrar(
+        "SymmetricRandomVectorGenerator",
+        [](const JSON& json)
+            {return std::make_shared<SymmetricRandomVectorGenerator<double>>(json);}
+    );
 
 } //namespace NeuroEvo
 

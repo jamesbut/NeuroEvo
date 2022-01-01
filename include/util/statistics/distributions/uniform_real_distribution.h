@@ -9,13 +9,14 @@
 
 namespace NeuroEvo {
 
-class UniformRealDistribution : public Distribution<double> 
+class UniformRealDistribution : public Distribution<double>
 {
 
 public:
 
     UniformRealDistribution(const double lower_bound, const double upper_bound,
                             const std::optional<unsigned> seed = std::nullopt);
+    UniformRealDistribution(const JSON& json);
 
     double next() override;
 
@@ -26,11 +27,8 @@ public:
 private:
 
     void reset() override;
-
-    UniformRealDistribution* clone_impl() const override 
-    {
-        return new UniformRealDistribution(*this);
-    }
+    UniformRealDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
     std::uniform_real_distribution<> _distr;
 

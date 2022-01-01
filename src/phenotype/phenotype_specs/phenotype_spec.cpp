@@ -9,7 +9,7 @@ PhenotypeSpec::PhenotypeSpec(const unsigned num_params, const bool trace) :
 
 PhenotypeSpec::PhenotypeSpec(const JSON& json) :
     _num_params(json.at({"num_params"})),
-    _trace(json.at({"trace"})),
+    _trace(json.value({"trace"}, false)),
     _print_traits(false) {}
 
 unsigned PhenotypeSpec::get_num_params() const

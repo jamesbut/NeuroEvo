@@ -13,9 +13,9 @@ namespace NeuroEvo {
 template <typename T>
 class RandomVectorGenerator : public VectorCreationPolicy<T> {
 
-public: 
+public:
 
-    RandomVectorGenerator(const unsigned vector_size, 
+    RandomVectorGenerator(const unsigned vector_size,
                           std::shared_ptr<Distribution<T>> vector_distr) :
         VectorCreationPolicy<T>(vector_size),
         _vector_distr(vector_distr) {}

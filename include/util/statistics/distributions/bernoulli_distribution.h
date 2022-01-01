@@ -20,12 +20,10 @@ public:
 
 private:
 
-    BernoulliDistribution* clone_impl() const override
-    {
-        return new BernoulliDistribution(*this);
-    }
+    BernoulliDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
-   std::bernoulli_distribution _distr; 
+    std::bernoulli_distribution _distr;
 
 };
 

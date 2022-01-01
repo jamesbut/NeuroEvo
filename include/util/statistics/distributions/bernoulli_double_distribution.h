@@ -9,22 +9,20 @@
 
 namespace NeuroEvo {
 
-class BernoulliDoubleDistribution : public Distribution<double> 
+class BernoulliDoubleDistribution : public Distribution<double>
 {
 
-public: 
+public:
 
     BernoulliDoubleDistribution(const double p = 0.5);
 
     double next() override;
     void reset() override;
 
-private: 
+private:
 
-    BernoulliDoubleDistribution* clone_impl() const override
-    {
-        return new BernoulliDoubleDistribution(*this);
-    }
+    BernoulliDoubleDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
     std::bernoulli_distribution _distr;
 

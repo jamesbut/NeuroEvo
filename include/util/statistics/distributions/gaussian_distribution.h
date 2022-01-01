@@ -17,11 +17,8 @@ public:
 private:
 
     void reset() override;
-
-    GaussianDistribution* clone_impl() const override
-    {
-        return new GaussianDistribution(*this);
-    }
+    GaussianDistribution* clone_impl() const override;
+    JSON to_json_impl() const override;
 
     std::normal_distribution<double> _distr;
 
