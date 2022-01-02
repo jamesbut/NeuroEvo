@@ -38,13 +38,12 @@ protected:
         double total_distance = 0.;
 
         for(std::size_t i = 0; i < phenotype_vector.size(); i++)
-        {
-            if(this->_domain_trace)
-                std::cout << this->_matching_vector[i] << " " << phenotype_vector[i]
-                    << std::endl;
-
             total_distance += std::abs(this->_matching_vector[i] - phenotype_vector[i]);
 
+        if(this->_domain_trace)
+        {
+            std::cout << "Matching vector: " << this->_matching_vector << std::endl;
+            std::cout << "Phenotype vector: " << phenotype_vector << std::endl;
         }
 
         //Normalised by dimension size

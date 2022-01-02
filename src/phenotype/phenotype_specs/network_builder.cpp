@@ -111,7 +111,6 @@ Phenotype<double>* NetworkBuilder::build_network()
             //If the torch network is read from file
             if(_read_file_path)
                 torch_network = new TorchNetwork(_read_file_path.value(),
-                                                 _layer_specs,
                                                  _trace);
             else
                 torch_network = new TorchNetwork(_layer_specs,

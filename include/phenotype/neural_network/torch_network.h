@@ -23,9 +23,7 @@ public:
                  const bool trace = false);
 
     //Read torch network from file
-    //One seems to need the layer specifications first before the network is read :/
     TorchNetwork(const std::string& file_path,
-                 const std::vector<LayerSpec>& layer_specs,
                  const bool trace = false);
 
     std::vector<double> activate(const std::vector<double>& inputs) override;
@@ -38,8 +36,7 @@ public:
 
     //Write network parameters to file
     void write(const std::string& file_path) const;
-    torch::nn::Sequential read(const std::string& file_path,
-                               const std::vector<LayerSpec>& layer_specs);
+    torch::nn::Sequential read(const std::string& file_path);
 
 private:
 
@@ -51,10 +48,15 @@ private:
 
     void print(std::ostream& os) const override;
 
+    std::string get_layer_specs_file_path(const std::string& file_path) const;
+
     JSON to_json_impl() const override;
     TorchNetwork* clone_impl() const override;
 
     torch::nn::Sequential _net;
+
+    //Save layer specs in case of writing to file
+    std::vector<LayerSpec> _layer_specs;
 
 };
 

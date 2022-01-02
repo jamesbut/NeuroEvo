@@ -2,13 +2,15 @@
 #include <torch/nn/options/linear.h>
 #include <filesystem>
 #include <util/exceptions/not_implemented_exception.h>
+#include <util/string.h>
 
 namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
     NetworkBase(trace),
-    _net(build_network(layer_specs, std::nullopt))
+    _net(build_network(layer_specs, std::nullopt)),
+    _layer_specs(layer_specs)
 {
     register_module("net", _net);
 }
@@ -17,16 +19,16 @@ TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
                            const std::vector<double>& init_weights,
                            const bool trace) :
     NetworkBase(trace),
-    _net(build_network(layer_specs, init_weights))
+    _net(build_network(layer_specs, init_weights)),
+    _layer_specs(layer_specs)
 {
     register_module("net", _net);
 }
 
 TorchNetwork::TorchNetwork(const std::string& file_path,
-                           const std::vector<LayerSpec>& layer_specs,
                            const bool trace) :
     NetworkBase(trace),
-    _net(read(file_path, layer_specs))
+    _net(read(file_path))
 {
     register_module("net", _net);
 }
@@ -189,22 +191,35 @@ void TorchNetwork::print(std::ostream& os) const
 void TorchNetwork::write(const std::string& file_path) const
 {
     torch::save(_net, file_path);
+
+    //Also save layer specs
+    JSON layers_json;
+    for(std::size_t i = 0; i < _layer_specs.size(); i++)
+        layers_json.emplace("LayerSpec" + std::to_string(i),
+                            _layer_specs.at(i).to_json());
+
+    layers_json.save_to_file(get_layer_specs_file_path(file_path));
 }
 
-torch::nn::Sequential TorchNetwork::read(const std::string& file_path,
-                                         const std::vector<LayerSpec>& layer_specs)
+torch::nn::Sequential TorchNetwork::read(const std::string& file_path)
 {
-    torch::nn::Sequential net = build_network(layer_specs, std::nullopt);
+    //Read and build layer specs
+    JSON layer_specs_json(get_layer_specs_file_path(file_path));
+    _layer_specs = LayerSpec::build_layer_specs(layer_specs_json);
+
+    torch::nn::Sequential net = build_network(_layer_specs, std::nullopt);
 
     if(std::filesystem::exists(file_path))
         torch::load(net, file_path);
     else
-    {
-        std::cerr << "File: " << file_path << " does not exist!" << std::endl;
-        exit(0);
-    }
+        throw std::invalid_argument("File: " + file_path + " does not exist!");
 
     return net;
+}
+
+std::string TorchNetwork::get_layer_specs_file_path(const std::string& file_path) const
+{
+    return remove_extension(file_path) + "_layer_specs";
 }
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const

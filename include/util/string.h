@@ -18,6 +18,9 @@ namespace NeuroEvo {
 // Split a string by a delimiter
 std::vector<std::string> split_string(std::string str, const std::string& delim);
 
+//Remove extension from end of string
+std::string remove_extension(std::string str);
+
 } // namespace NeuroEvo
 
 #endif

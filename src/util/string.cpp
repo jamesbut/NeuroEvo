@@ -1,5 +1,4 @@
 #include <util/string.h>
-
 #include <iostream>
 
 namespace NeuroEvo {
@@ -19,6 +18,14 @@ std::vector<std::string> split_string(std::string str, const std::string& delim)
     string_vec.push_back(str);
 
     return string_vec;
+}
+
+std::string remove_extension(std::string str)
+{
+    const std::size_t last_dot = str.find_last_of(".");
+    if(last_dot == std::string::npos)
+        return str;
+    return str.substr(0, last_dot);
 }
 
 } // namespace NeuroEvo
