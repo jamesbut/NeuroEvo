@@ -3,6 +3,46 @@
 
 namespace NeuroEvo {
 
+torch::Tensor matrix_to_tensor(const Matrix<double>& matrix)
+{
+    if(matrix.get_height() < 1)
+        throw std::length_error("Trying to convert matrix to torch tensor that does "
+            "not have any elements");
+
+    torch::Tensor t = torch::zeros({(int64_t)matrix.get_height(),
+                                    (int64_t)matrix.get_width()});
+
+    for(std::size_t i = 0; i < matrix.get_height(); i++)
+        for(std::size_t j = 0; j < matrix.get_width(); j++)
+            t.index_put_({(int64_t)i, (int64_t)j}, matrix.at(i,j));
+
+    return t;
+}
+
+torch::Tensor vector_to_tensor(const std::vector<double>& vec,
+                               const unsigned height,
+                               const unsigned width)
+{
+    torch::Tensor tensor = torch::tensor(vec);
+    return tensor.reshape({height, width});
+}
+
+Matrix<double> tensor_to_matrix(const torch::Tensor& t)
+{
+    std::vector<std::vector<double>> v(t.size(0), std::vector<double>(t.size(1), 0.));
+
+    for(unsigned i = 0; i < v.size(); i++)
+        for(unsigned j = 0; j < v[i].size(); j++)
+            v[i][j] = t.index({(int64_t)i, (int64_t)j}).item<double>();
+
+    return v;
+}
+
+std::vector<double> tensor_to_vector(const torch::Tensor& t)
+{
+    return tensor_to_matrix(t).get_vector();
+}
+
 double measure_symmetry(const torch::Tensor& t)
 {
     double total_symmetry = 0.;
@@ -45,33 +85,6 @@ double measure_square_symmetry(const torch::Tensor& t)
 torch::Tensor apply_gaussian_noise(const torch::Tensor& t, const double sigma)
 {
     return t + torch::normal(0, sigma, t.sizes());
-}
-
-torch::Tensor matrix_to_tensor(std::vector<std::vector<double>>& matrix)
-{
-    if(matrix.size() < 1)
-        throw std::length_error("Trying to convert matrix to torch tensor that does "
-            "not have any elements");
-
-    torch::Tensor t = torch::zeros({(int64_t)matrix.size(),
-                                    (int64_t)matrix.at(0).size()});
-
-    for(std::size_t i = 0; i < matrix.size(); i++)
-        for(std::size_t j = 0; j < matrix[i].size(); j++)
-            t.index_put_({(int64_t)i, (int64_t)j}, matrix[i][j]);
-
-    return t;
-}
-
-std::vector<std::vector<double>> tensor_to_matrix(const torch::Tensor& t)
-{
-    std::vector<std::vector<double>> v(t.size(0), std::vector<double>(t.size(1), 0.));
-
-    for(unsigned i = 0; i < v.size(); i++)
-        for(unsigned j = 0; j < v[i].size(); j++)
-            v[i][j] = t.index({(int64_t)i, (int64_t)j}).item<double>();
-
-    return v;
 }
 
 } // namespace NeuroEvo

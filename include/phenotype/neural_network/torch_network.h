@@ -38,6 +38,8 @@ public:
     void write(const std::string& file_path) const;
     torch::nn::Sequential read(const std::string& file_path);
 
+    void print(std::ostream& os) const override;
+
 private:
 
     torch::nn::Sequential build_network(
@@ -46,12 +48,12 @@ private:
 
     unsigned calculate_num_net_params(const torch::nn::Sequential& net) const;
 
-    void print(std::ostream& os) const override;
-
     std::string get_layer_specs_file_path(const std::string& file_path) const;
 
     JSON to_json_impl() const override;
     TorchNetwork* clone_impl() const override;
+
+    std::vector<double> get_params() const override;
 
     torch::nn::Sequential _net;
 

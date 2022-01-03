@@ -54,6 +54,11 @@ private:
         return new VectorPhenotype(*this);
     }
 
+    std::vector<T> get_params() const override
+    {
+        return _traits;
+    }
+
     const std::vector<T> _traits;
 
 };

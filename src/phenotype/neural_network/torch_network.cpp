@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <util/exceptions/not_implemented_exception.h>
 #include <util/string.h>
+#include <util/torch/tensor_utils.h>
 
 namespace NeuroEvo {
 
@@ -133,7 +134,6 @@ torch::nn::Sequential TorchNetwork::build_network(
     //If initial weights are given, set parameters of net
     if(init_weights.has_value())
     {
-
         //Check init weights are same size as parameters
         if(_num_params != init_weights->size())
         {
@@ -157,13 +157,11 @@ torch::nn::Sequential TorchNetwork::build_network(
                                     init_weights->begin() + weight_index + num_params);
             weight_index += num_params;
 
-            //Convert to tensor and reshape
-            torch::Tensor init_weights_t = torch::tensor(init_weights_slice);
-            init_weights_t = init_weights_t.reshape(params.sizes());
-
             //Set data
             //I don't know how I set this when params is a const reference :/
-            params.set_data(init_weights_t);
+            params.set_data(vector_to_tensor(init_weights_slice,
+                                             params.size(0),
+                                             params.size(1)));
 
         }
 
@@ -219,12 +217,11 @@ torch::nn::Sequential TorchNetwork::read(const std::string& file_path)
 
 std::string TorchNetwork::get_layer_specs_file_path(const std::string& file_path) const
 {
-    return remove_extension(file_path) + "_layer_specs";
+    return remove_extension(file_path) + "_layer_specs.json";
 }
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const
 {
-
     //Iterate through params and count
     int64_t net_params_size = 0;
     for(const auto& params : net->parameters())
@@ -247,6 +244,21 @@ JSON TorchNetwork::to_json_impl() const
 TorchNetwork* TorchNetwork::clone_impl() const
 {
     return new TorchNetwork(*this);
+}
+
+std::vector<double> TorchNetwork::get_params() const
+{
+    std::vector<torch::Tensor> torch_params = parameters();
+
+    //Convert parameters into a 1d vector of doubles
+    std::vector<double> param_vec;
+    for(const auto& param_tensor : torch_params)
+    {
+        const std::vector<double> params = tensor_to_vector(param_tensor);
+        param_vec.insert(param_vec.end(), params.begin(), params.end());
+    }
+
+    return param_vec;
 }
 
 } // namespace NeuroEvo

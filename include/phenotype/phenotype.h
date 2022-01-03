@@ -9,7 +9,6 @@
 
 #include <vector>
 #include <genotype/genotype.h>
-
 #include <iostream>
 
 namespace NeuroEvo {
@@ -50,6 +49,8 @@ public:
     {
         return _num_params;
     }
+
+    virtual std::vector<T> get_params() const = 0;
 
     virtual void set_trace(const bool trace)
     {

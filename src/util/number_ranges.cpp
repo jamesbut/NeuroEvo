@@ -3,59 +3,57 @@
 
 namespace NeuroEvo {
 
-std::vector<double> create_range(const double lower_bound, const double upper_bound,
-                                 const double increment)
+std::vector<double> create_range(const Range& range)
 {
     std::vector<double> number_range;
-    double value = lower_bound;
-    while(value <= upper_bound)
+    double value = range.lower_bound;
+    while(value <= range.upper_bound)
     {
         number_range.push_back(value);
-        value += increment;
+        value += range.increment;
     }
-    
+
     return number_range;
 }
 
-std::vector<std::pair<double, double>> create_range_2d(const double lower_bound, 
-                                                             const double upper_bound, 
-                                                             const double increment)
+std::vector<std::pair<double, double>> create_range_2d(const Range& range)
 {
     std::vector<std::pair<double, double>> range_pairs;
-    const unsigned approx_num_vals = pow(((upper_bound - lower_bound) / increment), 2);
+    const unsigned approx_num_vals = pow(((range.upper_bound - range.lower_bound) /
+                                          range.increment), 2);
     range_pairs.reserve(approx_num_vals);
 
-    double x_val = lower_bound;
-    double y_val = lower_bound;
+    double x_val = range.lower_bound;
+    double y_val = range.lower_bound;
 
-    while(x_val <= upper_bound)
+    while(x_val <= range.upper_bound)
     {
-        while(y_val <= upper_bound)
+        while(y_val <= range.upper_bound)
         {
             range_pairs.push_back(std::pair<double, double>(x_val, y_val));
-            y_val += increment;
+            y_val += range.increment;
         }
-        y_val = lower_bound;
-        x_val += increment;
+        y_val = range.lower_bound;
+        x_val += range.increment;
     }
 
     return range_pairs;
 }
 
-std::vector<double> create_range_w_size(const double lower_bound, const double upper_bound,
+std::vector<double> create_range_w_size(const double lower_bound,
+                                        const double upper_bound,
                                         const unsigned num_values)
 {
     const double range_size = upper_bound - lower_bound;
     const double increment = range_size / num_values;
 
-    return create_range(lower_bound, upper_bound, increment);
+    return create_range(Range(lower_bound, upper_bound, increment));
 }
 
 #if USE_TORCH
-torch::Tensor create_range_torch(const double lower_bound, const double upper_bound,
-                                 const double increment)
+torch::Tensor create_range_torch(const Range& range)
 {
-    std::vector<double> num_range = create_range(lower_bound, upper_bound, increment);
+    std::vector<double> num_range = create_range(range);
 
     torch::Tensor torch_range = torch::zeros({(int64_t)num_range.size(), 1},
                                              {torch::kFloat64});
@@ -65,10 +63,9 @@ torch::Tensor create_range_torch(const double lower_bound, const double upper_bo
     return torch_range;
 }
 
-torch::Tensor create_range_torch_2d(const double lower_bound, const double upper_bound,
-                                    const double increment)
+torch::Tensor create_range_torch_2d(const Range& range)
 {
-    std::vector<double> num_range = create_range(lower_bound, upper_bound, increment);
+    std::vector<double> num_range = create_range(range);
 
     torch::Tensor torch_range = torch::zeros({(int64_t)num_range.size(), 1});
     for(std::size_t i = 0; i < num_range.size(); i++)

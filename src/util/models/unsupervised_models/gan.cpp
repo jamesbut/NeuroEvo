@@ -242,7 +242,7 @@ double GAN::test_generator_symmetry(const bool random_noise) const
         noise = torch::randn({noise_size, _model->get_num_inputs()},
                              {torch::kFloat64});
     else
-        noise = create_range_torch(-2., 2., 0.01);
+        noise = create_range_torch(Range(-2., 2., 0.01));
 
     //Create noise range
     torch::Tensor generator_out = _model->forward(noise);

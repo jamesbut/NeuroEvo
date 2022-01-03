@@ -47,14 +47,12 @@ void Network::propogate_weights(const std::vector<double>& weights)
 
     for(auto& layer : _layers)
     {
-
         end += layer->get_number_of_weights();
 
         std::vector<double> tempW(start, end);
         layer->set_weights(tempW);
 
         start += layer->get_number_of_weights();
-
     }
 
 }
@@ -92,7 +90,6 @@ std::vector<double> Network::get_weights() const
         weights.insert(weights.end(), layer_weights.begin(), layer_weights.end());
     }
     return weights;
-
 }
 
 const std::vector<std::unique_ptr<Layer>>& Network::get_layers() const
@@ -126,5 +123,10 @@ Network* Network::clone_impl() const
 {
     return new Network(*this);
 };
+
+std::vector<double> Network::get_params() const
+{
+    return this->get_weights();
+}
 
 } // namespace NeuroEvo

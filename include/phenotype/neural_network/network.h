@@ -45,6 +45,8 @@ private:
 
     void print(std::ostream& os) const override;
 
+    std::vector<double> get_params() const override;
+
 };
 
 } // namespace NeuroEvo
