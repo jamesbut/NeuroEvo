@@ -265,17 +265,44 @@ torch::Tensor GAN::draw_conditional_noise(const unsigned num_noise_vecs) const
 
 NetworkBuilder GAN::create_generator_builder(JSON config) const
 {
-    //Code size for generator must also include the conditional label size - eventually
-    std::cout << "Generator config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+    JSON generator_config = config.at({"GeneratorSpec"});
+
+    //TODO: Number of inputs for generator must also include the conditional label size
+
+    //Add number of inputs and outputs for generator
+    generator_config.emplace("num_inputs", config.at({"code_size"}));
+    generator_config.emplace("num_outputs", config.at({"data_vec_size"}));
+
+    //Add linear activation function to final layer
+    JSON linear_json;
+    linear_json.emplace("name", "LinearSpec");
+    generator_config.emplace("final_layer_activation_function", linear_json);
+
+    NetworkBuilder generator_builder(generator_config);
+    generator_builder.make_torch_net();
+
+    return generator_builder;
 }
 
 NetworkBuilder GAN::create_discriminator_builder(JSON config) const
 {
-    std::cout << "Discriminator config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+    JSON discriminator_config = config.at({"DiscriminatorSpec"});
+
+    //TODO: Number of inputs for discriminator must also include conditional label size
+
+    //Add number of inputs and outputs for discriminator
+    discriminator_config.emplace("num_inputs", config.at({"data_vec_size"}));
+    discriminator_config.emplace("num_outputs", 1);
+
+    //Sigmoid spec on the final layer for the discriminator
+    JSON sigmoid_json;
+    sigmoid_json.emplace("name", "SigmoidSpec");
+    discriminator_config.emplace("final_layer_activation_function", sigmoid_json);
+
+    NetworkBuilder discriminator_builder(discriminator_config);
+    discriminator_builder.make_torch_net();
+
+    return discriminator_builder;
 }
 
 } // namespace NeuroEvo

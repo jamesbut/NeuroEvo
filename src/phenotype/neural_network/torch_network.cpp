@@ -135,12 +135,11 @@ torch::nn::Sequential TorchNetwork::build_network(
     if(init_weights.has_value())
     {
         //Check init weights are same size as parameters
-        if(_num_params != init_weights->size())
-        {
-            std::cerr << "Initial weights given to TorchNet does not match the "
-                "parameter size" << std::endl;
-            exit(0);
-        }
+        if(_num_params.value() != init_weights->size())
+            throw std::length_error("Initial weights size {" +
+                std::to_string(init_weights->size()) +
+                "} given to TorchNet does not match the parameter size {" +
+                std::to_string(_num_params.value()) + "}");
 
         //Set initial weights of network
         std::size_t weight_index = 0;
@@ -202,7 +201,7 @@ void TorchNetwork::write(const std::string& file_path) const
 torch::nn::Sequential TorchNetwork::read(const std::string& file_path)
 {
     //Read and build layer specs
-    JSON layer_specs_json(get_layer_specs_file_path(file_path));
+    JSON layer_specs_json(get_layer_specs_file_path(file_path) + ".json");
     _layer_specs = LayerSpec::build_layer_specs(layer_specs_json);
 
     torch::nn::Sequential net = build_network(_layer_specs, std::nullopt);
@@ -217,7 +216,7 @@ torch::nn::Sequential TorchNetwork::read(const std::string& file_path)
 
 std::string TorchNetwork::get_layer_specs_file_path(const std::string& file_path) const
 {
-    return remove_extension(file_path) + "_layer_specs.json";
+    return remove_extension(file_path) + "_layer_specs";
 }
 
 unsigned TorchNetwork::calculate_num_net_params(const torch::nn::Sequential& net) const
