@@ -166,31 +166,62 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output,
 
 }
 
-//TODO: VAE JSON constructor, check for num hidden layers == 0, like below
-//Num hidden layers should be -1 from what is given maybe?
-/*
-if(e_num_hidden_layers == 0)
-    return std::make_unique<NeuroEvo::VAE>(nullptr, decoder_spec, training_data);
-else
-{
-    auto encoder_spec = define_vae_encoder(data_vec_size, e_num_hidden_nodes,
-                                           e_num_hidden_layers);
-    return std::make_unique<NeuroEvo::VAE>(&encoder_spec, decoder_spec,
-                                           training_data);
-}
-*/
 std::optional<NetworkBuilder> VAE::create_encoder_builder(JSON config) const
 {
-    std::cout << "Encoder config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+
+    JSON encoder_config = config.at({"EncoderSpec"});
+
+    if(encoder_config.at({"num_hidden_layers"}) == 0)
+        return std::nullopt;
+    else
+    {
+        //Add number of inputs and outputs for VAE encoder
+        encoder_config.emplace("num_inputs", config.at({"data_vec_size"}));
+        encoder_config.emplace("num_outputs",
+                               encoder_config.at({"neurons_per_hidden_layer"}));
+
+        //Alter number of hidden layers and neurons per hidden layer
+        const unsigned altered_num_hidden_layers =
+            encoder_config.get<int>({"num_hidden_layers"}) <= 0 ?
+                0 : encoder_config.get<int>({"num_hidden_layers"})-1;
+        encoder_config.emplace("num_hidden_layers", altered_num_hidden_layers);
+
+        if(altered_num_hidden_layers == 0)
+            encoder_config.emplace("neurons_per_hidden_layer", 0);
+
+        //Default activation function is ReLU for both hidden and final layers
+        JSON relu_json;
+        relu_json.emplace({"name"}, "ReLUSpec");
+
+        if(!encoder_config.has_value({"hidden_layer_activation_function"}))
+            encoder_config.emplace("hidden_layer_activation_function", relu_json);
+        if(!encoder_config.has_value({"final_layer_activation_function"}))
+            encoder_config.emplace("final_layer_activation_function", relu_json);
+
+        NetworkBuilder encoder_builder(encoder_config);
+        encoder_builder.make_torch_net();
+
+        return encoder_builder;
+    }
 }
 
 NetworkBuilder VAE::create_decoder_builder(JSON config) const
 {
-    std::cout << "Decoder config" << std::endl;
-    std::cout << config << std::endl;
-    exit(0);
+    JSON decoder_config = config.at({"DecoderSpec"});
+
+    //Add number of inputs and outputs for VAE decoder
+    decoder_config.emplace("num_inputs", config.at({"code_size"}));
+    decoder_config.emplace("num_outputs", config.at({"data_vec_size"}));
+
+    //Add linear activation function to final layer
+    JSON linear_json;
+    linear_json.emplace("name", "LinearSpec");
+    decoder_config.emplace("final_layer_activation_function", linear_json);
+
+    NetworkBuilder decoder_builder(decoder_config);
+    decoder_builder.make_torch_net();
+
+    return decoder_builder;
 }
 
 } // namespace NeuroEvo
