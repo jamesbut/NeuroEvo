@@ -50,28 +50,6 @@ LayerSpec::LayerSpec(const JSON& json) :
               json.value({"neuron_type"}, NeuronType::Standard),
               json.value({"bias"}, true)) {}
 
-LayerSpec::LayerSpec(const LayerSpec& layer_spec) :
-    _neuron_type(layer_spec._neuron_type),
-    _num_neurons(layer_spec._num_neurons),
-    _inputs_per_neuron(layer_spec._inputs_per_neuron),
-    _params_per_neuron(layer_spec._params_per_neuron),
-    _activation_func_spec(layer_spec._activation_func_spec),
-    _batch_norm(layer_spec._batch_norm),
-    _bias(layer_spec._bias) {}
-
-LayerSpec& LayerSpec::operator=(const LayerSpec& layer_spec)
-{
-    _neuron_type = layer_spec._neuron_type;
-    _num_neurons = layer_spec._num_neurons;
-    _inputs_per_neuron = layer_spec._inputs_per_neuron;
-    _params_per_neuron = layer_spec._params_per_neuron;
-    _activation_func_spec = layer_spec._activation_func_spec;
-    _batch_norm = layer_spec._batch_norm;
-    _bias = layer_spec._bias;
-
-    return *this;
-}
-
 std::vector<LayerSpec> LayerSpec::build_layer_specs(
         const unsigned num_inputs,
         const unsigned num_outputs,
@@ -129,10 +107,8 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(
 
 std::vector<LayerSpec> LayerSpec::build_layer_specs(const JSON& json)
 {
-
     //Check for shorter format (without specifying full layer details)
     if(json.has_value({"num_hidden_layers"}))
-    {
         return build_layer_specs(json.at({"num_inputs"}), json.at({"num_outputs"}),
                                  json.at({"num_hidden_layers"}),
                                  json.at({"neurons_per_hidden_layer"}),
@@ -149,7 +125,7 @@ std::vector<LayerSpec> LayerSpec::build_layer_specs(const JSON& json)
                                  json.value({"bias"}, true));
 
     //Full layer format
-    } else
+    else
     {
         std::vector<LayerSpec> layer_specs;
         unsigned layer_num = 0;

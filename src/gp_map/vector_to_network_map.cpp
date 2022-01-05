@@ -6,7 +6,8 @@ VectorToNetworkMap::VectorToNetworkMap(std::shared_ptr<NetworkBuilder> net_build
     GPMap<double, double>(net_builder) {}
 
 VectorToNetworkMap::VectorToNetworkMap(const JSON& json) :
-    VectorToNetworkMap(std::make_shared<NetworkBuilder>(json.at({"PhenotypeSpec"}))) {}
+    VectorToNetworkMap(std::make_shared<NetworkBuilder>(
+                           json.get<JSON>({"PhenotypeSpec"}))) {}
 
 Phenotype<double>* VectorToNetworkMap::map(Genotype<double>& genotype)
 {

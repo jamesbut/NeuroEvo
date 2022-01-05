@@ -48,6 +48,7 @@ private:
 
     unsigned calculate_num_net_params(const torch::nn::Sequential& net) const;
 
+    std::vector<LayerSpec> read_layer_specs(const std::string& file_path) const;
     std::string get_layer_specs_file_path(const std::string& file_path) const;
 
     JSON to_json_impl() const override;
@@ -55,10 +56,10 @@ private:
 
     std::vector<double> get_params() const override;
 
-    torch::nn::Sequential _net;
-
     //Save layer specs in case of writing to file
     std::vector<LayerSpec> _layer_specs;
+
+    torch::nn::Sequential _net;
 
 };
 

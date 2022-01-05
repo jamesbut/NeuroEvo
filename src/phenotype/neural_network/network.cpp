@@ -115,7 +115,7 @@ JSON Network::to_json_impl() const
     JSON json;
     json.emplace("name", "Network");
     for(std::size_t i = 0; i < _layers.size(); i++)
-        json.emplace("Layer" + std::to_string(i), _layers.at(i)->to_json().at());
+        json.emplace("Layer" + std::to_string(i), _layers.at(i)->to_json());
     return json;
 }
 

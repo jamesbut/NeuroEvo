@@ -18,6 +18,7 @@ public:
 
     DoubleToDoubleNetMap(NetworkBuilder& decoder_spec,
                          std::shared_ptr<VectorPhenotypeSpec> pheno_spec);
+    DoubleToDoubleNetMap(const JSON& json);
 
     Phenotype<double>* map(Genotype<double>& genotype) override;
 

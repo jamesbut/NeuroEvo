@@ -8,6 +8,9 @@ DoubleToDoubleNetMap::DoubleToDoubleNetMap(
     std::shared_ptr<VectorPhenotypeSpec> pheno_spec) :
     NetworkMap<double, double>(net_builder, pheno_spec) {}
 
+DoubleToDoubleNetMap::DoubleToDoubleNetMap(const JSON& json) :
+    NetworkMap<double, double>(json) {}
+
 Phenotype<double>* DoubleToDoubleNetMap::map(Genotype<double>& genotype)
 {
     //Push genotype through decoder
@@ -21,5 +24,9 @@ DoubleToDoubleNetMap* DoubleToDoubleNetMap::clone_impl() const
 {
     return new DoubleToDoubleNetMap(*this);
 }
+
+static Factory<GPMap<double, double>>::Registrar double_to_double_net_map_registrar(
+    "DoubleToDoubleNetMap",
+    [](const JSON& json) {return std::make_shared<DoubleToDoubleNetMap>(json);});
 
 } // namespace NeuroEvo

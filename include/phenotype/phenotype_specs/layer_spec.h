@@ -41,12 +41,6 @@ public:
 
     LayerSpec(const JSON& json);
 
-    LayerSpec(const LayerSpec& layer_spec);
-    LayerSpec& operator=(const LayerSpec& layer_spec);
-    LayerSpec(LayerSpec&& layer_spec) = default;
-    LayerSpec& operator=(LayerSpec&& layer_spec) = default;
-    ~LayerSpec() = default;
-
     //A static function to build a number of layers according to a specification
     //This is helpful
     static std::vector<LayerSpec> build_layer_specs(
