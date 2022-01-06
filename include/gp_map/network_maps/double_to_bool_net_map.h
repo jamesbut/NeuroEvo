@@ -23,6 +23,7 @@ public:
 
 private:
 
+    JSON to_json_impl() const override;
     DoubleToBoolNetMap* clone_impl() const override;
 
 };

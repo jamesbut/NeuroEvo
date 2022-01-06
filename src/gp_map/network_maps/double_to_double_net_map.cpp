@@ -20,6 +20,14 @@ Phenotype<double>* DoubleToDoubleNetMap::map(Genotype<double>& genotype)
     return new VectorPhenotype<double>(decoder_output);
 }
 
+JSON DoubleToDoubleNetMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "DoubleToDoubleNetMap");
+    json.emplace("NetworkBuilder", _decoder->to_json());
+    return json;
+}
+
 DoubleToDoubleNetMap* DoubleToDoubleNetMap::clone_impl() const
 {
     return new DoubleToDoubleNetMap(*this);

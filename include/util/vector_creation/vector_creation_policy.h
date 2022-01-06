@@ -17,8 +17,10 @@ class VectorCreationPolicy {
 
 public:
 
-    VectorCreationPolicy(const unsigned vector_size) :
-        _vector_size(vector_size) {}
+    VectorCreationPolicy(const unsigned vector_size,
+                         const std::optional<unsigned>& seed = std::nullopt) :
+        _vector_size(vector_size),
+        _seed(seed) {}
 
     virtual ~VectorCreationPolicy() = default;
 
@@ -30,7 +32,12 @@ public:
         return _vector_size;
     }
 
-    void seed(const std::optional<unsigned>& seed)
+    const std::optional<unsigned>& get_seed() const
+    {
+        return _seed;
+    }
+
+    void set_seed(const std::optional<unsigned>& seed)
     {
         _seed = seed;
         seeded();

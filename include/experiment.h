@@ -194,20 +194,25 @@ private:
 };
 
 template <typename G, typename T>
-void individual_run(const JSON& json,
-                    const unsigned num_trials = 1,
-                    const bool domain_trace = false,
-                    const bool render = false)
+void individual_run(const JSON& json)
 {
 
     Organism<G, T> organism(json.at({"Organism"}));
 
     auto domain = Factory<Domain<G, T>>::create(json.at({"Domain"}));
-    domain->set_render(render);
-    domain->set_trace(domain_trace);
-    domain->exp_run_reset(0);
 
-    double fitness = domain->evaluate_org(organism, num_trials);
+    domain->set_render(json.value({"IndividualRun", "render"}, false));
+    domain->set_trace(json.value({"IndividualRun", "domain_trace"}, false));
+    std::optional<unsigned> domain_run_seed = std::nullopt;
+    if(json.has_value({"Domain", "seed"}))
+        domain_run_seed = json.at({"Domain", "seed"});
+
+    domain->exp_run_reset(0, true);
+
+    double fitness = domain->evaluate_org(
+                         organism,
+                         json.value({"IndividualRun", "num_trials"}, 1)
+                     );
 
     std::cout << "Individual run fitness: " << fitness << std::endl;
 

@@ -10,7 +10,8 @@ BoolToBoolNetMap::BoolToBoolNetMap(NetworkBuilder& net_builder,
 Phenotype<bool>* BoolToBoolNetMap::map(Genotype<bool>& genotype)
 {
     //Push genotype through decoder
-    const std::vector<double> double_genotype(genotype.genes().begin(), genotype.genes().end());
+    const std::vector<double> double_genotype(genotype.genes().begin(),
+                                              genotype.genes().end());
     const std::vector<double> decoder_output = _decoder->activate(double_genotype);
 
     //Cast output back to bools
@@ -26,6 +27,14 @@ Phenotype<bool>* BoolToBoolNetMap::map(Genotype<bool>& genotype)
     //Only returns vector phenotypes for now
     return new VectorPhenotype<bool>(traits);
 
+}
+
+JSON BoolToBoolNetMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "BoolToBoolNetMap");
+    json.emplace("NetworkBuilder", _decoder->to_json());
+    return json;
 }
 
 BoolToBoolNetMap* BoolToBoolNetMap::clone_impl() const

@@ -16,9 +16,14 @@ class RandomVectorGenerator : public VectorCreationPolicy<T> {
 public:
 
     RandomVectorGenerator(const unsigned vector_size,
-                          std::shared_ptr<Distribution<T>> vector_distr) :
-        VectorCreationPolicy<T>(vector_size),
-        _vector_distr(vector_distr) {}
+                          std::shared_ptr<Distribution<T>> vector_distr,
+                          const std::optional<unsigned>& seed = std::nullopt) :
+        VectorCreationPolicy<T>(vector_size, seed),
+        _vector_distr(vector_distr)
+    {
+        if(seed.has_value())
+            this->set_seed(seed);
+    }
 
 protected:
 

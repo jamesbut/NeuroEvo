@@ -27,10 +27,7 @@ public:
 
     NetworkMap(const JSON& json) :
         GPMap<G, T>(Factory<PhenotypeSpec>::create(json.at({"PhenotypeSpec"}))),
-        _decoder(std::make_unique<TorchNetwork>(
-                    std::string(NEURO_EVO_CMAKE_SRC_DIR) +
-                    json.get<std::string>({"NetworkBuilder", "file_path"}))
-                ) {}
+        _decoder(NetworkBuilder(json.at({"NetworkBuilder"})).build_network()) {}
 
     NetworkMap(const NetworkMap& network_map) :
         GPMap<G, T>(network_map),
@@ -49,14 +46,6 @@ public:
     }
 
 protected:
-
-    JSON to_json_impl() const override
-    {
-        JSON json;
-        json.emplace("name", "NetworkMap");
-        json.emplace("decoder", _decoder->to_json().at());
-        return json;
-    }
 
     NetworkMap* clone_impl() const override = 0;
 

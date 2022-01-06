@@ -16,11 +16,11 @@ class TorchNetwork : public NetworkBase, public torch::nn::Module
 
 public:
 
-    TorchNetwork(const std::vector<LayerSpec>& layer_specs, const bool trace = false);
-
-    TorchNetwork(const std::vector<LayerSpec>& layer_specs,
-                 const std::vector<double>& init_weights,
-                 const bool trace = false);
+    TorchNetwork(
+        const std::vector<LayerSpec>& layer_specs,
+        const std::optional<const std::vector<double>>& init_weights = std::nullopt,
+        const bool trace = false
+    );
 
     //Read torch network from file
     TorchNetwork(const std::string& file_path,
@@ -40,6 +40,9 @@ public:
 
     void print(std::ostream& os) const override;
 
+    static std::vector<LayerSpec> read_layer_specs(const std::string& file_path);
+    static std::string get_layer_specs_file_path(const std::string& file_path);
+
 private:
 
     torch::nn::Sequential build_network(
@@ -47,9 +50,6 @@ private:
             const std::optional<const std::vector<double>>& init_weights);
 
     unsigned calculate_num_net_params(const torch::nn::Sequential& net) const;
-
-    std::vector<LayerSpec> read_layer_specs(const std::string& file_path) const;
-    std::string get_layer_specs_file_path(const std::string& file_path) const;
 
     JSON to_json_impl() const override;
     TorchNetwork* clone_impl() const override;

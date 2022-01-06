@@ -29,10 +29,9 @@ public:
                    const bool domain_trace,
                    const double completion_fitness) :
         Domain<G, T>(domain_trace, completion_fitness),
-        _matching_vector(vector_creation_policy->generate_vector(0)),
         _vector_creation_policy(vector_creation_policy)
     {
-        print_matching_vector();
+        _matching_vector.reserve(vector_creation_policy->get_vector_size());
     }
 
     VectorMatching(const JSON& json) :
@@ -46,8 +45,7 @@ public:
                 nullptr
         )
     {
-        if(_vector_creation_policy)
-            _matching_vector = _vector_creation_policy->generate_vector(0);
+        _matching_vector.reserve(_vector_creation_policy->get_vector_size());
     }
 
     VectorMatching(const VectorMatching<G, T>& vector_matching) :
@@ -66,7 +64,7 @@ public:
             return false;
         }
 
-        if(vec_pheno_spec->get_num_params() != _matching_vector.size())
+        if(vec_pheno_spec->get_num_params() != _matching_vector.capacity())
         {
             std::cerr << "The number of phenotype parameters {" +
                 std::to_string(vec_pheno_spec->get_num_params()) + "} "
@@ -108,15 +106,20 @@ private:
         return fitness;
     }
 
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override
+    void exp_run_reset_impl(const unsigned run_num,
+                            const std::optional<unsigned>& run_seed) override
     {
 
         //Reset matching vector if it was generated from a distribution
         if(_vector_creation_policy)
         {
-            if(this->_seed.has_value())
-                this->_vector_creation_policy->seed(run_seed);
-            _matching_vector = _vector_creation_policy->generate_vector(run_num);
+            //If vector creation policy does not already have a seed, seed with run seed
+            if(!this->_vector_creation_policy->get_seed().has_value())
+                this->_vector_creation_policy->set_seed(run_seed);
+
+            //Generate matching vector
+            if(run_seed.has_value())
+                _matching_vector = _vector_creation_policy->generate_vector(run_num);
 
             print_matching_vector();
         }

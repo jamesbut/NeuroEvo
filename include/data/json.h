@@ -39,9 +39,20 @@ public:
             const T& default_value) const
     {
         try {
-            return at(keys);
+            return at(keys).get<T>();
         } catch(nlohmann::detail::out_of_range&) {
             return default_value;
+        }
+    }
+
+    //Used when attempting to get an optional
+    template <typename T>
+    std::optional<T> optional_value(const std::vector<const std::string>& keys) const
+    {
+        try {
+            return at(keys).get<T>();
+        } catch(nlohmann::detail::out_of_range&) {
+            return std::nullopt;
         }
     }
 

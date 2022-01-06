@@ -17,8 +17,9 @@ class SymmetricRandomVectorGenerator : public RandomVectorGenerator<T>
 public:
 
     SymmetricRandomVectorGenerator(const unsigned vector_size,
-                                   std::shared_ptr<Distribution<T>> vector_distr) :
-        RandomVectorGenerator<T>(vector_size, vector_distr)
+                                   std::shared_ptr<Distribution<T>> vector_distr,
+                                   const std::optional<unsigned>& seed = std::nullopt) :
+        RandomVectorGenerator<T>(vector_size, vector_distr, seed)
     {
         if(this->_vector_size % 2 != 0)
             throw std::domain_error("Cannot generate a symmetric vector of odd size!");
@@ -27,7 +28,8 @@ public:
     SymmetricRandomVectorGenerator(const JSON& json) :
         SymmetricRandomVectorGenerator(
             json.at({"vector_size"}),
-            Factory<Distribution<T>>::create(json.at({"Distribution"}))
+            Factory<Distribution<T>>::create(json.at({"Distribution"})),
+            json.optional_value<unsigned>({"seed"})
         ) {}
 
 private:

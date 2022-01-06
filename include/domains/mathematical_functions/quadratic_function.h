@@ -67,7 +67,8 @@ private:
     }
 
     void render() override {}
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+    void exp_run_reset_impl(const unsigned run_num,
+                            const std::optional<unsigned>& run_seed) override {}
     void trial_reset(const unsigned trial_num) override {}
 
     JSON to_json_impl() const override

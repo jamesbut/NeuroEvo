@@ -496,7 +496,8 @@ private:
         return (this->_screen_width / (2 * _x_max)) * x + (this->_screen_width / 2);
     }
 
-    void exp_run_reset_impl(const unsigned run_num, const unsigned run_seed) override {}
+    void exp_run_reset_impl(const unsigned run_num,
+                            const std::optional<unsigned>& run_seed) override {}
 
     void trial_reset(const unsigned trial_num) override
     {

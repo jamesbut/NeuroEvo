@@ -35,31 +35,33 @@ public:
         _completion_fitness(completion_fitness),
         _complete(false),
         _domain_trace(domain_trace),
-        _seed(seed),
         _trial_seed_sequence(seed),
         _render(render),
         _screen_width(screen_width),
         _screen_height(screen_height)
     {
+        if(_seed.has_value())
+            set_seed(seed);
+
 #if SFML_FOUND
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
 #endif
-        if(_seed.has_value())
-            _run_seed_sequence.set_seed(_seed.value());
     }
 
     Domain(const Domain& domain) :
         _completion_fitness(domain._completion_fitness),
         _complete(domain._complete),
         _domain_trace(domain._domain_trace),
-        _seed(domain._seed),
         _trial_seed_sequence(domain._trial_seed_sequence),
         _render(domain._render),
         _screen_width(domain._screen_width),
         _screen_height(domain._screen_height),
         _domain_hyperparams(domain._domain_hyperparams)
     {
+        if(domain._seed.has_value())
+            set_seed(domain._seed);
+
 #if SFML_FOUND
         if(_render)
             _window.create(sf::VideoMode(_screen_width, _screen_height), "Domain");
@@ -70,12 +72,14 @@ public:
         _completion_fitness(completion_fitness),
         _complete(false),
         _domain_trace(json.value({"trace"}, false)),
-        _seed(json.value<std::optional<unsigned>>({"seed"}, std::nullopt)),
-        _trial_seed_sequence(json.value<std::optional<unsigned>>({"seed"},
-                                                                 std::nullopt)),
+        _trial_seed_sequence(json.optional_value<unsigned>({"seed"})),
         _render(json.value({"render"}, false)),
         _screen_width(1280),
-        _screen_height(960) {}
+        _screen_height(960)
+    {
+        if(json.has_value({"seed"}))
+            set_seed(json.at({"seed"}));
+    }
 
     virtual ~Domain() = default;
 
@@ -151,7 +155,7 @@ public:
         return _complete;
     };
 
-    void exp_run_reset(const unsigned run_num)
+    void exp_run_reset(const unsigned run_num, const bool indv_run = false)
     {
         _complete = false;
 
@@ -161,7 +165,10 @@ public:
             _trial_seed_sequence.randomly_seed();
 
         mtx.lock();
-        exp_run_reset_impl(run_num, _run_seed_sequence.next());
+        if(indv_run)
+            exp_run_reset_impl(run_num, std::nullopt);
+        else
+            exp_run_reset_impl(run_num, _run_seed_sequence.next());
         mtx.unlock();
     }
 
@@ -255,7 +262,7 @@ protected:
 
     //Reset after each experiment
     virtual void exp_run_reset_impl(const unsigned run_num,
-                                    const unsigned run_seed) = 0;
+                                    const std::optional<unsigned>& run_seed) = 0;
     //Reset after each trial
     virtual void trial_reset(const unsigned trial_num) = 0;
     //Reset after each organism is evaluated

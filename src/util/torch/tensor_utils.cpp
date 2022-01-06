@@ -20,22 +20,36 @@ torch::Tensor matrix_to_tensor(const Matrix<double>& matrix)
 }
 
 torch::Tensor vector_to_tensor(const std::vector<double>& vec,
-                               const unsigned height,
-                               const unsigned width)
+                               torch::IntArrayRef tensor_size)
 {
     torch::Tensor tensor = torch::tensor(vec);
-    return tensor.reshape({height, width});
+    return tensor.reshape(tensor_size);
 }
 
 Matrix<double> tensor_to_matrix(const torch::Tensor& t)
 {
-    std::vector<std::vector<double>> v(t.size(0), std::vector<double>(t.size(1), 0.));
+    //Check for 1d tensor
+    if(t.sizes().size() == 1)
+    {
+        std::vector<double> v(t.size(0));
+        for(int64_t i = 0; i < v.size(); i++)
+            v[i] = t.index({i}).item<double>();
 
-    for(unsigned i = 0; i < v.size(); i++)
-        for(unsigned j = 0; j < v[i].size(); j++)
-            v[i][j] = t.index({(int64_t)i, (int64_t)j}).item<double>();
+        return v;
 
-    return v;
+    //2d tensor
+    } else
+    {
+
+        std::vector<std::vector<double>> v(t.size(0), std::vector<double>(t.size(1), 0.));
+
+        for(unsigned i = 0; i < v.size(); i++)
+            for(unsigned j = 0; j < v[i].size(); j++)
+                v[i][j] = t.index({(int64_t)i, (int64_t)j}).item<double>();
+
+        return v;
+
+    }
 }
 
 std::vector<double> tensor_to_vector(const torch::Tensor& t)

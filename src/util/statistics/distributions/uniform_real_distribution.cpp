@@ -11,9 +11,7 @@ UniformRealDistribution::UniformRealDistribution(const double lower_bound,
 
 UniformRealDistribution::UniformRealDistribution(const JSON& json) :
     UniformRealDistribution(json.at({"lower_bound"}), json.at({"upper_bound"}),
-                            json.value<const std::optional<unsigned>>(
-                                {"seed"}, std::nullopt)
-                            ) {}
+                            json.optional_value<unsigned>({"seed"})) {}
 
 double UniformRealDistribution::next()
 {

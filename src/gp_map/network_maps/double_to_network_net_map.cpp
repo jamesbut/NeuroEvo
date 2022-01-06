@@ -1,4 +1,5 @@
 #include <gp_map/network_maps/double_to_network_net_map.h>
+#include <util/exceptions/not_implemented_exception.h>
 
 namespace NeuroEvo {
 
@@ -16,6 +17,11 @@ Phenotype<double>* DoubleToNetworkNetMap::map(Genotype<double>& genotype)
     pheno_net_builder->set_init_weights(decoder_output);
     auto pheno = pheno_net_builder->build_network();
     return pheno;
+}
+
+JSON DoubleToNetworkNetMap::to_json_impl() const
+{
+    throw NotImplementedException("DoubleToNetworkNetMap::to_json_impl()");
 }
 
 DoubleToNetworkNetMap* DoubleToNetworkNetMap::clone_impl() const

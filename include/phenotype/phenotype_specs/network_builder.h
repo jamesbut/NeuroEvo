@@ -52,7 +52,9 @@ public:
 
     //Build with layer specs in which one can provide more fine grained detail
     NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
-                   const bool trace = false);
+                   const bool trace = false,
+                   const bool torch_net = false,
+                   const std::optional<const std::string>& read_file = std::nullopt);
 
     //Build network using json format
     NetworkBuilder(const JSON& json);

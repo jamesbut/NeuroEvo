@@ -15,8 +15,7 @@ torch::Tensor matrix_to_tensor(const Matrix<double>& matrix);
 
 //Converts vector of doubles to torch Tensor
 torch::Tensor vector_to_tensor(const std::vector<double>& vec,
-                               const unsigned height,
-                               const unsigned width);
+                               torch::IntArrayRef tensor_size);
 
 //Converts torch tensor to vector of vector of doubles
 Matrix<double> tensor_to_matrix(const torch::Tensor& t);

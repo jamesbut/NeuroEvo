@@ -45,15 +45,34 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_out
                    neuron_type, trace) {}
 
 NetworkBuilder::NetworkBuilder(const std::vector<LayerSpec>& layer_specs,
-                               const bool trace) :
+                               const bool trace,
+                               const bool torch_net,
+                               const std::optional<const std::string>& read_file) :
     PhenotypeSpec(required_num_genes(layer_specs), trace),
     _num_inputs(layer_specs.front().get_inputs_per_neuron()),
     _num_outputs(layer_specs.back().get_num_neurons()),
     _layer_specs(layer_specs),
-    _torch_net(false) {}
+    _torch_net(torch_net),
+    _read_file_path(read_file) {}
 
 NetworkBuilder::NetworkBuilder(const JSON& json) :
-    NetworkBuilder(LayerSpec::build_layer_specs(json), json.value({"trace"}, false)) {}
+    NetworkBuilder(json.has_value({"file_path"}) ?
+                       TorchNetwork::read_layer_specs(
+                           std::string(NEURO_EVO_CMAKE_SRC_DIR) +
+                           json.get<std::string>({"file_path"})) :
+                       LayerSpec::build_layer_specs(json),
+                   json.value({"trace"}, false),
+                   json.value({"torch_net"}, false),
+                   json.has_value({"file_path"}) ?
+                       std::make_optional(
+                           std::string(NEURO_EVO_CMAKE_SRC_DIR) +
+                           json.get<std::string>({"file_path"})
+                       ) :
+                       std::nullopt)
+    {
+        if(json.has_value({"weights"}))
+            set_init_weights(json.at({"weights"}));
+    }
 
 NetworkBuilder::NetworkBuilder(const NetworkBuilder& network_builder) :
     PhenotypeSpec(required_num_genes(network_builder._layer_specs,
@@ -106,19 +125,13 @@ Phenotype<double>* NetworkBuilder::build_network()
     {
         TorchNetwork* torch_network;
 
-        //If weights are not given
-        if(!_init_weights)
-            //If the torch network is read from file
-            if(_read_file_path)
-                torch_network = new TorchNetwork(_read_file_path.value(),
-                                                 _trace);
-            else
-                torch_network = new TorchNetwork(_layer_specs,
-                                                 _trace);
-        //If torch network is initialised by given weights
+        //If the torch network is read from file
+        if(_read_file_path)
+            torch_network = new TorchNetwork(_read_file_path.value(),
+                                             _trace);
         else
             torch_network = new TorchNetwork(_layer_specs,
-                                             _init_weights.value(),
+                                             _init_weights,
                                              _trace);
 
         return torch_network;

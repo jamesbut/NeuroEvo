@@ -8,16 +8,7 @@
 namespace NeuroEvo {
 
 TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
-                           const bool trace) :
-    NetworkBase(trace),
-    _layer_specs(layer_specs),
-    _net(build_network(layer_specs, std::nullopt))
-{
-    register_module("net", _net);
-}
-
-TorchNetwork::TorchNetwork(const std::vector<LayerSpec>& layer_specs,
-                           const std::vector<double>& init_weights,
+                           const std::optional<const std::vector<double>>& init_weights,
                            const bool trace) :
     NetworkBase(trace),
     _layer_specs(layer_specs),
@@ -160,8 +151,7 @@ torch::nn::Sequential TorchNetwork::build_network(
             //Set data
             //I don't know how I set this when params is a const reference :/
             params.set_data(vector_to_tensor(init_weights_slice,
-                                             params.size(0),
-                                             params.size(1)));
+                                             params.sizes().vec()));
 
         }
 
@@ -211,12 +201,12 @@ torch::nn::Sequential TorchNetwork::read(const std::string& file_path)
     return net;
 }
 
-std::string TorchNetwork::get_layer_specs_file_path(const std::string& file_path) const
+std::string TorchNetwork::get_layer_specs_file_path(const std::string& file_path)
 {
     return remove_extension(file_path) + "_layer_specs";
 }
 
-std::vector<LayerSpec> TorchNetwork::read_layer_specs(const std::string& file_path) const
+std::vector<LayerSpec> TorchNetwork::read_layer_specs(const std::string& file_path)
 {
     JSON layer_specs_json(get_layer_specs_file_path(file_path) + ".json");
     return LayerSpec::build_layer_specs(layer_specs_json);
@@ -242,8 +232,10 @@ JSON TorchNetwork::to_json_impl() const
 {
     JSON json;
     json.emplace("name", "TorchNetwork");
+    json.emplace("torch_net", true);
     for(std::size_t i = 0; i < _layer_specs.size(); i++)
-        json.emplace("Layer" + std::to_string(i), _layer_specs.at(i).to_json());
+        json.emplace("LayerSpec" + std::to_string(i), _layer_specs.at(i).to_json());
+    json.emplace("weights", get_params());
     return json;
 }
 

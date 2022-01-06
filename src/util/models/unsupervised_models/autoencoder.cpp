@@ -27,8 +27,7 @@ AutoEncoder::AutoEncoder(const JSON& config) :
         create_encoder_builder(config),
         create_decoder_builder(config),
         config.value({"tied_weights"}, false),
-        config.value<const std::optional<const double>>(
-            {"denoising_sigma"}, std::nullopt)
+        config.optional_value<const double>({"denoising_sigma"})
     ) {}
 
 bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,

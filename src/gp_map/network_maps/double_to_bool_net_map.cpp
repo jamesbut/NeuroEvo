@@ -27,6 +27,14 @@ Phenotype<bool>* DoubleToBoolNetMap::map(Genotype<double>& genotype)
 
 }
 
+JSON DoubleToBoolNetMap::to_json_impl() const
+{
+    JSON json;
+    json.emplace("name", "DoubleToBoolNetMap");
+    json.emplace("NetworkBuilder", _decoder->to_json());
+    return json;
+}
+
 DoubleToBoolNetMap* DoubleToBoolNetMap::clone_impl() const
 {
     return new DoubleToBoolNetMap(*this);

@@ -24,6 +24,7 @@ public:
 
 private:
 
+    JSON to_json_impl() const override;
     DoubleToDoubleNetMap* clone_impl() const override;
 
 };
