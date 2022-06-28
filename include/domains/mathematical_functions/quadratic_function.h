@@ -22,7 +22,10 @@ public:
         _c(c) {}
 
     QuadraticFunction(const JSON& json) :
-        Domain<G, double>(json),
+        Domain<G, double>(
+            json,
+            json.value({"completion_fitness"}, 0.0)
+        ),
         _a(json.at({"a"})),
         _b(json.at({"b"})),
         _c(json.at({"c"})) {}
