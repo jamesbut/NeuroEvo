@@ -1,34 +1,44 @@
-#ifndef _QUADRATIC_FUNCTION_H_
-#define _QUADRATIC_FUNCTION_H_
+#ifndef _BIVARIATE_QUADRATIC_H_
+#define _BIVARIATE_QUADRATIC_H_
+
+/*
+ * Function of the form: f(x,y) = ax^2 + by^2 + cxy + dx + ey + f
+ */
 
 #include <domains/domain.h>
-#include <population.h>
 
 namespace NeuroEvo {
 
 template <typename G>
-class QuadraticFunction : public Domain<G, double>
+class BivariateQuadratic : public Domain<G, double>
 {
 
 public:
 
-    QuadraticFunction(const double a, const double b, const double c,
-                      const bool domain_trace = false,
-                      const double completion_fitness = 0.0,
-                      const std::optional<const unsigned> seed = std::nullopt) :
+    BivariateQuadratic(const double a, const double b, const double c,
+                       const double d, const double e, const double f,
+                       const bool domain_trace = false,
+                       const double completion_fitness = 0.0,
+                       const std::optional<const unsigned> seed = std::nullopt) :
         Domain<G, double>(domain_trace, completion_fitness, seed),
         _a(a),
         _b(b),
-        _c(c) {}
+        _c(c),
+        _d(d),
+        _e(e),
+        _f(f) {}
 
-    QuadraticFunction(const JSON& json) :
+    BivariateQuadratic(const JSON& json) :
         Domain<G, double>(
             json,
             json.value({"completion_fitness"}, 0.0)
         ),
         _a(json.at({"a"})),
         _b(json.at({"b"})),
-        _c(json.at({"c"})) {}
+        _c(json.at({"c"})),
+        _d(json.at({"d"})),
+        _e(json.at({"e"})),
+        _f(json.at({"f"})) {}
 
     bool check_phenotype_spec(const PhenotypeSpec& pheno_spec) const override
     {
@@ -39,14 +49,16 @@ public:
         if(real_vec_pheno_spec == nullptr)
         {
             std::cerr << "Only vector phenotype specifications are allowed " <<
-                        "with the quadratic domain!" << std::endl;
+                        "with the bivariate quadratic domain!" << std::endl;
             return false;
         }
 
-        if(real_vec_pheno_spec->get_num_params() != 1)
+        if(real_vec_pheno_spec->get_num_params() != 2)
         {
-            std::cerr << "The number of params needs to equal 1 for a "
-                "1-dimensional function!" << std::endl;
+            std::cerr << "The number of params needs to equal 2 for a "
+                "2-dimensional function!" << std::endl;
+            std::cerr << "Number of params given: " << 
+                real_vec_pheno_spec->get_num_params() << std::endl;
             return false;
         }
 
@@ -64,9 +76,11 @@ private:
         std::vector<double> output = org.get_phenotype().activate(inputs);
 
         const double x = output.at(0);
-        const double y = _a * pow(x, 2) + _b * x + _c;
+        const double y = output.at(1);
+        const double z = _a * pow(x, 2) + _b * pow(y, 2) + _c * x * y +
+                         _d * x + _e * y + _f;
 
-        return y;
+        return z;
     }
 
     void render() override {}
@@ -77,29 +91,30 @@ private:
     JSON to_json_impl() const override
     {
         JSON json;
-        json.emplace("name", "QuadraticFunction");
+        json.emplace("name", "BivariateQuadratic");
         json.emplace("a", _a);
         json.emplace("b", _b);
         json.emplace("c", _c);
+        json.emplace("d", _d);
+        json.emplace("e", _e);
+        json.emplace("f", _f);
         return json;
     }
 
-    QuadraticFunction* clone_impl() const override
+    BivariateQuadratic* clone_impl() const override
     {
-        return new QuadraticFunction(*this);
+        return new BivariateQuadratic(*this);
     }
 
-    const double _a;
-    const double _b;
-    const double _c;
+    const double _a, _b, _c, _d, _e, _f;
 
 };
 
 static Factory<Domain<double, double>>::Registrar 
-    quad_registrar(
-        "QuadraticFunction",
+    bivariate_quad_registrar(
+        "BivariateQuadratic",
         [](const JSON& json)
-        {return std::make_shared<QuadraticFunction<double>>(json);}
+        {return std::make_shared<BivariateQuadratic<double>>(json);}
     );
 
 } // namespace NeuroEvo
