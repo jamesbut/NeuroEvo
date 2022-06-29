@@ -12,49 +12,44 @@ class GeneticAlgorithm : public Optimiser<G, T>
 
 public:
 
-    /*
-    GeneticAlgorithm(Selection<G, T>& selector,
-                     Mutator<G>& mutator,
-                     Distribution<G>& init_distr,
-                     GPMap<G, T>& gp_map,
-    */
     GeneticAlgorithm(const unsigned num_genes,
                      const unsigned max_gens,
                      const unsigned pop_size,
+                     std::shared_ptr<Selection<G, T>> selector,
+                     std::shared_ptr<Mutator<G>> mutator,
+                     std::shared_ptr<Distribution<G>> init_distr,
                      const bool quit_when_domain_complete = true,
                      const unsigned num_trials = 1,
                      const std::optional<unsigned>& seed = std::nullopt) :
-        //Optimiser<G, T>(gp_map, num_genes, max_gens, pop_size,
-        //                quit_when_domain_complete, num_trials, seed),
         Optimiser<G, T>(num_genes, max_gens, pop_size,
-                        quit_when_domain_complete, num_trials, seed) {}
-        /*
-        _selector(selector.clone()),
-        _mutator(mutator.clone()),
-        _init_distr(init_distr.clone()) {}
-        */
+                        quit_when_domain_complete, num_trials, seed),
+        _selector(selector),
+        _mutator(mutator),
+        _init_distr(init_distr) {}
 
     GeneticAlgorithm(const GeneticAlgorithm& genetic_algorithm) :
-        Optimiser<G, T>(genetic_algorithm) {}
-        /*
-        _selector(genetic_algorithm._selector->clone()),
-        _mutator(genetic_algorithm._mutator->clone()),
-        _init_distr(genetic_algorithm._init_distr->clone()) {}
-        */
+        Optimiser<G, T>(genetic_algorithm),
+        _selector(genetic_algorithm._selector),
+        _mutator(genetic_algorithm._mutator),
+        _init_distr(genetic_algorithm._init_distr) {}
 
     GeneticAlgorithm(const JSON& json) :
-        GeneticAlgorithm(json.at({"num_genes"}),
-                         json.at({"num_gens"}),
-                         json.at({"pop_size"}),
-                         json.at({"quit_domain_when_complete"}),
-                         json.at({"num_trials"})) {}
+        GeneticAlgorithm(
+            json.at({"num_genes"}),
+            json.at({"num_gens"}),
+            json.at({"pop_size"}),
+            Factory<Selection<G, T>>::create(json.at({"Selection"})),
+            Factory<Mutator<G>>::create(json.at({"Mutation"})),
+            Factory<Distribution<G>>::create(json.at({"InitDistribution"})),
+            json.at({"quit_domain_when_complete"}),
+            json.at({"num_trials"})
+        ) {}
 
 
-    Population<G, T> step(std::shared_ptr<GPMap<G, T>>) override
+    Population<G, T> step(std::shared_ptr<GPMap<G, T>> gp_map) override
     {
 
         std::vector<Organism<G, T>> new_orgs;
-        /*
         new_orgs.reserve(this->_pop_size);
 
         for(unsigned i = 0; i < this->_pop_size; i++)
@@ -64,11 +59,10 @@ public:
                 this->_population.get_organisms());
 
             //Mutation
-            _mutator->mutate(child_org.get_genotype().genes());
+            _mutator->mutate(child_org.get_genotype_mut().genes_mut());
 
             new_orgs.push_back(child_org);
         }
-        */
 
         return Population<G, T>(new_orgs);
 
@@ -77,10 +71,9 @@ public:
 private:
 
     //Initialise population according to init_distr
-    Population<G, T> initialise_population(std::shared_ptr<GPMap<G, T>>) override
+    Population<G, T> initialise_population(std::shared_ptr<GPMap<G, T>> gp_map) override
     {
 
-        /*
         std::vector<Genotype<G>> genotypes;
         genotypes.reserve(this->_pop_size);
 
@@ -93,8 +86,7 @@ private:
             genotypes.push_back(Genotype<G>(genes));
         }
 
-        //return Population<G, T>(genotypes, this->_gp_map);
-        */
+        return Population<G, T>(genotypes, gp_map);
 
     }
 
@@ -103,10 +95,9 @@ private:
         return new GeneticAlgorithm(*this);
     }
 
-    //Nothing to reset in the GA
     void reset() override
     {
-        /*
+
         _selector->reset(this->_seed);
         _mutator->reset(this->_seed);
 
@@ -114,17 +105,14 @@ private:
             _init_distr->set_seed(this->_seed.value());
         else
             _init_distr->randomly_seed();
-            */
 
     }
 
-    /*
-    std::unique_ptr<Selection<G, T>> _selector;
-    std::unique_ptr<Mutator<G>> _mutator;
+    std::shared_ptr<Selection<G, T>> _selector;
+    std::shared_ptr<Mutator<G>> _mutator;
     //Add crossover at some point
 
-    std::unique_ptr<Distribution<G>> _init_distr;
-    */
+    std::shared_ptr<Distribution<G>> _init_distr;
 
 };
 

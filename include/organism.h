@@ -78,6 +78,12 @@ public:
         return *_genotype;
     }
 
+    // Mutable genotype reference
+    Genotype<G>& get_genotype_mut() const
+    {
+        return *_genotype;
+    }
+
     const GPMap<G, T>& get_gp_map() const
     {
         return *_gp_map;

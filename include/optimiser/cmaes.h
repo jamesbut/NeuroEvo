@@ -212,7 +212,8 @@ private:
         return Population<double, T>(genotypes, gp_map);
     }
 
-    void perform_eigendecompostion() {
+    void perform_eigendecompostion()
+    {
 
         //Enforce O(N^2)
         if(static_cast<double>(_count_eval - _eigen_eval) >

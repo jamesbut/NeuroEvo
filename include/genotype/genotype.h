@@ -42,6 +42,12 @@ public:
         return _genes;
     }
 
+    // Mutable reference to genes
+    std::vector<G>& genes_mut()
+    {
+        return _genes;
+    }
+
     const std::optional<double>& get_fitness() const
     {
         return _fitness;
