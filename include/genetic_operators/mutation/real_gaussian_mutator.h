@@ -10,10 +10,11 @@ class RealGaussianMutator : public Mutator<double> {
 
 public:
 
-    RealGaussianMutator(const double mutation_rate, const double mutation_power);
-
-    RealGaussianMutator(const double mutation_rate, const double mutation_power,
-                        const double lower_bound, const double upper_bound);
+    RealGaussianMutator(
+        const double mutation_rate,
+        const double mutation_power,
+        const std::optional<const double> lower_bound = std::nullopt,
+        const std::optional<const double> upper_bound = std::nullopt);
 
     //A vector of bounds can be given such that each individual gene has a different
     //set of bounds
@@ -22,6 +23,8 @@ public:
     RealGaussianMutator(const double mutation_rate, const double mutation_power,
                         const std::vector<double>& lower_bounds,
                         const std::vector<double>& upper_bounds);
+
+    RealGaussianMutator(const JSON& json);
 
     void mutate(std::vector<double>& genes) override;
 
@@ -35,6 +38,8 @@ private:
     }
 
     GaussianDistribution _mut_power_distr;
+
+    //TODO: Subsume into 2 variables not 4
 
     //Will not mutate genes beyond bounds if bounds are given
     //If optional is not set, no bounds are used

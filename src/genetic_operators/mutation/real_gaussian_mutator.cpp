@@ -5,19 +5,9 @@ namespace NeuroEvo {
 
 RealGaussianMutator::RealGaussianMutator(
     const double mutation_rate,
-    const double mutation_power) :
-    Mutator(mutation_rate),
-    _mut_power_distr(0, mutation_power),
-    _lower_bound(std::nullopt),
-    _upper_bound(std::nullopt),
-    _lower_bounds(std::nullopt),
-    _upper_bounds(std::nullopt) {}
-
-RealGaussianMutator::RealGaussianMutator(
-    const double mutation_rate,
     const double mutation_power,
-    const double lower_bound,
-    const double upper_bound) :
+    const std::optional<const double> lower_bound,
+    const std::optional<const double> upper_bound) :
     Mutator(mutation_rate),
     _mut_power_distr(0, mutation_power),
     _lower_bound(lower_bound),
@@ -25,6 +15,7 @@ RealGaussianMutator::RealGaussianMutator(
     _lower_bounds(std::nullopt),
     _upper_bounds(std::nullopt) {}
 
+// TODO: Subsume into one constructor
 RealGaussianMutator::RealGaussianMutator(
     const double mutation_rate,
     const double mutation_power,
@@ -43,7 +34,14 @@ RealGaussianMutator::RealGaussianMutator(
                 "when given to RealGaussianMutator constructor");
     }
 
-void RealGaussianMutator::mutate(std::vector<double>& genes) {
+RealGaussianMutator::RealGaussianMutator(const JSON& json) :
+    RealGaussianMutator(
+        json.at({"mutation_rate"}),
+        json.at({"mutation_power"})
+    ) {}
+
+void RealGaussianMutator::mutate(std::vector<double>& genes)
+{
 
     for(std::size_t i = 0; i < genes.size(); i++)
     {
@@ -95,5 +93,12 @@ void RealGaussianMutator::reset_mutator(const std::optional<unsigned>& seed)
     else
         _mut_power_distr.randomly_seed();
 }
+
+static Factory<Mutator<double>>::Registrar 
+    real_mutator_registrar(
+        "RealGaussianMutator",
+        [](const JSON& json)
+        {return std::make_shared<RealGaussianMutator>(json);}
+    );
 
 } // namespace NeuroEvo

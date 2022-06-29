@@ -8,6 +8,7 @@
  */
 
 #include <util/statistics/distributions/uniform_real_distribution.h>
+#include <util/factory.h>
 
 namespace NeuroEvo {
 
