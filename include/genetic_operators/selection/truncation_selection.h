@@ -22,6 +22,9 @@ public:
         _percentage_selection(percentage_selection),
         _uniform_distr(0., 1.) {}
 
+    TruncationSelection(const JSON& json) :
+        TruncationSelection(json.get<const double>({"selection_percentage"})) {}
+
     Organism<G, T> select(const std::vector<Organism<G, T>>& orgs) override 
     {
 
@@ -42,8 +45,7 @@ public:
             considered_indices[floor(rand_num * considered_indices.size())];
 
         //Create copy of this org and return
-        return Organism(orgs.at(chosen_org).get_genotype(),
-                        orgs.at(chosen_org).get_gp_map());
+        return Organism(orgs.at(chosen_org));
 
     }
 
@@ -90,6 +92,13 @@ private:
     UniformRealDistribution _uniform_distr;
 
 };
+
+static Factory<Selection<double, double>>::Registrar 
+    truncation_registrar(
+        "TruncationSelection",
+        [](const JSON& json)
+        {return std::make_shared<TruncationSelection<double, double>>(json);}
+    );
 
 } // namespace NeuroEvo
 

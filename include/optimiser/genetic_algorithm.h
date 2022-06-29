@@ -116,7 +116,6 @@ private:
 
 };
 
-//Register(GeneticAlgorithm, Optimiser, double)
 static Factory<Optimiser<double, double>>::Registrar ga_registrar("GeneticAlgorithm",
     [](const JSON& json)
     {return std::make_shared<GeneticAlgorithm<double, double>>(json);});
