@@ -25,10 +25,12 @@ public:
     Experiment(std::shared_ptr<Domain<G, T>> domain,
                std::shared_ptr<GPMap<G, T>> gp_map,
                const bool dump_data,
-               const bool dump_winners_only) :
+               const bool dump_winners_only,
+               const std::optional<const JSON> exp_json = std::nullopt) :
         _domain(domain),
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
+        _exp_json(exp_json),
         _dump_data(dump_data),
         _dump_winners_only(dump_winners_only),
         _num_winners(0),
@@ -50,9 +52,14 @@ public:
 
         std::clock_t start = std::clock();
 
-        //Create experiment directory
         if(_dump_data)
+        {
+            //Create experiment directory
             _exp_dir_path = std::make_optional(DataCollector<G, T>::create_exp_dir());
+            //Dump JSON if there is one
+            if(_exp_json.has_value()) 
+                _exp_json->save_to_file(_exp_dir_path.value() + "/exp_config");
+        }
 
         //Run runs in parallel
         if(parallel_runs)
@@ -183,6 +190,7 @@ private:
     std::shared_ptr<GPMap<G, T>> _gp_map;
 
     std::optional<std::string> _exp_dir_path;
+    const std::optional<const JSON> _exp_json;
     const bool _dump_data;
     const bool _dump_winners_only;
 
