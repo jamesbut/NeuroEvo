@@ -16,7 +16,8 @@ std::vector<std::string> collect_dirs_in(const std::string& parent_dir_path)
     std::vector<std::string> directories; 
 
     for(const auto& dir : std::filesystem::directory_iterator(parent_dir_path))
-        directories.push_back(dir.path());
+        if(std::filesystem::is_directory(dir))
+            directories.push_back(dir.path());
 
     return directories;
 
