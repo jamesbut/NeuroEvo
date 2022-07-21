@@ -55,7 +55,10 @@ public:
         if(_dump_data)
         {
             //Create experiment directory
-            _exp_dir_path = std::make_optional(DataCollector<G, T>::create_exp_dir());
+            _exp_dir_path = std::make_optional(
+                DataCollector<G, T>::create_exp_dir(_exp_json)
+            );
+
             //Dump JSON if there is one
             if(_exp_json.has_value()) 
                 _exp_json->save_to_file(_exp_dir_path.value() + "/exp_config");

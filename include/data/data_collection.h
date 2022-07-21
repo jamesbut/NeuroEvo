@@ -108,13 +108,27 @@ public:
         return _run_dir_paths;
     }
 
-    //Creates experiment directory and returns path
-    //This path is more often than not given to the object constructor
-    static const std::string create_exp_dir()
+    //Creates experiment directory and returns path.
+    //If a JSON config is given the directory is calculated from the values 
+    //in that.
+    //This path is more often than not given to the object constructor.
+    static const std::string create_exp_dir(
+        const std::optional<JSON>& config = std::nullopt
+    )
     {
-        const std::string exp_dir_path = create_experiment_dir_path();
+        // Create path name
+        std::string exp_dir_path;
+        if(config.has_value() && 
+           config->has_value({"Logging", "exp_dir_name"}))
+            exp_dir_path = 
+                config->get<const std::string>({"Logging", "data_dir_path"}) +
+                config->get<const std::string>({"Logging", "exp_dir_name"});
+        else
+            exp_dir_path = create_experiment_dir_path();
+
+        // Create directory
         if(!boost::filesystem::exists(exp_dir_path))
-            boost::filesystem::create_directory(exp_dir_path);
+            boost::filesystem::create_directories(exp_dir_path);
         return exp_dir_path;
     }
 
