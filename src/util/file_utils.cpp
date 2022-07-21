@@ -23,4 +23,18 @@ std::vector<std::string> collect_dirs_in(const std::string& parent_dir_path)
 
 }
 
+std::vector<std::string> collect_files_recursive(
+    const std::string& parent_dir_path
+)
+{
+    std::vector<std::string> file_paths;
+
+    for(const auto& di :
+        std::filesystem::recursive_directory_iterator(parent_dir_path))
+        if(di.is_regular_file())
+            file_paths.push_back(di.path().string());
+
+    return file_paths;
+}
+
 } // namespace NeuroEvo

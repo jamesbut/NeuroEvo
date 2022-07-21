@@ -14,6 +14,11 @@ namespace NeuroEvo {
 //Collects the paths to all the subdirectories in a directory
 std::vector<std::string> collect_dirs_in(const std::string& parent_dir_path);
 
+//Recursively collects files in directory and sub directories
+std::vector<std::string> collect_files_recursive(
+    const std::string& parent_dir_path
+);
+
 } // namespace NeuroEvo
 
 #endif
