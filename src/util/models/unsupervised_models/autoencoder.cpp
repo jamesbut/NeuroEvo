@@ -7,11 +7,13 @@ namespace NeuroEvo {
 
 AutoEncoder::AutoEncoder(NetworkBuilder encoder_builder,
                          NetworkBuilder decoder_builder,
+                         const double learning_rate,
                          const bool tied_weights,
                          const std::optional<const double> denoising_sigma) :
     TrainableModel(decoder_builder, "ae.pt"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
+    _learning_rate(learning_rate),
     _denoising_sigma(denoising_sigma),
     _tied_weights(tied_weights)
     {
@@ -26,6 +28,7 @@ AutoEncoder::AutoEncoder(const JSON& config) :
     AutoEncoder(
         create_encoder_builder(config),
         create_decoder_builder(config),
+        config.get<const double>({"learning_rate"}),
         config.value({"tied_weights"}, false),
         config.optional_value<const double>({"denoising_sigma"})
     ) {}
@@ -38,14 +41,10 @@ bool AutoEncoder::train(const unsigned num_epochs, const unsigned batch_size,
 {
     //std::cout << _autoencoder->parameters() << std::endl;
 
-    //TODO: move to config
-    //const double learning_rate = 1e-3;
-    const double learning_rate = 5e-3;
-
     torch::optim::Adam optimizer(
         _autoencoder->parameters(),
         //_model->parameters(),
-        torch::optim::AdamOptions(learning_rate).weight_decay(weight_decay)
+        torch::optim::AdamOptions(_learning_rate).weight_decay(weight_decay)
     );
 
     /*

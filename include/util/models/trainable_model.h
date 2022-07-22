@@ -25,7 +25,8 @@ public:
     virtual bool train(const unsigned num_epochs, const unsigned batch_size,
                        const torch::Tensor& training_data,
                        const std::optional<const torch::Tensor>& test_data,
-                       const double weight_decay = 0., const bool trace = false,
+                       const double weight_decay = 0.,
+                       const bool trace = false,
                        const unsigned test_every = 1e6) = 0;
 
     //Returns model

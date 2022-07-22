@@ -18,6 +18,7 @@ public:
 
     AutoEncoder(NetworkBuilder encoder_builder,
                 NetworkBuilder decoder_builder,
+                const double learning_rate,
                 const bool tied_weights = false,
                 //This is the standard deviation of the gaussian of a denoising AE's
                 //corruption function. If this value is not a null optional, this
@@ -49,6 +50,8 @@ private:
 
     std::unique_ptr<TorchNetwork> _encoder;
     torch::nn::Sequential _autoencoder;
+
+    const double _learning_rate;
 
     const std::optional<const double> _denoising_sigma;
     const bool _tied_weights;
