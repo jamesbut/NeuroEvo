@@ -39,8 +39,17 @@ void TrainableModel::write_model(
     const std::optional<const unsigned>& prefix
 ) const
 {
+    // Determine model file name
     const std::string model_file_name =
         calculate_model_file_name(model_dir, prefix);
+
+    // Dump training configuration json
+    const std::string config_file_path = model_dir +
+                                         remove_extension(model_file_name) +
+                                         "_config";
+    config.save_to_file(config_file_path);
+
+    // Write model
     _model->write(model_dir + model_file_name);
 }
 
