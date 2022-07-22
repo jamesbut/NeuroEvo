@@ -18,7 +18,7 @@ class TrainableModel
 public:
 
     TrainableModel(NetworkBuilder& model_net_builder,
-                   const std::string& model_file_name);
+                   const std::string& model_name);
 
     virtual ~TrainableModel() = default;
 
@@ -39,12 +39,18 @@ public:
     void print_params() const;
 
     //Performs forward pass of model
-    torch::Tensor forward(const torch::Tensor& input, const bool trace = false) const;
+    torch::Tensor forward(
+        const torch::Tensor& input,
+        const bool trace = false
+    ) const;
 
     //Write model to file
     //Can give prefix to model file name, this is typically an epoch number
-    void write_model(const std::string& model_dir,
-                     const std::optional<const unsigned>& prefix = std::nullopt) const;
+    void write_model(
+        const std::string& model_dir,
+        const JSON& config,
+        const std::optional<const unsigned>& prefix = std::nullopt
+    ) const;
 
 protected:
 
@@ -72,7 +78,13 @@ protected:
 
 private:
 
-    const std::string _model_file_name;
+    // Calculate model file name to dump to
+    std::string calculate_model_file_name(
+        const std::string& model_dir,
+        const std::optional<const unsigned>& prefix
+    ) const;
+
+    const std::string _model_name;
 
 };
 

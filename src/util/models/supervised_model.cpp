@@ -10,11 +10,13 @@
 
 namespace NeuroEvo {
 
-SupervisedFeedForward::SupervisedFeedForward(NetworkBuilder net_builder,
-                                             const torch::Tensor& training_labels,
-                                             const std::optional<const torch::Tensor>&
-                                                 test_labels) :
-    TrainableModel(net_builder, "supervised.pt"),
+SupervisedFeedForward::SupervisedFeedForward(
+    NetworkBuilder net_builder,
+    const torch::Tensor& training_labels,
+    const std::optional<const torch::Tensor>&
+    test_labels
+) :
+    TrainableModel(net_builder, "supervised"),
     _training_labels(training_labels),
     _test_labels(test_labels) {}
 

@@ -7,7 +7,7 @@ namespace NeuroEvo {
 //layers that go separately to create mean and stddev - the constructor will do this
 VAE::VAE(std::optional<NetworkBuilder> encoder_builder,
          NetworkBuilder decoder_builder) :
-    TrainableModel(decoder_builder, "vae.pt"),
+    TrainableModel(decoder_builder, "vae"),
     _encoder(encoder_builder ?
              dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
     _encoder_mean_linear_layer(_encoder ?

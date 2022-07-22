@@ -13,7 +13,7 @@ namespace NeuroEvo {
 GAN::GAN(NetworkBuilder generator_builder,
          NetworkBuilder discriminator_builder,
          const std::optional<cGANParams>& cgan_params) :
-    TrainableModel(generator_builder, "gan.pt"),
+    TrainableModel(generator_builder, "gan"),
     _discriminator(
         dynamic_cast<TorchNetwork*>(discriminator_builder.build_network())),
     _cgan_params(cgan_params) {}

@@ -10,7 +10,7 @@ AutoEncoder::AutoEncoder(NetworkBuilder encoder_builder,
                          const double learning_rate,
                          const bool tied_weights,
                          const std::optional<const double> denoising_sigma) :
-    TrainableModel(decoder_builder, "ae.pt"),
+   TrainableModel(decoder_builder, "ae"),
     _encoder(dynamic_cast<TorchNetwork*>(encoder_builder.build_network())),
     _autoencoder(*_encoder, *_model),
     _learning_rate(learning_rate),

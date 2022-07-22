@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.11.4)
 
-# Must use C++-17 because optionals are used
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Check whether linux or mac is being used
 if(UNIX AND NOT APPLE)
