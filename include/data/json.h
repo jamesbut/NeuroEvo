@@ -21,9 +21,11 @@ public:
     JSON(const nlohmann::json& json);
 
     //Retrieve element from JSON with a vector of key strings
-    //If no argument is given a copy of the underlying nlohmann::json object is returned
+    //If no argument is given a copy of the underlying nlohmann::json object 
+    //is returned
     const nlohmann::json at(
-        const std::vector<const std::string>& keys = std::vector<const std::string>()
+        const std::vector<const std::string>& keys = 
+            std::vector<const std::string>()
     ) const;
 
     //Retrieve json value as T
@@ -47,7 +49,8 @@ public:
 
     //Used when attempting to get an optional
     template <typename T>
-    std::optional<T> optional_value(const std::vector<const std::string>& keys) const
+    std::optional<T> optional_value(const std::vector<const std::string>& keys)
+    const
     {
         try {
             return at(keys).get<T>();
@@ -74,6 +77,9 @@ public:
     {
         _j.emplace_back(value);
     }
+
+    // Exposes reference to underlying json (dangerous)
+    nlohmann::json& _j_ref();
 
     auto items() const
     {

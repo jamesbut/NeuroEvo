@@ -44,6 +44,11 @@ void JSON::emplace(const JSON& json)
         emplace(key, value);
 }
 
+nlohmann::json& JSON::_j_ref()
+{
+    return _j;
+}
+
 void JSON::save_to_file(const std::string& file_path) const
 {
     std::ofstream json_file(file_path + ".json");
