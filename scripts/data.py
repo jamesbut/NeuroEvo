@@ -10,7 +10,8 @@ def read_agent_data(exp_data_path, winner_file_name):
     # Get directories in data_dir_path
     run_folder_paths = get_sub_folders(exp_data_path)
 
-    # If there are no directories in exp_data_path, then look for data in exp_data_path
+    # If there are no directories in exp_data_path, then look for data in 
+    # exp_data_path
     if not run_folder_paths:
         run_folder_paths = [exp_data_path]
 
@@ -61,10 +62,10 @@ def read_data(folder_paths):
             with open(fp) as agent_file:
                 agent = json.load(agent_file)
 
-                fitnesses.append(agent['fitness'])
-                genotypes.append(agent['genotype'])
-                phenotypes.append(agent['network']['weights'])
-                domain_params.append(agent['env']['domain_params'])
+                fitnesses.append(agent['Organism']['fitness'])
+                genotypes.append(agent['Organism']['genes'])
+                phenotypes.append(agent['Organism']['Phenotype']['traits'])
+                # domain_params.append(agent['env']['domain_params'])
 
         except FileNotFoundError:
             sys.exit("Could not find file named: " + fp)
