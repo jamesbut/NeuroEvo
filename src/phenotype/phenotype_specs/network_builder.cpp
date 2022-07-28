@@ -31,7 +31,8 @@ NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
                                               bias)),
     _torch_net(false) {}
 
-NetworkBuilder::NetworkBuilder(const unsigned num_inputs, const unsigned num_outputs,
+NetworkBuilder::NetworkBuilder(const unsigned num_inputs,
+                               const unsigned num_outputs,
                                const unsigned num_hidden_layers,
                                const unsigned neurons_per_layer,
                                const std::shared_ptr<ActivationFunctionSpec>
@@ -171,18 +172,21 @@ void NetworkBuilder::add_read_file(const std::string& file_path)
     _read_file_path = file_path;
 }
 
-void NetworkBuilder::make_hebbian(const bool evolve_init_weights,
-                                  const std::optional<double> default_init_weight,
-                                  const bool print_weights_to_file,
-                                  const std::optional<std::string>& weights_file_name,
-                                  const std::optional<std::string>& outputs_file_name)
+void NetworkBuilder::make_hebbian(
+    const bool evolve_init_weights,
+    const std::optional<double> default_init_weight,
+    const bool print_weights_to_file,
+    const std::optional<std::string>& weights_file_name,
+    const std::optional<std::string>& outputs_file_name
+)
 {
 
     if(evolve_init_weights)
         _hebbs_spec.emplace(HebbsSpec(true, std::nullopt, print_weights_to_file,
                                       weights_file_name, outputs_file_name));
     else
-        _hebbs_spec.emplace(HebbsSpec(false, default_init_weight, print_weights_to_file,
+        _hebbs_spec.emplace(HebbsSpec(false, default_init_weight,
+                                      print_weights_to_file,
                                       weights_file_name, outputs_file_name));
 
     //Alter number of params
@@ -231,17 +235,20 @@ unsigned NetworkBuilder::get_num_outputs() const
     return _num_outputs;
 }
 
-unsigned NetworkBuilder::required_num_genes(const std::vector<LayerSpec>& layer_specs,
-                                            const std::optional<HebbsSpec>& hebbs_spec)
+unsigned NetworkBuilder::required_num_genes(
+    const std::vector<LayerSpec>& layer_specs,
+    const std::optional<HebbsSpec>& hebbs_spec
+)
 {
 
     unsigned num_genes = 0;
 
     for(const auto& layer_spec : layer_specs)
-        num_genes += layer_spec.get_num_neurons() * layer_spec.get_params_per_neuron();
+        num_genes += layer_spec.get_num_neurons() *
+                     layer_spec.get_params_per_neuron();
 
-    //If the specification is Hebbs, double the number of genes if the initial weights
-    //are being evolved
+    //If the specification is Hebbs, double the number of genes if the initial
+    //weights are being evolved
     if(hebbs_spec)
         if(hebbs_spec->get_evolve_init_weights())
             num_genes *= 2;
@@ -289,13 +296,15 @@ unsigned NetworkBuilder::required_num_genes(
 {
 
     //Build LayerSpecs from the specification
-    std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(num_inputs,
-                                                                      num_outputs,
-                                                                      num_hidden_layers,
-                                                                      neurons_per_layer,
-                                                                      neuron_type,
-                                                                      activation_func,
-                                                                      bias);
+    std::vector<LayerSpec> layer_specs = LayerSpec::build_layer_specs(
+        num_inputs,
+        num_outputs,
+        num_hidden_layers,
+        neurons_per_layer,
+        neuron_type,
+        activation_func,
+        bias
+    );
     return required_num_genes(layer_specs);
 
 }
@@ -315,7 +324,7 @@ const std::pair<std::vector<double>, std::vector<double>>
 
         //Split genes into 2 - learning rates and initial weights
         const std::vector<double> learning_rates(traits.begin(),
-                                                    traits.begin() + num_connections);
+                                                 traits.begin() + num_connections);
 
         const std::vector<double> weights(traits.begin() + num_connections,
                                             traits.end());
@@ -374,7 +383,8 @@ JSON NetworkBuilder::to_json_impl() const
     if(_read_file_path.has_value())
         json.emplace("read_file_path", _read_file_path.value());
     for(std::size_t i = 0; i < _layer_specs.size(); i++)
-        json.emplace("LayerSpec" + std::to_string(i), _layer_specs.at(i).to_json().at());
+        json.emplace("LayerSpec" + std::to_string(i),
+                     _layer_specs.at(i).to_json().at());
     return json;
 }
 

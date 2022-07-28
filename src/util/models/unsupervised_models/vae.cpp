@@ -3,23 +3,27 @@
 
 namespace NeuroEvo {
 
-//When handing encoder builder one does not have to define the separate fully connected
-//layers that go separately to create mean and stddev - the constructor will do this
+//When handing encoder builder one does not have to define the separate fully
+//connected layers that go separately to create mean and stddev - the constructor
+//will do this
 VAE::VAE(std::optional<NetworkBuilder> encoder_builder,
          NetworkBuilder decoder_builder) :
     TrainableModel(decoder_builder, "vae"),
-    _encoder(encoder_builder ?
-             dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
-    _encoder_mean_linear_layer(_encoder ?
-                               torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                        _model->get_num_inputs()) :
-                               torch::nn::LinearOptions(_encoder->get_num_inputs(),
-                                                        _model->get_num_inputs())),
-    _encoder_logvar_linear_layer(_encoder ?
-                                 torch::nn::LinearOptions(_encoder->get_num_outputs(),
-                                                          _model->get_num_inputs()) :
-                                 torch::nn::LinearOptions(_encoder->get_num_inputs(),
-                                                          _model->get_num_inputs()))
+    _encoder(
+        encoder_builder ?
+        dynamic_cast<TorchNetwork*>(encoder_builder->build_network()) : nullptr),
+    _encoder_mean_linear_layer(
+        _encoder ?
+        torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                 _model->get_num_inputs()) :
+        torch::nn::LinearOptions(_model->get_num_outputs(),
+                                 _model->get_num_inputs())),
+    _encoder_logvar_linear_layer(
+        _encoder ?
+        torch::nn::LinearOptions(_encoder->get_num_outputs(),
+                                 _model->get_num_inputs()) :
+        torch::nn::LinearOptions(_model->get_num_outputs(),
+                                 _model->get_num_inputs()))
     {
         _encoder_mean_linear_layer->to(torch::kFloat64);
         _encoder_logvar_linear_layer->to(torch::kFloat64);
@@ -78,8 +82,8 @@ bool VAE::train(const unsigned num_epochs, const unsigned batch_size,
 
         auto avg_loss = total_loss / training_data.size(0);
 
-        std::cout << "Epoch: " << i << " | Training Loss: " << avg_loss.item<double>()
-            << std::endl;
+        std::cout << "Epoch: " << i << " | Training Loss: "
+            << avg_loss.item<double>() << std::endl;
 
         _loss = avg_loss.item<double>();
     }
@@ -126,7 +130,9 @@ torch::Tensor VAE::sample(const torch::Tensor& mu, const torch::Tensor& log_var,
         std::cout << "Stddev: " << std::endl << stddev << std::endl;
 
     //Randomly generate epsilons from unit normal distribution
-    const torch::Tensor eps = torch::randn({mu.size(0), mu.size(1)}, {torch::kFloat64});
+    const torch::Tensor eps = torch::randn({mu.size(0), 
+                                            mu.size(1)},
+                                           {torch::kFloat64});
 
     //Sample from the distribution
     return eps * stddev + mu;
@@ -150,13 +156,15 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output,
     const torch::Tensor BCE_loss = torch::nn::functional::binary_cross_entropy(
         output,
         input,
-        torch::nn::functional::BinaryCrossEntropyFuncOptions().reduction(torch::kSum)
+        torch::nn::functional::BinaryCrossEntropyFuncOptions()
+            .reduction(torch::kSum)
     );
     */
 
     //https://arxiv.org/abs/1312.6114
     //I think this is difference between the output gauss params and a unit normal
-    torch::Tensor KLD_loss = -0.5 * torch::sum(1 + log_var - mu.pow(2) - log_var.exp());
+    torch::Tensor KLD_loss = -0.5 *
+        torch::sum(1 + log_var - mu.pow(2) - log_var.exp());
     KLD_loss /= output.size(0);
 
     //std::cout << "Reconstruction loss: " << reconstruction_loss << std::endl;
@@ -168,7 +176,6 @@ torch::Tensor VAE::loss_function(const torch::Tensor& output,
 
 std::optional<NetworkBuilder> VAE::create_encoder_builder(JSON config) const
 {
-
     JSON encoder_config = config.at({"EncoderSpec"});
 
     if(encoder_config.at({"num_hidden_layers"}) == 0)
