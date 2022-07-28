@@ -62,7 +62,9 @@ public:
             finished = optimisation_finished(gen, domain);
 
             //Collect data
-            data_collector.collect_generational_data(_population, gen, finished, domain);
+            data_collector.collect_generational_data(
+                _population, gen, finished, domain
+            );
 
             if(finished) break;
 
@@ -121,7 +123,8 @@ protected:
     //This is different for each optimiser
     virtual Population<G, T> step(std::shared_ptr<GPMap<G, T>> gp_map) = 0;
 
-    //Each algorithm will intialise its population differently - implement that in here
+    //Each algorithm will intialise its population differently - 
+    //implement that in here
     virtual Population<G, T> initialise_population(
         std::shared_ptr<GPMap<G, T>> gp_map) = 0;
 

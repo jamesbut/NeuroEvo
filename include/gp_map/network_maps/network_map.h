@@ -21,7 +21,8 @@ class NetworkMap : public GPMap<G, T>
 
 public:
 
-    NetworkMap(NetworkBuilder& decoder_spec, std::shared_ptr<PhenotypeSpec> pheno_spec) :
+    NetworkMap(NetworkBuilder& decoder_spec,
+               std::shared_ptr<PhenotypeSpec> pheno_spec) :
         GPMap<G, T>(pheno_spec),
         _decoder(decoder_spec.build_network()) {}
 

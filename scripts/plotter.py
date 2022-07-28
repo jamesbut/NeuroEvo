@@ -346,14 +346,16 @@ def read_and_plot_phenos(exp_data_path=None, winner_file_name=None, test_data=No
 
 # Determines which experiment to plot when a sub group of experiments is given
 
-# gen_one_max is a boolean which determines which experiment in the sub group to use.
-# If gen_one_max is false, the experiment with the best winner so far with the highest
-# fitness is chosen, otherwise the experiment with the highest best winner so far
-# fitness at generation 1 is chosen
+# gen_one_max is a boolean which determines which experiment in the sub group
+# to use.
+# If gen_one_max is false, the experiment with the best winner so far with the
+# highest fitness is chosen, otherwise the experiment with the highest best
+# winner so far fitness at generation 1 is chosen
 def _determine_experiment_to_plot(exp_data_path: str, winner_file_name: str,
                                   gen_one_max: bool, verbosity: bool) -> str:
 
-    # Check whether exp_data_path is an experiment directory or subgroup directory
+    # Check whether exp_data_path is an experiment directory or subgroup
+    # directory
     if 'exp' in exp_data_path.split('/')[-1]:
         return exp_data_path
 
@@ -443,7 +445,8 @@ def _plot_legend(prompt_legend_labels: bool, exp_data_dirs: List[str],
 
 
 def read_and_plot_evo_data(exp_data_dirs, data_dir_path, winner_file_name,
-                           gen_one_max: bool = False, plot_mean_bests: bool = False,
+                           gen_one_max: bool = False,
+                           plot_mean_bests: bool = False,
                            plot_median_bests: bool = True,
                            plot_q_bests: bool = False,
                            plot_best_bests: bool = True,
@@ -463,8 +466,10 @@ def read_and_plot_evo_data(exp_data_dirs, data_dir_path, winner_file_name,
     for i, exp_data_path in enumerate(exp_data_paths):
 
         # Determine which experiment to plot
-        exp_data_path = _determine_experiment_to_plot(exp_data_path, winner_file_name,
-                                                      gen_one_max, verbosity)
+        exp_data_path = _determine_experiment_to_plot(
+            exp_data_path, winner_file_name,
+            gen_one_max, verbosity
+        )
         print('Experiment data path:', exp_data_path)
 
         # Read experiment data
@@ -532,16 +537,17 @@ if __name__ == '__main__':
         # Get axis limits from command line
         plot_axis_lb, plot_axis_ub = parse_axis_limits(sys.argv)
 
-        read_and_plot_phenos('../data/' + exp_dir,
-                             'best_winner_so_far',
-                             group=True if '--group' in sys.argv else False,
-                             colour_params=True if '--colour-params' in sys.argv
-                                                else False,
-                             print_numpy_arrays=True
-                                if '--print-numpy-arrays' in sys.argv else False,
-                             verbosity=True if '--verbosity' in sys.argv else False,
-                             plot_axis_lb=plot_axis_lb,
-                             plot_axis_ub=plot_axis_ub)
+        read_and_plot_phenos(
+            '../data/' + exp_dir,
+            'best_winner_so_far',
+            group=True if '--group' in sys.argv else False,
+            colour_params=True if '--colour-params' in sys.argv else False,
+            print_numpy_arrays=True if '--print-numpy-arrays' in sys.argv
+                                    else False,
+            verbosity=True if '--verbosity' in sys.argv else False,
+            plot_axis_lb=plot_axis_lb,
+            plot_axis_ub=plot_axis_ub
+        )
 
     # Plot evolutionary run data
     elif '--evo' in sys.argv:
@@ -576,7 +582,8 @@ if __name__ == '__main__':
         prompt_legend_labels = True if '--legend-labels' in sys.argv else False
 
         # x-axis max
-        x_axis_max: Optional[list[str]] = retrieve_flag_args('--x-axis-max', sys.argv)
+        x_axis_max: Optional[list[str]] = \
+            retrieve_flag_args('--x-axis-max', sys.argv)
         # Convert to int
         if x_axis_max is not None:
             x_axis_max = int(x_axis_max[0])
@@ -587,6 +594,8 @@ if __name__ == '__main__':
         read_and_plot_evo_data(
             exp_data_dirs, '../data/',
             'best_winner_so_far',
-            gen_one_max, plot_mean_bests, plot_median_bests, plot_q_bests, plot_b_bests,
+            gen_one_max, plot_mean_bests, plot_median_bests,
+            plot_q_bests, plot_b_bests,
             plot_mean_means, plot_median_means, plot_q_means, verbosity,
-            prompt_legend_labels, x_axis_max)
+            prompt_legend_labels, x_axis_max
+        )

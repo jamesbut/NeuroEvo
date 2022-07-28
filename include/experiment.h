@@ -20,8 +20,8 @@ class Experiment {
 
 public:
 
-    //Constructs an experiment conditional on whether the phenotype specification is
-    //appropriate for the domain
+    //Constructs an experiment conditional on whether the phenotype 
+    //specification is appropriate for the domain
     Experiment(std::shared_ptr<Domain<G, T>> domain,
                std::shared_ptr<GPMap<G, T>> gp_map,
                const bool dump_data,
@@ -39,8 +39,8 @@ public:
     {
         //Check phenotype specification is appropriate for domain
         if(!domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
-            throw std::invalid_argument("Phenotype spec is not appropriate for this "
-                                        "domain");
+            throw std::invalid_argument(
+                "Phenotype spec is not appropriate for this domain");
     }
 
     void evolutionary_run(std::shared_ptr<Optimiser<G, T>> optimiser,
@@ -69,10 +69,11 @@ public:
         {
             //Trace is off in parallel runs
             const bool trace = false;
-            const RunArguments<G, T> run_args{_domain, optimiser, _gp_map,
-                                              _exp_dir_path, _dump_winners_only,
-                                              _num_winners, _total_winners_gens, trace,
-                                              domain_parallel};
+            const RunArguments<G, T> run_args{
+                _domain, optimiser, _gp_map,
+                _exp_dir_path, _dump_winners_only,
+                _num_winners, _total_winners_gens, trace,
+                domain_parallel};
             RunScheduler<G, T> scheduler(run_args, num_runs);
             scheduler.dispatch(run);
 
@@ -83,7 +84,8 @@ public:
             for(unsigned i = 0; i < num_runs; i++)
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(_domain, optimiser, _gp_map, i, _exp_dir_path, _dump_winners_only,
+                run(_domain, optimiser, _gp_map, i, _exp_dir_path,
+                    _dump_winners_only,
                     _num_winners, completed_flag, _total_winners_gens, trace,
                     domain_parallel);
             }
@@ -94,14 +96,15 @@ public:
         _avg_winners_gens = (double)_total_winners_gens / (double)num_runs;
 
         const unsigned non_winners = num_runs - _num_winners;
-        const unsigned total_winners_gens_winners_only = _total_winners_gens -
-                                                         (non_winners *
-                                                          optimiser->get_max_gens());
+        const unsigned total_winners_gens_winners_only = 
+            _total_winners_gens - (non_winners * optimiser->get_max_gens());
         _avg_winners_gens_winners_only = (double)total_winners_gens_winners_only /
                                          (double)_num_winners;
 
-        std::cout << "Num winners: " << _num_winners << "/" << num_runs << std::endl;
-        std::cout << "Average winner generation: " << _avg_winners_gens << std::endl;
+        std::cout << "Num winners: " << _num_winners << "/" << num_runs
+            << std::endl;
+        std::cout << "Average winner generation: " << _avg_winners_gens 
+            << std::endl;
         std::cout << "Average winner generation (only winners): " <<
             _avg_winners_gens_winners_only << std::endl;
         std::cout << "Duration: " << duration << " seconds" << std::endl;
