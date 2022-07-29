@@ -11,6 +11,7 @@ public:
 
     GaussianDistribution(const double mean = 0., const double stddev = 1.,
                          const std::optional<unsigned> seed = std::nullopt);
+    GaussianDistribution(const JSON& config);
 
     double next() override;
 
