@@ -27,8 +27,8 @@ public:
         _max_num_threads(max_num_threads) {}
 
     //Dispatches jobs - blocks until finished
-    void dispatch(void (&run)(std::shared_ptr<Domain<G, T>>,
-                              std::shared_ptr<Optimiser<G, T>> optimiser,
+    void dispatch(void (&run)(std::vector<std::shared_ptr<Domain<G, T>>>,
+                              std::shared_ptr<Optimiser<G, T>>,
                               std::shared_ptr<GPMap<G, T>>,
                               const unsigned,
                               const std::optional<const std::string>,
@@ -69,7 +69,8 @@ public:
                 {
 
                     //Get available thread index and pop queue
-                    const std::size_t thread_index = available_thread_indices.front();
+                    const std::size_t thread_index =
+                        available_thread_indices.front();
                     available_thread_indices.pop_front();
 
                     //Join previously spawned thread
@@ -84,11 +85,12 @@ public:
                     {
                         finished_flags[thread_index] = false;
 
-                        std::cout << "Starting run: " << num_runs_started << std::endl;
+                        std::cout << "Starting run: " << num_runs_started
+                            << std::endl;
 
                         threads[thread_index] = std::thread(
                                 run,
-                                _run_args.domain,
+                                _run_args.domains,
                                 std::ref(_run_args.optimiser),
                                 _run_args.gp_map,
                                 num_runs_started,

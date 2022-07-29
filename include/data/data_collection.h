@@ -63,7 +63,7 @@ public:
         const Population<G, T>& population,
         const unsigned current_gen,
         const bool final_gen,
-        const std::unique_ptr<Domain<G, T>>& domain)
+        const std::vector<std::unique_ptr<Domain<G, T>>>& domains)
     {
         //Create folder to store information if it has not already been created
         if(!_run_dir_path && _exp_dir_path.has_value())
@@ -73,14 +73,15 @@ public:
         }
 
         //Generational winner
-        const Organism<G, T>& gen_winner = calculate_generational_winner(population);
+        const Organism<G, T>& gen_winner =
+            calculate_generational_winner(population);
         if(_exp_dir_path.has_value())
-            save_generational_winner_to_file(gen_winner, domain);
+            save_generational_winner_to_file(gen_winner, domains);
 
         //Best winner so far
         calculate_best_winner_so_far(gen_winner);
         if(_exp_dir_path.has_value())
-            save_best_winner_so_far_to_file(domain);
+            save_best_winner_so_far_to_file(domains);
 
         calculate_population_statistics(population);
         if(final_gen)
@@ -144,7 +145,8 @@ private:
         _uq_gen_fitnesses.push_back(calculate_quantile(fitnesses, 0.75));
     }
 
-    //Fills the remainder of the statistics up to max gens if the run was finished early
+    //Fills the remainder of the statistics up to max gens if the run was 
+    //finished early
     //This helps with the python plots
     void complete_statistics()
     {
@@ -175,7 +177,8 @@ private:
         const std::vector<Organism<G, T>>& orgs = population.get_organisms();
 
         //If one of the organisms is a domain winner, this is immediately returned
-        //regardless of fitness. Sometimes an organism can be a domain winner and not
+        //regardless of fitness. 
+        //Sometimes an organism can be a domain winner and not
         //have the highest fitness. The domain winners take precedent.
         for(const auto& org : orgs)
             if(org.is_domain_winner())
@@ -203,30 +206,45 @@ private:
             _best_winner_so_far = gen_winner;
 
         //Save best winner so far fitness
-        _best_so_far_fitnesses.push_back(_best_winner_so_far->get_fitness().value());
+        _best_so_far_fitnesses.push_back(
+            _best_winner_so_far->get_fitness().value()
+        );
     }
 
-    void save_generational_winner_to_file(const Organism<G, T>& gen_winner,
-                                          const std::unique_ptr<Domain<G, T>>& domain)
-        const
+    void save_generational_winner_to_file(
+        const Organism<G, T>& gen_winner,
+        const std::vector<std::unique_ptr<Domain<G, T>>>& domains
+    ) const
     {
         //Print out highest scoring organism
         JSON json;
         json.emplace("Organism", gen_winner.to_json());
-        json.emplace("Domain", domain->to_json());
+        add_domains_to_json(json, domains);
         json.save_to_file(_run_dir_path.value() + "/generational_winner");
     }
 
-    //Pass in domain reference so the domain used to train the organism is saved also
-    void save_best_winner_so_far_to_file(const std::unique_ptr<Domain<G, T>>& domain)
-        const
+    //Pass in domain reference so the domain used to train the organism is 
+    //saved also
+    void save_best_winner_so_far_to_file(
+        const std::vector<std::unique_ptr<Domain<G, T>>>& domains
+    ) const
     {
         std::stringstream file_path;
         file_path << _run_dir_path.value() << "/best_winner_so_far";
         JSON json;
         json.emplace("Organism", _best_winner_so_far->to_json());
-        json.emplace("Domain", domain->to_json());
+        add_domains_to_json(json, domains);
         json.save_to_file(file_path.str());
+    }
+
+    void add_domains_to_json(
+        JSON& json,
+        const std::vector<std::unique_ptr<Domain<G, T>>>& domains
+    ) const
+    {
+        json._j_ref()["Domain"] = {};
+        for(const auto& domain : domains)
+            json._j_ref()["Domain"].push_back(domain->to_json()._j_ref());
     }
 
     void delete_exp_dir() const

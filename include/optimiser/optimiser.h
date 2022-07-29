@@ -43,27 +43,43 @@ public:
     virtual ~Optimiser() = default;
 
     //Optimise according to optimiser algorithm
-    //Returns bool to indicate whether domain was solved or not
-    bool optimise(std::unique_ptr<Domain<G, T>>& domain,
+    //Returns bool to indicate whether all domains were solved or not
+    bool optimise(std::vector<std::unique_ptr<Domain<G, T>>>& domains,
                   std::shared_ptr<GPMap<G, T>> gp_map,
                   DataCollector<G, T>& data_collector) {
 
         _population = initialise_population(gp_map);
+        
+        // Set whether organism is a winner based on the average domain 
+        // completion fitness.
+        // This is not desirable, I want to change this.
+        const double average_domain_completion_fitness = 
+            std::accumulate(
+                domains.begin(),
+                domains.end(),
+                0.0,
+                [](const double sum_so_far,
+                   const std::unique_ptr<Domain<G, T>>& domain)
+                {return sum_so_far + domain->get_completion_fitness();}
+            ) / domains.size();
 
         bool finished = false;
         unsigned gen = 1;
 
         do
         {
-            //Evaluate population on domain
-            domain->evaluate_population(_population, _num_trials, false);
+            //Evaluate population on domains
+            evaluate_population(
+                _population, domains, _num_trials,
+                average_domain_completion_fitness
+            );
 
             //Check for completion
-            finished = optimisation_finished(gen, domain);
+            finished = optimisation_finished(gen, domains);
 
             //Collect data
             data_collector.collect_generational_data(
-                _population, gen, finished, domain
+                _population, gen, finished, domains
             );
 
             if(finished) break;
@@ -83,8 +99,13 @@ public:
         std::cout << best_org << std::endl;
         */
 
-        if(domain->complete())
+        unsigned num_domains_completed = 0;
+        for(const auto& domain : domains)
+            if(domain->complete())
+                num_domains_completed++;
+        if(num_domains_completed == domains.size())
             return true;
+
         return false;
 
     }
@@ -145,13 +166,52 @@ protected:
 
 private:
 
-    bool optimisation_finished(const unsigned curr_gen,
-                               const std::unique_ptr<Domain<G, T>>& domain) const
+    void evaluate_population(
+        Population<G, T>& population, 
+        std::vector<std::unique_ptr<Domain<G, T>>>& domains,
+        const unsigned num_trials,
+        const double average_domain_completion_fitness
+    )
+    {
+        for(std::size_t i = 0; i < population.get_size(); i++)
+        {
+            double total_fitness = 0.0;
+
+            for(std::size_t j = 0; j < domains.size(); j++)
+                total_fitness += domains[j]->evaluate(
+                    population.get_mutable_organism(i)
+                );    
+
+            const double average_fitness = total_fitness / domains.size();
+
+            population.set_organism_fitness(
+                i, average_fitness, average_domain_completion_fitness
+            );
+        }
+
+        // Checks each domain for completion
+        // TODO: Do not know whether the functionality of this works now that 
+        // we have a list of domains - check!
+        for(auto& domain : domains)
+            domain->set_complete(domain->check_for_completion(population));
+    }
+
+    bool optimisation_finished(
+        const unsigned curr_gen,
+        const std::vector<std::unique_ptr<Domain<G, T>>>& domains
+    ) const
     {
         if(curr_gen >= _max_gens)
             return true;
-        if(domain->complete() && _quit_when_domain_complete)
+
+        // Return true if all domains are completed
+        unsigned num_domains_completed = 0;
+        for(const auto& domain : domains)
+            if(domain->complete() && _quit_when_domain_complete)
+                num_domains_completed++;
+        if(num_domains_completed == domains.size())
             return true;
+
         return false;
     }
 

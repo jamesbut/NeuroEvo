@@ -9,7 +9,7 @@ namespace NeuroEvo {
 template <typename G, typename T>
 struct RunArguments
 {
-    std::shared_ptr<Domain<G, T>> domain;
+    std::vector<std::shared_ptr<Domain<G, T>>> domains;
     std::shared_ptr<Optimiser<G, T>> optimiser;
     std::shared_ptr<GPMap<G, T>> gp_map;
     std::optional<const std::string> exp_dir_path;

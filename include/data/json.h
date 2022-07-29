@@ -20,6 +20,9 @@ public:
     JSON(const std::string& file_path);
     JSON(const nlohmann::json& json);
 
+    template <typename T>
+    JSON(const std::vector<T>& vec) : _j(vec) {}
+
     //Retrieve element from JSON with a vector of key strings
     //If no argument is given a copy of the underlying nlohmann::json object 
     //is returned

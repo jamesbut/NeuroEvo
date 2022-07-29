@@ -83,6 +83,17 @@ public:
 
     virtual ~Domain() = default;
 
+    // Evaluate single organism and return fitness
+    double evaluate(Organism<G, T>& org)
+    {
+        //Need to reset the network
+        org.genesis();
+        // Trial seed set to 108 right now, change if one wants seed to change 
+        // for each trial
+        return single_run(org, 108);
+    }
+
+
     //Evaluate entire population each for a number of trials
     void evaluate_population(Population<G, T>& pop, const unsigned num_trials,
                              const bool parallel)
@@ -206,6 +217,11 @@ public:
         }
     }
 
+    void set_complete(const bool complete)
+    {
+        _complete = complete;
+    }
+
     std::optional<std::vector<double>> get_hyperparams() const
     {
         return _domain_hyperparams;
@@ -229,16 +245,6 @@ public:
         return json;
     }
 
-protected:
-
-    //This function is abstract and all domains should implement
-    //one run for a single organism
-    //This function is called by the evaluate functions
-    //A random seed can be handed to this function in case there
-    //is a random component to the domain and all individuals in the
-    //population are required to be ran on the exact same domain.
-    virtual double single_run(Organism<G, T>& org, unsigned rand_seed) = 0;
-
     //Checks domain for completion - can be overriden
     virtual bool check_for_completion(Population<G, T>& population)
     {
@@ -248,6 +254,16 @@ protected:
 
         return false;
     }
+
+protected:
+
+    //This function is abstract and all domains should implement
+    //one run for a single organism
+    //This function is called by the evaluate functions
+    //A random seed can be handed to this function in case there
+    //is a random component to the domain and all individuals in the
+    //population are required to be ran on the exact same domain.
+    virtual double single_run(Organism<G, T>& org, unsigned rand_seed) = 0;
 
     virtual JSON to_json_impl() const = 0;
 

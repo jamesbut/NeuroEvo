@@ -22,12 +22,12 @@ public:
 
     //Constructs an experiment conditional on whether the phenotype 
     //specification is appropriate for the domain
-    Experiment(std::shared_ptr<Domain<G, T>> domain,
+    Experiment(std::vector<std::shared_ptr<Domain<G, T>>>& domains,
                std::shared_ptr<GPMap<G, T>> gp_map,
                const bool dump_data,
                const bool dump_winners_only,
                const std::optional<const JSON> exp_json = std::nullopt) :
-        _domain(domain),
+        _domains(domains),
         _gp_map(gp_map),
         _exp_dir_path(std::nullopt),
         _exp_json(exp_json),
@@ -38,9 +38,10 @@ public:
         _avg_winners_gens(0)
     {
         //Check phenotype specification is appropriate for domain
-        if(!domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
-            throw std::invalid_argument(
-                "Phenotype spec is not appropriate for this domain");
+        for(const auto& domain : _domains)
+            if(!domain->check_phenotype_spec(*gp_map->get_pheno_spec()))
+                throw std::invalid_argument(
+                    "Phenotype spec is not appropriate for this domain");
     }
 
     void evolutionary_run(std::shared_ptr<Optimiser<G, T>> optimiser,
@@ -70,7 +71,7 @@ public:
             //Trace is off in parallel runs
             const bool trace = false;
             const RunArguments<G, T> run_args{
-                _domain, optimiser, _gp_map,
+                _domains, optimiser, _gp_map,
                 _exp_dir_path, _dump_winners_only,
                 _num_winners, _total_winners_gens, trace,
                 domain_parallel};
@@ -84,7 +85,7 @@ public:
             for(unsigned i = 0; i < num_runs; i++)
             {
                 std::cout << "Starting run: " << i << std::endl;
-                run(_domain, optimiser, _gp_map, i, _exp_dir_path,
+                run(_domains, optimiser, _gp_map, i, _exp_dir_path,
                     _dump_winners_only,
                     _num_winners, completed_flag, _total_winners_gens, trace,
                     domain_parallel);
@@ -123,12 +124,14 @@ public:
 
     void set_domain_trace(const bool domain_trace)
     {
-        _domain->set_trace(domain_trace);
+        for(const auto& domain : _domains)
+            domain->set_trace(domain_trace);
     }
 
     void set_domain_seed(const unsigned seed)
     {
-        _domain->set_seed(seed);
+        for(const auto& domain : _domains)
+            domain->set_seed(seed);
     }
 
     double get_avg_winners_gens() const
@@ -148,7 +151,7 @@ public:
 
 private:
 
-    static void run(std::shared_ptr<Domain<G, T>> m_domain,
+    static void run(std::vector<std::shared_ptr<Domain<G, T>>> m_domains,
                     std::shared_ptr<Optimiser<G, T>> a_optimiser,
                     std::shared_ptr<GPMap<G, T>> m_gp_map,
                     const unsigned run_num,
@@ -161,9 +164,12 @@ private:
                     const bool domain_parallel = false)
     {
 
-        //Copy and reset domain
-        std::unique_ptr<Domain<G, T>> domain = m_domain->clone();
-        domain->exp_run_reset(run_num);
+        //Copy and reset domains
+        std::vector<std::unique_ptr<Domain<G, T>>> domains;
+        for(const auto& domain : m_domains)
+            domains.push_back(domain->clone());
+        for(const auto& domain : domains)
+            domain->exp_run_reset(run_num);
 
         //Copy and reset optimiser
         std::unique_ptr<Optimiser<G, T>> optimiser = a_optimiser->clone();
@@ -174,7 +180,7 @@ private:
                                            dump_winners_only, trace);
 
         //Call optimiser
-        const bool optimiser_status = optimiser->optimise(domain, m_gp_map,
+        const bool optimiser_status = optimiser->optimise(domains, m_gp_map,
                                                           data_collector);
 
         // Check whether the domain was solved or not
@@ -192,7 +198,8 @@ private:
 
     }
 
-    std::shared_ptr<Domain<G, T>> _domain;
+    // Vector of domains, one for each individual trial
+    std::vector<std::shared_ptr<Domain<G, T>>> _domains;
     std::shared_ptr<GPMap<G, T>> _gp_map;
 
     std::optional<std::string> _exp_dir_path;
