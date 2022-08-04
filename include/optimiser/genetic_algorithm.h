@@ -162,7 +162,6 @@ private:
     std::shared_ptr<Mutator<G>> _mutator;
     //Add crossover at some point
 
-    //std::shared_ptr<Distribution<G>> _init_distr;
     // A distribution for each gene
     std::vector<std::shared_ptr<Distribution<G>>> _init_distrs;
 

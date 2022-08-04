@@ -43,7 +43,10 @@ public:
         return json;
     }
 
-    auto clone_phenotype() const { return std::unique_ptr<Phenotype>(clone_impl()); }
+    auto clone_phenotype() const
+    {
+        return std::unique_ptr<Phenotype>(clone_impl()); 
+    }
 
     const std::optional<unsigned>& get_num_params() const
     {
