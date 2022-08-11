@@ -141,7 +141,7 @@ def _plot_exp_evo_data(mean_bests, median_bests, lq_bests, uq_bests, best_bests,
             self.data = np.empty([0, len(x_axis), 2])
             self.line_styles: List[str] = []
             self.line_widths: List[float] = []
-            self.gens = x_axis
+            self.gens = x_axis.astype(int)
             self.x_axis_max = x_axis_max
             # I need a way to record the particular data that has been plotted
             # in order to label the legend later
@@ -166,15 +166,14 @@ def _plot_exp_evo_data(mean_bests, median_bests, lq_bests, uq_bests, best_bests,
 
             # Plot data
             for i in range(self.data.shape[0]):
-                plt.plot(self.data[i, :self.x_axis_max, 0],
+                plt.plot(self.data[i, :self.x_axis_max, 0].astype(int),
                          self.data[i, :self.x_axis_max, 1],
                          color=colour, linestyle=self.line_styles[i],
                          linewidth=self.line_widths[i])
 
+
     # Create x axis of generations
-    gens = np.arange(1, median_bests.shape[0] + 1)
-    #x_axis_ticks = range(gens[0], gens[-1])
-    #plt.xticks(x_axis_ticks)
+    gens = np.arange(1, median_bests.shape[0] + 1).astype(int)
 
     data = PlotData(gens, x_axis_max)
 
@@ -463,6 +462,9 @@ def read_and_plot_evo_data(exp_data_dirs, data_dir_path, winner_file_name,
     # Labels of plotted data
     plotted_labels: List[Optional[str]] = []
 
+    # Set x axis to integers
+    plt.figure().gca().xaxis.get_major_locator().set_params(integer=True)
+
     for i, exp_data_path in enumerate(exp_data_paths):
 
         # Determine which experiment to plot
@@ -516,8 +518,7 @@ def read_and_plot_evo_data(exp_data_dirs, data_dir_path, winner_file_name,
     plt.ylabel('Fitness')
 
     # Save figure
-    # plt.savefig('figures/evo_figure.png', bbox_inches='tight',
-    #             pad_inches=0.05, dpi=500)
+    plt.savefig('../../../figures/evo_figure.svg', bbox_inches='tight')
 
     plt.show()
 
